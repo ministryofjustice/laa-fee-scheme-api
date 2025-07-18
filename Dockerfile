@@ -5,7 +5,7 @@ ARG app_version=0.0.1-SNAPSHOT
 
 VOLUME /tmp
 
-COPY scheme-service-${app_version}.jar laa-fee-scheme-api.jar
+COPY scheme-service/build/libs/scheme-service-${app_version}.jar laa-fee-scheme-api.jar
 
 EXPOSE 8080
 RUN groupadd --system --gid 800 customgroup \
