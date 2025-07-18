@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: LAA Fee Scheme API
+
+  #do not auto create db schema, use .sql scripts
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+# used by actuator info endpoint
+info:
+  app:
+    name: LAA Fee Scheme API
+    description: LAA Fee Scheme API to calculate fees for a claim and return response to Claim & Assess API.
+    version: 1.0.0
+
+management:
+  # specify actuator endpoints to enable
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+  # show detailed health status
+  endpoint:
+    health:
+      show-details: always
+
+  info:
+    env:
+      enabled: true

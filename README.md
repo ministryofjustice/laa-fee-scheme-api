@@ -1,12 +1,8 @@
-# laa-spring-boot-microservice-template
+# laa-fee-scheme-api
 [![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/laa-spring-boot-microservice-template/badge)](https://github-community.service.justice.gov.uk/repository-standards/laa-spring-boot-microservice-template)
-
-### ⚠️ WORK IN PROGRESS ⚠️
-This template is still under development and features may be added or subject to change.
 
 ## Overview
 
-Template GitHub repository used for Spring Boot Java microservice projects.
 
 The project uses the `laa-ccms-spring-boot-gradle-plugin` Gradle plugin which provides
 sensible defaults for the following plugins:
@@ -26,8 +22,8 @@ more information regarding setup and usage.
 ### Project Structure
 Includes the following subprojects:
 
-- `spring-boot-microservice-api` - example OpenAPI specification used for generating API stub interfaces and documentation.
-- `spring-boot-microservice-service` - example REST API service with CRUD operations interfacing a JPA repository with an in-memory database.
+- `scheme-api` - example OpenAPI specification used for generating API stub interfaces and documentation.
+- `scheme-service` - example REST API service with CRUD operations interfacing a JPA repository with an in-memory database.
 
 ## Setup Instructions
 Once you've created your repository using this template, perform the following steps:

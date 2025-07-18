@@ -17,8 +17,8 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'laa-spring-boot-microservice-template'
+rootProject.name = 'laa-fee-scheme-api'
 
-include 'spring-boot-microservice-api'
-include 'spring-boot-microservice-service'
+include 'scheme-api'
+include 'scheme-service'
 
