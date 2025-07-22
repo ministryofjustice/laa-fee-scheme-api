@@ -19,6 +19,8 @@ runs:
     - name: Build and test
       run: ./gradlew build
       shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload checkstyle report
       if: always()

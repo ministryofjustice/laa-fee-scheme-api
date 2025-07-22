@@ -1,8 +1,8 @@
 name: PR build and test
 on:
   workflow_dispatch:
-  pull_request:
-    types: [opened, reopened, synchronize]
+#  pull_request:
+#    types: [opened, reopened, synchronize]
 
 jobs:
   test:
@@ -53,10 +53,10 @@ jobs:
         run: ./gradlew build
 
       - name: Build a Docker image
-        run: docker build -t laa-cwa-bulk-upload:scan .
+        run: docker build -t laa-fee-scheme-api:scan .
 
       - name: Run Snyk to check Docker image for vulnerabilities
         uses: snyk/actions/docker@master
         with:
-          image: laa-cwa-bulk-upload:scan
+          image: laa-fee-scheme-api:scan
           args: --file=Dockerfile --severity-threshold=high
