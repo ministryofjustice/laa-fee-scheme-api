@@ -1,5 +1,10 @@
 name: Build and run tests
 
+inputs:
+  github-token:
+    description: 'Github Token to access the repository'
+    required: true
+
 runs:
   using: 'composite'
   steps:
@@ -19,6 +24,8 @@ runs:
     - name: Build and test
       run: ./gradlew build
       shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
 
     - name: Test coverage verification
       run: ./gradlew jacocoTestCoverageVerification

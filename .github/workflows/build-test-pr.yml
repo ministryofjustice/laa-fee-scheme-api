@@ -15,7 +15,8 @@ jobs:
     steps:
       - name: Build and run tests
         uses: './.github/actions/build-and-test'
-
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 #  vulnerability-scan-app:
 #    runs-on: ubuntu-latest
 #    needs:
