@@ -47,7 +47,7 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: checkstyle-report
-        path: build/reports/checkstyle
+        path: scheme-service/build/reports/checkstyle
         retention-days: 14
 
     - name: Upload test report
@@ -55,7 +55,7 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: test-report
-        path: build/reports/tests
+        path: scheme-service/build/reports/tests
         retention-days: 14
 
     - name: Upload jacoco coverage report
@@ -63,5 +63,5 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: jacoco-coverage-report
-        path: build/reports/jacoco
+        path: scheme-service/build/reports/jacoco
         retention-days: 14
