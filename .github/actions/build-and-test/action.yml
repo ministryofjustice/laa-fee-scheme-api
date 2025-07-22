@@ -35,6 +35,12 @@ runs:
       run: ./gradlew integrationTest --tests '*IntegrationTest'
       shell: bash
 
+    - name: Publish package
+      run: ./gradlew publish
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+
     - name: Upload test results
       uses: actions/upload-artifact@v4
       with:
