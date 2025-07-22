@@ -2,7 +2,10 @@ name: Build and deploy after PR merged
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+#      - main
+      - deploy-to-ecr
+  workflow_dispatch:
 
 permissions:
   contents: read
