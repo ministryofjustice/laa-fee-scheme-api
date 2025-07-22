@@ -5,8 +5,8 @@ FROM amazoncorretto:21-alpine
 ARG app_version=1.0.0
 
 # Set up working directory in the container
-RUN mkdir -p /opt/laa-spring-boot-microservice/
-WORKDIR /opt/laa-spring-boot-microservice/
+RUN mkdir -p /opt/laa-fee-scheme-api/
+WORKDIR /opt/laa-fee-scheme-api/
 
 # Copy the built JAR file to the container
 COPY scheme-service/build/libs/scheme-service-${app_version}.jar laa-fee-scheme-api.jar
