@@ -7,10 +7,6 @@ on:
       - LFSP-32-dev-deploy
   workflow_dispatch:
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
   build-test:
     runs-on: ubuntu-latest
