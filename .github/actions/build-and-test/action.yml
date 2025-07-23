@@ -1,0 +1,73 @@
+name: Build and run tests
+
+inputs:
+  github-token:
+    description: 'Github Token to access the repository'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'corretto'
+        java-version: '21'
+
+    - name: Set up Gradle
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Build and test
+      run: ./gradlew build
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+
+    - name: Test coverage verification
+      run: ./gradlew jacocoTestCoverageVerification
+      shell: bash
+
+    - name: Integration test
+      run: ./gradlew integrationTest --tests '*IntegrationTest'
+      shell: bash
+
+    - name: Publish package
+      run: ./gradlew publish
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: scheme-service/build/test-results
+        retention-days: 14
+
+    - name: Upload checkstyle report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: checkstyle-report
+        path: scheme-service/build/reports/checkstyle
+        retention-days: 14
+
+    - name: Upload test report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-report
+        path: scheme-service/build/reports/tests
+        retention-days: 14
+
+    - name: Upload jacoco coverage report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: jacoco-coverage-report
+        path: scheme-service/build/reports/jacoco
+        retention-days: 14
