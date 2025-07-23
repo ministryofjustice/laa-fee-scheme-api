@@ -46,12 +46,12 @@ jobs:
           kube-cluster: ${{ secrets.KUBE_CLUSTER }}
           kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
 
-      - name: Authenticate with Kubernetes cluster in Cloud Platform
+      - name: Helm Deploy
         uses: ministryofjustice/laa-reusable-github-actions/.github/actions/helm-deploy@main
         with:
           k8s_namespace: ${{ secrets.KUBE_NAMESPACE }}
           helm_release_name: laa-fee-scheme-api-${{ inputs.environment }}
-          helm_chart: laa-fee-scheme-api
+          helm_chart: helm_deploy/laa-fee-scheme-api
           helm_values_path: values-${{ inputs.environment }}.yaml
           image_registry: ${{ steps.auth.outputs.image_registry }}
           image_repo: ${{ vars.ECR_REPOSITORY }}
