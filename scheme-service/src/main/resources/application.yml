@@ -4,9 +4,9 @@ spring:
 
   datasource:
    ## url: jdbc:postgresql://localhost:5432/db5237d17910a637aa
-    url: jdbc:postgresql://cloud-platform-5237d17910a637aa.cdwm328dlye6.eu-west-2.rds.amazonaws.com:5432/db5237d17910a637aa
-    username: cpnkr95Y3Y
-    password: QwaqwkiWndInb9EK
+    url: 'jdbc:postgresql://${DB_SERVER}/${DB_NAME}'
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
   flyway:
     enabled: true
     locations: classpath:db/migration,classpath:db/repeatable
