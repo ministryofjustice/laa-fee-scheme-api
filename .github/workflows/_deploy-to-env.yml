@@ -38,6 +38,7 @@ jobs:
           role-session-name: deployment
 
       - name: Authenticate with Kubernetes cluster in Cloud Platform
+        id: auth
         uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@main
         with:
           kube-cert: ${{ secrets.KUBE_CERT }}
@@ -45,10 +46,13 @@ jobs:
           kube-cluster: ${{ secrets.KUBE_CLUSTER }}
           kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
 
-#      - name: Helm deploy to ${{ inputs.environment }}
-#        run: |
-#          cd kubernetes/helm_deploy/${{ inputs.app_name }}
-#          helm upgrade ${{ inputs.app_name }} -f values.yaml -f values-${{ inputs.environment }}.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set image.repository="${{ env.REGISTRY }}/${{ vars.ECR_REPOSITORY }}" --set image.tag="${{ env.IMAGE_TAG }}"
-#        env:
-#          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-#          IMAGE_TAG: ${{ inputs.repo_name }}-${{ github.sha }} # Tags ECR image with commit sha
+      - name: Authenticate with Kubernetes cluster in Cloud Platform
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/helm-deploy@main
+        with:
+          k8s_namespace: ${{ secrets.KUBE_NAMESPACE }}
+          helm_release_name: laa-fee-scheme-api-${{ inputs.environment }}
+          helm_chart: laa-fee-scheme-api
+          helm_values_path: values-${{ inputs.environment }}.yaml
+          image_registry: ${{ steps.auth.outputs.image_registry }}
+          image_repo: ${{ vars.ECR_REPOSITORY }}
+          image_tag: $${{ github.sha }}
