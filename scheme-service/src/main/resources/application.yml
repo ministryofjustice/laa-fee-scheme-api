@@ -2,6 +2,14 @@ spring:
   application:
     name: LAA Fee Scheme API
 
+  datasource:
+    url: jdbc:postgresql://localhost:5432/db5237d17910a637aa
+    username: cpnkr95Y3Y
+    password: QwaqwkiWndInb9EK
+  flyway:
+    enabled: true
+    locations: classpath:db/migration,classpath:db/repeatable
+
   #do not auto create db schema, use .sql scripts
   jpa:
     hibernate:
