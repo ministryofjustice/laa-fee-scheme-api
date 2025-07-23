@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - deploy-to-ecr # temp trigger for ECR deployment
   workflow_dispatch:
 
 permissions:
