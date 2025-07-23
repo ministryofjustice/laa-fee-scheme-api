@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - LFSP-32-dev-deploy
   workflow_dispatch:
 
 permissions:
@@ -46,22 +47,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup AWS ECR credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Login to AWS ECR container repo
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/ecr-auth@main
         with:
-          role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
-          aws-region: ${{ vars.ECR_REGION }}
+          ecr_region: ${{ vars.ECR_REGION }}
+          ecr_role: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          role-session-name: deployment
 
-      - name: Build & push Docker image + Deploy to Kubernetes
-        uses: aws-actions/amazon-ecr-login@v2
-        id: login-ecr
-      - run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ github.sha }}
+      - name: Build and Push
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/build-and-push@main
+        with:
+          dockerfile_path: .
+          image_registry: ${{ steps.login-ecr.outputs.registry }}
+          image_repo: ${{ vars.ECR_REPOSITORY }}
+          image_tag: ${{ github.sha }}
 
   deploy-dev:
     needs: ecr
