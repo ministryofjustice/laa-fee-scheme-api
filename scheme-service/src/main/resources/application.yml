@@ -3,7 +3,8 @@ spring:
     name: LAA Fee Scheme API
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/db5237d17910a637aa
+   ## url: jdbc:postgresql://localhost:5432/db5237d17910a637aa
+    url: jdbc:postgresql://cloud-platform-5237d17910a637aa.cdwm328dlye6.eu-west-2.rds.amazonaws.com:5432/db5237d17910a637aa
     username: cpnkr95Y3Y
     password: QwaqwkiWndInb9EK
   flyway:

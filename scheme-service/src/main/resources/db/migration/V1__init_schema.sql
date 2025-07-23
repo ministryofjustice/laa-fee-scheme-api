@@ -1,3 +1,9 @@
+-- Drop the table if it exists
+DROP TABLE IF EXISTS fee CASCADE;
+
+-- Drop the table if it exists
+DROP TABLE IF EXISTS fee_schemes CASCADE;
+
 
 CREATE TABLE IF NOT EXISTS fee_schemes (
                                            fee_schemes_id  SERIAL PRIMARY KEY,
