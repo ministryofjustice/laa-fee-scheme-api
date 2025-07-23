@@ -36,6 +36,13 @@ dependencies {
 
     implementation 'org.apache.commons:commons-lang3:3.18.0'
 
+    implementation 'org.postgresql:postgresql:42.7.2'
+
+// https://mvnrepository.com/artifact/org.flywaydb/flyway-core
+    implementation 'org.flywaydb:flyway-core:11.10.3'
+    implementation 'org.flywaydb:flyway-database-postgresql:11.10.3'
+
+
     implementation 'org.mapstruct:mapstruct:1.6.3'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 
