@@ -1,3 +1,6 @@
+server:
+  port: 8085
+
 spring:
   application:
     name: LAA Fee Scheme API
