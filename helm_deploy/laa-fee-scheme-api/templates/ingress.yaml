@@ -10,26 +10,22 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  ingressClassName: default
-  {{- if .Values.ingress.tls }}
+  ingressClassName: {{ .Values.ingress.className }}
   tls:
-    {{- range .Values.ingress.tls }}
+  {{- range .Values.ingress.hosts }}
     - hosts:
-        - "{{ $.Chart.Name }}-{{ $.Values.service.environment }}.{{ . }}"
-    {{- end }}
+        - {{ . }}
   {{- end }}
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: "{{ $.Chart.Name }}-{{ $.Values.service.environment }}.{{ .host }}"
+  {{- range .Values.ingress.hosts }}
+    - host: {{ . }}
       http:
         paths:
-        {{- range .paths }}
-          - path: {{ . }}
+          - path: /
             pathType: "ImplementationSpecific"
             backend:
               service:
                 name: {{ $.Chart.Name }}-service
                 port:
                   number: {{ $.Values.service.port }}
-        {{- end }}
     {{- end }}

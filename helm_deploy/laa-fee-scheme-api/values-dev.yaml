@@ -8,5 +8,7 @@ service:
   environment: "dev"
 
 ingress:
+  hosts:
+    - laa-fee-scheme-api-apps.live.cloud-platform.service.justice.gov.uk
   annotations:
     external-dns.alpha.kubernetes.io/set-identifier: "laa-fee-scheme-api-ingress-laa-fee-scheme-api-dev-green"
