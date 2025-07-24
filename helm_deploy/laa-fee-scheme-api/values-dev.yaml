@@ -5,6 +5,8 @@
 replicaCount: 1
 
 image:
+  # Override the image registry whose real value should come from secret.
+  registry: ""
   # Override the image repository whose real value should come from secret.
   repository: ""
   # Overrides the image tag whose default is the chart appVersion.
