@@ -1,23 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: laa-fee-scheme-api-deployment
-  namespace: ${NAMESPACE}
+  name: "{{ .Chart.Name }}-deployment"
+  namespace: "{{ .Chart.Name }}-{{ .Values.service.environment }}"
   labels:
-    app: laa-fee-scheme-api
+    {{- include "laa-fee-scheme-api.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: laa-fee-scheme-api # this should match the selector in service.yml
+      {{- include "laa-fee-scheme-api.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: laa-fee-scheme-api # this should match the selector in service.yml
+        {{- include "laa-fee-scheme-api.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       containers:
         - name: laa-fee-scheme-api
-          image: ${REGISTRY}/${REPOSITORY}:${IMAGE_TAG}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           ports:
             - containerPort: 8085
           securityContext:
@@ -28,24 +31,6 @@ spec:
               type: RuntimeDefault
             runAsNonRoot: true
             runAsUser: 1001
-          env:
-            - name: DB_SERVER
-              valueFrom:
-                secretKeyRef:
-                  name: rds-postgresql-instance-output
-                  key: rds_instance_endpoint
-            - name: DB_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: rds-postgresql-instance-output
-                  key: database_name
-            - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: rds-postgresql-instance-output
-                  key: database_username
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: rds-postgresql-instance-output
-                  key: database_password
+            {{- toYaml .Values.securityContext | nindent 12 }}
+
+          {{ include "laa-fee-scheme-api.env-vars" . | nindent 10 }}
