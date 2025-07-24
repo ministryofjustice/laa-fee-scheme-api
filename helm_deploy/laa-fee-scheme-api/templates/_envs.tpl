@@ -8,6 +8,11 @@ env:
       secretKeyRef:
         name: rds-postgresql-instance-output
         key: rds_instance_endpoint
+  - name: DB_NAME
+    valueFrom:
+      secretKeyRef:
+        name: rds-postgresql-instance-output
+        key: database_name
   - name: DB_USER
     valueFrom:
       secretKeyRef:
