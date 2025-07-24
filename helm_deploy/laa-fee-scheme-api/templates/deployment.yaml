@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: laa-fee-scheme-api
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
             - containerPort: 8085
           securityContext:
