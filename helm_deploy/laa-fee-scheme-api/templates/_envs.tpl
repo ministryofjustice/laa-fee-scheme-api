@@ -6,16 +6,16 @@ env:
   - name: DB_SERVER
     valueFrom:
       secretKeyRef:
-        name: rds-mssql-instance-output
+        name: rds-postgresql-instance-output
         key: rds_instance_endpoint
   - name: DB_USER
     valueFrom:
       secretKeyRef:
-        name: rds-mssql-instance-output
+        name: rds-postgresql-instance-output
         key: database_username
   - name: DB_PASSWORD
     valueFrom:
       secretKeyRef:
-        name: rds-mssql-instance-output
+        name: rds-postgresql-instance-output
         key: database_password
 {{- end -}}
