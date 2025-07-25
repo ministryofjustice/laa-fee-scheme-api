@@ -4,14 +4,6 @@
 
 replicaCount: 1
 
-image:
-  # Override the image registry whose real value should come from secret.
-  registry: ""
-  # Override the image repository whose real value should come from secret.
-  repository: ""
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
-
 service:
   type: ClusterIP
   port: 8085
@@ -22,3 +14,11 @@ ingress:
     - laa-fee-scheme-api-dev.apps.live.cloud-platform.service.justice.gov.uk
   annotations:
     external-dns.alpha.kubernetes.io/set-identifier: "laa-fee-scheme-api-ingress-laa-fee-scheme-api-dev-green"
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
