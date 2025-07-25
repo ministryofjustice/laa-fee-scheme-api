@@ -104,8 +104,7 @@ test-results/
 /.java-version
 
 # Project
-data-api/src/main/resources/application-secret.yml
-data-service/src/main/resources/application-secret.yml
+scheme-service/src/main/resources/application-local.yml
 
 # Snyk
 .dccache

@@ -21,8 +21,8 @@ USER 1001
 ENV TZ=Europe/London
 ENV JAVA_TOOL_OPTIONS="-XX:InitialRAMPercentage=50.0 -XX:MaxRAMPercentage=80.0"
 
-# Expose the port that the application will run on
-EXPOSE 8080
+# Expose the port that the application will run on and actuator port
+EXPOSE 8085 8185
 
 # Run the JAR file
 CMD ["java", "-jar", "laa-fee-scheme-api.jar"]

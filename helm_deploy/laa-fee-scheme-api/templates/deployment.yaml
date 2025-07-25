@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Chart.Name }}-deployment"
+  namespace: "{{ .Chart.Name }}-{{ .Values.service.environment }}"
+  labels:
+    {{- include "laa-fee-scheme-api.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "laa-fee-scheme-api.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      name: {{ .Chart.Name }}
+      namespace: "{{ .Chart.Name }}-{{ .Values.service.environment }}"
+      labels:
+        {{- include "laa-fee-scheme-api.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+            - name: actuator
+              containerPort: {{ .Values.actuator.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.actuator.health.path }}
+              port: actuator
+            initialDelaySeconds: {{ .Values.actuator.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.actuator.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.actuator.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.actuator.liveness.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.actuator.health.path }}
+              port: actuator
+            initialDelaySeconds: {{ .Values.actuator.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.actuator.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.actuator.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.actuator.readiness.failureThreshold }}
+
+          {{ include "laa-fee-scheme-api.env-vars" . | nindent 10 }}

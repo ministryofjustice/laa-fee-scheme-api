@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Chart.Name }}-ingress
+  namespace: "{{ .Chart.Name }}-{{ .Values.service.environment }}"
+  labels:
+    {{- include "laa-fee-scheme-api.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  tls:
+  {{- range .Values.ingress.hosts }}
+    - hosts:
+        - {{ . }}
+  {{- end }}
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - host: {{ . }}
+      http:
+        paths:
+          - path: /
+            pathType: "ImplementationSpecific"
+            backend:
+              service:
+                name: {{ $.Chart.Name }}-service
+                port:
+                  number: {{ $.Values.service.port }}
+    {{- end }}
