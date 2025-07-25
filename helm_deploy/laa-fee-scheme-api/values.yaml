@@ -8,6 +8,7 @@ image:
   registry: ""
   repository: ""
   tag: ""
+  pullPolicy: Always
 
 securityContext:
   allowPrivilegeEscalation: false
