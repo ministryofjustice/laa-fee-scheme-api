@@ -16,21 +16,21 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-#  vulnerability-scan-app:
-#    runs-on: ubuntu-latest
-#    needs:
-#      - test
-#    env:
-#      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-#      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#    steps:
-#      - uses: actions/checkout@v4
-#
-#      - name: Run Snyk to check app for vulnerabilities
-#        uses: snyk/actions/gradle@master
-#        with:
-#          command: code test
-#          args: --severity-threshold=high
+  vulnerability-scan-app:
+    runs-on: ubuntu-latest
+    needs:
+      - build-test
+    env:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Snyk to check app for vulnerabilities
+        uses: snyk/actions/gradle@master
+        with:
+          command: code test
+          args: --severity-threshold=high
 
   vulnerability-scan-docker:
     runs-on: ubuntu-latest
