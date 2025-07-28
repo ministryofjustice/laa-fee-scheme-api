@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - LFSP-44-deploy-to-uat
   workflow_dispatch:
 
 jobs:
@@ -63,6 +64,13 @@ jobs:
     uses: ./.github/workflows/_deploy-to-env.yml
     with:
       environment: dev
+    secrets: inherit
+
+  deploy-uat:
+    needs: deploy-dev
+    uses: ./.github/workflows/_deploy-to-env.yml
+    with:
+      environment: uat
     secrets: inherit
 
   vulnerability-report:
