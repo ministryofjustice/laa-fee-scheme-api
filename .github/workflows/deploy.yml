@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - LFSP-44-deploy-to-uat
   workflow_dispatch:
 
 jobs:
