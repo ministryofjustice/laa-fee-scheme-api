@@ -7,6 +7,7 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.model.FeeCalculationRequestDt
 import uk.gov.justice.laa.fee.scheme.feecalculator.model.FeeCalculationResponseDto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,8 +29,7 @@ class FeeServiceTest {
 
     @Test
     void getFeeCalculation_shouldReturnExpectedCalculation() {
-        FeeCalculationRequestDto request = new FeeCalculationRequestDto();
-        request.setFeeCode("FEE123");
+        FeeCalculationRequestDto request = getFeeCalculationRequestDto();
 
         FeeCalculationResponseDto response = feeService.getFeeCalculation(request);
 
@@ -40,5 +40,22 @@ class FeeServiceTest {
         assertNotNull(calculation);
         assertEquals(new BigDecimal("1234.12"), calculation.getSubTotal());
         assertEquals(new BigDecimal("1506.56"), calculation.getFinalTotal());
+    }
+
+    private static FeeCalculationRequestDto getFeeCalculationRequestDto() {
+        FeeCalculationRequestDto requestDto = new FeeCalculationRequestDto();
+        requestDto.setFeeCode("FEE123");
+        requestDto.setStartDate(LocalDate.of(2025, 7, 29));
+        requestDto.setNetProfitCosts(new BigDecimal("1000.50"));
+        requestDto.setNetDisbursementAmount(new BigDecimal("200.75"));
+        requestDto.setDisbursementVatAmount(new BigDecimal("40.15"));
+        requestDto.setVatIndicator(true);
+        requestDto.setDisbursementPriorAuthority("AUTH123");
+        requestDto.setBoltOnAdjournedHearing(1);
+        requestDto.setBoltOnDetentionTravelWaitingCosts(2);
+        requestDto.setBoltOnJrFormFilling(0);
+        requestDto.setBoltOnCmrhOral(1);
+        requestDto.setBoltOnCrmhTelephone(3);
+        return requestDto;
     }
 }
