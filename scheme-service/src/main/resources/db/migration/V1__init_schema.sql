@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS fee_schemes
 CREATE TABLE IF NOT EXISTS fee
 (
     fee_id                     SERIAL PRIMARY KEY,
-    fee_code                   varchar UNIQUE NOT NULL,
+    fee_code                   varchar        NOT NULL,
     fee_scheme_code            varchar        NOT NULL REFERENCES fee_schemes (scheme_code),
     total_fee                  numeric        NULL,
     profit_cost_limit          numeric        NULL,
