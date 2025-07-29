@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - LFSP-44-deploy-to-staging
   workflow_dispatch:
 
 jobs:
@@ -70,6 +71,13 @@ jobs:
     uses: ./.github/workflows/_deploy-to-env.yml
     with:
       environment: uat
+    secrets: inherit
+
+  deploy-staging:
+    needs: deploy-uat
+    uses: ./.github/workflows/_deploy-to-env.yml
+    with:
+      environment: staging
     secrets: inherit
 
   vulnerability-report:
