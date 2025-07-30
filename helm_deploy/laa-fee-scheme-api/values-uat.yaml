@@ -1,0 +1,22 @@
+# Default values for helm_deploy.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+service:
+  environment: "uat"
+
+ingress:
+  hosts:
+    - laa-fee-scheme-api-uat.apps.live.cloud-platform.service.justice.gov.uk
+  annotations:
+    external-dns.alpha.kubernetes.io/set-identifier: "laa-fee-scheme-api-ingress-laa-fee-scheme-api-uat-green"
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
