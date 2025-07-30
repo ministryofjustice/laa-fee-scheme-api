@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.controller;
+package uk.gov.justice.laa.fee.scheme.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,10 +9,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.justice.laa.fee.scheme.feecalculator.model.FeeCalculation;
-import uk.gov.justice.laa.fee.scheme.feecalculator.model.FeeCalculationRequestDto;
-import uk.gov.justice.laa.fee.scheme.feecalculator.model.FeeCalculationResponseDto;
-import uk.gov.justice.laa.fee.scheme.feecalculator.service.FeeService;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequestDto;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponseDto;
+import uk.gov.justice.laa.fee.scheme.service.FeeService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

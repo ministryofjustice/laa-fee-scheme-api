@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.model;
+package uk.gov.justice.laa.fee.scheme.model;
 
 import lombok.Data;
 

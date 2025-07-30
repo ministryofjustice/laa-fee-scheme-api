@@ -1,11 +1,8 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.service;
+package uk.gov.justice.laa.fee.scheme.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import uk.gov.justice.laa.fee.scheme.feecalculator.model.CategoryOfLawResponseDto;
-import uk.gov.justice.laa.fee.scheme.feecalculator.model.FeeCalculation;
-import uk.gov.justice.laa.fee.scheme.feecalculator.model.FeeCalculationRequestDto;
-import uk.gov.justice.laa.fee.scheme.feecalculator.model.FeeCalculationResponseDto;
+import uk.gov.justice.laa.fee.scheme.model.*;
 
 import java.math.BigDecimal;
 
@@ -13,13 +10,10 @@ import java.math.BigDecimal;
 @Service
 public class FeeService {
 
-    public CategoryOfLawResponseDto getCategoryCode(String feeCode) {
+    public CategoryOfLaw getCategoryCode(String feeCode) {
         // logic using feecode to be implemented
 
-        CategoryOfLawResponseDto categoryOfLaw = CategoryOfLawResponseDto.builder()
-                .feeCode(feeCode)
-                .categoryLawCode("asylum 123")
-                .build();
+        CategoryOfLaw categoryOfLaw = null;
         return categoryOfLaw;
     }
 
