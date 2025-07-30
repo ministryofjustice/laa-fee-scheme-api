@@ -84,6 +84,7 @@ components:
         startDate:
           type: string
           format: date
+          description: "Civil: case start date. Crime: Representation order date."
         netProfitCosts:
           type: number
           format: double
@@ -112,6 +113,19 @@ components:
           type: integer
         boltOnAdditionalTravel:
           type: integer
+        netTravelCosts:
+          type: string
+        netWaitingCosts:
+          type: string
+        caseConcludedDate:
+          type: string
+          format: date
+        policeCourtOrPrisonId:
+          type: string
+        dutySolicitor:
+          type: string
+        schemeId:
+          type: string
 
     FeeCalculationResponse:
       type: object
@@ -119,9 +133,9 @@ components:
         feeCode:
           type: string
         feeCalculation:
-          $ref: "#/components/schemas/FeeCalculation"
+          $ref: "#/components/schemas/FeeCalculationObject"
 
-    FeeCalculation:
+    FeeCalculationObject:
       type: object
       properties:
         totalAmount:

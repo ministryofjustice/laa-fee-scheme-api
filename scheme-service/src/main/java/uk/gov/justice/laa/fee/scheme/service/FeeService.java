@@ -1,10 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
-import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.model.CategoryOfLawResponse;
-import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculationObject;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
@@ -36,9 +35,9 @@ public class FeeService {
 
     FeeCalculationResponse response = FeeCalculationResponse.builder()
         .feeCode("FEE123")
-        .feeCalculation(FeeCalculation.builder()
-            .subTotal(new BigDecimal("1234.14"))
-            .finalTotal(new BigDecimal("1500.56"))
+        .feeCalculation(FeeCalculationObject.builder()
+            .subTotal(1234.14)
+            .totalAmount(1500.56)
             .build())
         .build();
 

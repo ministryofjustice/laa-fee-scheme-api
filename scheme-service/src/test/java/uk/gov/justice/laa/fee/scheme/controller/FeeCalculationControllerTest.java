@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -16,9 +15,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculationObject;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
-import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequestDto;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.service.FeeService;
 
@@ -34,13 +32,13 @@ class FeeCalculationControllerTest {
   @MockitoBean
   private FeeService feeService;
 
-  private static FeeCalculationRequestDto getFeeCalculationRequestDto() {
-    FeeCalculationRequestDto requestDto = new FeeCalculationRequestDto();
+  private static FeeCalculationRequest getFeeCalculationRequestDto() {
+    FeeCalculationRequest requestDto = new FeeCalculationRequest();
     requestDto.setFeeCode("FEE123");
     requestDto.setStartDate(LocalDate.of(2025, 7, 29));
-    requestDto.setNetProfitCosts(new BigDecimal("1000.50"));
-    requestDto.setNetDisbursementAmount(new BigDecimal("200.75"));
-    requestDto.setDisbursementVatAmount(new BigDecimal("40.15"));
+    requestDto.setNetProfitCosts(1000.50);
+    requestDto.setNetDisbursementAmount(200.75);
+    requestDto.setDisbursementVatAmount(40.15);
     requestDto.setVatIndicator(true);
     requestDto.setDisbursementPriorAuthority("AUTH123");
     requestDto.setBoltOnAdjournedHearing(1);
@@ -53,13 +51,13 @@ class FeeCalculationControllerTest {
 
   @Test
   void getFeeCalculation() throws Exception {
-    FeeCalculationRequestDto requestDto = getFeeCalculationRequestDto();
+    FeeCalculationRequest requestDto = getFeeCalculationRequestDto();
 
     FeeCalculationResponse responseDto = FeeCalculationResponse.builder()
         .feeCode("FEE123")
-        .feeCalculation(FeeCalculation.builder()
-            .subTotal(new BigDecimal("1234"))
-            .finalTotal(new BigDecimal("1500"))
+        .feeCalculation(FeeCalculationObject.builder()
+            .subTotal(1234.11)
+            .totalAmount(1500.12)
             .build())
         .build();
 
@@ -72,7 +70,7 @@ class FeeCalculationControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.feeCode").value("FEE123"))
         .andExpect(jsonPath("$.feeCalculation.subTotal").value(1234))
-        .andExpect(jsonPath("$.feeCalculation.finalTotal").value(1500));
+        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(1500));
   }
 
 }

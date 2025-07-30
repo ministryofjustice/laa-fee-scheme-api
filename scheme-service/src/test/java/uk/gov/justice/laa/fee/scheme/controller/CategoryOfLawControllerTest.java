@@ -16,7 +16,7 @@ import uk.gov.justice.laa.fee.scheme.model.CategoryOfLawResponse;
 import uk.gov.justice.laa.fee.scheme.service.FeeService;
 
 @WebMvcTest(CategoryOfLawController.class)
-class FeeCategoryOfLawControllerTest {
+class CategoryOfLawControllerTest {
 
   @Autowired
   private MockMvc mockMvc;

@@ -27,4 +27,11 @@ public class FeeCalculationRequestDto {
   private int boltOnCmrhOral;
   private int boltOnCrmhTelephone;
   private int boltOnAdditionalTravel; // Mental health only
+  // crime specific
+  private BigDecimal netTravelCosts;
+  private BigDecimal netWaitingCosts;
+  private LocalDate caseConcludedDate;
+  private String policeCourtOrPrisonId;
+  private String dutySolicitor;
+  private String schemeId;
 }
