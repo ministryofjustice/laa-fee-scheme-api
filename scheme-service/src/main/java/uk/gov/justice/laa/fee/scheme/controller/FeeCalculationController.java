@@ -18,7 +18,7 @@ public class FeeCalculationController implements FeeCalculationApi {
   private final FeeService feeService;
 
   @Override
-  public ResponseEntity<FeeCalculationResponse> postFeeData(FeeCalculationRequest feeCalculationRequest) {
+  public ResponseEntity<FeeCalculationResponse> getFeeCalculation(FeeCalculationRequest feeCalculationRequest) {
 
     FeeCalculationResponse feeCalculationResponseDto = feeService.getFeeCalculation(feeCalculationRequest);
 

@@ -39,7 +39,7 @@ paths:
       tags:
         - feeCalculation
       summary: Post fee data for calculating fee total
-      operationId: postFeeData
+      operationId: getFeeCalculation
       requestBody:
         required: true
         content:
