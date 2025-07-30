@@ -72,6 +72,13 @@ jobs:
       environment: uat
     secrets: inherit
 
+  deploy-staging:
+    needs: deploy-uat
+    uses: ./.github/workflows/_deploy-to-env.yml
+    with:
+      environment: staging
+    secrets: inherit
+
   vulnerability-report:
       runs-on: ubuntu-latest
       needs: ecr
