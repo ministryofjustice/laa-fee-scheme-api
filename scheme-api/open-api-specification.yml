@@ -1,45 +1,28 @@
 openapi: "3.0.0"
 info:
   version: 1.0.0
-  title: Items API
+  title: Fee Scheme API
 paths:
-  /api/v1/items:
+  /api/v1/category-of-law/{feeCode}:
     get:
       tags:
-        - items
-      summary: Get items
-      operationId: getItems
+        - categoryOfLaw
+      parameters:
+        - name: feeCode
+          in: path
+          required: true
+          description: Fee Code to retrieve Category of Law
+          schema:
+            type: string
+      summary: Get Category of Law
+      operationId: getCategoryOfLaw
       responses:
         '200':
           description: 'Success'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Items"
-        '400':
-          description: 'Bad request'
-        '401':
-          description: 'Unauthorized'
-        '403':
-          description: 'Forbidden'
-        '404':
-          description: 'Not found'
-        '500':
-          description: 'Internal server error'
-    post:
-      tags:
-        - items
-      summary: Create an item
-      operationId: createItem
-      requestBody:
-        description: create an item
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ItemRequestBody'
-      responses:
-        '201':
-          description: 'Created'
+                $ref: "#/components/schemas/CategoryOfLawResponse"
         '400':
           description: 'Bad request'
         '401':
@@ -51,122 +34,121 @@ paths:
         '500':
           description: 'Internal server error'
 
-  /api/v1/items/{id}:
-    get:
-      summary: Get item by id
-      operationId: getItemById
+  /api/v1/fee-calculation:
+    post:
       tags:
-        - items
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: The id of the item to retrieve
-          schema:
-            type: integer
-            format: int64
+        - feeCalculation
+      summary: Post fee data for calculating fee total
+      operationId: getFeeCalculation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeeCalculationRequest"
       responses:
         '200':
           description: Success
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Item"
+                $ref: "#/components/schemas/FeeCalculationResponse"
         '400':
-          description: 'Bad request'
+          description: Bad request
         '401':
-          description: 'Unauthorized'
+          description: Unauthorized
         '403':
-          description: 'Forbidden'
+          description: Forbidden
         '404':
-          description: 'Not found'
+          description: Not found
         '500':
-          description: 'Internal server error'
-    put:
-      tags:
-        - items
-      summary: Update an item
-      operationId: updateItem
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: The id of the item to be updated
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        description: update an existing item
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ItemRequestBody'
-      responses:
-        '204':
-          description: No content
-        '400':
-          description: 'Bad request'
-        '401':
-          description: 'Unauthorized'
-        '403':
-          description: 'Forbidden'
-        '404':
-          description: 'Not found'
-        '500':
-          description: 'Internal server error'
-    delete:
-      summary: Delete item by id
-      operationId: deleteItem
-      tags:
-        - items
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: The id of the item to be deleted
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '204':
-          description: No content
-        '400':
-          description: 'Bad request'
-        '401':
-          description: 'Unauthorized'
-        '403':
-          description: 'Forbidden'
-        '404':
-          description: 'Not found'
-        '500':
-          description: 'Internal server error'
+          description: Internal server error
 
 components:
   schemas:
-    Item:
+    CategoryOfLawResponse:
       required:
-        - id
-        - name
-        - description
+        - categoryOfLawCode
       properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        description:
-          type: string
-    ItemRequestBody:
-      required:
-        - name
-        - description
-      properties:
-        name:
-          type: string
-        description:
+        categoryOfLawCode:
           type: string
 
-    Items:
-      type: array
-      items:
-        $ref: "#/components/schemas/Item"
+    FeeCalculationRequest:
+      type: object
+      required:
+        - feeCode
+        - startDate
+      properties:
+        feeCode:
+          type: string
+        startDate:
+          type: string
+          format: date
+          description: "Civil: case start date. Crime: Representation order date."
+        netProfitCosts:
+          type: number
+          format: double
+        netDisbursementAmount:
+          type: number
+          format: double
+        netCostOfCounsel:
+          type: number
+          format: double
+        disbursementVatAmount:
+          type: number
+          format: double
+        vatIndicator:
+          type: boolean
+        disbursementPriorAuthority:
+          type: string
+        boltOns:
+          $ref: "#/components/schemas/BoltOnType"
+        netTravelCosts:
+          type: string
+        netWaitingCosts:
+          type: string
+        caseConcludedDate:
+          type: string
+          format: date
+        policeCourtOrPrisonId:
+          type: string
+        dutySolicitor:
+          type: string
+        schemeId:
+          type: string
+        ufn:
+          type: string
+
+    FeeCalculationResponse:
+      type: object
+      properties:
+        feeCode:
+          type: string
+        feeCalculation:
+          $ref: "#/components/schemas/FeeCalculation"
+
+    FeeCalculation:
+      type: object
+      properties:
+        totalAmount:
+          type: number
+          format: double
+        subTotal:
+          type: number
+          format: double
+
+    BoltOnType:
+      type: object
+      properties:
+        boltOnAdjournedHearing:
+          type: integer
+        boltOnDetentionTravelWaitingCosts:
+          type: integer
+        boltOnJrFormFilling:
+          type: integer
+        boltOnCmrhOral:
+          type: integer
+        boltOnCrmhTelephone:
+          type: integer
+        boltOnAdditionalTravel:
+          type: integer
