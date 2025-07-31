@@ -11,5 +11,5 @@ import lombok.Data;
 public class FeeCalculationResponseDto {
 
   private String feeCode;
-  private FeeCalculation feeCalculation;
+  private FeeCalculationDto feeCalculation;
 }

@@ -101,18 +101,8 @@ components:
           type: boolean
         disbursementPriorAuthority:
           type: string
-        boltOnAdjournedHearing:
-          type: integer
-        boltOnDetentionTravelWaitingCosts:
-          type: integer
-        boltOnJrFormFilling:
-          type: integer
-        boltOnCmrhOral:
-          type: integer
-        boltOnCrmhTelephone:
-          type: integer
-        boltOnAdditionalTravel:
-          type: integer
+        boltOns:
+          $ref: "#/components/schemas/BoltOnType"
         netTravelCosts:
           type: string
         netWaitingCosts:
@@ -126,6 +116,8 @@ components:
           type: string
         schemeId:
           type: string
+        ufn:
+          type: string
 
     FeeCalculationResponse:
       type: object
@@ -133,9 +125,9 @@ components:
         feeCode:
           type: string
         feeCalculation:
-          $ref: "#/components/schemas/FeeCalculationObject"
+          $ref: "#/components/schemas/FeeCalculation"
 
-    FeeCalculationObject:
+    FeeCalculation:
       type: object
       properties:
         totalAmount:
@@ -144,3 +136,19 @@ components:
         subTotal:
           type: number
           format: double
+
+    BoltOnType:
+      type: object
+      properties:
+        boltOnAdjournedHearing:
+          type: integer
+        boltOnDetentionTravelWaitingCosts:
+          type: integer
+        boltOnJrFormFilling:
+          type: integer
+        boltOnCmrhOral:
+          type: integer
+        boltOnCrmhTelephone:
+          type: integer
+        boltOnAdditionalTravel:
+          type: integer

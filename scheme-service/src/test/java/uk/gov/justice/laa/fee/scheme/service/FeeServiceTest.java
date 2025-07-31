@@ -5,8 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
+import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.CategoryOfLawResponse;
-import uk.gov.justice.laa.fee.scheme.model.FeeCalculationObject;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
@@ -23,11 +24,13 @@ class FeeServiceTest {
     requestDto.setDisbursementVatAmount(40.15);
     requestDto.setVatIndicator(true);
     requestDto.setDisbursementPriorAuthority("AUTH123");
-    requestDto.setBoltOnAdjournedHearing(1);
-    requestDto.setBoltOnDetentionTravelWaitingCosts(2);
-    requestDto.setBoltOnJrFormFilling(0);
-    requestDto.setBoltOnCmrhOral(1);
-    requestDto.setBoltOnCrmhTelephone(3);
+    requestDto.boltOns(BoltOnType.builder()
+        .boltOnAdjournedHearing(1)
+        .boltOnDetentionTravelWaitingCosts(2)
+        .boltOnJrFormFilling(0)
+        .boltOnCmrhOral(1)
+        .boltOnCrmhTelephone(3)
+        .build());
     return requestDto;
   }
 
@@ -50,7 +53,7 @@ class FeeServiceTest {
     assertNotNull(response);
     assertEquals("FEE123", response.getFeeCode());
 
-    FeeCalculationObject calculation = response.getFeeCalculation();
+    FeeCalculation calculation = response.getFeeCalculation();
     assertNotNull(calculation);
     assertEquals(1234.14, calculation.getSubTotal());
     assertEquals(1500.56, calculation.getTotalAmount());

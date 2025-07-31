@@ -15,6 +15,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationObject;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -41,11 +43,13 @@ class FeeCalculationControllerTest {
     requestDto.setDisbursementVatAmount(40.15);
     requestDto.setVatIndicator(true);
     requestDto.setDisbursementPriorAuthority("AUTH123");
-    requestDto.setBoltOnAdjournedHearing(1);
-    requestDto.setBoltOnDetentionTravelWaitingCosts(2);
-    requestDto.setBoltOnJrFormFilling(0);
-    requestDto.setBoltOnCmrhOral(1);
-    requestDto.setBoltOnCrmhTelephone(3);
+    requestDto.boltOns(BoltOnType.builder()
+        .boltOnAdjournedHearing(1)
+        .boltOnDetentionTravelWaitingCosts(2)
+        .boltOnJrFormFilling(0)
+        .boltOnCmrhOral(1)
+        .boltOnCrmhTelephone(3)
+        .build());
     return requestDto;
   }
 
@@ -55,7 +59,7 @@ class FeeCalculationControllerTest {
 
     FeeCalculationResponse responseDto = FeeCalculationResponse.builder()
         .feeCode("FEE123")
-        .feeCalculation(FeeCalculationObject.builder()
+        .feeCalculation(FeeCalculation.builder()
             .subTotal(1234.11)
             .totalAmount(1500.12)
             .build())

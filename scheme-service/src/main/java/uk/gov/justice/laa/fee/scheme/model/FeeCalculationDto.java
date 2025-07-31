@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Builder
 @Data
-public class FeeCalculation {
+public class FeeCalculationDto {
 
   // determine what else to include here i.e. calculated fields etc
 
