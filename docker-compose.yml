@@ -1,7 +1,24 @@
 services:
-  app:
-    build:
-      context: .
+#  app:
+#    build:
+#      context: .
+#    ports:
+#      - "8085:8085"
+#      - "8185:8185"
+
+  postgres:
+    container_name: fee-scheme-db
+    image: postgres
+    hostname: localhost
     ports:
-      - "8085:8085"
-      - "8185:8185"
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: fee_scheme_test_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
