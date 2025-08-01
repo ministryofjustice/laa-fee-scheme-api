@@ -37,17 +37,13 @@ CREATE TABLE IF NOT EXISTS fee
     region                      varchar        NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS categories
-(
-    category_code VARCHAR PRIMARY KEY,
-    category_name varchar NOT NULL
-);
+
 
 
 CREATE TABLE IF NOT EXISTS category_of_law_look_up
 (
     legal_help_categories_id SERIAL PRIMARY KEY,
-    category_code            VARCHAR      NOT NULL REFERENCES categories (category_code),
+    category_code            VARCHAR      NOT NULL,
     full_description         VARCHAR(255) NOT NULL,
     area_of_law              VARCHAR(50)  NOT NULL,
     fee_code                 VARCHAR      NOT NULL
