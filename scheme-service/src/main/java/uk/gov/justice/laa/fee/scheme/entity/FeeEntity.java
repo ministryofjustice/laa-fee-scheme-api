@@ -1,14 +1,14 @@
 package uk.gov.justice.laa.fee.scheme.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
 
 /**
  * The entity class for fees.
@@ -24,6 +24,7 @@ public class FeeEntity {
   private Long feeId;
   private String feeCode;
   private String feeSchemeCode;
+  @Column(precision = 10, scale = 2)
   private BigDecimal totalFee;
   private BigDecimal profitCostLimit;
   private BigDecimal disbursementLimit;
