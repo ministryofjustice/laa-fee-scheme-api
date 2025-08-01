@@ -5,9 +5,6 @@ DROP TABLE IF EXISTS fee_schemes CASCADE;
 DROP TABLE IF EXISTS category_of_law_look_up CASCADE;
 
 DROP TABLE IF EXISTS police_station_fees CASCADE;
-
-DROP TABLE IF EXISTS categories CASCADE;
-
 -- above drop sqls need to be revisited once master data is inserted
 
 CREATE TABLE IF NOT EXISTS fee_schemes
