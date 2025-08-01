@@ -9,18 +9,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * The entity class for legal help categories.
+ * The entity class for category of law look up.
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "legal_help_categories")
-public class LegalHelpCategoriesEntity {
+@Table(name = "category_of_law_look_up")
+public class CategoryOfLawLookUpEntity {
   @Id
-  private Long legalHelpCategoriesId;
+  private Long categoryOfLawLookUpId;
   private String categoryCode;
   private String fullDescription;
   private String areaOfLaw;
+  private String feeCode;
 }

@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.fee.scheme.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -24,11 +23,16 @@ public class FeeEntity {
   private Long feeId;
   private String feeCode;
   private String feeSchemeCode;
-  @Column(precision = 10, scale = 2)
   private BigDecimal totalFee;
   private BigDecimal profitCostLimit;
   private BigDecimal disbursementLimit;
   private BigDecimal escapeThresholdLimit;
   private Boolean priorAuthorityApplicable;
   private Boolean scheduleReference;
+  private BigDecimal hoInterviewBoltOn;
+  private BigDecimal oralCmrhBoltOn;
+  private BigDecimal telephoneCmrhBoltOn;
+  private BigDecimal substantiveHearingBoltOn;
+  private BigDecimal adjornHearingBoltOn;
+  private String region;
 }
