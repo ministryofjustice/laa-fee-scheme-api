@@ -23,10 +23,10 @@ CREATE TABLE IF NOT EXISTS fee
     fee_id                      SERIAL PRIMARY KEY,
     fee_code                    varchar        NOT NULL,
     fee_scheme_code             varchar        NOT NULL REFERENCES fee_schemes (scheme_code),
-    total_fee                   numeric        NULL,
-    profit_cost_limit           numeric        NULL,
-    disbursement_limit          numeric        NULL,
-    escape_threshold_limit      numeric        NULL,
+    total_fee                   numeric(10, 2) NULL,
+    profit_cost_limit           numeric(10, 2) NULL,
+    disbursement_limit          numeric(10, 2) NULL,
+    escape_threshold_limit      numeric(10, 2) NULL,
     prior_authority_applicable  bool           NULL,
     schedule_reference          bool           NULL,
     ho_interview_bolt_on        numeric(10, 2) NULL,
@@ -57,10 +57,10 @@ CREATE TABLE IF NOT EXISTS category_of_law_look_up
 CREATE TABLE IF NOT EXISTS police_station_fees
 (
     police_station_fees_id SERIAL PRIMARY KEY,
-    criminal_justice_area  varchar(255)  NOT NULL,
-    police_station_name    varchar(255)  NOT NULL,
-    police_station_code    varchar(255)  NOT NULL,
-    fixed_fee              numeric(7, 2) NULL,
-    escape_threshold       numeric(7, 2) NULL,
-    fee_scheme_code        varchar       NOT NULL REFERENCES fee_schemes (scheme_code)
+    criminal_justice_area  varchar(255)   NOT NULL,
+    police_station_name    varchar(255)   NOT NULL,
+    police_station_code    varchar(255)   NOT NULL,
+    fixed_fee              numeric(10, 2) NULL,
+    escape_threshold       numeric(10, 2) NULL,
+    fee_scheme_code        varchar        NOT NULL REFERENCES fee_schemes (scheme_code)
 );
