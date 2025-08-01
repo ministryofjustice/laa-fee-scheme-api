@@ -118,6 +118,8 @@ components:
           type: string
         ufn:
           type: string
+        numberOfMediationSessions:
+          type: string
 
     FeeCalculationResponse:
       type: object

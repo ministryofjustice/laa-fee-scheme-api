@@ -34,4 +34,7 @@ public class FeeCalculationRequestDto {
   private String policeCourtOrPrisonId;
   private String dutySolicitor;
   private String schemeId;
+  private String ufn;
+  // mediation specific
+  private int numberOfMediationSessions;
 }

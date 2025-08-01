@@ -10,6 +10,5 @@ import lombok.Data;
 @Data
 public class CategoryOfLawResponseDto {
 
-  private String feeCode;
   private String categoryLawCode;
 }
