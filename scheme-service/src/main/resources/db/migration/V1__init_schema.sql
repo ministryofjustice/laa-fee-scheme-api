@@ -31,6 +31,8 @@ CREATE TABLE IF NOT EXISTS fee
     telephone_cmrh_bolt_on      numeric(10, 2) NULL,
     substantive_hearing_bolt_on numeric(10, 2) NULL,
     adjorn_hearing_bolt_on      numeric(10, 2) NULL,
+    mediation_session_one       numeric(10, 2) NULL,
+    mediation_session_two       numeric(10, 2) NULL,
     region                      varchar        NOT NULL
 );
 
