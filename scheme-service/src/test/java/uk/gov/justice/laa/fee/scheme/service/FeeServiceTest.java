@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
-import uk.gov.justice.laa.fee.scheme.model.CategoryOfLawResponse;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -32,16 +31,6 @@ class FeeServiceTest {
         .boltOnCrmhTelephone(3)
         .build());
     return requestDto;
-  }
-
-  @Test
-  void getCategoryCode_shouldReturnExpectedCategoryOfLaw() {
-    String feeCode = "ASY";
-
-    CategoryOfLawResponse response = feeService.getCategoryCode(feeCode);
-
-    assertNotNull(response);
-    assertEquals("ASY", response.getCategoryOfLawCode());
   }
 
   @Test

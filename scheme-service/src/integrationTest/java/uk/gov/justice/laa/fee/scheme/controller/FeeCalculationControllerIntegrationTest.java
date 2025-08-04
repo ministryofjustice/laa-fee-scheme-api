@@ -5,18 +5,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.justice.laa.fee.scheme.FeeSchemeApplication;
 
-@SpringBootTest(classes = FeeSchemeApplication.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@SpringBootTest
 @AutoConfigureMockMvc
 public class FeeCalculationControllerIntegrationTest {
   @Autowired
@@ -29,29 +25,29 @@ public class FeeCalculationControllerIntegrationTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
-                  "feeCode": "string",
+                  "feeCode": "FEE1",
                   "startDate": "2025-08-01",
-                  "netProfitCosts": 0.1,
-                  "netDisbursementAmount": 0.1,
-                  "netCostOfCounsel": 0.1,
-                  "disbursementVatAmount": 0.1,
+                  "netProfitCosts": 1000.56,
+                  "netDisbursementAmount": 200.75,
+                  "netCostOfCounsel": 300.00,
+                  "disbursementVatAmount": 40.15, 
                   "vatIndicator": true,
-                  "disbursementPriorAuthority": "string",
+                  "disbursementPriorAuthority": "DISB123",
                   "boltOns": {
-                    "boltOnAdjournedHearing": 0,
+                    "boltOnAdjournedHearing": 1,
                     "boltOnDetentionTravelWaitingCosts": 0,
                     "boltOnJrFormFilling": 0,
                     "boltOnCmrhOral": 0,
                     "boltOnCrmhTelephone": 0,
                     "boltOnAdditionalTravel": 0
                   },
-                  "netTravelCosts": "string",
-                  "netWaitingCosts": "string",
+                  "netTravelCosts": 300.00,
+                  "netWaitingCosts": 100.00,
                   "caseConcludedDate": "2025-08-01",
-                  "policeCourtOrPrisonId": "string",
-                  "dutySolicitor": "string",
-                  "schemeId": "string",
-                  "ufn": "string",
+                  "policeCourtOrPrisonId": "12345",
+                  "dutySolicitor": "SOLICITOR123",
+                  "schemeId": "SCHEME1",
+                  "ufn": "UFN123",
                   "numberOfMediationSessions": 0
                 }
                 """)

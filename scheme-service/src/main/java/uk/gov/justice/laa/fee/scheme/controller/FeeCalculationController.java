@@ -1,6 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.laa.fee.scheme.api.FeeCalculationApi;
@@ -12,7 +12,7 @@ import uk.gov.justice.laa.fee.scheme.service.FeeService;
  * Controller for post fee data, to be used in fee calculation.
  */
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FeeCalculationController implements FeeCalculationApi {
 
   private final FeeService feeService;
@@ -20,8 +20,8 @@ public class FeeCalculationController implements FeeCalculationApi {
   @Override
   public ResponseEntity<FeeCalculationResponse> getFeeCalculation(FeeCalculationRequest feeCalculationRequest) {
 
-    FeeCalculationResponse feeCalculationResponseDto = feeService.getFeeCalculation(feeCalculationRequest);
+    FeeCalculationResponse feeCalculationResponse = feeService.getFeeCalculation(feeCalculationRequest);
 
-    return ResponseEntity.ok(feeCalculationResponseDto);
+    return ResponseEntity.ok(feeCalculationResponse);
   }
 }

@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS fee
     telephone_cmrh_bolt_on      NUMERIC(10, 2) NULL,
     substantive_hearing_bolt_on NUMERIC(10, 2) NULL,
     adjorn_hearing_bolt_on      NUMERIC(10, 2) NULL,
-    region                      varchar        NOT NULL
+    region                      VARCHAR        NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS category_of_law_look_up

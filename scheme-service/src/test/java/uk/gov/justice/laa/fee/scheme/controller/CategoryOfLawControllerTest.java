@@ -13,7 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.justice.laa.fee.scheme.model.CategoryOfLawResponse;
-import uk.gov.justice.laa.fee.scheme.service.FeeService;
+import uk.gov.justice.laa.fee.scheme.service.CategoryOfLawService;
 
 @WebMvcTest(CategoryOfLawController.class)
 class CategoryOfLawControllerTest {
@@ -22,12 +22,12 @@ class CategoryOfLawControllerTest {
   private MockMvc mockMvc;
 
   @MockitoBean
-  private FeeService feeService;
+  private CategoryOfLawService categoryOfLawService;
 
   @Test
   void getFeeByCode() throws Exception {
 
-    when(feeService.getCategoryCode(any())).thenReturn(CategoryOfLawResponse.builder()
+    when(categoryOfLawService.getCategoryCode(any())).thenReturn(CategoryOfLawResponse.builder()
         .categoryOfLawCode("ASY")
         .build());
 

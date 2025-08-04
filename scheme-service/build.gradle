@@ -30,7 +30,6 @@ integrationTest {
 
 check.dependsOn integrationTest
 
-
 dependencies {
     implementation project(':scheme-api')
 
