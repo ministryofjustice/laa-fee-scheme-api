@@ -24,6 +24,12 @@ jacocoTestCoverageVerification {
     }
 }
 
+integrationTest {
+    shouldRunAfter test
+}
+
+check.dependsOn integrationTest
+
 dependencies {
     implementation project(':scheme-api')
 

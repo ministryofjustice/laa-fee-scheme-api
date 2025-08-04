@@ -1,4 +1,5 @@
 spring:
+  # set up in memory H2 database for integration tests
   datasource:
     url: jdbc:h2:mem:feesDb;MODE=PostgreSQL;
     driver-class-name: org.h2.Driver
@@ -13,3 +14,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+
+  #  run flyway migrations on startup without repeatable migrations
+  flyway:
+    locations: classpath:db/migration
