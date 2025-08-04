@@ -31,8 +31,13 @@ CREATE TABLE IF NOT EXISTS fee
     telephone_cmrh_bolt_on      NUMERIC(10, 2) NULL,
     substantive_hearing_bolt_on NUMERIC(10, 2) NULL,
     adjorn_hearing_bolt_on      NUMERIC(10, 2) NULL,
+    mediation_session_one       NUMERIC(10, 2) NULL,
+    mediation_session_two       NUMERIC(10, 2) NULL,
     region                      VARCHAR        NOT NULL
 );
+
+
+
 
 CREATE TABLE IF NOT EXISTS category_of_law_look_up
 (
@@ -42,6 +47,7 @@ CREATE TABLE IF NOT EXISTS category_of_law_look_up
     area_of_law              VARCHAR(50)  NOT NULL,
     fee_code                 VARCHAR      NOT NULL
 );
+
 
 CREATE TABLE IF NOT EXISTS police_station_fees
 (
