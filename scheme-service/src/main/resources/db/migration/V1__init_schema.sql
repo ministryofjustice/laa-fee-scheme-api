@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS fee
 
 CREATE TABLE IF NOT EXISTS category_of_law_look_up
 (
-    legal_help_categories_id SERIAL PRIMARY KEY,
+    category_of_law_look_up_id SERIAL PRIMARY KEY,
     category_code            VARCHAR      NOT NULL,
     full_description         VARCHAR(255) NOT NULL,
     area_of_law              VARCHAR(50)  NOT NULL,
