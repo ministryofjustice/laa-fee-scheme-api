@@ -3,7 +3,6 @@
 
 ## Overview
 
-
 The project uses the `laa-ccms-spring-boot-gradle-plugin` Gradle plugin which provides
 sensible defaults for the following plugins:
 
@@ -22,8 +21,8 @@ more information regarding setup and usage.
 ### Project Structure
 Includes the following subprojects:
 
-- `scheme-api` - example OpenAPI specification used for generating API stub interfaces and documentation.
-- `scheme-service` - example REST API service with CRUD operations interfacing a JPA repository with an in-memory database.
+- `scheme-api` - OpenAPI specification used for generating API stub interfaces and documentation.
+- `scheme-service` - REST API service with operations interfacing a JPA repository to a PostgreSQL database.
 
 ## Build And Run Application
 
@@ -61,6 +60,6 @@ The following actuator endpoints have been configured:
   methods like getters, setters, constructors etc. at compile-time using annotations.
 - [MapStruct](https://mapstruct.org/) - used for object mapping, specifically for converting between different Java object types, such as Data Transfer Objects (DTOs)
   and Entity objects. It generates mapping code at compile code.
-- [H2](https://www.h2database.com/html/main.html) - used to provide an example database and should not be used in production.
+- [H2](https://www.h2database.com/html/main.html) - used to provide an in-memory database for the integration tests.
 
 

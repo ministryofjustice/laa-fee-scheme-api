@@ -17,10 +17,22 @@ jacocoTestReport {
 }
 
 jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(dir: it, exclude: ['**/FeeSchemeApplication.class'])
         }))
+    }
+
+    violationRules {
+        rule {
+            element = 'CLASS'
+
+            limit {
+                counter = 'LINE'
+                minimum = 0.80
+            }
+        }
     }
 }
 
@@ -29,6 +41,8 @@ integrationTest {
 }
 
 check.dependsOn integrationTest
+
+check.dependsOn jacocoTestCoverageVerification
 
 dependencies {
     implementation project(':scheme-api')
