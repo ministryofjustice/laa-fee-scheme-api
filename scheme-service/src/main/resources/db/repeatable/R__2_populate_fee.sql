@@ -21,9 +21,7 @@ VALUES ('INVA', 'POL_FS2016', NULL, 273.75, NULL, NULL, NULL, NULL, NULL, NULL, 
        ('INVE', 'POL_FS2022', NULL, 1574.06, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
         'Warrant of further detention (including Terrorism Act 2000, advice & assistance and other police station advice where given)'),
        ('INVF', 'POL_FS2022', NULL, 1574.06, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-        'Warrant of further detention (armed forces) (including Terrorism Act 2000, advice & assistance and other police station advice where given)')
-ON CONFLICT (fee_code) DO NOTHING;
-
+        'Warrant of further detention (armed forces) (including Terrorism Act 2000, advice & assistance and other police station advice where given)');
 INSERT INTO fee (fee_code, fee_scheme_code, total_fee, profit_cost_limit, disbursement_limit, escape_threshold_limit,
                  prior_authority_applicable, schedule_reference, ho_interview_bolt_on, oral_cmrh_bolt_on,
                  telephone_cmrh_bolt_on, substantive_hearing_bolt_on, adjorn_hearing_bolt_on, mediation_session_one,
@@ -47,9 +45,7 @@ VALUES ('INVH', 'POL_FS2022', NULL, 1574.06, NULL, NULL, NULL, NULL, NULL, NULL,
        ('INVD', 'POL_FS2016', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
         'Police station: attendance (armed forces)'),
        ('INVJ', 'POL_FS2016', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-        'Police station attendance: Immigration matter')
-ON CONFLICT (fee_code) DO NOTHING;
-
+        'Police station attendance: Immigration matter');
 INSERT INTO fee (fee_code, fee_scheme_code, total_fee, profit_cost_limit, disbursement_limit, escape_threshold_limit,
                  prior_authority_applicable, schedule_reference, ho_interview_bolt_on, oral_cmrh_bolt_on,
                  telephone_cmrh_bolt_on, substantive_hearing_bolt_on, adjorn_hearing_bolt_on, mediation_session_one,
@@ -63,6 +59,4 @@ VALUES ('INVB1', 'POL_FS2022', NULL, 33.00, NULL, NULL, NULL, NULL, NULL, NULL, 
        ('INVD', 'POL_FS2022', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
         'Police station: attendance (armed forces)'),
        ('INVJ', 'POL_FS2022', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-        'Police station attendance: Immigration matter')
-ON CONFLICT (fee_code) DO NOTHING;
-
+        'Police station attendance: Immigration matter');
