@@ -2,10 +2,10 @@
 INSERT INTO fee_schemes(scheme_code, scheme_name, valid_from, valid_to)
 VALUES ('SCHEME1', 'Scheme One', '2023-12-01', NULL);
 
-INSERT INTO fee(fee_id, fee_code, fee_scheme_code, total_fee, profit_cost_limit, disbursement_limit,
+INSERT INTO fee(fee_id, fee_code, fee_scheme_code, description, total_fee, profit_cost_limit, disbursement_limit,
                 escape_threshold_limit, prior_authority_applicable, schedule_reference, ho_interview_bolt_on,
                 oral_cmrh_bolt_on, telephone_cmrh_bolt_on, substantive_hearing_bolt_on, adjorn_hearing_bolt_on, region)
-VALUES (1, 'FEE1', 'SCHEME1', 1000.10, 2000.00, 3000.00, 4000.00, false, true, 100.50, 95.60, 45.30, 150.00, 75.00,
+VALUES (1, 'FEE1', 'SCHEME1', 'Fee-Description',1000.10, 2000.00, 3000.00, 4000.00, false, true, 100.50, 95.60, 45.30, 150.00, 75.00,
         'Region One');
 
 INSERT INTO category_of_law_look_up(category_of_law_look_up_id, category_code, full_description, area_of_law, fee_code)
