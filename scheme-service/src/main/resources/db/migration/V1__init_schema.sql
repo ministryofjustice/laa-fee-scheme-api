@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS fee_schemes
 CREATE TABLE IF NOT EXISTS fee
 (
     fee_id                      SERIAL PRIMARY KEY,
-    fee_code                    VARCHAR        NOT NULL UNIQUE,
+    fee_code                    VARCHAR        NOT NULL,
     description                 VARCHAR        NOT NULL,
     fee_scheme_code             VARCHAR        NOT NULL REFERENCES fee_schemes (scheme_code),
     total_fee                   NUMERIC(10, 2) NULL,
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS police_station_fees
     police_station_fees_id SERIAL PRIMARY KEY,
     criminal_justice_area  VARCHAR(255)   NOT NULL,
     police_station_name    VARCHAR(255)   NOT NULL,
-    police_station_code    VARCHAR(255)   NOT NULL UNIQUE,
+    police_station_code    VARCHAR(255)   NOT NULL,
     fixed_fee              NUMERIC(10, 2) NULL,
     escape_threshold       NUMERIC(10, 2) NULL,
     fee_scheme_code        VARCHAR        NOT NULL REFERENCES fee_schemes (scheme_code)
