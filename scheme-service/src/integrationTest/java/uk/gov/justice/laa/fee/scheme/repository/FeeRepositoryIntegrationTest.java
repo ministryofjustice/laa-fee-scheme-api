@@ -40,5 +40,6 @@ class FeeRepositoryIntegrationTest {
     assertThat(feeEntity.getSubstantiveHearingBoltOn()).isEqualTo(new BigDecimal("150.00"));
     assertThat(feeEntity.getAdjornHearingBoltOn()).isEqualTo(new BigDecimal("75.00"));
     assertThat(feeEntity.getRegion()).isEqualTo("Region One");
+    assertThat(feeEntity.getDescription()).isEqualTo("Fee-Description");
   }
 }

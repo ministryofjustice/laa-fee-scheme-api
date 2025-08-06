@@ -35,4 +35,5 @@ public class FeeEntity {
   private BigDecimal substantiveHearingBoltOn;
   private BigDecimal adjornHearingBoltOn;
   private String region;
+  private String description;
 }

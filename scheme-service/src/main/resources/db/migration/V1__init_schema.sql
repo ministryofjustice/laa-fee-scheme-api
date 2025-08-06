@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS fee
 (
     fee_id                      SERIAL PRIMARY KEY,
     fee_code                    VARCHAR        NOT NULL,
+    description                 VARCHAR        NOT NULL,
     fee_scheme_code             VARCHAR        NOT NULL REFERENCES fee_schemes (scheme_code),
     total_fee                   NUMERIC(10, 2) NULL,
     profit_cost_limit           NUMERIC(10, 2) NULL,
@@ -33,7 +34,7 @@ CREATE TABLE IF NOT EXISTS fee
     adjorn_hearing_bolt_on      NUMERIC(10, 2) NULL,
     mediation_session_one       NUMERIC(10, 2) NULL,
     mediation_session_two       NUMERIC(10, 2) NULL,
-    region                      VARCHAR        NOT NULL
+    region                      VARCHAR        NULL
 );
 
 
