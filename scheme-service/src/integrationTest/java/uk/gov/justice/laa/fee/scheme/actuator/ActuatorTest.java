@@ -15,12 +15,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 @AutoConfigureObservability
+@DirtiesContext
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(properties = {
     "management.endpoints.web.exposure.include=health,metrics,prometheus",
     "management.endpoint.health.show-details=always",
 })
-@DirtiesContext
 class ActuatorTest {
 
   @LocalServerPort
@@ -44,7 +44,6 @@ class ActuatorTest {
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(result.getBody()).contains("application.ready.time");
   }
-
 
   @Test
   void actuatorPrometheusEndPointShouldReturnMetrics() {

@@ -48,8 +48,8 @@ Includes the following subprojects:
 The following actuator endpoints have been configured:
 - http://localhost:8185/actuator
 - http://localhost:8185/actuator/health
-- http://localhost:8085/actuator/metrics
-- http://localhost:8085/actuator/prometheus
+- http://localhost:8185/actuator/metrics
+- http://localhost:8185/actuator/prometheus
 
 ## Additional Information
 
