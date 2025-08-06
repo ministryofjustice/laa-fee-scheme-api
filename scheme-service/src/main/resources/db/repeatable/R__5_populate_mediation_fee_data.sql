@@ -40,15 +40,3 @@ VALUES
     ('MED31', 'Child only Co - single session 2 parties eligible, with agreed proposal', NULL, 356.00, 773.00, 'MED_FS2013'),
     ('MED32', 'Child only Co - single session 1 party eligible, with agreed proposal', NULL, 293.00, 501.50, 'MED_FS2013')
 ON CONFLICT (fee_code) DO NOTHING;
-
--- INSERT INTO fee (fee_code, description, total_fee, mediation_session_one, mediation_session_two, fee_scheme_code)
--- VALUES
---
---     \\ Replace existing conflict clauses, amd dse If existing data needs modified \\
---
---     ON CONFLICT (fee_code) DO UPDATE SET
---         total_fee = EXCLUDED.total_fee,
---         description = EXCLUDED.description,
---         mediation_session_one = EXCLUDED.mediation_session_one,
---         mediation_session_two = EXCLUDED.mediation_session_two,
---         fee_scheme_code = EXCLUDED.fee_scheme_code;
