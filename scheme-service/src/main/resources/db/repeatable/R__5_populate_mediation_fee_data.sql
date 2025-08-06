@@ -1,6 +1,5 @@
 INSERT INTO fee (fee_code, description, total_fee, mediation_session_one, mediation_session_two, fee_scheme_code)
 VALUES
-
     ('MAM1', 'Mediation Assesment (alone)', 87.00, NULL, NULL, 'MED_FS2013'),
     ('MAM2', 'Mediation Assesment (separate)', 87.00, NULL, NULL, 'MED_FS2013'),
     ('MAM3', 'Mediation Assesment (together)', 130.00, NULL, NULL, 'MED_FS2013'),
@@ -18,7 +17,8 @@ VALUES
     ('MED12', 'All issues co-mediation -  1 party eligible - Agreement on all issues', NULL, 356.00, 773.00, 'MED_FS2013'),
     ('MED13', 'All issues co-mediation - 2 parties eligible, agreement on P&F only', NULL, 419.00, 1253.00, 'MED_FS2013'),
     ('MED14', 'All issues co-mediation - 1 party eligible, agreement on P&F only', NULL, 324.50, 741.50, 'MED_FS2013'),
-    ('MED15', 'All issues co-mediation - 2 parties eligible, agreement on Children only ', NULL, 356.00, 1190.00, 'MED_FS2013');
+    ('MED15', 'All issues co-mediation - 2 parties eligible, agreement on Children only ', NULL, 356.00, 1190.00, 'MED_FS2013')
+ON CONFLICT (fee_code) DO NOTHING;
 
 INSERT INTO fee (fee_code, description, total_fee, mediation_session_one, mediation_session_two, fee_scheme_code)
 VALUES
@@ -38,13 +38,13 @@ VALUES
     ('MED29', 'Child only sole - single session, 2 parties eligible, with agreed proposal', NULL, 294.00, 588.00, 'MED_FS2013'),
     ('MED30', 'Child only sole - single session 1 party eligible, with agreed proposal', NULL, 231.00, 378.00, 'MED_FS2013'),
     ('MED31', 'Child only Co - single session 2 parties eligible, with agreed proposal', NULL, 356.00, 773.00, 'MED_FS2013'),
-    ('MED32', 'Child only Co - single session 1 party eligible, with agreed proposal', NULL, 293.00, 501.50, 'MED_FS2013');
-
+    ('MED32', 'Child only Co - single session 1 party eligible, with agreed proposal', NULL, 293.00, 501.50, 'MED_FS2013')
+ON CONFLICT (fee_code) DO NOTHING;
 
 -- INSERT INTO fee (fee_code, description, total_fee, mediation_session_one, mediation_session_two, fee_scheme_code)
 -- VALUES
 --
---     \\ Use If existing data needs modified \\
+--     \\ Replace existing conflict clauses, amd dse If existing data needs modified \\
 --
 --     ON CONFLICT (fee_code) DO UPDATE SET
 --         total_fee = EXCLUDED.total_fee,
