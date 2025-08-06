@@ -103,9 +103,11 @@ components:
         boltOns:
           $ref: "#/components/schemas/BoltOnType"
         netTravelCosts:
-          type: string
+          type: number
+          format: double
         netWaitingCosts:
-          type: string
+          type: number
+          format: double
         caseConcludedDate:
           type: string
           format: date
