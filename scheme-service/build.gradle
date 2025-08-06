@@ -64,6 +64,7 @@ dependencies {
     implementation 'org.flywaydb:flyway-core:11.10.5'
     implementation 'org.flywaydb:flyway-database-postgresql:11.10.5'
 
+    implementation 'io.micrometer:micrometer-registry-prometheus:1.15.2'
 
     implementation 'org.mapstruct:mapstruct:1.6.3'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
