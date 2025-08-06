@@ -4,41 +4,62 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import java.util.stream.Stream;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 
 @DataJpaTest
+@Testcontainers
 class FeeRepositoryIntegrationTest {
 
-  private static final Long FEE_CODE = 1L;
+  @Container
+  static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17")
+      .withDatabaseName("testpostgresdb")
+      .withUsername("username")
+      .withPassword("password");
+
+  @DynamicPropertySource
+  static void registerProps(DynamicPropertyRegistry registry) {
+    registry.add("spring.datasource.url", postgres::getJdbcUrl);
+    registry.add("spring.datasource.username", postgres::getUsername);
+    registry.add("spring.datasource.password", postgres::getPassword);
+    registry.add("spring.flyway.enabled", () -> "true");
+    registry.add("spring.flyway.locations", () -> "classpath:db/migration,classpath:db/repeatable");
+  }
 
   @Autowired
   private FeeRepository repository;
 
-  @Test
-  void getFeeById() {
-    Optional<FeeEntity> result = repository.findById(FEE_CODE);
-
+  @ParameterizedTest
+  @MethodSource("feeTestDataMediation")
+  void testFeeByCodeMediation(String feeCode, String expectedDescription, BigDecimal expectedTotalFee, BigDecimal expectedOneMediation, BigDecimal expectedTwoMediation, String feeSchemeCode) {
+    Optional<FeeEntity> result = repository.findByFeeCode(feeCode);
     assertThat(result).isPresent();
 
-    FeeEntity feeEntity = result.get();
-    assertThat(feeEntity.getFeeId()).isEqualTo(FEE_CODE);
-    assertThat(feeEntity.getFeeCode()).isEqualTo("FEE1");
-    assertThat(feeEntity.getFeeSchemeCode()).isEqualTo("SCHEME1");
-    assertThat(feeEntity.getTotalFee()).isEqualTo(new BigDecimal("1000.10"));
-    assertThat(feeEntity.getProfitCostLimit()).isEqualTo(new BigDecimal("2000.00"));
-    assertThat(feeEntity.getDisbursementLimit()).isEqualTo(new BigDecimal("3000.00"));
-    assertThat(feeEntity.getEscapeThresholdLimit()).isEqualTo(new BigDecimal("4000.00"));
-    assertThat(feeEntity.getPriorAuthorityApplicable()).isEqualTo(false);
-    assertThat(feeEntity.getScheduleReference()).isEqualTo(true);
-    assertThat(feeEntity.getHoInterviewBoltOn()).isEqualTo(new BigDecimal("100.50"));
-    assertThat(feeEntity.getOralCmrhBoltOn()).isEqualTo(new BigDecimal("95.60"));
-    assertThat(feeEntity.getTelephoneCmrhBoltOn()).isEqualTo(new BigDecimal("45.30"));
-    assertThat(feeEntity.getSubstantiveHearingBoltOn()).isEqualTo(new BigDecimal("150.00"));
-    assertThat(feeEntity.getAdjornHearingBoltOn()).isEqualTo(new BigDecimal("75.00"));
-    assertThat(feeEntity.getRegion()).isEqualTo("Region One");
+    FeeEntity entity = result.get();
+
+    assertThat(entity.getFeeCode()).isEqualTo(feeCode);
+    assertThat(entity.getDescription()).isEqualTo(expectedDescription);
+    assertThat(entity.getTotalFee()).isEqualTo(expectedTotalFee);
+    assertThat(entity.getMediationSessionOne()).isEqualTo(expectedOneMediation);
+    assertThat(entity.getMediationSessionTwo()).isEqualTo(expectedTwoMediation);
+    assertThat(entity.getFeeSchemeCode()).isEqualTo(feeSchemeCode);
+  }
+
+  static Stream<Arguments> feeTestDataMediation() {
+    return Stream.of(
+        Arguments.of("MAM1", "Mediation Assesment (alone)", new BigDecimal("87.00"), null, null, "MED_FS2013"),
+        Arguments.of("MED8", "All issues sole -  1 party eligible, agreement on P&F only", null, new BigDecimal("262.50"), new BigDecimal("556.50"), "MED_FS2013"),
+        Arguments.of("MED32", "Child only Co - single session 1 party eligible, with agreed proposal", null, new BigDecimal("293.00"), new BigDecimal("501.50"), "MED_FS2013")
+    );
   }
 }
