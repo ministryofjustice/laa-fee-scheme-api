@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - LFSP-60-setup-servicemonitor
   workflow_dispatch:
 
 jobs:
