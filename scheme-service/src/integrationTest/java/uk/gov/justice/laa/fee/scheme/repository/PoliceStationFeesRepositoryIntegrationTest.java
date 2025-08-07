@@ -10,31 +10,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
+import uk.gov.justice.laa.fee.scheme.repository.postgrestestcontainer.PostgresContainerTestBase;
 
 @DataJpaTest
-@Testcontainers
-class PoliceStationFeesRepositoryIntegrationTest {
-
-  @Container
-  static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17")
-      .withDatabaseName("testpostgresdb")
-      .withUsername("username")
-      .withPassword("password");
-
-  @DynamicPropertySource
-  static void registerProps(DynamicPropertyRegistry registry) {
-    registry.add("spring.datasource.url", postgres::getJdbcUrl);
-    registry.add("spring.datasource.username", postgres::getUsername);
-    registry.add("spring.datasource.password", postgres::getPassword);
-    registry.add("spring.flyway.enabled", () -> "true");
-    registry.add("spring.flyway.locations", () -> "classpath:db/migration,classpath:db/repeatable");
-  }
+class PoliceStationFeesRepositoryIntegrationTest extends PostgresContainerTestBase {
 
   @Autowired
   private PoliceStationFeesRepository repository;
