@@ -1,0 +1,13 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Chart.Name }}-monitoring
+  namespace: "{{ .Chart.Name }}-{{ .Values.service.environment }}"
+spec:
+  selector:
+    matchLabels:
+      {{- include "laa-fee-scheme-api.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: actuator
+      interval: {{ .Values.actuator.metrics.scrapeInterval }}
+      path: {{ .Values.actuator.metrics.path }}

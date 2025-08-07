@@ -10,5 +10,10 @@ spec:
     - name: http
       port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.port }}
+      protocol: TCP
+    - name: actuator
+      port: {{ .Values.actuator.port }}
+      targetPort: actuator
+      protocol: TCP
   selector:
     {{- include "laa-fee-scheme-api.selectorLabels" . | nindent 4 }}
