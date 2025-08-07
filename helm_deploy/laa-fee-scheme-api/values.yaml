@@ -27,12 +27,12 @@ service:
   environment: ""
 
 actuator:
+  port: 8185
   metrics:
     scrapeInterval: 15s
     path: /actuator/prometheus
   health:
     path: /actuator/health
-  port: 8185
   liveness:
     initialDelaySeconds: 45
     periodSeconds: 10
