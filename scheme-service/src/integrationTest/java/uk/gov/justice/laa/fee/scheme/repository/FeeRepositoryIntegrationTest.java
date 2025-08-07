@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.repository.postgrestestcontainer.PostgresContainerTestBase;
+import uk.gov.justice.laa.fee.scheme.repository.postgresTestContainer.PostgresContainerTestBase;
 
 @DataJpaTest
 class FeeRepositoryIntegrationTest extends PostgresContainerTestBase {
