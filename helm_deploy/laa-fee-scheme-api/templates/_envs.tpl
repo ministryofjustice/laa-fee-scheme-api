@@ -23,4 +23,8 @@ env:
       secretKeyRef:
         name: rds-postgresql-instance-output
         key: database_password
+  {{-if .Values.sentry.enabled }}
+  - name: SENTRY_DSN
+    value: {{ .Values.sentry.dsn }}
+  {{ end -}}
 {{- end -}}

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - LFSP-62
   workflow_dispatch:
 
 jobs:

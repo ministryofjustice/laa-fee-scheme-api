@@ -1,7 +1,12 @@
 plugins {
     id 'io.freefair.lombok' version '8.14'
     id 'uk.gov.laa.ccms.springboot.laa-ccms-spring-boot-gradle-plugin'
+    id "io.sentry.jvm.gradle" version "4.10.0"
 }
+
+def versions = [
+        sentry 						: '7.13.0'
+]
 
 test {
     useJUnitPlatform()
@@ -44,6 +49,17 @@ check.dependsOn integrationTest
 
 check.dependsOn jacocoTestCoverageVerification
 
+
+dependencyManagement {
+    dependencies {
+        dependencySet(group: 'io.sentry', version: versions.sentry) {
+            entry 'sentry-spring-boot-starter'
+            entry 'sentry-logback'
+        }
+    }
+}
+
+
 dependencies {
     implementation project(':scheme-api')
 
@@ -76,4 +92,9 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // Sentry
+    implementation platform("io.sentry:sentry-bom:$versions.sentry")
+    implementation "io.sentry:sentry-logback:$versions.sentry"
+    implementation "io.sentry:sentry-spring-boot-starter-jakarta:$versions.sentry"
 }
