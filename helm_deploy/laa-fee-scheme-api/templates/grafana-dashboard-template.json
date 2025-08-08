@@ -1474,8 +1474,8 @@
         ]
     },
     "timezone": "browser",
-    "title": "LAA Fee Scheme API Dashboard - {{ .Release.Name }} / {{ .Release.Namespace }}",
-    "uid": "{{ .Release.Name | trunc 12 }}-{{ .Release.Namespace | trunc -10 }}-{{ .Chart.Name | trunc -12 }}",
+    "title": "LAA Fee Scheme API Dashboard - {{ .Release.Namespace }}",
+    "uid": "{{ .Release.Namespace }}-dashboard",
     "version": 1,
     "weekStart": ""
 }
