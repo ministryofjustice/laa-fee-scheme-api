@@ -13,7 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.justice.laa.fee.scheme.exceptions.CategoryCodeNotFound;
+import uk.gov.justice.laa.fee.scheme.exceptions.CategoryCodeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.model.CategoryOfLawResponse;
 import uk.gov.justice.laa.fee.scheme.service.CategoryOfLawService;
 
@@ -41,7 +41,7 @@ class CategoryOfLawControllerTest {
 
   @Test
   void throwExceptionWhenCategoryOfLawNotFound() throws Exception {
-    when(categoryOfLawService.getCategoryCode(anyString())).thenThrow(new CategoryCodeNotFound("FEE123"));
+    when(categoryOfLawService.getCategoryCode(anyString())).thenThrow(new CategoryCodeNotFoundException("FEE123"));
 
     mockMvc.perform(get("/api/v1/category-of-law/FEE123"))
         .andExpect(status().isNotFound())

@@ -2,7 +2,7 @@ package uk.gov.justice.laa.fee.scheme.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import uk.gov.justice.laa.fee.scheme.exceptions.CategoryCodeNotFound;
+import uk.gov.justice.laa.fee.scheme.exceptions.CategoryCodeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.model.CategoryOfLawResponse;
 import uk.gov.justice.laa.fee.scheme.repository.CategoryOfLawLookUpRepository;
 
@@ -20,7 +20,7 @@ public class CategoryOfLawService {
    *
    * @param feeCode the fee code
    * @return category of law response
-   * @exception CategoryCodeNotFound category law not found
+   * @exception CategoryCodeNotFoundException category law not found
    */
   public CategoryOfLawResponse getCategoryCode(String feeCode) {
 
@@ -28,6 +28,6 @@ public class CategoryOfLawService {
         .map(entity -> CategoryOfLawResponse.builder()
             .categoryOfLawCode(entity.getCategoryCode())
             .build())
-        .orElseThrow(() -> new CategoryCodeNotFound(feeCode));
+        .orElseThrow(() -> new CategoryCodeNotFoundException(feeCode));
   }
 }
