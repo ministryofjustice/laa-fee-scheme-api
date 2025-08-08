@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.justice.laa.fee.scheme.exceptions.CategoryCodeNotFound;
 import uk.gov.justice.laa.fee.scheme.model.CategoryOfLawResponse;
 import uk.gov.justice.laa.fee.scheme.service.CategoryOfLawService;
 
@@ -25,7 +27,7 @@ class CategoryOfLawControllerTest {
   private CategoryOfLawService categoryOfLawService;
 
   @Test
-  void getFeeByCode() throws Exception {
+  void getCategoryOfLawByFeeByCode() throws Exception {
 
     when(categoryOfLawService.getCategoryCode(any())).thenReturn(CategoryOfLawResponse.builder()
         .categoryOfLawCode("ASY")
@@ -35,5 +37,15 @@ class CategoryOfLawControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.categoryOfLawCode").value("ASY"));
+  }
+
+  @Test
+  void throwExceptionWhenCategoryOfLawNotFound() throws Exception {
+    when(categoryOfLawService.getCategoryCode(anyString())).thenThrow(new CategoryCodeNotFound("FEE123"));
+
+    mockMvc.perform(get("/api/v1/category-of-law/FEE123"))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.status").value(404))
+        .andExpect(jsonPath("$.message").value("Category of code not found for fee: FEE123"));
   }
 }
