@@ -1434,8 +1434,7 @@
     "schemaVersion": 40,
     "tags": [
         "LAA",
-        "{{ .Release.Namespace }}",
-        "{{ .Release.Name }}"
+        "{{ .Release.Namespace }}"
     ],
     "templating": {
         "list": [
