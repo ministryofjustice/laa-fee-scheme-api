@@ -30,7 +30,7 @@ Selector labels
 */}}
 {{- define "laa-fee-scheme-api.selectorLabels" -}}
 app: {{ .Chart.Name }}
-app.kubernetes.io/metadata.name: "{{ .Chart.Name }}-{{ .Values.service.environment }}"
+app.kubernetes.io/metadata.name: {{ .Release.Name }}
 app.kubernetes.io/name: {{ include "laa-fee-scheme-api.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}

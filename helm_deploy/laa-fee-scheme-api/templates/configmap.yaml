@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-dashboard
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "laa-fee-scheme-api.labels" . | nindent 4 }}
+data:
+  {{ .Chart.Name }}-dashboard.json:
+  {{ include "laa-fee-scheme-api-grafana-dashboard-template" . | quote | indent 4 }}
