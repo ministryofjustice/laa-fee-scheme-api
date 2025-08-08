@@ -16,6 +16,9 @@ public class CategoryOfLawLookUpRepositoryIntegrationTest {
   @Autowired
   private CategoryOfLawLookUpRepository repository;
 
+  // will be refactored one we have test data in dev and
+  // LFSP-57 populate mediation fee data is merged
+
   @Test
   void getCategoryOfLawLookupRepositoryById() {
     Optional<CategoryOfLawLookUpEntity> result = repository.findById(CATEGORY_OF_LAW_LOOK_UP_ID);
