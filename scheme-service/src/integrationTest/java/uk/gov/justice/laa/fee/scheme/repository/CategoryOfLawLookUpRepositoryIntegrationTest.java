@@ -15,6 +15,9 @@ public class CategoryOfLawLookUpRepositoryIntegrationTest extends PostgresContai
   @Autowired
   private CategoryOfLawLookUpRepository repository;
 
+  // will be refactored one we have test data in dev and
+  // LFSP-57 populate mediation fee data is merged
+
   @Test
   void getCategoryOfLawLookupRepositoryById() {
     // to be implemented once flyway data implemented

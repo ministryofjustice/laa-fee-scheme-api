@@ -19,8 +19,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
-    schemas: fee-scheme
-    default-schema: fee-scheme
+    schemas: fee_scheme
+    default-schema: fee_scheme
     enabled: true
     locations: classpath:db/migration,classpath:db/repeatable
 
