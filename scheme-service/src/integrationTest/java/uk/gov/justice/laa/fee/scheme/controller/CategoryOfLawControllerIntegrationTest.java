@@ -25,6 +25,6 @@ class CategoryOfLawControllerIntegrationTest {
         .perform(get("/api/v1/category-of-law/FEE1"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.categoryOfLawCode").value("ASY"));
+        .andExpect(jsonPath("$.categoryOfLawCode").value("CAT1"));
   }
 }
