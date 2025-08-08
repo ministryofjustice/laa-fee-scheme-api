@@ -4,6 +4,7 @@ metadata:
   name: {{ .Chart.Name }}-dashboard
   namespace: "{{ .Chart.Name }}-{{ .Values.service.environment }}"
   labels:
+    grafana_dashboard: ""
     {{- include "laa-fee-scheme-api.labels" . | nindent 4 }}
 data:
   {{ .Chart.Name }}-dashboard.json:
