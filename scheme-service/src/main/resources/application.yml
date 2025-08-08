@@ -18,6 +18,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: fee_scheme
   flyway:
     schemas: fee_scheme
     default-schema: fee_scheme
