@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.repository.postgresTestContainer;
+package uk.gov.justice.laa.fee.scheme.postgresTestContainer;
 
 import org.testcontainers.containers.PostgreSQLContainer;
 
