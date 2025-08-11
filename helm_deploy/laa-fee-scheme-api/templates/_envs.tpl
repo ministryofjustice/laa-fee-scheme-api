@@ -23,4 +23,4 @@ env:
       secretKeyRef:
         name: rds-postgresql-instance-output
         key: database_password
-{{- end -}}
+{{- end }}
