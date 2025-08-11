@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - LFSP-61-setup-grafana
   workflow_dispatch:
 
 jobs:
