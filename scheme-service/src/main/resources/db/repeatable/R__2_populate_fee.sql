@@ -59,4 +59,10 @@ VALUES ('INVB1', 'POL_FS2022', NULL, 33.00, NULL, NULL, NULL, NULL, NULL, NULL, 
        ('INVD', 'POL_FS2022', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
         'Police station: attendance (armed forces)'),
        ('INVJ', 'POL_FS2022', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-        'Police station attendance: Immigration matter');
+        'Police station attendance: Immigration matter'),
+       ('INVM', 'POL_FS2022', NULL, 314.81, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+        'Pre-Charge Engagement Advice and Assistance UFN Date (for case starting from 07/06/2021)'),
+       ('INVB1', 'POL_FS2024', NULL, 33.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+        'Police station: telephone advice only (London)'),
+       ('INVB2', 'POL_FS2024', NULL, 31.74, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+        'Police station: telephone advice only (Outside of London)');
