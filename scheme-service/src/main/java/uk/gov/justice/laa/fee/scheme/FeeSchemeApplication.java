@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme;
 
+import io.sentry.Sentry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -16,5 +17,6 @@ public class FeeSchemeApplication {
    */
   public static void main(String[] args) {
     SpringApplication.run(FeeSchemeApplication.class, args);
+    Sentry.captureMessage("Sentry is configured successfully for LAA-Fee-Scheme Application!");
   }
 }
