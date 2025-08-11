@@ -1473,7 +1473,7 @@
         ]
     },
     "timezone": "browser",
-    "title": "LAA Fee Scheme API Dashboard - {{ .Release.Namespace | replace "laa-fee-scheme-api-" "" }} / {{ .Release.Namespace }}",
+    "title": "LAA Fee Scheme API - {{ .Release.Namespace | replace "laa-fee-scheme-api-" "" }} / {{ .Release.Namespace }}",
     "uid": "{{ .Release.Namespace }}-dashboard",
     "version": 1,
     "weekStart": ""
