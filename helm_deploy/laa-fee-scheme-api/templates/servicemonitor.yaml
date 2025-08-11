@@ -2,7 +2,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ .Chart.Name }}-monitoring
-  namespace: "{{ .Chart.Name }}-{{ .Values.service.environment }}"
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:

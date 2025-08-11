@@ -4,9 +4,6 @@
 
 replicaCount: 1
 
-service:
-  environment: "uat"
-
 ingress:
   hosts:
     - laa-fee-scheme-api-uat.apps.live.cloud-platform.service.justice.gov.uk
