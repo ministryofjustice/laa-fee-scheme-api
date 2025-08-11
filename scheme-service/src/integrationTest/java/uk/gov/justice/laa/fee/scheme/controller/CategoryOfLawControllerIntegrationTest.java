@@ -11,10 +11,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import uk.gov.justice.laa.fee.scheme.postgresTestContainer.PostgresContainerTestBase;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class CategoryOfLawControllerIntegrationTest {
+@Testcontainers
+class CategoryOfLawControllerIntegrationTest extends PostgresContainerTestBase {
 
   @Autowired
   private MockMvc mockMvc;
@@ -22,9 +25,9 @@ class CategoryOfLawControllerIntegrationTest {
   @Test
   void shouldGetCategoryOfLaw() throws Exception {
     mockMvc
-        .perform(get("/api/v1/category-of-law/FEE1"))
+        .perform(get("/api/v1/category-of-law/CAPA"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.categoryOfLawCode").value("ASY"));
+        .andExpect(jsonPath("$.categoryOfLawCode").value("AAP"));
   }
 }
