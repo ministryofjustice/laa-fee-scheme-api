@@ -22,6 +22,7 @@ public class FeeEntity {
   @Id
   private Long feeId;
   private String feeCode;
+  private String description;
   private String feeSchemeCode;
   private BigDecimal totalFee;
   private BigDecimal profitCostLimit;
@@ -34,6 +35,7 @@ public class FeeEntity {
   private BigDecimal telephoneCmrhBoltOn;
   private BigDecimal substantiveHearingBoltOn;
   private BigDecimal adjornHearingBoltOn;
+  private BigDecimal mediationSessionOne;
+  private BigDecimal mediationSessionTwo;
   private String region;
-  private String description;
 }
