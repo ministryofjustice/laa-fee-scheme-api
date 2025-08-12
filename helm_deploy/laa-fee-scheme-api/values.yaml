@@ -69,3 +69,6 @@ resources: {}
 
 autoscaling:
   enabled: false
+
+sentry:
+  enabled: false
