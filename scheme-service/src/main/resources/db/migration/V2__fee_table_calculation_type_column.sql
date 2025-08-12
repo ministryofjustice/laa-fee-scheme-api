@@ -1,0 +1,4 @@
+DROP SCHEMA IF EXISTS "fee-scheme" CASCADE;
+
+ALTER TABLE fee
+    ADD COLUMN calculation_type VARCHAR NULL;
