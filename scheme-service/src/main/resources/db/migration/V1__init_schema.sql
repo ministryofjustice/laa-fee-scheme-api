@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS fee_schemes
     scheme_code VARCHAR PRIMARY KEY,
     scheme_name VARCHAR NOT NULL,
     valid_from  DATE    NOT NULL,
-    valid_to    DATE    NULL
+    valid_to    DATE    NULL,
+    fee_codes VARCHAR[] NULL
 );
 
 CREATE TABLE IF NOT EXISTS fee

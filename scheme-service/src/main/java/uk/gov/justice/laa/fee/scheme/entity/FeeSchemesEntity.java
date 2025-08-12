@@ -24,4 +24,5 @@ public class FeeSchemesEntity {
   private String schemeName;
   private LocalDate validFrom;
   private LocalDate validTo;
+  private String feeCodes;
 }

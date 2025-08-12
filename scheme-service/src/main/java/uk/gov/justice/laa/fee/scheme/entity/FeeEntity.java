@@ -38,4 +38,5 @@ public class FeeEntity {
   private BigDecimal mediationSessionOne;
   private BigDecimal mediationSessionTwo;
   private String region;
+  private String calculationType;
 }
