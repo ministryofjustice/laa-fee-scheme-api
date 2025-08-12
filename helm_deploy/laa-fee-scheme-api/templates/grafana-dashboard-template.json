@@ -1166,7 +1166,7 @@
                         "uid": "prometheus"
                     },
                     "editorMode": "builder",
-                    "expr": "hikaricp_connections_min{namespace='{{ .Release.Namespace }}',container='$container', pool='HikariPool-1'}",
+                    "expr": "hikaricp_connections_min{namespace='{{ .Release.Namespace }}',container='$container', pool='fee-scheme-DB-CP'}",
                     "legendFormat": "{{`{{instance}}`}}",
                     "range": true,
                     "refId": "A"
@@ -1225,7 +1225,7 @@
                         "uid": "prometheus"
                     },
                     "editorMode": "builder",
-                    "expr": "hikaricp_connections_max{namespace='{{ .Release.Namespace }}',container='$container', pool='HikariPool-1'}",
+                    "expr": "hikaricp_connections_max{namespace='{{ .Release.Namespace }}',container='$container', pool='fee-scheme-DB-CP'}",
                     "legendFormat": "{{`{{instance}}`}}",
                     "range": true,
                     "refId": "A"
@@ -1320,7 +1320,7 @@
                         "uid": "prometheus"
                     },
                     "editorMode": "builder",
-                    "expr": "hikaricp_connections_active{namespace='{{ .Release.Namespace }}',container='$container', pool='HikariPool-1'}",
+                    "expr": "hikaricp_connections_active{namespace='{{ .Release.Namespace }}',container='$container', pool='fee-scheme-DB-CP'}",
                     "legendFormat": "{{`{{instance}}`}}",
                     "range": true,
                     "refId": "A"
@@ -1419,7 +1419,7 @@
                         "uid": "prometheus"
                     },
                     "editorMode": "builder",
-                    "expr": "hikaricp_connections_timeout_total{namespace='{{ .Release.Namespace }}',container='$container', pool='HikariPool-1'}",
+                    "expr": "hikaricp_connections_timeout_total{namespace='{{ .Release.Namespace }}',container='$container', pool='fee-scheme-DB-CP'}",
                     "legendFormat": "{{`{{instance}}`}}",
                     "range": true,
                     "refId": "A"
