@@ -14,17 +14,18 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 @Repository
 public interface FeeSchemesRepository extends JpaRepository<FeeSchemesEntity, String> {
 
-  @Query(value = """
-      SELECT *
-      FROM fee_scheme.fee_schemes
-      WHERE :feeCode = ANY(fee_codes)
-        AND valid_from <= :inputDate
-        AND (valid_to IS NULL OR valid_to >= :inputDate)
-      ORDER BY valid_from DESC
-      LIMIT 1
-      """, nativeQuery = true)
-  Optional<FeeSchemesEntity> findValidSchemeForDate(@Param("feeCode") String feeCode,
-                                                    @Param("inputDate") LocalDate inputDate);
-
+  @Query("""
+        SELECT fs
+        FROM FeeEntity f
+        JOIN f.feeSchemeCode fs
+        WHERE f.feeCode = :feeCode
+          AND fs.validFrom <= :inputDate
+          AND (fs.validTo IS NULL OR fs.validTo >= :inputDate)
+        ORDER BY fs.validFrom DESC
+        """)
+  Optional<FeeSchemesEntity> findValidSchemeForDate(
+      @Param("feeCode") String feeCode,
+      @Param("inputDate") LocalDate inputDate
+  );
 }
 

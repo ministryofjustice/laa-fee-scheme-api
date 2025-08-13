@@ -12,6 +12,6 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 public interface FeeRepository extends JpaRepository<FeeEntity, Long> {
   Optional<FeeEntity> findByFeeCode(String feeCode);
 
-  Optional<FeeEntity> findByFeeCodeAndFeeSchemeCode(String feeCode, String feeSchemeCode);
+  Optional<FeeEntity> findByFeeCodeAndFeeSchemeCode_SchemeCode(String feeCode, String schemeCode);
 
 }

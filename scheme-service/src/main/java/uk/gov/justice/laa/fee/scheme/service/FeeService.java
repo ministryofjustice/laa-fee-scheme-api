@@ -1,18 +1,20 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
-import uk.gov.justice.laa.fee.scheme.feeCalculators.CalculateMediationFee;
+import uk.gov.justice.laa.fee.scheme.exceptions.FeeEntityNotFoundException;
+import uk.gov.justice.laa.fee.scheme.exceptions.FeeSchemeNotFoundForDateException;
+import uk.gov.justice.laa.fee.scheme.feecalculators.CalculateMediationFee;
+import uk.gov.justice.laa.fee.scheme.feecalculators.CalculationType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
 import uk.gov.justice.laa.fee.scheme.repository.FeeSchemesRepository;
 
 /**
- * Initial service for determining category law code, and for fee calculation.
+ *  Service for determining fee calculation for a fee code and fee schema.
  */
 @RequiredArgsConstructor
 @Service
@@ -22,53 +24,33 @@ public class FeeService {
   private final FeeSchemesRepository feeSchemesRepository;
 
   /**
-   * Initial method for determining fee calculation, using fee data.
+   * Get fee entity for a fee schema for a given date.
+   * get calculation based on calculation type.
    */
   public FeeCalculationResponse getFeeCalculation(FeeCalculationRequest feeData) {
 
-    //   FIND THE SCHEME ENTITY ID USING THE FEE CODE AND THE START DATE
-    FeeSchemesEntity feeSchemesEntity = feeSchemesRepository
-        .findValidSchemeForDate(feeData.getFeeCode(), feeData.getStartDate())
-        .orElseThrow(() -> new EntityNotFoundException(
-            "No valid scheme found for group " + feeData.getFeeCode() + " on date " + feeData.getStartDate())
-        );
+    FeeSchemesEntity feeSchemesEntity = feeSchemesRepository.findValidSchemeForDate(feeData.getFeeCode(), feeData.getStartDate())
+        .orElseThrow(() -> new FeeSchemeNotFoundForDateException(feeData.getFeeCode(), feeData.getStartDate()));
     String schemeId = feeSchemesEntity.getSchemeCode();
 
+    FeeEntity feeEntity = feeRepository.findByFeeCodeAndFeeSchemeCode_SchemeCode(feeData.getFeeCode(), schemeId)
+        .orElseThrow(() -> new FeeEntityNotFoundException(feeData.getFeeCode(), schemeId));
 
-    //  FIND THE FEE ENTITY USING THE FEE CODE AND THE FEE SCHEME ID PREVIOUSLY DETERMINED
-    FeeEntity feeEntity = feeRepository.findByFeeCodeAndFeeSchemeCode(feeData.getFeeCode(), schemeId)
-        .orElseThrow(() -> new EntityNotFoundException(
-            "Fee not found for code: " + feeData.getFeeCode()
-        ));
+    CalculationType calculationType = feeEntity.getCalculationType();
 
-    System.out.println("FeeEntity " + feeEntity);
-    // I.E.
-    // "feeCode": "INVA",
-    //  "startDate": "2022-09-30",
-    // WILL FIND ENTITY CORRESPONDING WITH SCHEME POL_FS2022
-    //FeeEntity FeeEntity(feeId=8, feeCode=INVA, description=Advice and Assistance (not at the police station), feeSchemeCode=POL_FS2022, totalFee=null, profitCostLimit=314.81, disbursementLimit=null, escapeThresholdLimit=null, priorAuthorityApplicable=null, scheduleReference=null, hoInterviewBoltOn=null, oralCmrhBoltOn=null, telephoneCmrhBoltOn=null, substantiveHearingBoltOn=null, adjornHearingBoltOn=null, mediationSessionOne=null, mediationSessionTwo=null, region=null, calculationType=null)
-    //
-     // "feeCode": "INVA",
-    //   "startDate": "2021-02-30",
-    // WILL FIND ENTITY CORRESPONDING WITH SCHEME POL_FS2016
-    //FeeEntity FeeEntity(feeId=1, feeCode=INVA, description=Advice and Assistance (not at the police station), feeSchemeCode=POL_FS2016, totalFee=null, profitCostLimit=273.75, disbursementLimit=null, escapeThresholdLimit=null, priorAuthorityApplicable=null, scheduleReference=null, hoInterviewBoltOn=null, oralCmrhBoltOn=null, telephoneCmrhBoltOn=null, substantiveHearingBoltOn=null, adjornHearingBoltOn=null, mediationSessionOne=null, mediationSessionTwo=null, region=null, calculationType=null)
-
-
-    String calculationType = feeEntity.getCalculationType();
-    getCalculation(calculationType, feeEntity);
-
-    return null;
+    return getCalculation(calculationType, feeEntity, feeData);
   }
 
-  public FeeCalculationResponse getCalculation(String calculationType, FeeEntity feeEntity) {
+  /**
+   * Perform calculation based on calculation type.
+   */
+  public FeeCalculationResponse getCalculation(CalculationType calculationType, FeeEntity feeEntity,
+                                               FeeCalculationRequest feeData) {
 
     return switch (calculationType) {
-      case "MEDIATION" -> CalculateMediationFee.getFee(feeEntity);
-      case "another one" -> null;
+      case MEDIATION -> CalculateMediationFee.getFee(feeEntity, feeData);
       default -> null;
     };
-
   }
-
 }
 

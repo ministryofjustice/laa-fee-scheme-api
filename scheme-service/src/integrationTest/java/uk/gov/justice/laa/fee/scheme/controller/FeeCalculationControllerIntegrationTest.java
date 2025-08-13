@@ -11,50 +11,35 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import uk.gov.justice.laa.fee.scheme.postgresTestContainer.PostgresContainerTestBase;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class FeeCalculationControllerIntegrationTest {
+@Testcontainers
+public class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase {
   @Autowired
   private MockMvc mockMvc;
 
   @Test
-  void shouldGetFeeCalculation() throws Exception {
+  void shouldGetFeeCalculation_mediation() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
-                  "feeCode": "FEE1",
-                  "startDate": "2025-08-01",
-                  "netProfitCosts": 1000.56,
-                  "netDisbursementAmount": 200.75,
-                  "netCostOfCounsel": 300.00,
-                  "disbursementVatAmount": 40.15, 
+                  "feeCode": "MED21",
+                  "startDate": "2019-09-30",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
                   "vatIndicator": true,
-                  "disbursementPriorAuthority": "DISB123",
-                  "boltOns": {
-                    "boltOnAdjournedHearing": 1,
-                    "boltOnDetentionTravelWaitingCosts": 0,
-                    "boltOnJrFormFilling": 0,
-                    "boltOnCmrhOral": 0,
-                    "boltOnCrmhTelephone": 0,
-                    "boltOnAdditionalTravel": 0
-                  },
-                  "netTravelCosts": 300.00,
-                  "netWaitingCosts": 100.00,
-                  "caseConcludedDate": "2025-08-01",
-                  "policeCourtOrPrisonId": "12345",
-                  "dutySolicitor": "SOLICITOR123",
-                  "schemeId": "SCHEME1",
-                  "ufn": "UFN123",
-                  "numberOfMediationSessions": 0
+                  "numberOfMediationSessions": 1
                 }
                 """)
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.feeCode").value("FEE123"))
-        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(1500.56));
+        .andExpect(jsonPath("$.feeCode").value("MED21"))
+        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(321.93));
   }
 }

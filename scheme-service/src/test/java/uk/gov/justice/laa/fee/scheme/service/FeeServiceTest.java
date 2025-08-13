@@ -2,49 +2,67 @@ package uk.gov.justice.laa.fee.scheme.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.fee.scheme.feecalculators.CalculationType.MEDIATION;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
+import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
+import uk.gov.justice.laa.fee.scheme.repository.FeeSchemesRepository;
 
+@ExtendWith(MockitoExtension.class)
 class FeeServiceTest {
 
-  private final FeeService feeService = new FeeService();
-
-  private static FeeCalculationRequest getFeeCalculationRequestDto() {
-    FeeCalculationRequest requestDto = new FeeCalculationRequest();
-    requestDto.setFeeCode("FEE123");
-    requestDto.setStartDate(LocalDate.of(2025, 7, 29));
-    requestDto.setNetProfitCosts(1000.50);
-    requestDto.setNetDisbursementAmount(200.75);
-    requestDto.setDisbursementVatAmount(40.15);
-    requestDto.setVatIndicator(true);
-    requestDto.setDisbursementPriorAuthority("AUTH123");
-    requestDto.boltOns(BoltOnType.builder()
-        .boltOnAdjournedHearing(1)
-        .boltOnDetentionTravelWaitingCosts(2)
-        .boltOnJrFormFilling(0)
-        .boltOnCmrhOral(1)
-        .boltOnCrmhTelephone(3)
-        .build());
-    return requestDto;
-  }
+  @InjectMocks
+  private FeeService feeService;
+  @Mock
+  FeeRepository feeRepository;
+  @Mock
+  FeeSchemesRepository feeSchemesRepository;
 
   @Test
-  void getFeeCalculation_shouldReturnExpectedCalculation() {
-    FeeCalculationRequest request = getFeeCalculationRequestDto();
+  void getFeeCalculation_shouldReturnExpectedCalculation_mediation() {
+    FeeSchemesEntity feeSchemesEntity = new FeeSchemesEntity();
+    feeSchemesEntity.setSchemeCode("MED_FS2013");
+    feeSchemesEntity.setSchemeName("mediation fee scheme 2013");
+    feeSchemesEntity.setValidFrom(LocalDate.parse("2013-04-01"));
+    feeSchemesEntity.setValidTo(null);
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any())).thenReturn(Optional.of(feeSchemesEntity));
 
-    FeeCalculationResponse response = feeService.getFeeCalculation(request);
+    FeeEntity feeEntity = new FeeEntity();
+    feeEntity.setFeeCode("MED1");
+    feeEntity.setMediationSessionOne(new BigDecimal(50));
+    feeEntity.setMediationSessionTwo(new BigDecimal(100));
+    feeEntity.setCalculationType(MEDIATION);
+    when(feeRepository.findByFeeCodeAndFeeSchemeCode_SchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+
+    FeeCalculationRequest requestDto = new FeeCalculationRequest();
+    requestDto.setFeeCode("MED1");
+    requestDto.setStartDate(LocalDate.of(2025, 7, 29));
+    requestDto.setNetDisbursementAmount(70.75);
+    requestDto.setDisbursementVatAmount(20.15);
+    requestDto.setVatIndicator(true);
+    requestDto.setNumberOfMediationSessions(2);
+    FeeCalculationResponse response = feeService.getFeeCalculation(requestDto);
 
     assertNotNull(response);
-    assertEquals("FEE123", response.getFeeCode());
+    assertEquals("MED1", response.getFeeCode());
 
     FeeCalculation calculation = response.getFeeCalculation();
     assertNotNull(calculation);
-    assertEquals(1234.14, calculation.getSubTotal());
-    assertEquals(1500.56, calculation.getTotalAmount());
+    assertEquals(120.75, calculation.getSubTotal());
+    assertEquals(150.90, calculation.getTotalAmount());
   }
 }
