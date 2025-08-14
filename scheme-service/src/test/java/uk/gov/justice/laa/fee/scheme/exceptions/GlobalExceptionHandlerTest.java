@@ -2,6 +2,7 @@ package uk.gov.justice.laa.fee.scheme.exceptions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,5 +31,29 @@ class GlobalExceptionHandlerTest {
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getStatus()).isEqualTo(404);
     assertThat(response.getBody().getMessage()).isEqualTo("Category of code not found for fee: FEE123");
+  }
+
+  @Test
+  void handleFeeSchemeNotFoundForDate() {
+    FeeSchemeNotFoundForDateException exception = new FeeSchemeNotFoundForDateException("FEE123", LocalDate.now());
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeeSchemeNotFoundForDate(exception);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().getStatus()).isEqualTo(404);
+    assertThat(response.getBody().getMessage()).isEqualTo("No fee scheme found for fee FEE123, with date 2025-08-14");
+  }
+
+  @Test
+  void handleFeeEntityNotfoundForScheme() {
+    FeeEntityNotFoundException exception = new FeeEntityNotFoundException("FEE123", "schemeId");
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeeEntityNotfoundForScheme(exception);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().getStatus()).isEqualTo(404);
+    assertThat(response.getBody().getMessage()).isEqualTo("Fee entity not found for fee FEE123, and schemeId schemeId");
   }
 }

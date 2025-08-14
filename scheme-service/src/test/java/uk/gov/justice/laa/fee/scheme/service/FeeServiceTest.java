@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,6 +34,45 @@ class FeeServiceTest {
   FeeSchemesRepository feeSchemesRepository;
 
   @Test
+  void shouldThrowException_feeSchemeNotFoundForDate() {
+    FeeCalculationRequest requestDto = new FeeCalculationRequest();
+    requestDto.setFeeCode("FEE123");
+    requestDto.setStartDate(LocalDate.of(2025, 7, 29));
+    requestDto.setNetDisbursementAmount(70.75);
+    requestDto.setDisbursementVatAmount(20.15);
+    requestDto.setVatIndicator(true);
+    requestDto.setNumberOfMediationSessions(2);
+
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any())).thenReturn(Optional.empty());
+
+    assertThatThrownBy(() -> feeService.getFeeCalculation(requestDto))
+        .hasMessageContaining("No fee scheme found for fee FEE123, with date 2025-07-29");
+  }
+
+  @Test
+  void shouldThrowException_feeEntityNotFoundForSchemeId() {
+    FeeCalculationRequest requestDto = new FeeCalculationRequest();
+    requestDto.setFeeCode("FEE123");
+    requestDto.setStartDate(LocalDate.of(2025, 7, 29));
+    requestDto.setNetDisbursementAmount(70.75);
+    requestDto.setDisbursementVatAmount(20.15);
+    requestDto.setVatIndicator(true);
+    requestDto.setNumberOfMediationSessions(2);
+
+    FeeSchemesEntity feeSchemesEntity = new FeeSchemesEntity();
+    feeSchemesEntity.setSchemeCode("scheme123");
+
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any())).thenReturn(Optional.of(feeSchemesEntity));
+
+    when(feeRepository.findByFeeCodeAndFeeSchemeCode_SchemeCode("FEE123", "scheme123"))
+        .thenReturn(Optional.empty());
+
+    assertThatThrownBy(() -> feeService.getFeeCalculation(requestDto))
+        .hasMessageContaining("Fee entity not found for fee FEE123, and schemeId scheme123");
+
+  }
+
+  @Test
   void getFeeCalculation_shouldReturnExpectedCalculation_mediation() {
     FeeSchemesEntity feeSchemesEntity = new FeeSchemesEntity();
     feeSchemesEntity.setSchemeCode("MED_FS2013");
@@ -62,7 +102,7 @@ class FeeServiceTest {
 
     FeeCalculation calculation = response.getFeeCalculation();
     assertNotNull(calculation);
-    assertEquals(120.75, calculation.getSubTotal());
-    assertEquals(150.90, calculation.getTotalAmount());
+    assertEquals(170.75, calculation.getSubTotal());
+    assertEquals(210.90, calculation.getTotalAmount());
   }
 }
