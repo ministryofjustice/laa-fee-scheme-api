@@ -26,4 +26,3 @@ public interface FeeSchemesRepository extends JpaRepository<FeeSchemesEntity, St
   Optional<FeeSchemesEntity> findValidSchemeForDate(@Param("feeCode") String feeCode,
                                                     @Param("inputDate") LocalDate inputDate);
 }
-
