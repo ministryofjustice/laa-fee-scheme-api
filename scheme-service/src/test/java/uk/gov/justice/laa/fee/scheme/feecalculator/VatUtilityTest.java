@@ -1,21 +1,24 @@
-package uk.gov.justice.laa.fee.scheme.feecalculators;
+package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class VatUtilityTest {
 
-  @Test
-  void should_getVatRateForDate() {
-    assertThat(VatUtility.getVatRateForDate(LocalDate.of(2011, 1, 4)))
-        .isEqualByComparingTo("20.00");
-    assertThat(VatUtility.getVatRateForDate(LocalDate.of(2010, 6, 1)))
-        .isEqualByComparingTo("17.50");
-    assertThat(VatUtility.getVatRateForDate(LocalDate.of(2009, 6, 1)))
-        .isEqualByComparingTo("15.00");
+  @ParameterizedTest
+  @CsvSource({
+      "2011-01-04, 20",
+      "2010-06-01, 17.5",
+      "2009-06-01, 15"
+  })
+  void should_getVatRateForDate(String date, String expectedVatRate) {
+    LocalDate localDate = LocalDate.parse(date);
+    assertThat(VatUtility.getVatRateForDate(localDate)).isEqualTo(expectedVatRate);
   }
 
   @Test

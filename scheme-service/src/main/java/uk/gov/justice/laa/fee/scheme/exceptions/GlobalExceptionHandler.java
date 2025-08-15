@@ -28,24 +28,10 @@ public class GlobalExceptionHandler {
   }
 
   /**
-   * Global exception handler for FeeSchemeNotFoundForDateException exception.
+   * Global exception handler for FeeNotFoundException exception.
    */
-  @ExceptionHandler(FeeSchemeNotFoundForDateException.class)
-  public ResponseEntity<ErrorResponse> handleFeeSchemeNotFoundForDate(FeeSchemeNotFoundForDateException ex) {
-    ErrorResponse errorResponse = new ErrorResponse()
-        .timestamp(OffsetDateTime.now())
-        .status(HttpStatus.NOT_FOUND.value())
-        .error(HttpStatus.NOT_FOUND.getReasonPhrase())
-        .message(ex.getMessage());
-
-    return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-  }
-
-  /**
-   * Global exception handler for FeeEntityNotFoundException exception.
-   */
-  @ExceptionHandler(FeeEntityNotFoundException.class)
-  public ResponseEntity<ErrorResponse> handleFeeEntityNotfoundForScheme(FeeEntityNotFoundException ex) {
+  @ExceptionHandler(FeeNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleFeeCodeNotfound(FeeNotFoundException ex) {
     ErrorResponse errorResponse = new ErrorResponse()
         .timestamp(OffsetDateTime.now())
         .status(HttpStatus.NOT_FOUND.value())

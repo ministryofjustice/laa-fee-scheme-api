@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculators;
+package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -10,26 +10,25 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 /**
  * Calculate the mediation fee for a given fee entity and fee data.
  * */
-public final class CalculateMediationFee {
+public final class MediationFeeCalculator {
 
   /**
    * Determines whether the calculation should include mediation sessions based presence of numberOfMediationSessions.
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeData) {
-    String feeCode = feeData.getFeeCode();
     Integer numberOfMediationSessions = feeData.getNumberOfMediationSessions();
 
     if (numberOfMediationSessions == null) {
-      return getCalculationWithoutMediationSessions(feeCode, feeEntity, feeData);
+      return getCalculationWithoutMediationSessions(feeEntity, feeData);
     } else {
-      return getCalculationWithMediationSessions(feeCode, feeEntity, feeData);
+      return getCalculationWithMediationSessions(feeEntity, feeData);
     }
   }
 
   /**
    * Gets fixed fee depending on number if mediation sessions.
    */
-  private static FeeCalculationResponse getCalculationWithMediationSessions(String feeCode, FeeEntity feeEntity,
+  private static FeeCalculationResponse getCalculationWithMediationSessions(FeeEntity feeEntity,
                                                                             FeeCalculationRequest feeData) {
     BigDecimal baseFee = BigDecimal.ZERO;
 
@@ -38,17 +37,17 @@ public final class CalculateMediationFee {
     } else if (feeData.getNumberOfMediationSessions() > 1) {
       baseFee = BigDecimal.valueOf(feeEntity.getMediationSessionTwo().doubleValue());
     }
-    return buildFeeResponse(feeCode, baseFee, feeData);
+    return buildFeeResponse(baseFee, feeData);
   }
 
   /**
    * Gets fixed fee from static total_fee.
    */
-  private static FeeCalculationResponse getCalculationWithoutMediationSessions(String feeCode, FeeEntity feeEntity,
+  private static FeeCalculationResponse getCalculationWithoutMediationSessions(FeeEntity feeEntity,
                                                                                FeeCalculationRequest feeData) {
     BigDecimal baseFee = feeEntity.getTotalFee();
 
-    return buildFeeResponse(feeCode, baseFee, feeData);
+    return buildFeeResponse(baseFee, feeData);
   }
 
   /**
@@ -56,7 +55,7 @@ public final class CalculateMediationFee {
    * If Applicable add VAT to fixed fee,
    * fixedFeeWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
    */
-  private static FeeCalculationResponse buildFeeResponse(String feeCode, BigDecimal fixedFee, FeeCalculationRequest feeData) {
+  private static FeeCalculationResponse buildFeeResponse(BigDecimal fixedFee, FeeCalculationRequest feeData) {
 
     BigDecimal fixedFeeWithVat = Boolean.TRUE.equals(feeData.getVatIndicator())
         ? VatUtility.addVat(fixedFee, feeData.getStartDate())
@@ -74,7 +73,7 @@ public final class CalculateMediationFee {
     BigDecimal finalTotal = fixedFeeWithVat.add(netDisbursementAmount).add(netDisbursementVatAmount);
 
     return new FeeCalculationResponse()
-        .feeCode(feeCode)
+        .feeCode(feeData.getFeeCode())
         .feeCalculation(FeeCalculation.builder()
             .subTotal(subTotal.setScale(2, RoundingMode.HALF_UP).doubleValue())
             .totalAmount(finalTotal.setScale(2, RoundingMode.HALF_UP).doubleValue())

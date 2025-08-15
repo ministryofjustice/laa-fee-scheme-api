@@ -5,10 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.laa.fee.scheme.feecalculators.CalculationType.MEDIATION;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MEDIATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,66 +36,71 @@ class FeeServiceTest {
 
   @Test
   void shouldThrowException_feeSchemeNotFoundForDate() {
-    FeeCalculationRequest requestDto = new FeeCalculationRequest();
-    requestDto.setFeeCode("FEE123");
-    requestDto.setStartDate(LocalDate.of(2025, 7, 29));
-    requestDto.setNetDisbursementAmount(70.75);
-    requestDto.setDisbursementVatAmount(20.15);
-    requestDto.setVatIndicator(true);
-    requestDto.setNumberOfMediationSessions(2);
+    FeeCalculationRequest requestDto = FeeCalculationRequest.builder()
+        .feeCode("FEE123")
+        .startDate(LocalDate.of(2025, 7, 29))
+        .netDisbursementAmount(70.75)
+        .disbursementVatAmount(20.15)
+        .vatIndicator(true)
+        .numberOfMediationSessions(2)
+        .build();
 
-    when(feeSchemesRepository.findValidSchemeForDate(any(), any())).thenReturn(Optional.empty());
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of());
 
     assertThatThrownBy(() -> feeService.getFeeCalculation(requestDto))
-        .hasMessageContaining("No fee scheme found for fee FEE123, with date 2025-07-29");
+        .hasMessageContaining("Fee not found for fee code FEE123, with start date 2025-07-29");
   }
 
   @Test
   void shouldThrowException_feeEntityNotFoundForSchemeId() {
-    FeeCalculationRequest requestDto = new FeeCalculationRequest();
-    requestDto.setFeeCode("FEE123");
-    requestDto.setStartDate(LocalDate.of(2025, 7, 29));
-    requestDto.setNetDisbursementAmount(70.75);
-    requestDto.setDisbursementVatAmount(20.15);
-    requestDto.setVatIndicator(true);
-    requestDto.setNumberOfMediationSessions(2);
+    FeeCalculationRequest requestDto = FeeCalculationRequest.builder()
+        .feeCode("FEE123")
+        .startDate(LocalDate.of(2025, 7, 29))
+        .netDisbursementAmount(70.75)
+        .disbursementVatAmount(20.15)
+        .vatIndicator(true)
+        .numberOfMediationSessions(2)
+        .build();
 
     FeeSchemesEntity feeSchemesEntity = new FeeSchemesEntity();
     feeSchemesEntity.setSchemeCode("scheme123");
 
-    when(feeSchemesRepository.findValidSchemeForDate(any(), any())).thenReturn(Optional.of(feeSchemesEntity));
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
 
     when(feeRepository.findByFeeCodeAndFeeSchemeCode_SchemeCode("FEE123", "scheme123"))
         .thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> feeService.getFeeCalculation(requestDto))
-        .hasMessageContaining("Fee entity not found for fee FEE123, and schemeId scheme123");
+        .hasMessageContaining("Fee not found for fee code FEE123, with start date 2025-07-29");
 
   }
 
   @Test
   void getFeeCalculation_shouldReturnExpectedCalculation_mediation() {
-    FeeSchemesEntity feeSchemesEntity = new FeeSchemesEntity();
-    feeSchemesEntity.setSchemeCode("MED_FS2013");
-    feeSchemesEntity.setSchemeName("mediation fee scheme 2013");
-    feeSchemesEntity.setValidFrom(LocalDate.parse("2013-04-01"));
-    feeSchemesEntity.setValidTo(null);
-    when(feeSchemesRepository.findValidSchemeForDate(any(), any())).thenReturn(Optional.of(feeSchemesEntity));
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder()
+        .schemeCode("MED_FS2013")
+        .schemeName("mediation fee scheme 2013")
+        .validFrom(LocalDate.parse("2013-04-01"))
+        .validTo(null)
+        .build();
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
 
-    FeeEntity feeEntity = new FeeEntity();
-    feeEntity.setFeeCode("MED1");
-    feeEntity.setMediationSessionOne(new BigDecimal(50));
-    feeEntity.setMediationSessionTwo(new BigDecimal(100));
-    feeEntity.setCalculationType(MEDIATION);
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("MED1")
+        .mediationSessionOne(new BigDecimal(50))
+        .mediationSessionTwo(new BigDecimal(100))
+        .calculationType(MEDIATION)
+        .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode_SchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 
-    FeeCalculationRequest requestDto = new FeeCalculationRequest();
-    requestDto.setFeeCode("MED1");
-    requestDto.setStartDate(LocalDate.of(2025, 7, 29));
-    requestDto.setNetDisbursementAmount(70.75);
-    requestDto.setDisbursementVatAmount(20.15);
-    requestDto.setVatIndicator(true);
-    requestDto.setNumberOfMediationSessions(2);
+    FeeCalculationRequest requestDto = FeeCalculationRequest.builder()
+        .feeCode("MED1")
+        .startDate(LocalDate.of(2025, 7, 29))
+        .netDisbursementAmount(70.75)
+        .disbursementVatAmount(20.15)
+        .vatIndicator(true)
+        .numberOfMediationSessions(2)
+        .build();
     FeeCalculationResponse response = feeService.getFeeCalculation(requestDto);
 
     assertNotNull(response);

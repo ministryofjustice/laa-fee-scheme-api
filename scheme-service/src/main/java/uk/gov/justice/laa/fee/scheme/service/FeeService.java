@@ -1,13 +1,13 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
-import uk.gov.justice.laa.fee.scheme.exceptions.FeeEntityNotFoundException;
-import uk.gov.justice.laa.fee.scheme.exceptions.FeeSchemeNotFoundForDateException;
-import uk.gov.justice.laa.fee.scheme.feecalculators.CalculateMediationFee;
-import uk.gov.justice.laa.fee.scheme.feecalculators.CalculationType;
+import uk.gov.justice.laa.fee.scheme.exceptions.FeeNotFoundException;
+import uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.MediationFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
@@ -29,12 +29,15 @@ public class FeeService {
    */
   public FeeCalculationResponse getFeeCalculation(FeeCalculationRequest feeData) {
 
-    FeeSchemesEntity feeSchemesEntity = feeSchemesRepository.findValidSchemeForDate(feeData.getFeeCode(), feeData.getStartDate())
-        .orElseThrow(() -> new FeeSchemeNotFoundForDateException(feeData.getFeeCode(), feeData.getStartDate()));
+    FeeSchemesEntity feeSchemesEntity = feeSchemesRepository
+        .findValidSchemeForDate(feeData.getFeeCode(), feeData.getStartDate(), PageRequest.of(0, 1))
+        .stream()
+        .findFirst()
+        .orElseThrow(() -> new FeeNotFoundException(feeData.getFeeCode(), feeData.getStartDate()));
     String schemeId = feeSchemesEntity.getSchemeCode();
 
     FeeEntity feeEntity = feeRepository.findByFeeCodeAndFeeSchemeCode_SchemeCode(feeData.getFeeCode(), schemeId)
-        .orElseThrow(() -> new FeeEntityNotFoundException(feeData.getFeeCode(), schemeId));
+        .orElseThrow(() -> new FeeNotFoundException(feeData.getFeeCode(), feeData.getStartDate()));
 
     CalculationType calculationType = feeEntity.getCalculationType();
 
@@ -48,7 +51,7 @@ public class FeeService {
                                                FeeCalculationRequest feeData) {
 
     return switch (calculationType) {
-      case MEDIATION -> CalculateMediationFee.getFee(feeEntity, feeData);
+      case MEDIATION -> MediationFeeCalculator.getFee(feeEntity, feeData);
       default -> null;
     };
   }

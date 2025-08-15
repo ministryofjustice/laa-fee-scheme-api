@@ -1,9 +1,9 @@
-package uk.gov.justice.laa.fee.scheme.feecalculators;
+package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.within;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static uk.gov.justice.laa.fee.scheme.feecalculators.CalculationType.MEDIATION;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MEDIATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,7 +15,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
-class CalculateMediationFeeTest {
+class MediationFeeCalculatorTest {
 
   @ParameterizedTest()
   @MethodSource("testData")
@@ -27,22 +27,24 @@ class CalculateMediationFeeTest {
       double expectedSubTotal,
       double expectedTotal) {
 
-    FeeCalculationRequest feeData = new FeeCalculationRequest();
-    feeData.setFeeCode(feeCode);
-    feeData.setStartDate(LocalDate.of(2025, 7, 29));
-    feeData.setNetDisbursementAmount(50.50);
-    feeData.setDisbursementVatAmount(20.15);
-    feeData.setVatIndicator(vatIndicator);
-    feeData.setNumberOfMediationSessions(numberOfMediationSessions);
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode(feeCode)
+        .startDate(LocalDate.of(2025, 7, 29))
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .vatIndicator(vatIndicator)
+        .numberOfMediationSessions(numberOfMediationSessions)
+        .build();
 
-    FeeEntity feeEntity = new FeeEntity();
-    feeEntity.setFeeCode(feeCode);
-    feeEntity.setTotalFee(new BigDecimal("75.50"));
-    feeEntity.setMediationSessionOne(new BigDecimal("50"));
-    feeEntity.setMediationSessionTwo(new BigDecimal("100"));
-    feeEntity.setCalculationType(MEDIATION);
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode(feeCode)
+        .totalFee(new BigDecimal("75.50"))
+        .mediationSessionOne(new BigDecimal("50"))
+        .mediationSessionTwo(new BigDecimal("100"))
+        .calculationType(MEDIATION)
+        .build();
 
-    FeeCalculationResponse response = CalculateMediationFee.getFee(feeEntity, feeData);
+    FeeCalculationResponse response = MediationFeeCalculator.getFee(feeEntity, feeData);
 
     assertNotNull(response.getFeeCalculation());
     assertThat(response.getFeeCode()).isEqualTo(feeCode);
@@ -54,8 +56,8 @@ class CalculateMediationFeeTest {
     return Stream.of(
         arguments("1 mediation session, VAT applied",  "MED1", true,  1,    100.50, 130.65),
         arguments("1 mediation session, no VAT",       "MED1", false, 1,    100.50, 120.65),
-        arguments("2 mediation sessions, VAT applied", "MED1", true,  3,    150.50, 190.65),
-        arguments("2 mediation sessions, no VAT",      "MED1", false, 3,    150.50, 170.65),
+        arguments("2 mediation sessions, VAT applied", "MED1", true,  2,    150.50, 190.65),
+        arguments("2 mediation sessions, no VAT",      "MED1", false, 2,    150.50, 170.65),
         arguments("More than 1 mediation session, VAT applied", "MED1", true,  3,    150.50, 190.65),
         arguments("More than 1 mediation session, no VAT",      "MED1", false, 3,    150.50, 170.65),
         arguments("No mediation sessions, VAT applied", "MAM1", true, null, 126.00, 161.25),

@@ -34,28 +34,15 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
-  void handleFeeSchemeNotFoundForDate() {
-    LocalDate date = LocalDate.of(2025, 2, 20);
-
-    FeeSchemeNotFoundForDateException exception = new FeeSchemeNotFoundForDateException("FEE123", date);
-
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeeSchemeNotFoundForDate(exception);
-
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-    assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().getStatus()).isEqualTo(404);
-    assertThat(response.getBody().getMessage()).isEqualTo(String.format("No fee scheme found for fee FEE123, with date %s", date));
-  }
-
-  @Test
   void handleFeeEntityNotfoundForScheme() {
-    FeeEntityNotFoundException exception = new FeeEntityNotFoundException("FEE123", "schemeId");
+    LocalDate date = LocalDate.of(2025, 2, 20);
+    FeeNotFoundException exception = new FeeNotFoundException("FEE123", date);
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeeEntityNotfoundForScheme(exception);
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeeCodeNotfound(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getStatus()).isEqualTo(404);
-    assertThat(response.getBody().getMessage()).isEqualTo("Fee entity not found for fee FEE123, and schemeId schemeId");
+    assertThat(response.getBody().getMessage()).isEqualTo("Fee not found for fee code FEE123, with start date %s", date);
   }
 }

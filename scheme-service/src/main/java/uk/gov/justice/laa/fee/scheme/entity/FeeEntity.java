@@ -13,7 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.gov.justice.laa.fee.scheme.feecalculators.CalculationType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType;
 
 /**
  * The entity class for fees.

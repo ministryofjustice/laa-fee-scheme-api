@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculators;
+package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 /**
  * enum for the types of calculations.

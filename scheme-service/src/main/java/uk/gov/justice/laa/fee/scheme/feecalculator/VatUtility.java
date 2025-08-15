@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculators;
+package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
