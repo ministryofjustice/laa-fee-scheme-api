@@ -35,14 +35,16 @@ class GlobalExceptionHandlerTest {
 
   @Test
   void handleFeeSchemeNotFoundForDate() {
-    FeeSchemeNotFoundForDateException exception = new FeeSchemeNotFoundForDateException("FEE123", LocalDate.now());
+    LocalDate date = LocalDate.of(2025, 2, 20);
+
+    FeeSchemeNotFoundForDateException exception = new FeeSchemeNotFoundForDateException("FEE123", date);
 
     ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeeSchemeNotFoundForDate(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getStatus()).isEqualTo(404);
-    assertThat(response.getBody().getMessage()).isEqualTo("No fee scheme found for fee FEE123, with date 2025-08-14");
+    assertThat(response.getBody().getMessage()).isEqualTo(String.format("No fee scheme found for fee FEE123, with date %s", date));
   }
 
   @Test
