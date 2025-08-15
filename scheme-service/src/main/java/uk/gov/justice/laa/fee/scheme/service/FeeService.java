@@ -1,33 +1,58 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
+import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
+import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.exceptions.FeeNotFoundException;
+import uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.MediationFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
+import uk.gov.justice.laa.fee.scheme.repository.FeeSchemesRepository;
 
 /**
- * Initial service for determining category law code, and for fee calculation.
+ *  Service for determining fee calculation for a fee code and fee schema.
  */
 @RequiredArgsConstructor
 @Service
 public class FeeService {
 
+  private final FeeRepository feeRepository;
+  private final FeeSchemesRepository feeSchemesRepository;
+
   /**
-   * Initial method for determining fee calculation, using fee data.
+   * Get fee entity for a fee schema for a given date.
+   * get calculation based on calculation type.
    */
   public FeeCalculationResponse getFeeCalculation(FeeCalculationRequest feeData) {
-    // Logic using the OpenAPI-generated request model `feeData`
 
-    FeeCalculationResponse response = FeeCalculationResponse.builder()
-        .feeCode("FEE123")
-        .feeCalculation(FeeCalculation.builder()
-            .subTotal(1234.14)
-            .totalAmount(1500.56)
-            .build())
-        .build();
+    FeeSchemesEntity feeSchemesEntity = feeSchemesRepository
+        .findValidSchemeForDate(feeData.getFeeCode(), feeData.getStartDate(), PageRequest.of(0, 1))
+        .stream()
+        .findFirst()
+        .orElseThrow(() -> new FeeNotFoundException(feeData.getFeeCode(), feeData.getStartDate()));
 
-    return response;
+    FeeEntity feeEntity = feeRepository.findByFeeCodeAndFeeSchemeCode(feeData.getFeeCode(), feeSchemesEntity)
+        .orElseThrow(() -> new FeeNotFoundException(feeData.getFeeCode(), feeData.getStartDate()));
+
+    CalculationType calculationType = feeEntity.getCalculationType();
+
+    return getCalculation(calculationType, feeEntity, feeData);
+  }
+
+  /**
+   * Perform calculation based on calculation type.
+   */
+  public FeeCalculationResponse getCalculation(CalculationType calculationType, FeeEntity feeEntity,
+                                               FeeCalculationRequest feeData) {
+
+    return switch (calculationType) {
+      case MEDIATION -> MediationFeeCalculator.getFee(feeEntity, feeData);
+      default -> null;
+    };
   }
 }
 

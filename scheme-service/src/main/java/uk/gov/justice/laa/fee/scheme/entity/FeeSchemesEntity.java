@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -20,6 +21,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "fee_schemes")
 public class FeeSchemesEntity {
   @Id
+  @Column(name = "scheme_code")
   private String schemeCode;
   private String schemeName;
   private LocalDate validFrom;
