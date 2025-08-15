@@ -34,9 +34,8 @@ public class FeeService {
         .stream()
         .findFirst()
         .orElseThrow(() -> new FeeNotFoundException(feeData.getFeeCode(), feeData.getStartDate()));
-    String schemeId = feeSchemesEntity.getSchemeCode();
 
-    FeeEntity feeEntity = feeRepository.findByFeeCodeAndFeeSchemeCode_SchemeCode(feeData.getFeeCode(), schemeId)
+    FeeEntity feeEntity = feeRepository.findByFeeCodeAndFeeSchemeCode(feeData.getFeeCode(), feeSchemesEntity)
         .orElseThrow(() -> new FeeNotFoundException(feeData.getFeeCode(), feeData.getStartDate()));
 
     CalculationType calculationType = feeEntity.getCalculationType();

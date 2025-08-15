@@ -53,6 +53,13 @@ class FeeServiceTest {
 
   @Test
   void shouldThrowException_feeEntityNotFoundForSchemeId() {
+    FeeSchemesEntity feeSchemesEntity = new FeeSchemesEntity();
+    feeSchemesEntity.setSchemeCode("scheme123");
+
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
+    when(feeRepository.findByFeeCodeAndFeeSchemeCode("FEE123", feeSchemesEntity))
+        .thenReturn(Optional.empty());
+
     FeeCalculationRequest requestDto = FeeCalculationRequest.builder()
         .feeCode("FEE123")
         .startDate(LocalDate.of(2025, 7, 29))
@@ -61,14 +68,6 @@ class FeeServiceTest {
         .vatIndicator(true)
         .numberOfMediationSessions(2)
         .build();
-
-    FeeSchemesEntity feeSchemesEntity = new FeeSchemesEntity();
-    feeSchemesEntity.setSchemeCode("scheme123");
-
-    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
-
-    when(feeRepository.findByFeeCodeAndFeeSchemeCode_SchemeCode("FEE123", "scheme123"))
-        .thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> feeService.getFeeCalculation(requestDto))
         .hasMessageContaining("Fee not found for fee code FEE123, with start date 2025-07-29");
@@ -91,7 +90,7 @@ class FeeServiceTest {
         .mediationSessionTwo(new BigDecimal(100))
         .calculationType(MEDIATION)
         .build();
-    when(feeRepository.findByFeeCodeAndFeeSchemeCode_SchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 
     FeeCalculationRequest requestDto = FeeCalculationRequest.builder()
         .feeCode("MED1")
