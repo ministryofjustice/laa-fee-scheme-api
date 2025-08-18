@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.exceptions;
+package uk.gov.justice.laa.fee.scheme.exception;
 
 /**
  * Exception when no category code found for supplied fee code.

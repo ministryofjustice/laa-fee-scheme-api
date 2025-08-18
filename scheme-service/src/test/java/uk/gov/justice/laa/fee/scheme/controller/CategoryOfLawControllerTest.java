@@ -13,7 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.justice.laa.fee.scheme.exceptions.CategoryCodeNotFoundException;
+import uk.gov.justice.laa.fee.scheme.exception.CategoryCodeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.model.CategoryOfLawResponse;
 import uk.gov.justice.laa.fee.scheme.service.CategoryOfLawService;
 

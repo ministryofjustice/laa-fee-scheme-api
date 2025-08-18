@@ -17,7 +17,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 class MediationFeeCalculatorTest {
 
-  @ParameterizedTest()
+  @ParameterizedTest
   @MethodSource("testData")
   void getFee_whenMediation_withMediationSessions(
       String description,
@@ -44,11 +44,11 @@ class MediationFeeCalculatorTest {
         .calculationType(MEDIATION)
         .build();
 
-    FeeCalculationResponse response = MediationFeeCalculator.getFee(feeEntity, feeData);
+    FeeCalculationResponse response = MediationFeeCalculator.getFee(feeData, feeEntity);
 
     assertNotNull(response.getFeeCalculation());
     assertThat(response.getFeeCode()).isEqualTo(feeCode);
-    assertThat(response.getFeeCalculation().getSubTotal()).isCloseTo(expectedSubTotal, within(0.001));
+    assertThat(response.getFeeCalculation().getSubTotal()).isEqualTo(expectedSubTotal);
     assertThat(response.getFeeCalculation().getTotalAmount()).isCloseTo(expectedTotal, within(0.001));
   }
 

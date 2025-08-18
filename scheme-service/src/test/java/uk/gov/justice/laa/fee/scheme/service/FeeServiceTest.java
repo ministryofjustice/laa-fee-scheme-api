@@ -1,18 +1,25 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MEDIATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -75,12 +82,42 @@ class FeeServiceTest {
   }
 
   @Test
+  void getFeeCalculation_shouldReturnExpectedCalculation_communityCare() {
+    String feeCode = "COM";
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder()
+        .schemeCode("COM_FS2013")
+        .schemeName("Community Care Fee Scheme 2013")
+        .validFrom(LocalDate.parse("2013-04-01"))
+        .build();
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode(feeCode)
+        .fixedFee(new BigDecimal("79.80"))
+        .calculationType(COMMUNITY_CARE)
+        .build();
+    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode(feeCode)
+        .startDate(LocalDate.of(2025, 5, 12))
+        .vatIndicator(true)
+        .netDisbursementAmount(45.16)
+        .disbursementVatAmount(9.03)
+        .build();
+
+    FeeCalculationResponse response = feeService.getFeeCalculation(request);
+
+    assertFeeCalculation(response, "COM", 124.96, 149.95);
+  }
+
+  @Test
   void getFeeCalculation_shouldReturnExpectedCalculation_mediation() {
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder()
         .schemeCode("MED_FS2013")
         .schemeName("mediation fee scheme 2013")
         .validFrom(LocalDate.parse("2013-04-01"))
-        .validTo(null)
         .build();
     when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
 
@@ -92,7 +129,7 @@ class FeeServiceTest {
         .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 
-    FeeCalculationRequest requestDto = FeeCalculationRequest.builder()
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
         .feeCode("MED1")
         .startDate(LocalDate.of(2025, 7, 29))
         .netDisbursementAmount(70.75)
@@ -100,14 +137,20 @@ class FeeServiceTest {
         .vatIndicator(true)
         .numberOfMediationSessions(2)
         .build();
-    FeeCalculationResponse response = feeService.getFeeCalculation(requestDto);
 
-    assertNotNull(response);
-    assertEquals("MED1", response.getFeeCode());
+    FeeCalculationResponse response = feeService.getFeeCalculation(request);
+
+    assertFeeCalculation(response, "MED1", 170.75, 210.90);
+  }
+
+  private void assertFeeCalculation(FeeCalculationResponse response, String feeCode, double subTotal, double total) {
+    assertThat(response).isNotNull();
+    assertThat(response.getFeeCode()).isEqualTo(feeCode);
 
     FeeCalculation calculation = response.getFeeCalculation();
-    assertNotNull(calculation);
-    assertEquals(170.75, calculation.getSubTotal());
-    assertEquals(210.90, calculation.getTotalAmount());
+    assertThat(calculation).isNotNull();
+    assertThat(calculation.getSubTotal()).isEqualTo(subTotal);
+    assertThat(calculation.getTotalAmount()).isEqualTo(total);
   }
+
 }

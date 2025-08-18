@@ -5,9 +5,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
-import uk.gov.justice.laa.fee.scheme.exceptions.FeeNotFoundException;
-import uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType;
+import uk.gov.justice.laa.fee.scheme.exception.FeeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.MediationFeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.OtherCivilFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
@@ -27,31 +27,28 @@ public class FeeService {
    * Get fee entity for a fee schema for a given date.
    * get calculation based on calculation type.
    */
-  public FeeCalculationResponse getFeeCalculation(FeeCalculationRequest feeData) {
+  public FeeCalculationResponse getFeeCalculation(FeeCalculationRequest feeCalculationRequest) {
 
     FeeSchemesEntity feeSchemesEntity = feeSchemesRepository
-        .findValidSchemeForDate(feeData.getFeeCode(), feeData.getStartDate(), PageRequest.of(0, 1))
+        .findValidSchemeForDate(feeCalculationRequest.getFeeCode(), feeCalculationRequest.getStartDate(), PageRequest.of(0, 1))
         .stream()
         .findFirst()
-        .orElseThrow(() -> new FeeNotFoundException(feeData.getFeeCode(), feeData.getStartDate()));
+        .orElseThrow(() -> new FeeNotFoundException(feeCalculationRequest.getFeeCode(), feeCalculationRequest.getStartDate()));
 
-    FeeEntity feeEntity = feeRepository.findByFeeCodeAndFeeSchemeCode(feeData.getFeeCode(), feeSchemesEntity)
-        .orElseThrow(() -> new FeeNotFoundException(feeData.getFeeCode(), feeData.getStartDate()));
+    FeeEntity feeEntity = feeRepository.findByFeeCodeAndFeeSchemeCode(feeCalculationRequest.getFeeCode(), feeSchemesEntity)
+        .orElseThrow(() -> new FeeNotFoundException(feeCalculationRequest.getFeeCode(), feeCalculationRequest.getStartDate()));
 
-    CalculationType calculationType = feeEntity.getCalculationType();
-
-    return getCalculation(calculationType, feeEntity, feeData);
+    return getCalculation(feeCalculationRequest, feeEntity);
   }
 
   /**
    * Perform calculation based on calculation type.
    */
-  public FeeCalculationResponse getCalculation(CalculationType calculationType, FeeEntity feeEntity,
-                                               FeeCalculationRequest feeData) {
+  private FeeCalculationResponse getCalculation(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    return switch (calculationType) {
-      case MEDIATION -> MediationFeeCalculator.getFee(feeEntity, feeData);
-      default -> null;
+    return switch (feeEntity.getCalculationType()) {
+      case COMMUNITY_CARE -> OtherCivilFeeCalculator.getFee(feeCalculationRequest, feeEntity);
+      case MEDIATION -> MediationFeeCalculator.getFee(feeCalculationRequest, feeEntity);
     };
   }
 }
