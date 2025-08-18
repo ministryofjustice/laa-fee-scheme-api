@@ -18,11 +18,11 @@ public final class OtherCivilFeeCalculator {
   /**
    * Calculated fee for Other Civil Cases based on the provided fee entity and fee calculation request.
    *
-   * @param feeCalculationRequest the request containing fee calculation data
    * @param feeEntity the fee entity containing fee details
+   * @param feeCalculationRequest the request containing fee calculation data
    * @return FeeCalculationResponse with calculated fee
    */
-  public static FeeCalculationResponse getFee(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+  public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
     BigDecimal fixedFee = feeEntity.getFixedFee();
 
     return buildFixedFeeResponse(fixedFee, feeCalculationRequest);

@@ -33,7 +33,7 @@ class OtherCivilFeeCalculatorTest {
         .calculationType(COMMUNITY_CARE)
         .build();
 
-    FeeCalculationResponse result = OtherCivilFeeCalculator.getFee(feeCalculationRequest, feeEntity);
+    FeeCalculationResponse result = OtherCivilFeeCalculator.getFee(feeEntity, feeCalculationRequest);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("COM");

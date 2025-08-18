@@ -44,7 +44,7 @@ class MediationFeeCalculatorTest {
         .calculationType(MEDIATION)
         .build();
 
-    FeeCalculationResponse response = MediationFeeCalculator.getFee(feeData, feeEntity);
+    FeeCalculationResponse response = MediationFeeCalculator.getFee(feeEntity, feeData);
 
     assertNotNull(response.getFeeCalculation());
     assertThat(response.getFeeCode()).isEqualTo(feeCode);

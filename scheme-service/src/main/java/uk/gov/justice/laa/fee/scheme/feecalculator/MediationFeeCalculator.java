@@ -18,13 +18,13 @@ public final class MediationFeeCalculator {
   /**
    * Determines whether the calculation should include mediation sessions based presence of numberOfMediationSessions.
    */
-  public static FeeCalculationResponse getFee(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
-    Integer numberOfMediationSessions = feeCalculationRequest.getNumberOfMediationSessions();
+  public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeData) {
+    Integer numberOfMediationSessions = feeData.getNumberOfMediationSessions();
 
     if (numberOfMediationSessions == null) {
-      return getCalculationWithoutMediationSessions(feeEntity, feeCalculationRequest);
+      return getCalculationWithoutMediationSessions(feeEntity, feeData);
     } else {
-      return getCalculationWithMediationSessions(feeEntity, feeCalculationRequest);
+      return getCalculationWithMediationSessions(feeEntity, feeData);
     }
   }
 
@@ -32,15 +32,15 @@ public final class MediationFeeCalculator {
    * Gets fixed fee depending on number if mediation sessions.
    */
   private static FeeCalculationResponse getCalculationWithMediationSessions(FeeEntity feeEntity,
-                                                                            FeeCalculationRequest feeCalculationRequest) {
+                                                                            FeeCalculationRequest feeData) {
     BigDecimal baseFee = BigDecimal.ZERO;
 
-    if (feeCalculationRequest.getNumberOfMediationSessions() == 1) {
+    if (feeData.getNumberOfMediationSessions() == 1) {
       baseFee = BigDecimal.valueOf(feeEntity.getMediationSessionOne().doubleValue());
-    } else if (feeCalculationRequest.getNumberOfMediationSessions() > 1) {
+    } else if (feeData.getNumberOfMediationSessions() > 1) {
       baseFee = BigDecimal.valueOf(feeEntity.getMediationSessionTwo().doubleValue());
     }
-    return buildFixedFeeResponse(baseFee, feeCalculationRequest);
+    return buildFixedFeeResponse(baseFee, feeData);
   }
 
   /**

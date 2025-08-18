@@ -38,17 +38,17 @@ public class FeeService {
     FeeEntity feeEntity = feeRepository.findByFeeCodeAndFeeSchemeCode(feeCalculationRequest.getFeeCode(), feeSchemesEntity)
         .orElseThrow(() -> new FeeNotFoundException(feeCalculationRequest.getFeeCode(), feeCalculationRequest.getStartDate()));
 
-    return getCalculation(feeCalculationRequest, feeEntity);
+    return getCalculation(feeEntity, feeCalculationRequest);
   }
 
   /**
    * Perform calculation based on calculation type.
    */
-  private FeeCalculationResponse getCalculation(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+  private FeeCalculationResponse getCalculation(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
 
     return switch (feeEntity.getCalculationType()) {
-      case COMMUNITY_CARE -> OtherCivilFeeCalculator.getFee(feeCalculationRequest, feeEntity);
-      case MEDIATION -> MediationFeeCalculator.getFee(feeCalculationRequest, feeEntity);
+      case COMMUNITY_CARE -> OtherCivilFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+      case MEDIATION -> MediationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
     };
   }
 }
