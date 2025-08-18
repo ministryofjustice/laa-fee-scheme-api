@@ -70,7 +70,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
     return new FeeCalculationResponse().toBuilder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
-        .warning(warningList)
+        .warnings(warningList)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(feeCalculationRequest.getVatIndicator())

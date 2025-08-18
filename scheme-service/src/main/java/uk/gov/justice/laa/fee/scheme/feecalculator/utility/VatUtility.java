@@ -24,13 +24,14 @@ public final class VatUtility {
   }
 
   /**
-   * get VAT value to for a amount.
+   * get VAT value to for an amount.
    */
-  public static BigDecimal getVatValue(BigDecimal value, LocalDate startDate, Boolean vatIndicator) {
-    if (Boolean.TRUE.equals(vatIndicator)) {
-      return calculateVatAmount(value, getVatRateForDate(startDate));
+  public static BigDecimal getVatValue(BigDecimal value, LocalDate startDate, boolean vatIndicator) {
+    if (!vatIndicator) {
+      return BigDecimal.ZERO;
     }
-    return BigDecimal.ZERO;
+    BigDecimal rate = getVatRateForDate(startDate);
+    return calculateVatAmount(value, rate);
   }
 
   /**
