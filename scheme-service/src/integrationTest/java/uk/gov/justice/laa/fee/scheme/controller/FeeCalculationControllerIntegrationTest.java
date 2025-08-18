@@ -42,6 +42,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(jsonPath("$.feeCalculation.subTotal").value(389.67))
         .andExpect(jsonPath("$.feeCalculation.totalAmount").value(467.60));
   }
+
   @Test
   void shouldGetFeeCalculation_mediation() throws Exception {
     mockMvc

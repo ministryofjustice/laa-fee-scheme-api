@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.within;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MEDIATION;
 
@@ -49,7 +48,7 @@ class MediationFeeCalculatorTest {
     assertNotNull(response.getFeeCalculation());
     assertThat(response.getFeeCode()).isEqualTo(feeCode);
     assertThat(response.getFeeCalculation().getSubTotal()).isEqualTo(expectedSubTotal);
-    assertThat(response.getFeeCalculation().getTotalAmount()).isCloseTo(expectedTotal, within(0.001));
+    assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
   }
 
   public static Stream<Arguments> testData() {

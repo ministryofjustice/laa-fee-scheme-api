@@ -18,7 +18,7 @@ class OtherCivilFeeCalculatorTest {
 
   @ParameterizedTest
   @MethodSource("testData")
-  void getFee_whenOtherCivil_communityCare(boolean vatIndicator, double subTotal, double total) {
+  void getFee_whenOtherCivil_communityCare(boolean vatIndicator, double expectedSubTotal, double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("COM")
         .startDate(LocalDate.of(2025, 5, 12))
@@ -38,8 +38,8 @@ class OtherCivilFeeCalculatorTest {
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("COM");
     assertThat(result.getFeeCalculation()).isNotNull();
-    assertThat(result.getFeeCalculation().getSubTotal()).isEqualTo(subTotal);
-    assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(total);
+    assertThat(result.getFeeCalculation().getSubTotal()).isEqualTo(expectedSubTotal);
+    assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
   }
 
   public static Stream<Arguments> testData() {
