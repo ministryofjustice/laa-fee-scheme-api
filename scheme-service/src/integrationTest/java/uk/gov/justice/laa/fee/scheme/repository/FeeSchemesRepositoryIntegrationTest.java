@@ -24,7 +24,7 @@ class FeeSchemesRepositoryIntegrationTest extends PostgresContainerTestBase {
 
     FeeSchemesEntity fee = result.get();
     assertThat(fee.getSchemeCode()).isEqualTo("MED_FS2013");
-    assertThat(fee.getSchemeName()).isEqualTo("mediation fee scheme 2013");
+    assertThat(fee.getSchemeName()).isEqualTo("Mediation Fee Scheme 2013");
     assertThat(fee.getValidFrom()).isEqualTo(LocalDate.parse("2013-04-01"));
     assertThat(fee.getValidTo()).isNull();
   }
