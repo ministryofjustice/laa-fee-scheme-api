@@ -38,7 +38,7 @@ class MediationFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .totalFee(new BigDecimal("75.50"))
+        .fixedFee(new BigDecimal("75.50"))
         .mediationSessionOne(new BigDecimal("50"))
         .mediationSessionTwo(new BigDecimal("100"))
         .calculationType(MEDIATION)

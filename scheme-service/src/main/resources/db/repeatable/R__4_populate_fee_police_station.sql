@@ -1,4 +1,4 @@
-INSERT INTO fee (fee_code, fee_scheme_code, total_fee, profit_cost_limit, disbursement_limit, escape_threshold_limit,
+INSERT INTO fee (fee_code, fee_scheme_code, fixed_fee, profit_cost_limit, disbursement_limit, escape_threshold_limit,
                  prior_authority_applicable, schedule_reference, ho_interview_bolt_on, oral_cmrh_bolt_on,
                  telephone_cmrh_bolt_on, substantive_hearing_bolt_on, adjorn_hearing_bolt_on, mediation_session_one,
                  mediation_session_two, region, description)
@@ -24,7 +24,7 @@ VALUES ('INVA', 'POL_FS2016', NULL, 273.75, NULL, NULL, NULL, NULL, NULL, NULL, 
         'Warrant of further detention (armed forces) (including Terrorism Act 2000, advice & assistance and other police station advice where given)')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
-INSERT INTO fee (fee_code, fee_scheme_code, total_fee, profit_cost_limit, disbursement_limit, escape_threshold_limit,
+INSERT INTO fee (fee_code, fee_scheme_code, fixed_fee, profit_cost_limit, disbursement_limit, escape_threshold_limit,
                  prior_authority_applicable, schedule_reference, ho_interview_bolt_on, oral_cmrh_bolt_on,
                  telephone_cmrh_bolt_on, substantive_hearing_bolt_on, adjorn_hearing_bolt_on, mediation_session_one,
                  mediation_session_two, region, description)
@@ -50,7 +50,7 @@ VALUES ('INVH', 'POL_FS2022', NULL, 1574.06, NULL, NULL, NULL, NULL, NULL, NULL,
         'Police station attendance: Immigration matter')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
-INSERT INTO fee (fee_code, fee_scheme_code, total_fee, profit_cost_limit, disbursement_limit, escape_threshold_limit,
+INSERT INTO fee (fee_code, fee_scheme_code, fixed_fee, profit_cost_limit, disbursement_limit, escape_threshold_limit,
                  prior_authority_applicable, schedule_reference, ho_interview_bolt_on, oral_cmrh_bolt_on,
                  telephone_cmrh_bolt_on, substantive_hearing_bolt_on, adjorn_hearing_bolt_on, mediation_session_one,
                  mediation_session_two, region, description)

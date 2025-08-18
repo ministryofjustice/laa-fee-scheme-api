@@ -21,7 +21,7 @@ class FeeRepositoryIntegrationTest extends PostgresContainerTestBase {
 
   @ParameterizedTest
   @MethodSource("feeTestDataMediation")
-  void testFeeByCodeMediation(String feeCode, String expectedDescription, BigDecimal expectedTotalFee, BigDecimal expectedOneMediation, BigDecimal expectedTwoMediation, String feeSchemeCode) {
+  void testFeeByCodeMediation(String feeCode, String expectedDescription, BigDecimal expectedFixedFee, BigDecimal expectedOneMediation, BigDecimal expectedTwoMediation, String feeSchemeCode) {
     Optional<FeeEntity> result = repository.findByFeeCode(feeCode);
     assertThat(result).isPresent();
 
@@ -29,7 +29,7 @@ class FeeRepositoryIntegrationTest extends PostgresContainerTestBase {
 
     assertThat(entity.getFeeCode()).isEqualTo(feeCode);
     assertThat(entity.getDescription()).isEqualTo(expectedDescription);
-    assertThat(entity.getTotalFee()).isEqualTo(expectedTotalFee);
+    assertThat(entity.getFixedFee()).isEqualTo(expectedFixedFee);
     assertThat(entity.getMediationSessionOne()).isEqualTo(expectedOneMediation);
     assertThat(entity.getMediationSessionTwo()).isEqualTo(expectedTwoMediation);
     assertThat(entity.getFeeSchemeCode().getSchemeCode()).isEqualTo(feeSchemeCode);

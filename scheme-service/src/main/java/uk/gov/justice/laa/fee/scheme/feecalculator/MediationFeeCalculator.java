@@ -41,11 +41,11 @@ public final class MediationFeeCalculator {
   }
 
   /**
-   * Gets fixed fee from static total_fee.
+   * Gets fixed fee from static fixed_fee.
    */
   private static FeeCalculationResponse getCalculationWithoutMediationSessions(FeeEntity feeEntity,
                                                                                FeeCalculationRequest feeData) {
-    BigDecimal baseFee = feeEntity.getTotalFee();
+    BigDecimal baseFee = feeEntity.getFixedFee();
 
     return buildFeeResponse(baseFee, feeData);
   }
