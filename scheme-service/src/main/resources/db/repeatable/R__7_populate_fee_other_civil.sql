@@ -3,7 +3,7 @@ VALUES ('CAPA', 'Claims Against Public Authorities Legal Help Fixed Fee', 239.00
        ('CLIN', 'Clinical Negligence Legal Help Fixed Fee', 195.00, 585.00, 'CLIN_FS2013', 'CLINICAL_NEGLIGENCE'),
        ('COM', 'Community Care Legal Help Fixed Fee', 266.00, 798.00, 'COM_FS2013', 'COMMUNITY_CARE'),
        ('DEBT', 'Debt Legal Help Fixed Fee', 180.00, 540.00, 'DEBT_FS2013', 'DEBT'),
-       ('ELA', 'HLPAS Stage One: Early Legal Advice Fixed Fee', 157.00, 471.00, 'ELA_FS2024', 'HOUSING_HLPAS'),
+       ('ELA', 'HLPAS Stage One: Early Legal Advice', 157.00, 471.00, 'ELA_FS2024', 'HOUSING_HLPAS'),
        ('HOUS', 'Housing Fixed Fee', 157.00, 471.00, 'HOUS_FS2013', 'HOUSING'),
        ('MISCASBI', 'Miscellaneous (ASBI) Legal Help Fixed Fee', 157.00, 471.00, 'MISCASBI_FS2015', 'MISCELLANEOUS'),
        ('MISCCON', 'Miscellaneous (Consumer) Legal Help Fixed Fee', 159.00, 477.00, 'MISCCON_FS2013', 'MISCELLANEOUS'),
