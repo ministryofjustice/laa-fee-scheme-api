@@ -5,5 +5,6 @@ package uk.gov.justice.laa.fee.scheme.feecalculator;
  */
 public enum CalculationType {
 
-  MEDIATION
+  MEDIATION,
+  IMMIGRATION_ASYLUM
 }

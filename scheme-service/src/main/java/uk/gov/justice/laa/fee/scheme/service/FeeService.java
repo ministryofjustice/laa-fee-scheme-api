@@ -7,6 +7,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.exceptions.FeeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.ImmigrationAndAsylumFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.MediationFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -51,6 +52,7 @@ public class FeeService {
 
     return switch (calculationType) {
       case MEDIATION -> MediationFeeCalculator.getFee(feeEntity, feeData);
+      case IMMIGRATION_ASYLUM -> ImmigrationAndAsylumFeeCalculator.getFee(feeEntity, feeData);
       default -> null;
     };
   }

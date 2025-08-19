@@ -18,3 +18,12 @@ INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('COM_FS2013', 'Community Care Fee Scheme 2013', '2013-04-01', NULL)
     ON CONFLICT (scheme_code) DO NOTHING;
+
+-- Fee Scheme for 'Immigration and Asylum' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('I&A_FS2013', 'Immigration and Asylum Scheme 2013', '2013-04-01', NULL),
+    ('I&A_FS2020', 'Immigration and Asylum Scheme 2020', '2020-06-08', NULL),
+    ('I&A_FS2023', 'Immigration and Asylum Scheme 2023', '2023-04-01', NULL)
+    ON CONFLICT (scheme_code) DO NOTHING;
+
