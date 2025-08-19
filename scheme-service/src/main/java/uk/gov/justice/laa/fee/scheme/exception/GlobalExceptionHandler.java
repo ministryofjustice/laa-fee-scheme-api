@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.exceptions;
+package uk.gov.justice.laa.fee.scheme.exception;
 
 import java.time.OffsetDateTime;
 import org.springframework.http.HttpStatus;

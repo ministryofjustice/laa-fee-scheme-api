@@ -2,7 +2,7 @@ package uk.gov.justice.laa.fee.scheme.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import uk.gov.justice.laa.fee.scheme.exceptions.CategoryCodeNotFoundException;
+import uk.gov.justice.laa.fee.scheme.exception.CategoryCodeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.model.CategoryOfLawResponse;
 import uk.gov.justice.laa.fee.scheme.repository.CategoryOfLawLookUpRepository;
 
