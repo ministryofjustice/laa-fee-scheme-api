@@ -8,7 +8,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 /**
- * Calculate the Other Civil Cases fee for a given fee entity and fee data.
+ * Calculate the Other Civil Cases fee for a given fee entity and fee calculation request.
  */
 public final class OtherCivilFeeCalculator {
 

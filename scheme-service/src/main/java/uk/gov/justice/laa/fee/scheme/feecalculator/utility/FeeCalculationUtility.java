@@ -10,7 +10,6 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 /**
  * Utility class for fee calculation operations.
- * This class provides methods to calculate fees with VAT and build fee calculation responses.
  */
 public final class FeeCalculationUtility {
 
