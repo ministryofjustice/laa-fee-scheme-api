@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator;
+package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 

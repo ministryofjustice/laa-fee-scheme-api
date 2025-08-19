@@ -5,6 +5,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator;
  */
 public enum CalculationType {
 
+  COMMUNITY_CARE,
   MEDIATION,
   IMMIGRATION_ASYLUM
 }

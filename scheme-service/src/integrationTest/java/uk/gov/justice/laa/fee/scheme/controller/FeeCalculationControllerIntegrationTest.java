@@ -18,8 +18,31 @@ import uk.gov.justice.laa.fee.scheme.postgresTestContainer.PostgresContainerTest
 @AutoConfigureMockMvc
 @Testcontainers
 public class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase {
+
   @Autowired
   private MockMvc mockMvc;
+
+  @Test
+  void shouldGetFeeCalculation_communityCare() throws Exception {
+    mockMvc
+        .perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "COM",
+                  "startDate": "2021-11-02",
+                  "netDisbursementAmount": 123.67,
+                  "disbursementVatAmount": 24.73,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.feeCode").value("COM"))
+        .andExpect(jsonPath("$.feeCalculation.subTotal").value(389.67))
+        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(467.60));
+  }
 
   @Test
   void shouldGetFeeCalculation_mediation() throws Exception {
@@ -40,6 +63,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.feeCode").value("MED21"))
+        .andExpect(jsonPath("$.feeCalculation.subTotal").value(268.21))
         .andExpect(jsonPath("$.feeCalculation.totalAmount").value(321.93));
   }
 }

@@ -1,9 +1,9 @@
-package uk.gov.justice.laa.fee.scheme.exceptions;
+package uk.gov.justice.laa.fee.scheme.exception;
 
 import java.time.LocalDate;
 
 /**
- * Exception for when no fee entity can be found for fee_code and fee_scheme_code.
+ * Exception for when no fee entity can be found for fee_code and start_date.
  */
 public class FeeNotFoundException extends RuntimeException  {
   public FeeNotFoundException(String feeCode, LocalDate startDate) {
