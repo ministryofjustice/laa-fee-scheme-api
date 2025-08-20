@@ -23,7 +23,7 @@ public final class MediationFeeCalculator {
     Integer numberOfMediationSessions = feeData.getNumberOfMediationSessions();
 
     if (feeEntity.getFixedFee() == null) {
-      // Where fee code type is MED numberOfMediationSessions required, numberOfMediationSessions will determine fixed fee amount.
+      // Where fee code type is MED numberOfMediationSessions is required, numberOfMediationSessions will determine fixed fee amount.
       if (numberOfMediationSessions == null || numberOfMediationSessions <= 0) {
         throw new InvalidMediationSessionException(feeEntity.getFeeCode());
       }
