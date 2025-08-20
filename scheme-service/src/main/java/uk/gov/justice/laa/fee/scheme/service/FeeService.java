@@ -14,7 +14,7 @@ import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
 import uk.gov.justice.laa.fee.scheme.repository.FeeSchemesRepository;
 
 /**
- *  Service for determining fee calculation for a fee code and fee schema.
+ * Service for determining fee calculation for a fee code and fee schema.
  */
 @RequiredArgsConstructor
 @Service
@@ -47,7 +47,8 @@ public class FeeService {
   private FeeCalculationResponse getCalculation(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
 
     return switch (feeEntity.getCalculationType()) {
-      case COMMUNITY_CARE -> OtherCivilFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+      case CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE ->
+          OtherCivilFeeCalculator.getFee(feeEntity, feeCalculationRequest);
       case MEDIATION -> MediationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
     };
   }
