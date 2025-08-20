@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator;
+package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
 
 import java.math.BigDecimal;
 import lombok.Data;

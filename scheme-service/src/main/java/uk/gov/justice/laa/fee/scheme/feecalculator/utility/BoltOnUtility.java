@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator;
+package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -12,6 +12,7 @@ public class BoltOnUtility {
 
     if (feeData.getBoltOns() != null) {
       List<BoltOnPair> boltOns = Arrays.asList(
+          // add rest of boltons, currently has immigration and asylum
           new BoltOnPair(feeData.getBoltOns().getBoltOnAdjournedHearing(), feeEntity.getAdjornHearingBoltOn()),
           new BoltOnPair(feeData.getBoltOns().getBoltOnHomeOfficeInterview(), feeEntity.getHoInterviewBoltOn()),
           new BoltOnPair(feeData.getBoltOns().getBoltOnCmrhOral(), feeEntity.getOralCmrhBoltOn()),
