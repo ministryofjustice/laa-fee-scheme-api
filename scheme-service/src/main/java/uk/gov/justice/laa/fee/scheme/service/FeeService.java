@@ -47,7 +47,8 @@ public class FeeService {
   private FeeCalculationResponse getCalculation(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
 
     return switch (feeEntity.getCalculationType()) {
-      case CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE ->
+      case CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT,
+           HOUSING, HOUSING_HLPAS, MISCELLANEOUS, PUBLIC_LAW ->
           OtherCivilFeeCalculator.getFee(feeEntity, feeCalculationRequest);
       case MEDIATION -> MediationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
     };

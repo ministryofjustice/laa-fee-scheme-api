@@ -7,7 +7,12 @@ import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.CLAIMS_PUBLIC_AUTHORITIES;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.CLINICAL_NEGLIGENCE;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.COMMUNITY_CARE;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.DEBT;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.HOUSING;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.HOUSING_HLPAS;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MEDIATION;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MISCELLANEOUS;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.PUBLIC_LAW;
 import static uk.gov.justice.laa.fee.scheme.testutility.TestDataUtility.buildFeeEntity;
 import static uk.gov.justice.laa.fee.scheme.testutility.TestDataUtility.buildFeeSchemesEntity;
 
@@ -26,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -109,11 +115,14 @@ class FeeServiceTest {
 
   @ParameterizedTest
   @MethodSource("testDataOtherCivil")
-  void getFeeCalculation_shouldReturnExpectedCalculation_otherCivil(String feeCode, FeeSchemesEntity feeSchemesEntity, FeeEntity feeEntity,
+  void getFeeCalculation_shouldReturnExpectedCalculation_otherCivil(String feeCode, String schemeCode, String schemeName, LocalDate validFrom,
+                                                                    BigDecimal fixedFee, CalculationType calculationType,
                                                                     double expectedSubTotal, double expectedTotal) {
 
-    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
-    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any()))
+        .thenReturn(List.of(buildFeeSchemesEntity(schemeCode, schemeName, validFrom)));
+    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any()))
+        .thenReturn(Optional.of(buildFeeEntity(feeCode, fixedFee, calculationType)));
 
     FeeCalculationRequest request = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -131,21 +140,37 @@ class FeeServiceTest {
   static Stream<Arguments> testDataOtherCivil() {
     return Stream.of(
         Arguments.of("CAPA", // Claims Against Public Authorities
-            buildFeeSchemesEntity("CAPA_FS2013", "Claims Against Public Authorities Fee Scheme 2013", LocalDate.parse("2013-04-01")),
-            buildFeeEntity("CAPA", new BigDecimal("235.00"), CLAIMS_PUBLIC_AUTHORITIES),
+            "CAPA_FS2013", "CAPA Fee Scheme 2013", LocalDate.parse("2013-04-01"),
+            new BigDecimal("235.00"), CLAIMS_PUBLIC_AUTHORITIES,
             297.93, 357.52),
         Arguments.of("CLIN", // Clinical Negligence
-            buildFeeSchemesEntity("CLIN_FS2013", "Clinical Negligence Fee Scheme 2013", LocalDate.parse("2013-04-01")),
-            buildFeeEntity("CLIN", new BigDecimal("420.00"), CLINICAL_NEGLIGENCE),
+            "CLIN_FS2013", "CLIN Fee Scheme 2013", LocalDate.parse("2013-04-01"),
+            new BigDecimal("420.00"), CLINICAL_NEGLIGENCE,
             482.93, 579.52),
         Arguments.of("COM", // Community Care
-            buildFeeSchemesEntity("COM_FS2013", "Community Care Fee Scheme 2013", LocalDate.parse("2013-04-01")),
-            buildFeeEntity("CAPA", new BigDecimal("79.00"), COMMUNITY_CARE),
+            "COM_FS2013", "COM Fee Scheme 2013", LocalDate.parse("2013-04-01"),
+            new BigDecimal("79.00"), COMMUNITY_CARE,
             141.93, 170.32),
-        Arguments.of("DEBT", // Community Care
-            buildFeeSchemesEntity("DEBT_FS2013", "Debt Fee Scheme 2013", LocalDate.parse("2013-04-01")),
-            buildFeeEntity("DEBT", new BigDecimal("133.00"), COMMUNITY_CARE),
-            195.93, 235.12)
+        Arguments.of("DEBT", // Debt
+            "DEBT_FS2013", "DEBT Fee Scheme 2013", LocalDate.parse("2013-04-01"),
+            new BigDecimal("133.00"), DEBT,
+            195.93, 235.12),
+        Arguments.of("ELA", // Housing - HLPAS
+            "ELA_FS2024", "ELA Fee Scheme 2013", LocalDate.parse("2024-09-01"),
+            new BigDecimal("209.00"), HOUSING_HLPAS,
+            271.93, 326.32),
+        Arguments.of("HOUS", // Housing
+            "HOUS_FS2013", "HOUS Fee Scheme 2013", LocalDate.parse("2013-04-01"),
+            new BigDecimal("98.00"), HOUSING,
+            160.93, 193.12),
+        Arguments.of("MISCASBI", // Miscellaneous
+            "MISCASBI_FS2015", "MISCASBI Fee Scheme 2015", LocalDate.parse("2015-03-23"),
+            new BigDecimal("375.00"), MISCELLANEOUS,
+            437.93, 525.52),
+        Arguments.of("PUB", // Miscellaneous
+            "PUB_FS2013", "PUB Fee Scheme 2015", LocalDate.parse("2013-04-01"),
+            new BigDecimal("112.00"), PUBLIC_LAW,
+            174.93, 209.92)
     );
   }
 
