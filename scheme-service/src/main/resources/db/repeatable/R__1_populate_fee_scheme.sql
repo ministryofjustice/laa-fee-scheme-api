@@ -65,12 +65,6 @@ VALUES
     ('PUB_FS2013', 'Public Law Fee Scheme 2013', '2013-04-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
--- Fee Scheme for 'Community Care' category
-INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
-VALUES
-    ('COM_FS2013', 'Community Care Fee Scheme 2013', '2013-04-01', NULL)
-    ON CONFLICT (scheme_code) DO NOTHING;
-
 -- Fee Scheme for 'Immigration and Asylum' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
