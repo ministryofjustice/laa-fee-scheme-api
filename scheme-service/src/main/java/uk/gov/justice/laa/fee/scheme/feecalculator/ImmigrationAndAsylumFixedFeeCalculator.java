@@ -14,7 +14,7 @@ import uk.gov.justice.laa.fee.scheme.model.Warning;
 /**
  * Calculate the Immigration and asylum fee for a given fee entity and fee calculation request.
  */
-public final class ImmigrationAndAsylumFeeCalculator {
+public final class ImmigrationAndAsylumFixedFeeCalculator {
 
   private static final List<String> FEE_CODES_WITH_NO_DISBURSEMENT = List.of("IDAS1", "IDAS2");
   private static final String WARNING_CODE = "123"; // clarify what code should be
