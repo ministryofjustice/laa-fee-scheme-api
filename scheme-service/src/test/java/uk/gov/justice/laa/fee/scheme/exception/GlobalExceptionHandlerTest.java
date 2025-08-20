@@ -45,4 +45,16 @@ class GlobalExceptionHandlerTest {
     assertThat(response.getBody().getStatus()).isEqualTo(404);
     assertThat(response.getBody().getMessage()).isEqualTo("Fee not found for fee code FEE123, with start date %s", date);
   }
+
+  @Test
+  void handleInvalidMediationSession() {
+    InvalidMediationSessionException exception = new InvalidMediationSessionException("FEE123");
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleInvalidMediationSession(exception);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().getStatus()).isEqualTo(400);
+    assertThat(response.getBody().getMessage()).isEqualTo("Invalid mediation session for Fee code FEE123: numberOfMediationSessions required");
+  }
 }

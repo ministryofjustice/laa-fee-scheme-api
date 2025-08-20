@@ -4,6 +4,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculation
 
 import java.math.BigDecimal;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
+import uk.gov.justice.laa.fee.scheme.exception.InvalidMediationSessionException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
@@ -21,10 +22,15 @@ public final class MediationFeeCalculator {
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeData) {
     Integer numberOfMediationSessions = feeData.getNumberOfMediationSessions();
 
-    if (numberOfMediationSessions == null) {
-      return getCalculationWithoutMediationSessions(feeEntity, feeData);
-    } else {
+    if (feeEntity.getFixedFee() == null) {
+      // Where fee code type is MED numberOfMediationSessions required, numberOfMediationSessions will determine fixed fee amount.
+      if (numberOfMediationSessions == null || numberOfMediationSessions <= 0) {
+        throw new InvalidMediationSessionException(feeEntity.getFeeCode());
+      }
       return getCalculationWithMediationSessions(feeEntity, feeData);
+    } else {
+      // Where fee code type is MAM numberOfMediationSessions is not required, and will be omitted from calculation
+      return getCalculationWithoutMediationSessions(feeEntity, feeData);
     }
   }
 

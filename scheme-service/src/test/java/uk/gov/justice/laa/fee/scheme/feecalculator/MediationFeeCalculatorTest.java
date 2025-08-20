@@ -24,7 +24,9 @@ class MediationFeeCalculatorTest {
       boolean vatIndicator,
       Integer numberOfMediationSessions,
       double expectedSubTotal,
-      double expectedTotal) {
+      double expectedTotal,
+      BigDecimal fixedFee
+  ) {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -37,7 +39,7 @@ class MediationFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .fixedFee(new BigDecimal("75.50"))
+        .fixedFee(fixedFee)
         .mediationSessionOne(new BigDecimal("50"))
         .mediationSessionTwo(new BigDecimal("100"))
         .calculationType(MEDIATION)
@@ -53,19 +55,19 @@ class MediationFeeCalculatorTest {
 
   public static Stream<Arguments> testData() {
     return Stream.of(
-        arguments("1 mediation session, VAT applied",  "MED1", true,  1,    100.50, 130.65),
-        arguments("1 mediation session, no VAT",       "MED1", false, 1,    100.50, 120.65),
-        arguments("2 mediation sessions, VAT applied", "MED1", true,  2,    150.50, 190.65),
-        arguments("2 mediation sessions, no VAT",      "MED1", false, 2,    150.50, 170.65),
-        arguments("More than 1 mediation session, VAT applied", "MED1", true,  3,    150.50, 190.65),
-        arguments("More than 1 mediation session, no VAT",      "MED1", false, 3,    150.50, 170.65),
-        arguments("No mediation sessions, VAT applied", "MAM1", true, null, 126.00, 161.25),
-        arguments("No mediation sessions, no VAT",     "MAM1", false, null, 126.00, 146.15)
+        arguments("1 mediation session, VAT applied",  "MED1", true,  1,    100.50, 130.65, null),
+        arguments("1 mediation session, no VAT",       "MED1", false, 1,    100.50, 120.65, null),
+        arguments("2 mediation sessions, VAT applied", "MED1", true,  2,    150.50, 190.65, null),
+        arguments("2 mediation sessions, no VAT",      "MED1", false, 2,    150.50, 170.65, null),
+        arguments("More than 1 mediation session, VAT applied", "MED1", true,  3,    150.50, 190.65, null),
+        arguments("More than 1 mediation session, no VAT",      "MED1", false, 3,    150.50, 170.65, null),
+        arguments("No mediation sessions, VAT applied", "MAM1", true, null, 126.00, 161.25, new BigDecimal("75.50")),
+        arguments("No mediation sessions, no VAT",     "MAM1", false, null, 126.00, 146.15, new BigDecimal("75.50"))
     );
   }
 
   private static Arguments arguments(String scenario, String feeCode, boolean vat, Integer sessions,
-                                double subtotal, double total) {
-    return Arguments.of(scenario, feeCode, vat, sessions, subtotal, total);
+                                double subtotal, double total, BigDecimal fixedFee) {
+    return Arguments.of(scenario, feeCode, vat, sessions, subtotal, total, fixedFee);
   }
 }
