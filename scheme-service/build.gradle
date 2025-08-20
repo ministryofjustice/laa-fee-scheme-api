@@ -37,6 +37,11 @@ jacocoTestCoverageVerification {
                 counter = 'LINE'
                 minimum = 0.80
             }
+
+            limit {
+                counter = 'BRANCH'
+                minimum = 0.70
+            }
         }
     }
 }
@@ -81,9 +86,6 @@ dependencies {
     implementation 'org.flywaydb:flyway-database-postgresql:11.11.1'
 
     implementation 'io.micrometer:micrometer-registry-prometheus:1.15.3'
-
-    implementation 'org.mapstruct:mapstruct:1.6.3'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 
     runtimeOnly 'com.h2database:h2'
 
