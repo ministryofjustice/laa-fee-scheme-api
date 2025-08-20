@@ -2,24 +2,18 @@ package uk.gov.justice.laa.fee.scheme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.COMMUNITY_CARE;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.IMMIGRATION_ASYLUM_FIXED_FEE;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MEDIATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -141,6 +135,39 @@ class FeeServiceTest {
     FeeCalculationResponse response = feeService.getFeeCalculation(request);
 
     assertFeeCalculation(response, "MED1", 170.75, 210.90);
+  }
+
+  @Test
+  void getFeeCalculation_shouldReturnExpectedCalculation_immigrationAsylumFixedFee() {
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder()
+        .schemeCode("I&A_FS2020")
+        .schemeName("Standard Fee - Immigration CLR (2c + advocacy substantive hearing fee)")
+        .validFrom(LocalDate.parse("2025-04-01"))
+        .build();
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("IMCC")
+        .fixedFee(new BigDecimal("764.00"))
+        .disbursementLimit(new BigDecimal("600"))
+        .oralCmrhBoltOn(new BigDecimal("166"))
+        .telephoneCmrhBoltOn(new BigDecimal("90"))
+        .adjornHearingBoltOn(new BigDecimal("161"))
+        .calculationType(IMMIGRATION_ASYLUM_FIXED_FEE)
+        .build();
+    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("IMCC")
+        .startDate(LocalDate.of(2025, 7, 29))
+        .netDisbursementAmount(70.75)
+        .disbursementVatAmount(20.15)
+        .vatIndicator(true)
+        .build();
+
+    FeeCalculationResponse response = feeService.getFeeCalculation(request);
+
+    assertFeeCalculation(response, "IMCC", 834.75, 1007.70);
   }
 
   private void assertFeeCalculation(FeeCalculationResponse response, String feeCode, double subTotal, double total) {

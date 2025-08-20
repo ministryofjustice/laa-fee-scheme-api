@@ -12,7 +12,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.Warning;
 
 /**
- * TO DO.
+ * Calculate the Immigration and asylum fee for a given fee entity and fee calculation request.
  */
 public final class ImmigrationAndAsylumFeeCalculator {
 
@@ -21,7 +21,7 @@ public final class ImmigrationAndAsylumFeeCalculator {
   private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
 
   /**
-   * TO DO.
+   * Calculated fee for Immigration and asylum fee based on the provided fee entity and fee calculation request.
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
     // get the requested disbursement amount from feeCalculationRequest
@@ -50,7 +50,7 @@ public final class ImmigrationAndAsylumFeeCalculator {
     BigDecimal netDisbursementAmount;
     BigDecimal netDisbursementLimit = feeEntity.getDisbursementLimit();
     Warning warning = null;
-    // if fee code is "IDAS1", "IDAS2", and a requestedNetDisbursementAmount exists, return a warning, as these codes
+    // If fee code is "IDAS1", "IDAS2", and a requestedNetDisbursementAmount exists, return a warning, as these codes
     // are exempt from claiming disbursement
     if (isDisbursementNotAllowed(feeEntity, requestedNetDisbursementAmount)) {
       warning = Warning.builder()
@@ -83,7 +83,7 @@ public final class ImmigrationAndAsylumFeeCalculator {
   }
 
   /**
-   * TO DO.
+   * Calculate net disbursement amount based on requested amount, limit and prior authority.
    */
   private static BigDecimal getNetDisbursement(BigDecimal requestedNetDisbursementAmount, BigDecimal netDisbursementLimit,
                                                FeeCalculationRequest feeData) {
@@ -92,21 +92,19 @@ public final class ImmigrationAndAsylumFeeCalculator {
       // Where requestedNetDisbursementAmount is below limit, we allow request as is.
       return requestedNetDisbursementAmount;
     }
-    // Where requestedNetDisbursementAmount is above limit, we allow request as is if they have authorisation
+    // Where requestedNetDisbursementAmount is above limit, we allow request as is, if they have authorisation,
     // if no authorisation default to limit.
-    System.out.println("test  " + feeData.getDisbursementPriorAuthority());
     return feeData.getDisbursementPriorAuthority() != null
         ? requestedNetDisbursementAmount
         : netDisbursementLimit;
   }
 
   /**
-   * TO DO.
+   * determine if fee code is exempt from requesting disbursement.
    */
   private static boolean isDisbursementNotAllowed(FeeEntity feeEntity, BigDecimal requestedAmount) {
-    return requestedAmount.compareTo(BigDecimal.ZERO) > 0 && FEE_CODES_WITH_NO_DISBURSEMENT.contains(feeEntity.getFeeCode());
+    return requestedAmount.compareTo(BigDecimal.ZERO) >= 0 && FEE_CODES_WITH_NO_DISBURSEMENT.contains(feeEntity.getFeeCode());
   }
-
 
 }
 

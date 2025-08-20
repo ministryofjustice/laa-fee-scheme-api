@@ -6,23 +6,30 @@ import java.util.List;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 
+/**
+ * Class for calculating total value of bolt ons.
+ */
 public class BoltOnUtility {
 
-  public static BigDecimal calculateBoltOnAmount(FeeCalculationRequest feeData, FeeEntity feeEntity) {
+  /**
+   * Where bolt on exists, multiply bolt types value by number requested.
+   */
+  public static BigDecimal calculateBoltOnAmount(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    if (feeData.getBoltOns() != null) {
+    if (feeCalculationRequest.getBoltOns() != null) {
       List<BoltOnPair> boltOns = Arrays.asList(
-          // add rest of boltons, currently has immigration and asylum
-          new BoltOnPair(feeData.getBoltOns().getBoltOnAdjournedHearing(), feeEntity.getAdjornHearingBoltOn()),
-          new BoltOnPair(feeData.getBoltOns().getBoltOnHomeOfficeInterview(), feeEntity.getHoInterviewBoltOn()),
-          new BoltOnPair(feeData.getBoltOns().getBoltOnCmrhOral(), feeEntity.getOralCmrhBoltOn()),
-          new BoltOnPair(feeData.getBoltOns().getBoltOnCrmhTelephone(), feeEntity.getTelephoneCmrhBoltOn())
+          new BoltOnPair(feeCalculationRequest.getBoltOns().getBoltOnAdjournedHearing(), feeEntity.getAdjornHearingBoltOn()),
+          new BoltOnPair(feeCalculationRequest.getBoltOns().getBoltOnHomeOfficeInterview(), feeEntity.getHoInterviewBoltOn()),
+          new BoltOnPair(feeCalculationRequest.getBoltOns().getBoltOnCmrhOral(), feeEntity.getOralCmrhBoltOn()),
+          new BoltOnPair(feeCalculationRequest.getBoltOns().getBoltOnCrmhTelephone(), feeEntity.getTelephoneCmrhBoltOn())
       );
 
       return boltOns.stream()
           .filter(i -> i.boltOnAmount != null && i.numberOfBoltOns != null)
           .map(i -> BigDecimal.valueOf(i.numberOfBoltOns).multiply(i.boltOnAmount))
           .reduce(BigDecimal.ZERO, BigDecimal::add);
-    } else return BigDecimal.ZERO;
+    } else {
+      return BigDecimal.ZERO;
+    }
   }
 }

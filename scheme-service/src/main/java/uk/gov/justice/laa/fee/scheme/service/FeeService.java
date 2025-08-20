@@ -50,7 +50,7 @@ public class FeeService {
     return switch (feeEntity.getCalculationType()) {
       case COMMUNITY_CARE -> OtherCivilFeeCalculator.getFee(feeEntity, feeCalculationRequest);
       case MEDIATION -> MediationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
-      case IMMIGRATION_ASYLUM -> ImmigrationAndAsylumFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+      case IMMIGRATION_ASYLUM_FIXED_FEE -> ImmigrationAndAsylumFeeCalculator.getFee(feeEntity, feeCalculationRequest);
     };
   }
 }
