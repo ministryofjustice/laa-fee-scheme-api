@@ -2,15 +2,18 @@ package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MEDIATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
+import uk.gov.justice.laa.fee.scheme.exception.InvalidMediationSessionException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
@@ -18,7 +21,7 @@ class MediationFeeCalculatorTest {
 
   @ParameterizedTest
   @MethodSource("testData")
-  void getFee_whenMediation_withMediationSessions(
+  void getFee_whenMediation(
       String description,
       String feeCode,
       boolean vatIndicator,
@@ -69,5 +72,27 @@ class MediationFeeCalculatorTest {
   private static Arguments arguments(String scenario, String feeCode, boolean vat, Integer sessions,
                                 double subtotal, double total, BigDecimal fixedFee) {
     return Arguments.of(scenario, feeCode, vat, sessions, subtotal, total, fixedFee);
+  }
+
+  @Test
+  void getFee_whenMediationSessionIsNull_thenThrowsException() {
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode("MED1")
+        .startDate(LocalDate.of(2025, 7, 29))
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .vatIndicator(true)
+        .numberOfMediationSessions(0)
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("MED1")
+        .fixedFee(null)
+        .mediationSessionOne(new BigDecimal("50"))
+        .mediationSessionTwo(new BigDecimal("100"))
+        .calculationType(MEDIATION)
+        .build();
+
+    assertThrows(InvalidMediationSessionException.class, () -> MediationFeeCalculator.getFee(feeEntity, feeData));
   }
 }
