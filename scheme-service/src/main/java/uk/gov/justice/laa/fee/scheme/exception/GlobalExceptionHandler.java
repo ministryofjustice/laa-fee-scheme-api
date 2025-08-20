@@ -40,4 +40,18 @@ public class GlobalExceptionHandler {
 
     return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
   }
+
+  /**
+   * Global exception handler for InvalidMediationSessionException exception.
+   */
+  @ExceptionHandler(InvalidMediationSessionException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidMediationSession(InvalidMediationSessionException ex) {
+    ErrorResponse errorResponse = new ErrorResponse()
+        .timestamp(OffsetDateTime.now())
+        .status(HttpStatus.BAD_REQUEST.value())
+        .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+        .message(ex.getMessage());
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
 }
