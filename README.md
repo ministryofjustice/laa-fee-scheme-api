@@ -60,6 +60,6 @@ The following actuator endpoints have been configured:
 - [Springdoc OpenAPI](https://springdoc.org/) - used to generate OpenAPI documentation. It automatically generates Swagger UI, JSON documentation based on your Spring REST APIs.
 - [Lombok](https://projectlombok.org/) - used to help to reduce boilerplate Java code by automatically generating common
   methods like getters, setters, constructors etc. at compile-time using annotations.
-- [Testcontainers](https://testcontainers.com/) - used to spin up a PostgreSQL container for the integration tests.
+- [Testcontainers](https://testcontainers.com/) - used to provide a PostgreSQL container for the integration tests.
 
 

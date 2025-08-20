@@ -163,11 +163,11 @@ class FeeServiceTest {
             "HOUS_FS2013", "HOUS Fee Scheme 2013", LocalDate.parse("2013-04-01"),
             new BigDecimal("98.00"), HOUSING,
             160.93, 193.12),
-        Arguments.of("MISCASBI", // Miscellaneous
-            "MISCASBI_FS2015", "MISCASBI Fee Scheme 2015", LocalDate.parse("2015-03-23"),
+        Arguments.of("MISCCON", // Miscellaneous
+            "MISCCON", "MISCCON Fee Scheme 2015", LocalDate.parse("2015-03-23"),
             new BigDecimal("375.00"), MISCELLANEOUS,
             437.93, 525.52),
-        Arguments.of("PUB", // Miscellaneous
+        Arguments.of("PUB", // Public Law
             "PUB_FS2013", "PUB Fee Scheme 2015", LocalDate.parse("2013-04-01"),
             new BigDecimal("112.00"), PUBLIC_LAW,
             174.93, 209.92)
