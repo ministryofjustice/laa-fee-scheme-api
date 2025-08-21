@@ -184,10 +184,6 @@ components:
       properties:
         boltOnAdjournedHearing:
           type: integer
-        boltOnDetentionTravelWaitingCosts:
-          type: integer
-        boltOnJrFormFilling:
-          type: integer
         boltOnCmrhOral:
           type: integer
         boltOnCrmhTelephone:
