@@ -50,10 +50,10 @@ class MediationFeeCalculatorTest {
 
     FeeCalculationResponse response = MediationFeeCalculator.getFee(feeEntity, feeData);
 
-    assertNotNull(response.getFeeCalculation());
+    assertNotNull(response.getFeeCalculationItems());
     assertThat(response.getFeeCode()).isEqualTo(feeCode);
-    assertThat(response.getFeeCalculation().getSubTotal()).isEqualTo(expectedSubTotal);
-    assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
+    assertThat(response.getFeeCalculationItems().getSubTotal()).isEqualTo(expectedSubTotal);
+    assertThat(response.getFeeCalculationItems().getCalculatedClaimAmount()).isEqualTo(expectedTotal);
   }
 
   public static Stream<Arguments> testData() {

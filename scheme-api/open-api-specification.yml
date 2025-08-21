@@ -148,20 +148,69 @@ components:
     FeeCalculationResponse:
       type: object
       properties:
-        feeCode:
+        feeCode: # remove or keep?
           type: string
-        feeCalculation:
+        claimId: # assume new field they'll send us?
+          type: string
+        schemeId: # not mentioned but maybe useful, as clarifies where figures came from.
+          type: string
+        error: # not sure what error codes, or description would be i.e. the actual purpose
+          $ref: "#/components/schemas/Error"
+        warning:
+          $ref: "#/components/schemas/Warning"
+        escapeCaseFlag:
+          type: boolean
+        feeCalculationItems:
           $ref: "#/components/schemas/FeeCalculation"
 
     FeeCalculation:
       type: object
       properties:
-        totalAmount:
+        calculatedClaimAmount:
           type: number
           format: double
-        subTotal:
+        subTotal: # existing, but can keep or remove, imo maybe easier to remove, as makes calcs simpler
           type: number
           format: double
+        hourlyTotalAmount:
+          type: number
+          format: double
+        hourlyVatAmount:
+          type: number
+          format: double
+        fixedFeeAmount:
+          type: number
+          format: double
+        fixedFeeVatAmount: # would we also need/want to list the vat amounts for other totals if included e.g. jrFormFilling
+          type: number
+          format: double
+        disbursementAmount:
+          type: number
+          format: double
+        disbursementVatAmount:
+          type: number
+          format: double
+        boltOnFeeTotal: # keep as one total or a break down of the various bolt ons?
+          type: number
+          format: double
+        # there could be several other fields to return, jrFormFilling, netCostOfCounsel, netWaitingCosts etc etc
+        # if needed expand to include every field that is used for calculations?
+
+    Error:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        errorDescription:
+          type: string
+
+    Warning:
+      type: object
+      properties:
+        warrningCode:
+          type: string
+        warningDescription:
+          type: string
 
     BoltOnType:
       type: object

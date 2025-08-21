@@ -36,9 +36,9 @@ public final class FeeCalculationUtility {
 
     return new FeeCalculationResponse()
         .feeCode(feeCalculationRequest.getFeeCode())
-        .feeCalculation(FeeCalculation.builder()
+        .feeCalculationItems(FeeCalculation.builder()
             .subTotal(toDouble(subTotal))
-            .totalAmount(toDouble(finalTotal))
+            .calculatedClaimAmount(toDouble(finalTotal))
             .build());
   }
 

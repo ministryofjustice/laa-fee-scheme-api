@@ -37,9 +37,9 @@ class OtherCivilFeeCalculatorTest {
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("COM");
-    assertThat(result.getFeeCalculation()).isNotNull();
-    assertThat(result.getFeeCalculation().getSubTotal()).isEqualTo(expectedSubTotal);
-    assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
+    assertThat(result.getFeeCalculationItems()).isNotNull();
+    assertThat(result.getFeeCalculationItems().getSubTotal()).isEqualTo(expectedSubTotal);
+    assertThat(result.getFeeCalculationItems().getCalculatedClaimAmount()).isEqualTo(expectedTotal);
   }
 
 }

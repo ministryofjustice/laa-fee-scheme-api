@@ -178,10 +178,10 @@ class FeeServiceTest {
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo(feeCode);
 
-    FeeCalculation calculation = response.getFeeCalculation();
+    FeeCalculation calculation = response.getFeeCalculationItems();
     assertThat(calculation).isNotNull();
     assertThat(calculation.getSubTotal()).isEqualTo(subTotal);
-    assertThat(calculation.getTotalAmount()).isEqualTo(total);
+    assertThat(calculation.getCalculatedClaimAmount()).isEqualTo(total);
   }
 
 }

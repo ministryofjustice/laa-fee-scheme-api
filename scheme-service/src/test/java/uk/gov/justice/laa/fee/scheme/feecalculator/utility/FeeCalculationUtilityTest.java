@@ -32,10 +32,10 @@ class FeeCalculationUtilityTest {
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("FEE1");
 
-    FeeCalculation calculation = response.getFeeCalculation();
+    FeeCalculation calculation = response.getFeeCalculationItems();
     assertThat(calculation).isNotNull();
     assertThat(calculation.getSubTotal()).isEqualTo(expectedSubTotal);
-    assertThat(calculation.getTotalAmount()).isEqualTo(expectedTotal);
+    assertThat(calculation.getCalculatedClaimAmount()).isEqualTo(expectedTotal);
   }
 
 }
