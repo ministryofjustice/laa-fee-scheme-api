@@ -1,7 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
+
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.BoltOnUtility;
@@ -16,6 +18,9 @@ import uk.gov.justice.laa.fee.scheme.model.Warning;
  */
 public final class ImmigrationAndAsylumFixedFeeCalculator {
 
+  private ImmigrationAndAsylumFixedFeeCalculator() {
+  }
+
   private static final List<String> FEE_CODES_WITH_NO_DISBURSEMENT = List.of("IDAS1", "IDAS2");
   private static final String WARNING_CODE = "123"; // clarify what code should be
   private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
@@ -25,24 +30,16 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
     // get the requested disbursement amount from feeCalculationRequest
-    BigDecimal requestedNetDisbursementAmount = feeCalculationRequest.getNetDisbursementAmount() != null
-        ? BigDecimal.valueOf(feeCalculationRequest.getNetDisbursementAmount())
-        : BigDecimal.ZERO;
+    BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
 
     // get the requested disbursement VAT amount from feeCalculationRequest
-    BigDecimal disbursementVatAmount = feeCalculationRequest.getDisbursementVatAmount() != null
-        ? BigDecimal.valueOf(feeCalculationRequest.getDisbursementVatAmount())
-        : BigDecimal.ZERO;
+    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
     // get the requested detentionAndTravelCosts amount from feeCalculationRequest
-    BigDecimal detentionAndTravelCosts = feeCalculationRequest.getDetentionAndWaitingCosts() != null
-        ? BigDecimal.valueOf(feeCalculationRequest.getDetentionAndWaitingCosts())
-        : BigDecimal.ZERO;
+    BigDecimal detentionAndTravelCosts = toBigDecimal(feeCalculationRequest.getDetentionAndWaitingCosts());
 
     // get the requested jrFormFilling amount from feeCalculationRequest
-    BigDecimal jrFormFilling = feeCalculationRequest.getJrFormFilling() != null
-        ? BigDecimal.valueOf(feeCalculationRequest.getJrFormFilling())
-        : BigDecimal.ZERO;
+    BigDecimal jrFormFilling = toBigDecimal(feeCalculationRequest.getJrFormFilling());
 
     // get the total bolt on value amount from utility class
     BigDecimal boltOnValue = BoltOnUtility.calculateBoltOnAmount(feeCalculationRequest, feeEntity);
@@ -76,8 +73,8 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
         .warning(warning)
         .feeCode(feeCalculationRequest.getFeeCode())
         .feeCalculation(FeeCalculation.builder()
-            .subTotal(subTotalWithoutTax.setScale(2, RoundingMode.HALF_UP).doubleValue())
-            .totalAmount(finalTotal.setScale(2, RoundingMode.HALF_UP).doubleValue())
+            .subTotal((toDouble(subTotalWithoutTax)))
+            .totalAmount((toDouble(finalTotal)))
             .build())
         .build();
   }

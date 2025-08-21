@@ -25,8 +25,8 @@ public class BoltOnUtility {
       );
 
       return boltOns.stream()
-          .filter(i -> i.boltOnAmount != null && i.numberOfBoltOns != null)
-          .map(i -> BigDecimal.valueOf(i.numberOfBoltOns).multiply(i.boltOnAmount))
+          .filter(i -> i.boltOnAmount() != null && i.numberOfBoltOns() != null)
+          .map(i -> BigDecimal.valueOf(i.numberOfBoltOns()).multiply(i.boltOnAmount()))
           .reduce(BigDecimal.ZERO, BigDecimal::add);
     } else {
       return BigDecimal.ZERO;
