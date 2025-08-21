@@ -107,4 +107,30 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(jsonPath("$.feeCalculation.subTotal").value(2111.21))
         .andExpect(jsonPath("$.feeCalculation.totalAmount").value(2533.53));
   }
+
+  @Test
+  void shouldGetFeeCalculation_mentalHealth() throws Exception {
+    mockMvc
+        .perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "MHL03",
+                  "startDate": "2021-11-05",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true,
+                  "boltOns": {
+                    "boltOnAdjournedHearing": 3.00
+                  }
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.feeCode").value("MHL03"))
+        .andExpect(jsonPath("$.feeCalculation.subTotal").value(901.21))
+        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(1081.53));
+  }
+
 }

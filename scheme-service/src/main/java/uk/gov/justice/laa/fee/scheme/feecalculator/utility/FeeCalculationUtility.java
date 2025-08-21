@@ -20,7 +20,7 @@ public final class FeeCalculationUtility {
   }
 
   /**
-   * Fixed fee  + netDisbursementAmount = subtotal.
+   * Given fixed fee + netDisbursementAmount = subtotal.
    * If Applicable add VAT to fixed fee,
    * baWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
    */
