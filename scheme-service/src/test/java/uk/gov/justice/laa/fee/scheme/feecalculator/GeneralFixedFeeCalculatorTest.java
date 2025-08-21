@@ -11,14 +11,14 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
-class OtherCivilFeeCalculatorTest {
+class GeneralFixedFeeCalculatorTest {
 
   @ParameterizedTest
   @CsvSource({
       "false, 150.11, 170.33", // No VAT
       "true, 150.11, 180.33" // VAT applied
   })
-  void getFee_whenOtherCivil_communityCare(boolean vatIndicator, double expectedSubTotal, double expectedTotal) {
+  void getFee_shouldReturnFeeCalculationResponse(boolean vatIndicator, double expectedSubTotal, double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("COM")
         .startDate(LocalDate.of(2025, 5, 12))
@@ -33,7 +33,7 @@ class OtherCivilFeeCalculatorTest {
         .calculationType(COMMUNITY_CARE)
         .build();
 
-    FeeCalculationResponse result = OtherCivilFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+    FeeCalculationResponse result = GeneralFixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("COM");

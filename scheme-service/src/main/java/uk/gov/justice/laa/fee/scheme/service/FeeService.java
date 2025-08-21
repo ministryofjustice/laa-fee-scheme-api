@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.exception.FeeNotFoundException;
+import uk.gov.justice.laa.fee.scheme.feecalculator.GeneralFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.ImmigrationAndAsylumFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.MediationFeeCalculator;
-import uk.gov.justice.laa.fee.scheme.feecalculator.OtherCivilFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
@@ -48,11 +48,10 @@ public class FeeService {
   private FeeCalculationResponse getCalculation(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
 
     return switch (feeEntity.getCalculationType()) {
-      case CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT,
-           HOUSING, HOUSING_HLPAS, MISCELLANEOUS, PUBLIC_LAW ->
-          OtherCivilFeeCalculator.getFee(feeEntity, feeCalculationRequest);
-      case MEDIATION -> MediationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+      case CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT, HOUSING, HOUSING_HLPAS,
+           MENTAL_HEALTH, MISCELLANEOUS, PUBLIC_LAW -> GeneralFixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
       case IMMIGRATION_ASYLUM_FIXED_FEE -> ImmigrationAndAsylumFixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+      case MEDIATION -> MediationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
     };
   }
 }

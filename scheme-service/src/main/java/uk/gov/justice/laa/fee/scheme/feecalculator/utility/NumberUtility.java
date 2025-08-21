@@ -21,7 +21,6 @@ public final class NumberUtility {
     return NumberUtils.toScaledBigDecimal(value);
   }
 
-
   /**
    * Converts a Double value to a BigDecimal with scaling.
    *
@@ -31,4 +30,15 @@ public final class NumberUtility {
   public static Double toDouble(BigDecimal value) {
     return NumberUtils.toDouble(value);
   }
+
+  /**
+   * Converts a BigDecimal value to a BigDecimal with scaling, defaulting to zero if null.
+   *
+   * @param value the BigDecimal value to convert
+   * @return the converted BigDecimal, or zero if the input is null
+   */
+  public static BigDecimal defaultToZeroIfNull(BigDecimal value) {
+    return NumberUtils.toScaledBigDecimal(value);
+  }
+
 }
