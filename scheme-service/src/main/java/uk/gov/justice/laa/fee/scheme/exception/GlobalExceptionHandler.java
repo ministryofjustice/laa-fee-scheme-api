@@ -18,13 +18,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(CategoryCodeNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleCategoryOfLawNotFound(CategoryCodeNotFoundException ex) {
-    ErrorResponse errorResponse = new ErrorResponse()
-        .timestamp(OffsetDateTime.now())
-        .status(HttpStatus.NOT_FOUND.value())
-        .error(HttpStatus.NOT_FOUND.getReasonPhrase())
-        .message(ex.getMessage());
-
-    return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    return handleException(ex, HttpStatus.NOT_FOUND);
   }
 
   /**
@@ -32,13 +26,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(FeeNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleFeeCodeNotfound(FeeNotFoundException ex) {
-    ErrorResponse errorResponse = new ErrorResponse()
-        .timestamp(OffsetDateTime.now())
-        .status(HttpStatus.NOT_FOUND.value())
-        .error(HttpStatus.NOT_FOUND.getReasonPhrase())
-        .message(ex.getMessage());
-
-    return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    return handleException(ex, HttpStatus.NOT_FOUND);
   }
 
   /**
@@ -46,12 +34,16 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(InvalidMediationSessionException.class)
   public ResponseEntity<ErrorResponse> handleInvalidMediationSession(InvalidMediationSessionException ex) {
+    return handleException(ex, HttpStatus.BAD_REQUEST);
+  }
+
+  private ResponseEntity<ErrorResponse> handleException(RuntimeException ex, HttpStatus status) {
     ErrorResponse errorResponse = new ErrorResponse()
         .timestamp(OffsetDateTime.now())
-        .status(HttpStatus.BAD_REQUEST.value())
-        .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+        .status(status.value())
+        .error(status.getReasonPhrase())
         .message(ex.getMessage());
 
-    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>(errorResponse, status);
   }
 }
