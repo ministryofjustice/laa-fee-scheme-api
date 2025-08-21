@@ -43,8 +43,8 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.feeCode").value("MED21"))
-        .andExpect(jsonPath("$.feeCalculation.subTotal").value(268.21))
-        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(321.93));
+        .andExpect(jsonPath("$.feeCalculationItems.subTotal").value(268.21))
+        .andExpect(jsonPath("$.feeCalculationItems.calculatedClaimAmount").value(321.93));
   }
 
   @ParameterizedTest
@@ -75,8 +75,8 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.feeCode").value(feeCode))
-        .andExpect(jsonPath("$.feeCalculation.subTotal").value(expectedSubTotal))
-        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(expectedTotal));
+        .andExpect(jsonPath("$.feeCalculationItems.subTotal").value(expectedSubTotal))
+        .andExpect(jsonPath("$.feeCalculationItems.calculatedClaimAmount").value(expectedTotal));
   }
 
   @Test
@@ -104,7 +104,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.feeCode").value("IMCF"))
-        .andExpect(jsonPath("$.feeCalculation.subTotal").value(2111.21))
-        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(2533.53));
+        .andExpect(jsonPath("$.feeCalculationItems.subTotal").value(2111.21))
+        .andExpect(jsonPath("$.feeCalculationItems.calculatedClaimAmount").value(2533.53));
   }
 }

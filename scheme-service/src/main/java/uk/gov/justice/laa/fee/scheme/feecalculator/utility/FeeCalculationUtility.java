@@ -22,23 +22,29 @@ public final class FeeCalculationUtility {
    * fixedFeeWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
    */
   public static FeeCalculationResponse buildFixedFeeResponse(BigDecimal fixedFee, FeeCalculationRequest feeCalculationRequest) {
-    BigDecimal fixedFeeWithVat = Boolean.TRUE.equals(feeCalculationRequest.getVatIndicator())
-        ? VatUtility.addVat(fixedFee, feeCalculationRequest.getStartDate())
-        : fixedFee;
+    boolean vatApplicable = Boolean.TRUE.equals(feeCalculationRequest.getVatIndicator());
+
+    BigDecimal fixedFeeVatAmount = VatUtility.getVatValue(fixedFee, feeCalculationRequest.getStartDate(), vatApplicable);
 
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
 
     BigDecimal netDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    BigDecimal subTotal = fixedFee.add(netDisbursementAmount);
+    BigDecimal finalTotalWithoutVat = fixedFee
+        .add(netDisbursementAmount)
+        .add(netDisbursementVatAmount);
 
-    BigDecimal finalTotal = fixedFeeWithVat.add(netDisbursementAmount).add(netDisbursementVatAmount);
+    BigDecimal finalTotalWithVat = BigDecimal.ZERO;
+    if (vatApplicable) {
+      finalTotalWithVat = finalTotalWithoutVat
+          .add(fixedFeeVatAmount);
+    }
 
     return new FeeCalculationResponse()
         .feeCode(feeCalculationRequest.getFeeCode())
-        .feeCalculation(FeeCalculation.builder()
-            .subTotal(toDouble(subTotal))
-            .totalAmount(toDouble(finalTotal))
+        .feeCalculationItems(FeeCalculation.builder()
+            .calculatedClaimAmount(toDouble(vatApplicable ? finalTotalWithVat : finalTotalWithoutVat))
+            .subTotal(toDouble(finalTotalWithoutVat.subtract(netDisbursementVatAmount)))
             .build());
   }
 
