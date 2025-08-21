@@ -131,6 +131,9 @@ components:
         netWaitingCosts:
           type: number
           format: double
+        detentionAndWaitingCosts:
+          type: number
+          format: double
         caseConcludedDate:
           type: string
           format: date
@@ -144,6 +147,9 @@ components:
           type: string
         numberOfMediationSessions:
           type: integer
+        jrFormFilling:
+          type: number
+          format: double
 
     FeeCalculationResponse:
       type: object
@@ -162,6 +168,8 @@ components:
           type: boolean
         feeCalculationItems:
           $ref: "#/components/schemas/FeeCalculation"
+        warning:
+          $ref: "#/components/schemas/Warning"
 
     FeeCalculation:
       type: object
@@ -212,20 +220,26 @@ components:
         warningDescription:
           type: string
 
+    Warning:
+      type: object
+      properties:
+        warrningCode:
+          type: string
+        warningDescription:
+          type: string
+
     BoltOnType:
       type: object
       properties:
         boltOnAdjournedHearing:
-          type: integer
-        boltOnDetentionTravelWaitingCosts:
-          type: integer
-        boltOnJrFormFilling:
           type: integer
         boltOnCmrhOral:
           type: integer
         boltOnCrmhTelephone:
           type: integer
         boltOnAdditionalTravel:
+          type: integer
+        boltOnHomeOfficeInterview:
           type: integer
 
     ErrorResponse:

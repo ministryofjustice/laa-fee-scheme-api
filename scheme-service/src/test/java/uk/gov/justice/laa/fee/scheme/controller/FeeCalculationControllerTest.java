@@ -43,9 +43,8 @@ class FeeCalculationControllerTest {
     requestDto.setVatIndicator(true);
     requestDto.setDisbursementPriorAuthority("AUTH123");
     requestDto.boltOns(BoltOnType.builder()
+        .boltOnHomeOfficeInterview(2)
         .boltOnAdjournedHearing(1)
-        .boltOnDetentionTravelWaitingCosts(2)
-        .boltOnJrFormFilling(0)
         .boltOnCmrhOral(1)
         .boltOnCrmhTelephone(3)
         .build());

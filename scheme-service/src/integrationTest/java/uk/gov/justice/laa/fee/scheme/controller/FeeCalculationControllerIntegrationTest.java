@@ -79,4 +79,32 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(jsonPath("$.feeCalculationItems.calculatedClaimAmount").value(expectedTotal));
   }
 
+  @Test
+  void shouldGetFeeCalculation_immigrationAndAsylumFixedFee() throws Exception {
+    mockMvc
+        .perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "IMCF",
+                  "startDate": "2024-09-30",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true,
+                  "boltOns": {
+                        "boltOnAdjournedHearing": 2.00,
+                        "boltOnCmrhOral": 1.00,
+                        "boltOnCrmhTelephone": 3.00
+                  },
+                  "detentionAndWaitingCosts": 111.00,
+                  "jrFormFilling": 50.00
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.feeCode").value("IMCF"))
+        .andExpect(jsonPath("$.feeCalculation.subTotal").value(2111.21))
+        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(2533.53));
+  }
 }
