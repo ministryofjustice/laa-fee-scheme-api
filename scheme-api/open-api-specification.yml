@@ -156,9 +156,9 @@ components:
       properties:
         feeCode: # remove or keep?
           type: string
-        claimId: # assume new field they'll send us?
-          type: string
         schemeId: # not mentioned but maybe useful, as clarifies where figures came from.
+          type: string
+        claimId: # assume new field they'll send us?
           type: string
         error: # not sure what error codes, or description would be i.e. the actual purpose
           $ref: "#/components/schemas/Error"
@@ -168,8 +168,6 @@ components:
           type: boolean
         feeCalculationItems:
           $ref: "#/components/schemas/FeeCalculation"
-        warning:
-          $ref: "#/components/schemas/Warning"
 
     FeeCalculation:
       type: object
@@ -177,7 +175,12 @@ components:
         calculatedClaimAmount:
           type: number
           format: double
-        subTotal: # existing, but can keep or remove, imo maybe easier to remove, as makes calcs simpler
+        subTotal:
+          type: number
+          format: double
+        vatIndicator:
+          type: boolean
+        VatRateApplied:
           type: number
           format: double
         hourlyTotalAmount:
@@ -189,7 +192,19 @@ components:
         fixedFeeAmount:
           type: number
           format: double
-        fixedFeeVatAmount: # would we also need/want to list the vat amounts for other totals if included e.g. jrFormFilling
+        fixedFeeVatAmount:
+          type: number
+          format: double
+        netProfitCostsAmount:
+          type: number
+          format: double
+        netProfitCostsVatAmount:
+          type: number
+          format: double
+        netCostOfCounselAmount:
+          type: number
+          format: double
+        netCostOfCounselVatAmount:
           type: number
           format: double
         disbursementAmount:
@@ -198,11 +213,36 @@ components:
         disbursementVatAmount:
           type: number
           format: double
+        netTravelCostsAmount:
+          type: number
+          format: double
+        netTravelCostsVatAmount:
+          type: number
+          format: double
+        netWaitingCosts:
+          type: number
+          format: double
+        netWaitingCostsVatAmount:
+          type: number
+          format: double
+        detentionAndWaitingCostsAmount:
+          type: number
+          format: double
+        detentionAndWaitingCostsVatAmount:
+          type: number
+          format: double
+        jrFormFillingAmount:
+          type: number
+          format: double
+        jrFormFillingVatAmount:
+          type: number
+          format: double
         boltOnFeeTotal: # keep as one total or a break down of the various bolt ons?
           type: number
           format: double
-        # there could be several other fields to return, jrFormFilling, netCostOfCounsel, netWaitingCosts etc etc
-        # if needed expand to include every field that is used for calculations?
+        boltOnFeeVatTotal:
+          type: number
+          format: double
 
     Error:
       type: object
@@ -215,15 +255,7 @@ components:
     Warning:
       type: object
       properties:
-        warrningCode:
-          type: string
-        warningDescription:
-          type: string
-
-    Warning:
-      type: object
-      properties:
-        warrningCode:
+        warningCode:
           type: string
         warningDescription:
           type: string
