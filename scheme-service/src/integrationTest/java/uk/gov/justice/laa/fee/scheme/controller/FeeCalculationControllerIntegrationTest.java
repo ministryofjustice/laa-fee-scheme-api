@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,28 +23,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
 
   @Autowired
   private MockMvc mockMvc;
-
-  @Test
-  void shouldGetFeeCalculation_communityCare() throws Exception {
-    mockMvc
-        .perform(post("/api/v1/fee-calculation")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "COM",
-                  "startDate": "2021-11-02",
-                  "netDisbursementAmount": 123.67,
-                  "disbursementVatAmount": 24.73,
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.feeCode").value("COM"))
-        .andExpect(jsonPath("$.feeCalculation.subTotal").value(389.67))
-        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(467.60));
-  }
 
   @Test
   void shouldGetFeeCalculation_mediation() throws Exception {
@@ -66,4 +46,37 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(jsonPath("$.feeCalculation.subTotal").value(268.21))
         .andExpect(jsonPath("$.feeCalculation.totalAmount").value(321.93));
   }
+
+  @ParameterizedTest
+  @CsvSource({
+      "CAPA, 362.38, 434.85",    // Claims Against Public Authorities
+      "CLIN, 318.38, 382.05",    // Clinical Negligence
+      "COM, 389.38, 467.25",      // Community Care
+      "DEBT, 303.38, 364.05",     // Debt
+      "ELA, 280.38, 336.45",      // Housing - HLPAS
+      "HOUS, 280.38, 336.45",     // Housing
+      "MISCCON, 282.38, 338.85",  // Miscellaneous
+      "PUB, 382.38, 458.85"       // Public Law
+  })
+  void shouldGetFeeCalculation_otherCivilCategories(String feeCode, String expectedSubTotal, String expectedTotal) throws Exception {
+    mockMvc
+        .perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(String.format("""
+                {
+                  "feeCode": "%s",
+                  "startDate": "2025-02-01",
+                  "netDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "vatIndicator": true
+                }
+                """, feeCode))
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.feeCode").value(feeCode))
+        .andExpect(jsonPath("$.feeCalculation.subTotal").value(expectedSubTotal))
+        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(expectedTotal));
+  }
+
 }

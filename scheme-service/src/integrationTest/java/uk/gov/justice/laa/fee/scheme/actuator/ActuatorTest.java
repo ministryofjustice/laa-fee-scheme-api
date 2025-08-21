@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import uk.gov.justice.laa.fee.scheme.postgresTestContainer.PostgresContainerTestBase;
 
 @AutoConfigureObservability
 @DirtiesContext
@@ -20,7 +21,7 @@ import org.springframework.test.context.TestPropertySource;
     "management.endpoints.web.exposure.include=health,metrics,prometheus",
     "management.endpoint.health.show-details=always",
 })
-class ActuatorTest {
+class ActuatorTest extends PostgresContainerTestBase {
 
   @LocalServerPort
   private int port;
