@@ -10,6 +10,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.COMMUN
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.DEBT;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.HOUSING;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.HOUSING_HLPAS;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.IMMIGRATION_ASYLUM_FIXED_FEE;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MEDIATION;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MISCELLANEOUS;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.PUBLIC_LAW;
@@ -172,6 +173,37 @@ class FeeServiceTest {
             new BigDecimal("112.00"), PUBLIC_LAW,
             174.93, 209.92)
     );
+  }
+
+  @Test
+  void getFeeCalculation_shouldReturnExpectedCalculation_immigrationAsylumFixedFee() {
+    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("I&A_FS2020",
+        "Standard Fee - Immigration CLR (2c + advocacy substantive hearing fee)", LocalDate.parse("2025-04-01"));
+
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("IMCC")
+        .fixedFee(new BigDecimal("764.00"))
+        .disbursementLimit(new BigDecimal("600"))
+        .oralCmrhBoltOn(new BigDecimal("166"))
+        .telephoneCmrhBoltOn(new BigDecimal("90"))
+        .adjornHearingBoltOn(new BigDecimal("161"))
+        .calculationType(IMMIGRATION_ASYLUM_FIXED_FEE)
+        .build();
+    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("IMCC")
+        .startDate(LocalDate.of(2025, 7, 29))
+        .netDisbursementAmount(70.75)
+        .disbursementVatAmount(20.15)
+        .vatIndicator(true)
+        .build();
+
+    FeeCalculationResponse response = feeService.getFeeCalculation(request);
+
+    assertFeeCalculation(response, "IMCC", 834.75, 1007.70);
   }
 
   private void assertFeeCalculation(FeeCalculationResponse response, String feeCode, double subTotal, double total) {
