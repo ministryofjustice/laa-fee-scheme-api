@@ -60,8 +60,6 @@ The following actuator endpoints have been configured:
 - [Springdoc OpenAPI](https://springdoc.org/) - used to generate OpenAPI documentation. It automatically generates Swagger UI, JSON documentation based on your Spring REST APIs.
 - [Lombok](https://projectlombok.org/) - used to help to reduce boilerplate Java code by automatically generating common
   methods like getters, setters, constructors etc. at compile-time using annotations.
-- [MapStruct](https://mapstruct.org/) - used for object mapping, specifically for converting between different Java object types, such as Data Transfer Objects (DTOs)
-  and Entity objects. It generates mapping code at compile code.
-- [H2](https://www.h2database.com/html/main.html) - used to provide an in-memory database for the integration tests.
+- [Testcontainers](https://testcontainers.com/) - used to provide a PostgreSQL container for the integration tests.
 
 
