@@ -6,5 +6,6 @@ package uk.gov.justice.laa.fee.scheme.feecalculator;
 public enum CalculationType {
 
   COMMUNITY_CARE,
-  MEDIATION
+  MEDIATION,
+  POLICE_STATION
 }

@@ -22,8 +22,10 @@ public class PoliceStationFeesEntity {
   @Id
   private Long policeStationFeesId;
   private String criminalJusticeArea;
-  private String policeStationName;
-  private String policeStationCode;
+  private String psSchemeName;
+  private String psSchemeId;
   private BigDecimal fixedFee;
   private BigDecimal escapeThreshold;
+  private String feeSchemeCode;
+
 }

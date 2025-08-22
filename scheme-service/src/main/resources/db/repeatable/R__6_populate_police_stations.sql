@@ -1,5 +1,5 @@
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('NE001', 'HARTLEPOOL ', '1001', 'Hartlepool '),
        ('NE900', 'HARTLEPOOL NON-POLICE STATION', '1001', 'Hartlepool'),
        ('NE002', 'GUISBOROUGH ', '1002', 'Teeside '),
@@ -31,8 +31,8 @@ VALUES ('NE001', 'HARTLEPOOL ', '1001', 'Hartlepool '),
        ('NE023', 'PETERLEE ', '1007', 'Easington '),
        ('NE024', 'EASINGTON ', '1007', 'Easington ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('NE906', 'EASINGTON NON-POLICE STATION', '1007', 'Easington'),
        ('NE025', 'PONTELAND ', '1008', 'South East Northumberland '),
        ('NE026', 'MORPETH ', '1008', 'South East Northumberland '),
@@ -64,8 +64,8 @@ VALUES ('NE906', 'EASINGTON NON-POLICE STATION', '1007', 'Easington'),
        ('NE047', 'SUNDERLAND WEST', '1013', 'Sunderland / Houghton Le Spring '),
        ('NE048', 'SUNDERLAND NORTH ', '1013', 'Sunderland / Houghton Le Spring ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('NE049', 'SUNDERLAND CENTRAL ', '1013', 'Sunderland / Houghton Le Spring '),
        ('NE050', 'WASHINGTON ', '1013', 'Sunderland / Houghton Le Spring '),
        ('NE051', 'HOUGHTON-LE-SPRING ', '1013', 'Sunderland / Houghton Le Spring '),
@@ -98,8 +98,8 @@ VALUES ('NE049', 'SUNDERLAND CENTRAL ', '1013', 'Sunderland / Houghton Le Spring
        ('RD011', 'CHESHAM', '1133', 'High Wycombe & Amersham'),
        ('RD012', 'AMERSHAM', '1133', 'High Wycombe & Amersham')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('RD013', 'RAF WALTERS ASH STRIKE COMMAND', '1133', 'High Wycombe & Amersham'),
        ('RD014', 'MARLOW', '1133', 'High Wycombe & Amersham'),
        ('RD015', 'HIGH WYCOMBE', '1133', 'High Wycombe & Amersham'),
@@ -131,8 +131,8 @@ VALUES ('RD013', 'RAF WALTERS ASH STRIKE COMMAND', '1133', 'High Wycombe & Amers
        ('RD031', 'LANGLEY', '1138', 'Slough (East Berkshire)'),
        ('RD032', 'CROWTHORNE', '1138', 'Slough (East Berkshire)')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('RD033', 'BURNHAM', '1138', 'Slough (East Berkshire)'),
        ('RD034', 'ASCOT', '1138', 'Slough (East Berkshire)'),
        ('RD035', 'BRACKNELL', '1138', 'Slough (East Berkshire)'),
@@ -165,8 +165,8 @@ VALUES ('RD033', 'BURNHAM', '1138', 'Slough (East Berkshire)'),
        ('RD058', 'WINCHESTER', '1141', 'Andover/Basingstoke/Winchester (NW Hants)'),
        ('RD059', 'BISHOPS WALTHAM', '1141', 'Andover/Basingstoke/Winchester (NW Hants)')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('RD060', 'DROXFORD', '1141', 'Andover/Basingstoke/Winchester (NW Hants)'),
        ('RD914', 'ANDOVER / BASINGSTOKE / WINCHESTER (N W HANTS) NON-POLICE STATION', '1141',
         'Andover / Basingstoke / Winchester (NW Hants)'),
@@ -200,8 +200,8 @@ VALUES ('RD060', 'DROXFORD', '1141', 'Andover/Basingstoke/Winchester (NW Hants)'
        ('RD072', 'TOTTON', '1145', 'South West Hants (Southampton)'),
        ('RD073', 'SOUTHAMPTON CENTRAL', '1145', 'South West Hants (Southampton)')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('RD074', 'ROMSEY', '1145', 'South West Hants (Southampton)'),
        ('RD075', 'RINGWOOD', '1145', 'South West Hants (Southampton)'),
        ('RD076', 'PORTSWOOD', '1145', 'South West Hants (Southampton)'),
@@ -233,8 +233,8 @@ VALUES ('RD074', 'ROMSEY', '1145', 'South West Hants (Southampton)'),
        ('LS014', 'HM CUSTOMS KING GEORGE DOCKS ', '1203', 'Hull '),
        ('LS015', 'BRANSHOLME ', '1203', 'Hull ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('LS022', 'PRIORY ROAD', '1203', 'Hull'),
        ('LS902', 'HULL NON-POLICE STATION', '1203', 'Hull'),
        ('LS016', 'BROUGH ', '1204', 'Beverley / Bridlington '),
@@ -266,8 +266,8 @@ VALUES ('LS022', 'PRIORY ROAD', '1203', 'Hull'),
        ('LS039', 'SETTLE ', '1208', 'Skipton, Settle & Ingleton '),
        ('LS040', 'INGLETON ', '1208', 'Skipton, Settle & Ingleton ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('LS907', 'SKIPTON, SETTLE & INGLETON NON-POLICE STATION', '1208', 'Skipton, Settle & Ingleton'),
        ('LS041', 'SCARBOROUGH ', '1209', 'Scarborough / Whitby '),
        ('LS042', 'WHITBY ', '1209', 'Scarborough / Whitby '),
@@ -299,8 +299,8 @@ VALUES ('LS907', 'SKIPTON, SETTLE & INGLETON NON-POLICE STATION', '1208', 'Skipt
        ('LS064', 'MEXBOROUGH ', '1213', 'Doncaster '),
        ('LS065', 'DONCASTER ', '1213', 'Doncaster ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('LS066', 'ARMTHORPE', '1213', 'Doncaster'),
        ('LS912', 'DONCASTER NON-POLICE STATION', '1213', 'Doncaster'),
        ('LS067', 'KIVETON PARK ( MALTBY ) ', '1214', 'Rotherham '),
@@ -332,8 +332,8 @@ VALUES ('LS066', 'ARMTHORPE', '1213', 'Doncaster'),
        ('LS090', 'HOLMFIRTH ', '1217', 'Huddersfield '),
        ('LS916', 'HUDDERSFIELD NON-POLICE STATION', '1217', 'Huddersfield')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('LS091', 'HECKMONDWIKE ', '1218', 'Dewsbury '),
        ('LS092', 'DEWSBURY ', '1218', 'Dewsbury '),
        ('LS093', 'BATLEY ', '1218', 'Dewsbury '),
@@ -365,8 +365,8 @@ VALUES ('LS091', 'HECKMONDWIKE ', '1218', 'Dewsbury '),
        ('LS116', 'ROTHWELL ', '1221', 'Leeds '),
        ('LS117', 'HM CUSTOMS LEEDS ', '1221', 'Leeds ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('LS118', 'KILLINGBECK (GIPTON) ', '1221', 'Leeds '),
        ('LS119', 'CHAPELTOWN ', '1221', 'Leeds '),
        ('LS120', 'CENTRAL BRIDEWELL,LEEDS ', '1221', 'Leeds '),
@@ -398,8 +398,8 @@ VALUES ('LS118', 'KILLINGBECK (GIPTON) ', '1221', 'Leeds '),
        ('LN013', 'WOOD STREET ', '1303', 'Bishopsgate '),
        ('LN902', 'BISHOPSGATE NON-POLICE STATION', '1303', 'Bishopsgate')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('LN014', 'BTP WEMBLEY PARK', '1304', 'Brent '),
        ('LN015', 'CAREY WAY (WEMBLEY) ', '1304', 'Brent '),
        ('LN016', 'HARLESDEN ', '1304', 'Brent '),
@@ -431,8 +431,8 @@ VALUES ('LN014', 'BTP WEMBLEY PARK', '1304', 'Brent '),
        ('LN039', 'GYPSY HILL ', '1307', 'Camberwell Green '),
        ('LN040', 'HERNEHILL ( FAVERSHAM ) ', '1307', 'Camberwell Green ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('LN041', 'SOUTHWARK ', '1307', 'Camberwell Green '),
        ('LN042', 'STREATHAM ', '1307', 'Camberwell Green '),
        ('LN067', 'VAUXHALL', '1307', 'Camberwell Green'),
@@ -464,8 +464,8 @@ VALUES ('LN041', 'SOUTHWARK ', '1307', 'Camberwell Green '),
        ('LN068', 'VINE STREET ', '1308', 'Central London '),
        ('LN069', 'WEST END CENTRAL', '1308', 'Central London ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('LN070', 'WHITEHALL ', '1308', 'Central London '),
        ('LN075', 'BTP WHITFIELD STREET', '1308', 'Central London'),
        ('LN907', 'CENTRAL LONDON NON-POLICE STATION', '1308', 'Central London'),
@@ -497,8 +497,8 @@ VALUES ('LN070', 'WHITEHALL ', '1308', 'Central London '),
        ('LN094', 'WINCHMORE HILL', '1312', 'Enfield '),
        ('LN911', 'ENFIELD NON-POLICE STATION', '1312', 'Enfield')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('LN095', 'BROCKLEY', '1313', 'Greenwich/Woolwich'),
        ('LN096', 'CATFORD', '1313', 'Greenwich/Woolwich'),
        ('LN097', 'DEPTFORD', '1313', 'Greenwich/Woolwich'),
@@ -530,8 +530,8 @@ VALUES ('LN095', 'BROCKLEY', '1313', 'Greenwich/Woolwich'),
        ('LN120', 'RAINHAM', '1316', 'Havering'),
        ('LN121', 'RAINHAM ID SUITE', '1316', 'Havering')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('LN122', 'ROMFORD', '1316', 'Havering'),
        ('LN915', 'HAVERING NON-POLICE STATION', '1316', 'Havering'),
        ('LN204', 'BTP HEATHROW ', '1317', 'Heathrow '),
@@ -563,8 +563,8 @@ VALUES ('LN122', 'ROMFORD', '1316', 'Havering'),
        ('LN143', 'FOREST GATE', '1321', 'Newham'),
        ('LN144', 'NORTH WOOLWICH', '1321', 'Newham')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('LN145', 'PLAISTOW', '1321', 'Newham'),
        ('LN146', 'THE CITY AIRPORT', '1321', 'Newham'),
        ('LN147', 'STRATFORD POLICE STATION (WEST HAM)', '1321', 'Newham'),
@@ -596,8 +596,8 @@ VALUES ('LN145', 'PLAISTOW', '1321', 'Newham'),
        ('LN169', 'WANDSWORTH', '1325', 'South London'),
        ('LN923', 'SOUTH LONDON NON-POLICE STATION', '1325', 'South London')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('LN170', 'SUTTON', '1326', 'Sutton'),
        ('LN171', 'WALLINGTON', '1326', 'Sutton'),
        ('LN924', 'SUTTON NON-POLICE STATION', '1326', 'Sutton'),
@@ -629,8 +629,8 @@ VALUES ('LN170', 'SUTTON', '1326', 'Sutton'),
        ('LN927', 'UXBRIDGE NON-POLICE STATION', '1329', 'Uxbridge'),
        ('LN194', 'CHINGFORD ', '1330', 'Waltham Forest ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('LN195', 'LEYTON ', '1330', 'Waltham Forest '),
        ('LN196', 'LEYTONSTONE ', '1330', 'Waltham Forest '),
        ('LN197', 'WALTHAMSTOW ', '1330', 'Waltham Forest '),
@@ -662,8 +662,8 @@ VALUES ('LN195', 'LEYTON ', '1330', 'Waltham Forest '),
        ('BR015', 'ILMINSTER ', '2003', 'Mendip & South Somerset '),
        ('BR016', 'CREWKERNE ', '2003', 'Mendip & South Somerset ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BR017', 'CHARD ', '2003', 'Mendip & South Somerset '),
        ('BR018', 'RNAS YEOVILTON ', '2003', 'Mendip & South Somerset '),
        ('BR019', 'YEOVIL ', '2003', 'Mendip & South Somerset '),
@@ -695,8 +695,8 @@ VALUES ('BR017', 'CHARD ', '2003', 'Mendip & South Somerset '),
        ('BR042', 'RAF WESTON SUPER MARE', '2006', 'Weston Super Mare '),
        ('BR043', 'WESTON-SUPER-MARE', '2006', 'Weston-Super-Mare')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BR905', 'WESTON-SUPER-MARE NON-POLICE STATION', '2006', 'Weston-Super-Mare'),
        ('BR906', 'CENTRAL DORSET NON-POLICE STATION', '2007', 'Central Dorset'),
        ('BR052', 'WINTON ', '2008', 'Bournemouth & Christchurch '),
@@ -728,8 +728,8 @@ VALUES ('BR905', 'WESTON-SUPER-MARE NON-POLICE STATION', '2006', 'Weston-Super-M
        ('BR067', 'WEYMOUTH ', '2010', 'Bridport / West Dorset'),
        ('BR909', 'BRIDPORT / WEST DORSET NON-POLICE STATION', '2010', 'Bridport / West Dorset')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BR068', 'ARMY 158 PROVOST P S U ', '2011', 'Salisbury '),
        ('BR069', 'M O D LARKHILL ', '2011', 'Salisbury '),
        ('BR070', 'SALISBURY ', '2011', 'Salisbury '),
@@ -761,8 +761,8 @@ VALUES ('BR068', 'ARMY 158 PROVOST P S U ', '2011', 'Salisbury '),
        ('BR094', 'SWINDON WESTLEA (CLOSED) ', '2013', 'Swindon '),
        ('BR095', 'GABLECROSS ', '2013', 'Swindon ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BR912', 'SWINDON NON-POLICE STATION', '2013', 'Swindon'),
        ('BR096', 'WHITTINGTON ', '2014', 'Cheltenham '),
        ('BR097', 'STOW ON THE WOLD [DESIGNATED] ', '2014', 'Cheltenham '),
@@ -794,8 +794,8 @@ VALUES ('BR912', 'SWINDON NON-POLICE STATION', '2013', 'Swindon'),
        ('BR916', 'BARNSTAPLE NON-POLICE STATION', '2017', 'Barnstaple'),
        ('BR120', 'COLYTON ( EXMOUTH ) ', '2018', 'Exeter ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BR121', 'BEER ( EXETER ) ', '2018', 'Exeter '),
        ('BR122', 'TIVERTON ', '2018', 'Exeter '),
        ('BR123', 'SIDMOUTH ', '2018', 'Exeter '),
@@ -827,8 +827,8 @@ VALUES ('BR121', 'BEER ( EXETER ) ', '2018', 'Exeter '),
        ('BR147', 'KINGSAND ', '2020', 'East Cornwall '),
        ('BR148', 'LOOE ', '2020', 'East Cornwall ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BR149', 'MEVAGISSEY ', '2020', 'East Cornwall '),
        ('BR150', 'FOWEY ', '2020', 'East Cornwall '),
        ('BR151', 'LOSTWITHIEL ', '2020', 'East Cornwall '),
@@ -861,8 +861,8 @@ VALUES ('BR149', 'MEVAGISSEY ', '2020', 'East Cornwall '),
        ('BR920', 'CARRICK / KERRIER (CAMBORNE) / PENWITH NON-POLICE STATION', '2021',
         'Carrick / Kerrier (Camborne) / Penwith')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BR179', 'TEIGNBRIDGE ', '2022', 'Teignbridge / Torbay '),
        ('BR180', 'MORETONHAMPSTEAD ', '2022', 'Teignbridge / Torbay '),
        ('BR181', 'KINGSTEIGNTON ', '2022', 'Teignbridge / Torbay '),
@@ -894,8 +894,8 @@ VALUES ('BR179', 'TEIGNBRIDGE ', '2022', 'Teignbridge / Torbay '),
        ('BM008', 'LONGTON ', '3001', 'Stoke on Trent / Leek '),
        ('BM009', 'KIDSGROVE ', '3001', 'Stoke on Trent / Leek ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BM010', 'HANLEY ', '3001', 'Stoke on Trent / Leek '),
        ('BM011', 'BURSLEM. ', '3001', 'Stoke on Trent / Leek '),
        ('BM012', 'LEEK ', '3001', 'Stoke on Trent / Leek '),
@@ -927,8 +927,8 @@ VALUES ('BM010', 'HANLEY ', '3001', 'Stoke on Trent / Leek '),
        ('BM224', 'ARMITAGE', '3002', 'Stafford / Cannock & Rugeley'),
        ('BM282', 'AUDLEY', '3002', 'Stafford / Cannock & Rugeley')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BM901', 'STAFFORD / CANNOCK & RUGELEY NON-POLICE STATION', '3002', 'Stafford / Cannock & Rugeley'),
        ('BM030', 'BURTON-UPON-TRENT ', '3003', 'Lichfield & Tamworth / Burton Upon Trent / Uttoxeter '),
        ('BM031', 'BARTON-UNDER-NEEDWOOD ', '3003', 'Lichfield & Tamworth / Burton Upon Trent / Uttoxeter '),
@@ -961,8 +961,8 @@ VALUES ('BM901', 'STAFFORD / CANNOCK & RUGELEY NON-POLICE STATION', '3002', 'Sta
        ('BM054', 'ILMINGTON ', '3004', 'Leamington / Nuneaton / Rugby '),
        ('BM055', 'SNITTERFIELD ', '3004', 'Leamington / Nuneaton / Rugby ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BM056', 'STRATFORD-UPON-AVON ', '3004', 'Leamington / Nuneaton / Rugby '),
        ('BM057', 'SHIPSTON ON STOUR ', '3004', 'Leamington / Nuneaton / Rugby '),
        ('BM058', 'HENLEY IN ARDEN ', '3004', 'Leamington / Nuneaton / Rugby '),
@@ -994,8 +994,8 @@ VALUES ('BM056', 'STRATFORD-UPON-AVON ', '3004', 'Leamington / Nuneaton / Rugby 
        ('BM066', 'LEOMINSTER ', '3005', 'Hereford / Leominster '),
        ('BM067', 'BROMYARD ', '3005', 'Hereford / Leominster ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BM068', 'CRAVEN ARMS ( LEOMINSTER) ', '3005', 'Hereford / Leominster '),
        ('BM069', 'CHURCH STRETTON ( LEOMINSTER ) ', '3005', 'Hereford / Leominster '),
        ('BM070', 'PETERCHURCH ', '3005', 'Hereford / Leominster '),
@@ -1027,8 +1027,8 @@ VALUES ('BM068', 'CRAVEN ARMS ( LEOMINSTER) ', '3005', 'Hereford / Leominster ')
        ('BM093', 'GREAT WITLEY ', '3006', 'Kidderminster / Redditch '),
        ('BM094', 'CRABBS CROSS ', '3006', 'Kidderminster / Redditch ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BM095', 'HEADLESS CROSS ', '3006', 'Kidderminster / Redditch '),
        ('BM096', 'WINYATES ', '3006', 'Kidderminster / Redditch '),
        ('BM102', 'ASTLEY', '3006', 'Kidderminster / Redditch'),
@@ -1060,8 +1060,8 @@ VALUES ('BM095', 'HEADLESS CROSS ', '3006', 'Kidderminster / Redditch '),
        ('BM105', 'BRIDGNORTH ', '3008', 'Telford '),
        ('BM106', 'SHIFNAL ', '3008', 'Telford ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BM107', 'MUCH WENLOCK ', '3008', 'Telford '),
        ('BM108', 'OAKENGATES ', '3008', 'Telford '),
        ('BM109', 'DONNINGTON ', '3008', 'Telford '),
@@ -1093,8 +1093,8 @@ VALUES ('BM107', 'MUCH WENLOCK ', '3008', 'Telford '),
        ('BM294', 'POWICK', '3009', 'Worcester'),
        ('BM295', 'HALLOW', '3009', 'Worcester')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BM296', 'FERNHILL HEATH', '3009', 'Worcester'),
        ('BM297', 'BROADHEATH (WORCESTER)', '3009', 'Worcester'),
        ('BM298', 'UPTON-ON-SEVERN', '3009', 'Worcester'),
@@ -1126,8 +1126,8 @@ VALUES ('BM296', 'FERNHILL HEATH', '3009', 'Worcester'),
        ('BM146', 'BILSTON (NOT FOUND) ', '3011', 'Wolverhampton & Seisdon '),
        ('BM147', 'WOLVERHAMPTON CENTRAL ', '3011', 'Wolverhampton & Seisdon ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BM289', 'KINVER', '3011', 'Wolverhampton & Seisdon'),
        ('BM290', 'CODSALL', '3011', 'Wolverhampton & Seisdon'),
        ('BM291', 'SEISDON', '3011', 'Wolverhampton & Seisdon'),
@@ -1159,8 +1159,8 @@ VALUES ('BM289', 'KINVER', '3011', 'Wolverhampton & Seisdon'),
        ('BM169', 'STEELHOUSE LANE ', '3014', 'Birmingham '),
        ('BM170', 'STECHFORD, STATION ROAD ', '3014', 'Birmingham ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BM171', 'SPARKHILL, STRATFORD ROAD ', '3014', 'Birmingham '),
        ('BM172', 'SHELDON ', '3014', 'Birmingham '),
        ('BM173', 'QUINTON ROAD WEST ', '3014', 'Birmingham '),
@@ -1192,8 +1192,8 @@ VALUES ('BM171', 'SPARKHILL, STRATFORD ROAD ', '3014', 'Birmingham '),
        ('BM216', 'HM CUSTOMS ST JAMES HOUSE BIRMINGHAM', '3014', 'Birmingham'),
        ('BM217', 'HM CUSTOMS SUTTON COLDFIELD', '3014', 'Birmingham')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BM218', 'HM CUSTOMS TWO BROADWAY BIRMINGHAM', '3014', 'Birmingham'),
        ('BM219', 'MOSELEY, WOODBRIDGE ROAD', '3014', 'Birmingham'),
        ('BM220', 'SHARD END, PACKINGTON AVENUE', '3014', 'Birmingham'),
@@ -1225,8 +1225,8 @@ VALUES ('BM218', 'HM CUSTOMS TWO BROADWAY BIRMINGHAM', '3014', 'Birmingham'),
        ('WA005', 'LLANELLI', '4003', 'Llanelli'),
        ('WA006', 'KIDWELLY', '4003', 'Llanelli')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('WA007', 'CROSSHANDS', '4003', 'Llanelli'),
        ('WA008', 'BURRYPORT', '4003', 'Llanelli'),
        ('WA902', 'LLANELLI NON-POLICE STATION', '4003', 'Llanelli'),
@@ -1259,8 +1259,8 @@ VALUES ('WA007', 'CROSSHANDS', '4003', 'Llanelli'),
        ('WA030', 'CWMBRAN ', '4008', 'East Gwent '),
        ('WA031', 'CHEPSTOW ', '4008', 'East Gwent ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('WA032', 'CALDICOT ', '4008', 'East Gwent '),
        ('WA033', 'ABERGAVENNY ', '4008', 'East Gwent '),
        ('WA907', 'EAST GWENT NON-POLICE STATION', '4008', 'East Gwent'),
@@ -1294,8 +1294,8 @@ VALUES ('WA032', 'CALDICOT ', '4008', 'East Gwent '),
        ('WA056', 'ABERGELE', '4012', 'Colwyn Bay'),
        ('WA911', 'COLWYN BAY NON-POLICE STATION', '4012', 'Colwyn Bay')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('WA057', 'ST ASAPH', '4013', 'Denbighshire'),
        ('WA058', 'RUTHIN', '4013', 'Denbighshire'),
        ('WA059', 'RHYL', '4013', 'Denbighshire'),
@@ -1327,8 +1327,8 @@ VALUES ('WA057', 'ST ASAPH', '4013', 'Denbighshire'),
        ('WA080', 'OVERTON ', '4018', 'Wrexham '),
        ('WA081', 'LLANGOLLEN ', '4018', 'Wrexham ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('WA082', 'CORWEN ', '4018', 'Wrexham '),
        ('WA917', 'WREXHAM NON-POLICE STATION', '4018', 'Wrexham'),
        ('WA083', 'FAIRWATER ', '4019', 'Cardiff '),
@@ -1360,8 +1360,8 @@ VALUES ('WA082', 'CORWEN ', '4018', 'Wrexham '),
        ('WA106', 'TALBOT GREEN ', '4022', 'Mid Glamorgan & Miskin '),
        ('WA107', 'TONYREFAIL ', '4022', 'Mid Glamorgan & Miskin ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('WA108', 'TONYPANDY ', '4022', 'Mid Glamorgan & Miskin '),
        ('WA109', 'TON PENTRE ', '4022', 'Mid Glamorgan & Miskin '),
        ('WA110', 'TAFFS WELL ', '4022', 'Mid Glamorgan & Miskin '),
@@ -1393,8 +1393,8 @@ VALUES ('WA108', 'TONYPANDY ', '4022', 'Mid Glamorgan & Miskin '),
        ('WA131', 'SWANSEA CENTRAL ', '4027', 'Swansea '),
        ('WA132', 'MUMBLES ', '4027', 'Swansea ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('WA133', 'SKETTY ', '4027', 'Swansea '),
        ('WA134', 'MORRISTON ', '4027', 'Swansea '),
        ('WA135', 'GORSEINON ', '4027', 'Swansea '),
@@ -1426,8 +1426,8 @@ VALUES ('WA133', 'SKETTY ', '4027', 'Swansea '),
        ('LV023', 'COPPERAS HILL ', '5003', 'Liverpool '),
        ('LV024', 'BELLE VALE ', '5003', 'Liverpool ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('LV025', 'ALLERTON ', '5003', 'Liverpool '),
        ('LV026', 'ADMIRAL STREET ', '5003', 'Liverpool '),
        ('LV027', 'FARNWORTH ST. ( EATON ROAD ) ', '5003', 'Liverpool '),
@@ -1460,8 +1460,8 @@ VALUES ('LV025', 'ALLERTON ', '5003', 'Liverpool '),
        ('MA006', 'CONGLETON,MACCLESFIELD', '6001',
         'Crewe & Nantwich / Sandbach & Congleton / Macclesfield ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('MA007', 'ALSAGER ', '6001', 'Crewe & Nantwich / Sandbach & Congleton / Macclesfield '),
        ('MA008', 'NANTWICH ', '6001', 'Crewe & Nantwich / Sandbach & Congleton / Macclesfield '),
        ('MA009', 'CREWE (CLOSED) ', '6001', 'Crewe & Nantwich / Sandbach & Congleton / Macclesfield '),
@@ -1494,8 +1494,8 @@ VALUES ('MA007', 'ALSAGER ', '6001', 'Crewe & Nantwich / Sandbach & Congleton / 
        ('MA033', 'WESTERN AREA (BLACON) ', '6003', 'Chester / Vale Royal (Northwich) '),
        ('MA229', 'ELLESMERE', '6003', 'Chester / Vale Royal (Northwich)')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('MA902', 'CHESTER / VALE ROYAL (NORTHWICH) NON-POLICE STATION', '6003', 'Chester / Vale Royal (Northwich)'),
        ('MA034', 'RAVENGLASS ', '6004', 'Barrow In Furness '),
        ('MA035', 'SILECROFT ', '6004', 'Barrow In Furness '),
@@ -1527,8 +1527,8 @@ VALUES ('MA902', 'CHESTER / VALE ROYAL (NORTHWICH) NON-POLICE STATION', '6003', 
        ('MA059', 'IREBY ', '6006', 'Penrith / Carlisle '),
        ('MA060', 'DURDAR ', '6006', 'Penrith / Carlisle ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('MA061', 'DALSTON, CUMBRIA ', '6006', 'Penrith / Carlisle '),
        ('MA062', 'COTE HILL ', '6006', 'Penrith / Carlisle '),
        ('MA063', 'CORBY HILL ', '6006', 'Penrith / Carlisle '),
@@ -1560,8 +1560,8 @@ VALUES ('MA061', 'DALSTON, CUMBRIA ', '6006', 'Penrith / Carlisle '),
        ('MA088', 'FLIMBY ', '6007', 'Whitehaven / Workington '),
        ('MA089', 'DEARHAM ', '6007', 'Whitehaven / Workington ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('MA090', 'CROSBY ', '6007', 'Whitehaven / Workington '),
        ('MA091', 'BROUGHTON MOOR ', '6007', 'Whitehaven / Workington '),
        ('MA092', 'BRIGHAM ', '6007', 'Whitehaven / Workington '),
@@ -1593,8 +1593,8 @@ VALUES ('MA090', 'CROSBY ', '6007', 'Whitehaven / Workington '),
        ('MA117', 'CHEETHAM HILL ', '6008', 'Manchester '),
        ('MA118', 'BOOTLE ST. ', '6008', 'Manchester ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('MA119', 'WYTHENSHAWE. ', '6008', 'Manchester '),
        ('MA120', 'ELIZABETH SLINGER ', '6008', 'Manchester '),
        ('MA121', 'GARTSIDE STREET ', '6008', 'Manchester '),
@@ -1626,8 +1626,8 @@ VALUES ('MA119', 'WYTHENSHAWE. ', '6008', 'Manchester '),
        ('MA910', 'SALFORD NON-POLICE STATION', '6011', 'Salford'),
        ('MA143', 'WESTHOUGHTON', '6012', 'Bolton')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('MA144', 'HORWICH', '6012', 'Bolton'),
        ('MA145', 'FARNWORTH', '6012', 'Bolton'),
        ('MA146', 'BREIGHTMET', '6012', 'Bolton'),
@@ -1659,8 +1659,8 @@ VALUES ('MA144', 'HORWICH', '6012', 'Bolton'),
        ('MA169', 'HEYWOOD', '6015', 'Rochdale/Middleton'),
        ('MA170', 'BIRCH SERVICE AREA', '6015', 'Rochdale/Middleton')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('MA171', 'MOSSLEY', '6015', 'Rochdale/Middleton'),
        ('MA914', 'ROCHDALE / MIDDLETON NON-POLICE STATION', '6015', 'Rochdale / Middleton'),
        ('MA172', 'DENTON', '6016', 'Tameside'),
@@ -1692,8 +1692,8 @@ VALUES ('MA171', 'MOSSLEY', '6015', 'Rochdale/Middleton'),
        ('MA195', 'GISBURN', '6019', 'Blackburn/Accrington/Ribble Valley'),
        ('MA196', 'LONGRIDGE', '6019', 'Blackburn/Accrington/Ribble Valley')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('MA197', 'CLITHEROE', '6019', 'Blackburn/Accrington/Ribble Valley'),
        ('MA198', 'GREENBANK, BLACKBURN', '6019', 'Blackburn/Accrington/Ribble Valley'),
        ('MA918', 'BLACKBURN / ACCRINGTON / RIBBLE VALLEY NON-POLICE STATION', '6019',
@@ -1726,8 +1726,8 @@ VALUES ('MA197', 'CLITHEROE', '6019', 'Blackburn/Accrington/Ribble Valley'),
        ('MA222', 'BAMBERBRIDGE', '6023', 'Chorley/Ormskirk/South Ribble & Leyland'),
        ('MA223', 'LEYLAND', '6023', 'Chorley/Ormskirk/South Ribble & Leyland')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('MA922', 'CHORLEY / ORMSKIRK / SOUTH RIBBLE & LEYLAND NON-POLICE STATION', '6023',
         'Chorley / Ormskirk / South Ribble & Leyland'),
        ('MA224', 'PRESTON', '6024', 'Preston'),
@@ -1761,8 +1761,8 @@ VALUES ('MA922', 'CHORLEY / ORMSKIRK / SOUTH RIBBLE & LEYLAND NON-POLICE STATION
        ('BG028', 'GILLINGHAM, KENT', '7003', 'Medway'),
        ('BG029', 'BTP CHATHAM RAILWAY STATION', '7003', 'Medway')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BG030', 'CHATHAM', '7003', 'Medway'),
        ('BG904', 'MEDWAY NON-POLICE STATION', '7003', 'Medway'),
        ('BG031', 'EASTLING (FAVERSHAM)', '7004', 'Swale'),
@@ -1794,8 +1794,8 @@ VALUES ('BG030', 'CHATHAM', '7003', 'Medway'),
        ('BG046', 'GUILDFORD B T P', '7008', 'Guildford & Farnham'),
        ('BG047', 'GUILDFORD B T P', '7008', 'Guildford & Farnham')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BG048', 'GODALMING', '7008', 'Guildford & Farnham'),
        ('BG909', 'GUILDFORD & FARNHAM NON-POLICE STATION', '7008', 'Guildford & Farnham'),
        ('BG049', 'CAMBERLEY', '7009', 'North West Surrey (Woking)'),
@@ -1827,8 +1827,8 @@ VALUES ('BG048', 'GODALMING', '7008', 'Guildford & Farnham'),
        ('BG069', 'H M CUSTOMS NEWHAVEN', '7013', 'Brighton & Hove & Lewes'),
        ('BG913', 'BRIGHTON & HOVE & LEWES NON-POLICE STATION', '7013', 'Brighton & Hove & Lewes')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('BG070', 'PETWORTH', '7014', 'Chichester & District'),
        ('BG071', 'MIDHURST', '7014', 'Chichester & District'),
        ('BG072', 'CHICHESTER', '7014', 'Chichester & District'),
@@ -1860,8 +1860,8 @@ VALUES ('BG070', 'PETWORTH', '7014', 'Chichester & District'),
        ('NT001', 'LONG EATON ', '8001', 'East Derbyshire (Ripley) / Ilkeston '),
        ('NT002', 'ILKESTON ', '8001', 'East Derbyshire (Ripley) / Ilkeston ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('NT003', 'RIPLEY - DIVISIONAL HQ ', '8001', 'East Derbyshire (Ripley) / Ilkeston '),
        ('NT004', 'HEANOR ', '8001', 'East Derbyshire (Ripley) / Ilkeston '),
        ('NT005', 'ALFRETON ', '8001', 'East Derbyshire (Ripley) / Ilkeston '),
@@ -1895,8 +1895,8 @@ VALUES ('NT003', 'RIPLEY - DIVISIONAL HQ ', '8001', 'East Derbyshire (Ripley) / 
        ('NT028', 'COTTON LANE ', '8004', 'Derby / Swadlincote '),
        ('NT029', 'ST MARY''S WHARF (DERBY) ', '8004', 'Derby / Swadlincote ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('NT030', 'LITTLEOVER ', '8004', 'Derby / Swadlincote '),
        ('NT032', 'SWADLINCOTE', '8004', 'Derby / Swadlincote'),
        ('NT903', 'DERBY / SWADLINCOTE NON-POLICE STATION', '8004', 'Derby / Swadlincote'),
@@ -1929,8 +1929,8 @@ VALUES ('NT030', 'LITTLEOVER ', '8004', 'Derby / Swadlincote '),
        ('NT055', 'BOURNE ', '8008', 'Boston / Bourne / Stamford '),
        ('NT056', 'STAMFORD ', '8008', 'Boston / Bourne / Stamford ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('NT057', 'WRANGLE ', '8008', 'Boston / Bourne / Stamford '),
        ('NT058', 'WHAPLODE ', '8008', 'Boston / Bourne / Stamford '),
        ('NT059', 'SWINESHEAD ', '8008', 'Boston / Bourne / Stamford '),
@@ -1962,8 +1962,8 @@ VALUES ('NT057', 'WRANGLE ', '8008', 'Boston / Bourne / Stamford '),
        ('NT080', 'GRANTHAM ', '8011', 'Grantham & Sleaford '),
        ('NT082', 'RAF CRANWELL ', '8011', 'Grantham & Sleaford ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('NT910', 'GRANTHAM & SLEAFORD NON-POLICE STATION', '8011', 'Grantham & Sleaford'),
        ('NT083', 'RAVENSHEAD ', '8012', 'Mansfield '),
        ('NT084', 'SELSTON ', '8012', 'Mansfield '),
@@ -1995,8 +1995,8 @@ VALUES ('NT910', 'GRANTHAM & SLEAFORD NON-POLICE STATION', '8011', 'Grantham & S
        ('NT107', 'BINGHAM ', '8014', 'Nottingham '),
        ('NT913', 'NOTTINGHAM NON-POLICE STATION', '8014', 'Nottingham')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('NT108', 'WORKSOP ', '8015', 'Worksop & East Retford '),
        ('NT109', 'RETFORD ', '8015', 'Worksop & East Retford '),
        ('NT110', 'HARWORTH ', '8015', 'Worksop & East Retford '),
@@ -2028,8 +2028,8 @@ VALUES ('NT108', 'WORKSOP ', '8015', 'Worksop & East Retford '),
        ('EA009', 'DUNSTABLE ', '9002', 'Luton '),
        ('EA901', 'LUTON NON-POLICE STATION', '9002', 'Luton')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('EA010', 'CAMBRIDGE ', '9003', 'Cambridge '),
        ('EA011', 'SAWSTON ', '9003', 'Cambridge '),
        ('EA902', 'CAMBRIDGE NON-POLICE STATION', '9003', 'Cambridge'),
@@ -2061,8 +2061,8 @@ VALUES ('EA010', 'CAMBRIDGE ', '9003', 'Cambridge '),
        ('EA031', 'HALSTEAD ', '9010', 'Braintree '),
        ('EA032', 'BRAINTREE ', '9010', 'Braintree ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('EA034', 'WETHERSFIELD MOD POLICE ', '9010', 'Braintree '),
        ('EA909', 'BRAINTREE NON-POLICE STATION', '9010', 'Braintree'),
        ('EA035', 'RMP COLCHESTER GARRISON ', '9011', 'Clacton & Harwich / Colchester '),
@@ -2094,8 +2094,8 @@ VALUES ('EA034', 'WETHERSFIELD MOD POLICE ', '9010', 'Braintree '),
        ('EA055', 'LEIGH, ESSEX ', '9015', 'Rayleigh / Southend On Sea '),
        ('EA056', 'HM CUSTOMS SOUTHEND AIRPORT ', '9015', 'Rayleigh / Southend On Sea ')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('EA057', 'SOUTHEND ', '9015', 'Rayleigh / Southend On Sea '),
        ('EA058', 'ROCHFORD ', '9015', 'Rayleigh / Southend On Sea '),
        ('EA059', 'CANVEY ISLAND ', '9015', 'Rayleigh / Southend On Sea '),
@@ -2128,8 +2128,8 @@ VALUES ('EA057', 'SOUTHEND ', '9015', 'Rayleigh / Southend On Sea '),
        ('EA077', 'HITCHIN ', '9019', 'Stevenage & North Hertfordshire '),
        ('EA150', 'BALDOCK', '9019', 'Stevenage & North Hertfordshire')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('EA151', 'BUSHEY (BARNET)', '9019', 'Stevenage & North Hertfordshire'),
        ('EA918', 'STEVENAGE & NORTH HERTFORDSHIRE NON-POLICE STATION', '9019', 'Stevenage & North Hertfordshire'),
        ('EA078', 'LONDON COLNEY', '9020', 'St Albans '),
@@ -2161,8 +2161,8 @@ VALUES ('EA151', 'BUSHEY (BARNET)', '9019', 'Stevenage & North Hertfordshire'),
        ('EA097', 'ACLE ', '9023', 'Great Yarmouth '),
        ('EA922', 'GREAT YARMOUTH NON-POLICE STATION', '9023', 'Great Yarmouth')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('EA098', 'SWAFFHAM ', '9024', 'Kings Lynn & West Norfolk '),
        ('EA099', 'WELLS NEXT THE SEA, NORFOLK ', '9024', 'Kings Lynn & West Norfolk '),
        ('EA100', 'RAF MARHAM ', '9024', 'Kings Lynn & West Norfolk '),
@@ -2194,8 +2194,8 @@ VALUES ('EA098', 'SWAFFHAM ', '9024', 'Kings Lynn & West Norfolk '),
        ('EA119', 'BECCLES', '9028', 'Lowestoft/Beccles & Halesworth/Aldeburgh'),
        ('EA120', 'LOWESTOFT', '9028', 'Lowestoft/Beccles & Halesworth/Aldeburgh')
 ON CONFLICT (police_station_id) DO NOTHING;
-INSERT INTO police_stations (police_station_id, police_station_name, police_station_scheme_id,
-                             police_station_scheme_name)
+INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
+                             ps_scheme_name)
 VALUES ('EA121', 'LEISTON', '9028', 'Lowestoft/Beccles & Halesworth/Aldeburgh'),
        ('EA122', 'SAXMUNDHAM', '9028', 'Lowestoft/Beccles & Halesworth/Aldeburgh'),
        ('EA927', 'LOWESTOFT / BECCLES & HALESWORTH / ALDEBURGH NON-POLICE STATION', '9028',
