@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class VatUtilityTest {
 
@@ -31,9 +33,15 @@ class VatUtilityTest {
     assertThat(result).isEqualByComparingTo("204.60");
   }
 
-  @Test
-  void should_addVat() {
-    BigDecimal result = VatUtility.addVat(BigDecimal.valueOf(170.50), LocalDate.of(2011, 2, 1));
-    assertThat(result).isEqualByComparingTo("204.60");
+  @ParameterizedTest
+  @CsvSource(value = {
+      "null, 170.5",
+      "false, 170.5",
+      "true, 204.60",
+  }, nullValues = {"null"})
+  void should_addVatIfApplicable(Boolean vatIndicator, String expectedResult) {
+    BigDecimal result = VatUtility.addVatIfApplicable(BigDecimal.valueOf(170.50), LocalDate.of(2011, 2, 1), vatIndicator);
+    assertThat(result).isEqualByComparingTo(expectedResult);
   }
+
 }

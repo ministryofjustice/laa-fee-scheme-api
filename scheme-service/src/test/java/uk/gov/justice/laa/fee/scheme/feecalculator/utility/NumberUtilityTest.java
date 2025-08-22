@@ -34,4 +34,20 @@ class NumberUtilityTest {
 
     assertThat(result).isEqualTo(0);
   }
+
+  @Test
+  void defaultToZeroIfNull_givenNull_returnsZero() {
+    BigDecimal result = NumberUtility.defaultToZeroIfNull( null);
+
+    assertThat(result).isEqualTo(BigDecimal.ZERO);
+  }
+
+  @Test
+  void defaultToZeroIfNull_givenValue_returnsValue() {
+    BigDecimal value =  new BigDecimal("129.13");
+
+    BigDecimal result = NumberUtility.defaultToZeroIfNull(value);
+
+    assertThat(result).isEqualTo(value);
+  }
 }

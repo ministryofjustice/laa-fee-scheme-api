@@ -11,6 +11,9 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
  */
 public class BoltOnUtility {
 
+  private BoltOnUtility() {
+  }
+
   /**
    * Where bolt on exists, multiply bolt types value by number requested.
    */

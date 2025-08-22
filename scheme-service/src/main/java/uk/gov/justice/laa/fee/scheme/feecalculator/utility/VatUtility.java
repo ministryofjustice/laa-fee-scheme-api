@@ -24,11 +24,14 @@ public final class VatUtility {
   }
 
   /**
-   * Adds VAT to a value.
+   * Adds VAT to a value if applicable.
    */
-  public static BigDecimal addVat(BigDecimal value, LocalDate startDate) {
-    BigDecimal rate = getVatRateForDate(startDate);
-    return addVatUsingRate(value, rate);
+  public static BigDecimal addVatIfApplicable(BigDecimal value, LocalDate startDate, Boolean isVatApplicable) {
+    if (Boolean.TRUE.equals(isVatApplicable)) {
+      BigDecimal rate = getVatRateForDate(startDate);
+      return addVatUsingRate(value, rate);
+    }
+    return value;
   }
 
   /**
