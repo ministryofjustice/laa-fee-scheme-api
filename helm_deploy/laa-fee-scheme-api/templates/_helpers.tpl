@@ -1,21 +1,21 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "laa-fee-scheme-api.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{ define "laa-fee-scheme-api.name" -}}
+{{ default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "laa-fee-scheme-api.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{ define "laa-fee-scheme-api.chart" -}}
+{{ printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "laa-fee-scheme-api.labels" -}}
+{{ define "laa-fee-scheme-api.labels" -}}
 helm.sh/chart: {{ include "laa-fee-scheme-api.chart" . }}
 {{ include "laa-fee-scheme-api.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
@@ -28,7 +28,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "laa-fee-scheme-api.selectorLabels" -}}
+{{ define "laa-fee-scheme-api.selectorLabels" -}}
 app: {{ .Chart.Name }}
 app.kubernetes.io/metadata.name: {{ .Release.Name }}
 app.kubernetes.io/name: {{ include "laa-fee-scheme-api.name" . }}
