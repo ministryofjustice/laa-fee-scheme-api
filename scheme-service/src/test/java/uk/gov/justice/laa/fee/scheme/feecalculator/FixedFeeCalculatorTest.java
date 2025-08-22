@@ -11,7 +11,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
-class GeneralFixedFeeCalculatorTest {
+class FixedFeeCalculatorTest {
 
   @ParameterizedTest
   @CsvSource({
@@ -33,7 +33,7 @@ class GeneralFixedFeeCalculatorTest {
         .calculationType(COMMUNITY_CARE)
         .build();
 
-    FeeCalculationResponse result = GeneralFixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+    FeeCalculationResponse result = FixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("COM");

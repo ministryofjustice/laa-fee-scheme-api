@@ -8,8 +8,8 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 /**
  * Calculate the fixed fee for a given fee entity and fee data.
  */
-public final class GeneralFixedFeeCalculator {
-  private GeneralFixedFeeCalculator() {
+public final class FixedFeeCalculator {
+  private FixedFeeCalculator() {
   }
 
   /**

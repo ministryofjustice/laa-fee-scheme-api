@@ -32,13 +32,13 @@ public final class NumberUtility {
   }
 
   /**
-   * Converts a BigDecimal value to a BigDecimal with scaling, defaulting to zero if null.
+   * Returns the given BigDecimal value or BigDecimal.ZERO if the value is null.
    *
-   * @param value the BigDecimal value to convert
-   * @return the converted BigDecimal, or zero if the input is null
+   * @param value the BigDecimal value to check
+   * @return the original value or BigDecimal.ZERO if null
    */
   public static BigDecimal defaultToZeroIfNull(BigDecimal value) {
-    return NumberUtils.toScaledBigDecimal(value);
+    return value != null ? value : BigDecimal.ZERO;
   }
 
 }
