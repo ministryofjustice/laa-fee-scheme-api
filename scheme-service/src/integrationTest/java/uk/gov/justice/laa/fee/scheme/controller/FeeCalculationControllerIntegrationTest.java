@@ -38,8 +38,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "travelAndWaitingCosts": 88.81,
                   "netDisbursementAmount": 100.21,
                   "disbursementVatAmount": 20.12,
-                  "vatIndicator": true,
-                  "numberOfMediationSessions": 1
+                  "vatIndicator": true
                 }
                 """)
             .accept(MediaType.APPLICATION_JSON))
