@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
+import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -33,7 +34,6 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
       BigDecimal netDisbursementLimit,
       double detentionAndWaitingCosts,
       double jrFormfilling,
-      double expectedSubTotal,
       double expectedTotal) {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
@@ -55,6 +55,7 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
         .fixedFee(new BigDecimal("75.50"))
         .calculationType(IMMIGRATION_ASYLUM_FIXED_FEE)
         .disbursementLimit(netDisbursementLimit)
@@ -64,7 +65,6 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
 
     assertNotNull(response.getFeeCalculation());
     assertThat(response.getFeeCode()).isEqualTo(feeCode);
-    assertThat(response.getFeeCalculation().getSubTotal()).isEqualTo(expectedSubTotal);
     assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
   }
 
@@ -72,39 +72,40 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
     return Stream.of(
         arguments("IACA, Has Vat, eligible for disbursement, below limit",
             "IACA", true, null, 399, 50, BigDecimal.valueOf(600),
-            50, 50, 574.50, 659.60),
+            50, 50, 659.60),
         arguments("IACA, Has Vat, eligible for disbursement, above limit, with prior auth",
             "IACA", true, "hasPriorAuth", 800, 100, BigDecimal.valueOf(600),
-            50, 50, 975.50, 1110.60),
+            50, 50, 1110.60),
         arguments("IACA, Has Vat, eligible for disbursement, above limit, without prior auth",
             "IACA", true, null, 800, 100,  BigDecimal.valueOf(600),
-            50, 50, 775.50, 910.60),
+            50, 50, 910.60),
         arguments("IACA, No Vat, eligible for disbursement, below limit",
             "IACA", false, null, 399, 50, BigDecimal.valueOf(600),
-            50, 50, 574.50, 624.50),
+            50, 50, 624.50),
         arguments("IACA, No Vat, eligible for disbursement, above limit, with prior auth",
             "IACA", false, "hasPriorAuth", 800, 100, BigDecimal.valueOf(600),
-            50, 50, 975.50, 1075.50),
+            50, 50, 1075.50),
         arguments("IACA, No Vat, eligible for disbursement, above limit, without prior auth",
             "IACA", false, null, 800, 100,  BigDecimal.valueOf(600),
-            50, 50, 775.50, 875.50)
+            50, 50, 875.50)
     );
   }
 
   private static Arguments arguments(String scenario, String feeCode, boolean vat, String priorAuthority, double netDisbursementAmount,
                                      double disbursementVatAmount, BigDecimal netDisbursementLimit, double detentionAndWaitingCosts,
-                                     double jrFormfilling, double subtotal, double total) {
+                                     double jrFormfilling, double total) {
     return Arguments.of(scenario, feeCode, vat, priorAuthority, netDisbursementAmount, disbursementVatAmount, netDisbursementLimit,
-        detentionAndWaitingCosts, jrFormfilling, subtotal, total);
+        detentionAndWaitingCosts, jrFormfilling, total);
   }
 
   @ParameterizedTest
   @CsvSource({
-      "IDAS1, true, 75.5, 90.60",
-      "IDAS1, false, 75.5, 75.5",
-      "IDAS2, true, 75.5, 90.60",
-      "IDAS2, false, 75.5, 75.5"})
-  void getFee_whenImmigrationAndAsylum_withoutDisbursement(String feeCode, boolean vatIndicator, double expectedSubTotal,
+      "IDAS1, true, 90.60",
+      "IDAS1, false, 75.5",
+      "IDAS2, true, 90.60",
+      "IDAS2, false, 75.5"
+  })
+  void getFee_whenImmigrationAndAsylum_withoutDisbursement(String feeCode, boolean vatIndicator,
                                                            double expectedTotal) {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
@@ -119,6 +120,7 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
         .fixedFee(new BigDecimal("75.50"))
         .calculationType(IMMIGRATION_ASYLUM_FIXED_FEE)
         .disbursementLimit(null)
@@ -128,9 +130,7 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
 
     assertNotNull(response.getFeeCalculation());
     assertThat(response.getFeeCode()).isEqualTo(feeCode);
-    assertThat(response.getFeeCalculation().getSubTotal()).isEqualTo(expectedSubTotal);
     assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
-    assertThat(response.getWarning().getWarrningCode()).isEqualTo(WARNING_CODE);
     assertThat(response.getWarning().getWarningDescription()).isEqualTo(WARNING_CODE_DESCRIPTION);
   }
 }

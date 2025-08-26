@@ -131,6 +131,9 @@ components:
         netWaitingCosts:
           type: number
           format: double
+        travelAndWaitingCosts:
+          type: number
+          format: double
         detentionAndWaitingCosts:
           type: number
           format: double
@@ -156,10 +159,16 @@ components:
       properties:
         feeCode:
           type: string
-        feeCalculation:
-          $ref: "#/components/schemas/FeeCalculation"
+        schemeId:
+          type: string
+        claimId:
+          type: string
         warning:
           $ref: "#/components/schemas/Warning"
+        escapeCaseFlag:
+          type: boolean
+        feeCalculation:
+          $ref: "#/components/schemas/FeeCalculation"
 
     FeeCalculation:
       type: object
@@ -167,15 +176,57 @@ components:
         totalAmount:
           type: number
           format: double
-        subTotal:
+        vatIndicator:
+          type: boolean
+        VatRateApplied:
+          type: number
+          format: double
+        calculatedVatAmount:
+          type: number
+          format: double
+        disbursementAmount:
+          type: number
+          format: double
+        disbursementVatAmount:
+          type: number
+          format: double
+        hourlyTotalAmount:
+          type: number
+          format: double
+        hourlyVatAmount:
+          type: number
+          format: double
+        fixedFeeAmount:
+          type: number
+          format: double
+        netProfitCostsAmount:
+          type: number
+          format: double
+        netCostOfCounselAmount:
+          type: number
+          format: double
+        netTravelCostsAmount:
+          type: number
+          format: double
+        netWaitingCosts:
+          type: number
+          format: double
+        detentionAndWaitingCostsAmount:
+          type: number
+          format: double
+        jrFormFillingAmount:
+          type: number
+          format: double
+        travelAndWaitingCostAmount:
+          type: number
+          format: double
+        boltOnFeeAmount:
           type: number
           format: double
 
     Warning:
       type: object
       properties:
-        warrningCode:
-          type: string
         warningDescription:
           type: string
 

@@ -94,6 +94,7 @@ class FeeServiceTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("MED1")
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
         .mediationSessionOne(new BigDecimal(50))
         .mediationSessionTwo(new BigDecimal(100))
         .calculationType(MEDIATION)
@@ -111,19 +112,18 @@ class FeeServiceTest {
 
     FeeCalculationResponse response = feeService.getFeeCalculation(request);
 
-    assertFeeCalculation(response, "MED1", 170.75, 210.90);
+    assertFeeCalculation(response, "MED1",  210.90);
   }
 
   @ParameterizedTest
   @MethodSource("testDataOtherCivil")
   void getFeeCalculation_shouldReturnExpectedCalculation_otherCivil(String feeCode, String schemeCode, String schemeName, LocalDate validFrom,
-                                                                    BigDecimal fixedFee, CalculationType calculationType,
-                                                                    double expectedSubTotal, double expectedTotal) {
+                                                                    BigDecimal fixedFee, CalculationType calculationType, double expectedTotal) {
 
     when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any()))
         .thenReturn(List.of(buildFeeSchemesEntity(schemeCode, schemeName, validFrom)));
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any()))
-        .thenReturn(Optional.of(buildFeeEntity(feeCode, fixedFee, calculationType)));
+        .thenReturn(Optional.of(buildFeeEntity(feeCode, fixedFee, calculationType, schemeCode)));
 
     FeeCalculationRequest request = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -135,43 +135,35 @@ class FeeServiceTest {
 
     FeeCalculationResponse response = feeService.getFeeCalculation(request);
 
-    assertFeeCalculation(response, feeCode, expectedSubTotal, expectedTotal);
+    assertFeeCalculation(response, feeCode, expectedTotal);
   }
 
   static Stream<Arguments> testDataOtherCivil() {
     return Stream.of(
         Arguments.of("CAPA", // Claims Against Public Authorities
             "CAPA_FS2013", "CAPA Fee Scheme 2013", LocalDate.parse("2013-04-01"),
-            new BigDecimal("235.00"), CLAIMS_PUBLIC_AUTHORITIES,
-            297.93, 357.52),
+            new BigDecimal("235.00"), CLAIMS_PUBLIC_AUTHORITIES, 357.52),
         Arguments.of("CLIN", // Clinical Negligence
             "CLIN_FS2013", "CLIN Fee Scheme 2013", LocalDate.parse("2013-04-01"),
-            new BigDecimal("420.00"), CLINICAL_NEGLIGENCE,
-            482.93, 579.52),
+            new BigDecimal("420.00"), CLINICAL_NEGLIGENCE, 579.52),
         Arguments.of("COM", // Community Care
             "COM_FS2013", "COM Fee Scheme 2013", LocalDate.parse("2013-04-01"),
-            new BigDecimal("79.00"), COMMUNITY_CARE,
-            141.93, 170.32),
+            new BigDecimal("79.00"), COMMUNITY_CARE, 170.32),
         Arguments.of("DEBT", // Debt
             "DEBT_FS2013", "DEBT Fee Scheme 2013", LocalDate.parse("2013-04-01"),
-            new BigDecimal("133.00"), DEBT,
-            195.93, 235.12),
+            new BigDecimal("133.00"), DEBT, 235.12),
         Arguments.of("ELA", // Housing - HLPAS
             "ELA_FS2024", "ELA Fee Scheme 2013", LocalDate.parse("2024-09-01"),
-            new BigDecimal("209.00"), HOUSING_HLPAS,
-            271.93, 326.32),
+            new BigDecimal("209.00"), HOUSING_HLPAS, 326.32),
         Arguments.of("HOUS", // Housing
             "HOUS_FS2013", "HOUS Fee Scheme 2013", LocalDate.parse("2013-04-01"),
-            new BigDecimal("98.00"), HOUSING,
-            160.93, 193.12),
+            new BigDecimal("98.00"), HOUSING, 193.12),
         Arguments.of("MISCCON", // Miscellaneous
             "MISCCON", "MISCCON Fee Scheme 2015", LocalDate.parse("2015-03-23"),
-            new BigDecimal("375.00"), MISCELLANEOUS,
-            437.93, 525.52),
+            new BigDecimal("375.00"), MISCELLANEOUS, 525.52),
         Arguments.of("PUB", // Public Law
             "PUB_FS2013", "PUB Fee Scheme 2015", LocalDate.parse("2013-04-01"),
-            new BigDecimal("112.00"), PUBLIC_LAW,
-            174.93, 209.92)
+            new BigDecimal("112.00"), PUBLIC_LAW, 209.92)
     );
   }
 
@@ -184,6 +176,7 @@ class FeeServiceTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("IMCC")
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
         .fixedFee(new BigDecimal("764.00"))
         .disbursementLimit(new BigDecimal("600"))
         .oralCmrhBoltOn(new BigDecimal("166"))
@@ -203,16 +196,15 @@ class FeeServiceTest {
 
     FeeCalculationResponse response = feeService.getFeeCalculation(request);
 
-    assertFeeCalculation(response, "IMCC", 834.75, 1007.70);
+    assertFeeCalculation(response, "IMCC",  1007.70);
   }
 
-  private void assertFeeCalculation(FeeCalculationResponse response, String feeCode, double subTotal, double total) {
+  private void assertFeeCalculation(FeeCalculationResponse response, String feeCode , double total) {
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo(feeCode);
 
     FeeCalculation calculation = response.getFeeCalculation();
     assertThat(calculation).isNotNull();
-    assertThat(calculation.getSubTotal()).isEqualTo(subTotal);
     assertThat(calculation.getTotalAmount()).isEqualTo(total);
   }
 

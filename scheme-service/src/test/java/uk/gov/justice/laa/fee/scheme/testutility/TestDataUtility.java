@@ -1,7 +1,5 @@
 package uk.gov.justice.laa.fee.scheme.testutility;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.CLAIMS_PUBLIC_AUTHORITIES;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
@@ -20,9 +18,11 @@ public final class TestDataUtility {
         .build();
   }
 
-  public static FeeEntity buildFeeEntity(String feeCode, BigDecimal fixedFee, CalculationType calculationType) {
+  public static FeeEntity buildFeeEntity(String feeCode, BigDecimal fixedFee, CalculationType calculationType,
+                                         String schemeCode) {
     return FeeEntity.builder()
         .feeCode(feeCode)
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode(schemeCode).build())
         .fixedFee(fixedFee)
         .calculationType(calculationType)
         .build();

@@ -58,7 +58,6 @@ class FeeCalculationControllerTest {
     FeeCalculationResponse responseDto = FeeCalculationResponse.builder()
         .feeCode("FEE123")
         .feeCalculation(FeeCalculation.builder()
-            .subTotal(1234.11)
             .totalAmount(1500.12)
             .build())
         .build();
@@ -71,7 +70,6 @@ class FeeCalculationControllerTest {
             .content(objectMapper.writeValueAsString(requestDto)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.feeCode").value("FEE123"))
-        .andExpect(jsonPath("$.feeCalculation.subTotal").value(1234))
         .andExpect(jsonPath("$.feeCalculation.totalAmount").value(1500));
   }
 
