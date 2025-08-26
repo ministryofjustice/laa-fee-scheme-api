@@ -8,6 +8,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.CLAIMS
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.CLINICAL_NEGLIGENCE;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.DEBT;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.DISCRIMINATION;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.HOUSING;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.HOUSING_HLPAS;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.IMMIGRATION_ASYLUM_FIXED_FEE;
@@ -85,6 +86,34 @@ class FeeServiceTest {
     assertThatThrownBy(() -> feeService.getFeeCalculation(requestDto))
         .hasMessageContaining("Fee not found for fee code FEE123, with start date 2025-07-29");
 
+  }
+
+  @Test
+  void getFeeCalculation_shouldReturnExpectedCalculation_discrimination() {
+    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("DISC_FS2013", "Discrimination Fee Scheme 2013", LocalDate.parse("2013-04-01"));
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("DISC")
+        .escapeThresholdLimit(new BigDecimal("700.00"))
+        .calculationType(DISCRIMINATION)
+        .build();
+    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("DISC")
+        .startDate(LocalDate.of(2025, 7, 29))
+        .netProfitCosts(250.25)
+        .netCostOfCounsel(100.72)
+        .travelAndWaitingCosts(30.34)
+        .netDisbursementAmount(70.75)
+        .disbursementVatAmount(20.15)
+        .vatIndicator(true)
+        .build();
+
+    FeeCalculationResponse response = feeService.getFeeCalculation(request);
+
+    assertFeeCalculation(response, "DISC", 452.06, 548.47);
   }
 
   @Test
