@@ -1,13 +1,14 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility.buildFixedResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
 
 import java.math.BigDecimal;
 import java.util.List;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.BoltOnUtility;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.Warning;
@@ -67,7 +68,14 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
     BigDecimal subTotalWithoutTax = fixedFee.add(boltOnValue).add(detentionAndTravelCosts).add(jrFormFilling).add(netDisbursementAmount);
     BigDecimal finalTotal = taxableSubTotal.add(netDisbursementAmount).add(disbursementVatAmount);
 
-    return buildFixedResponse(feeCalculationRequest.getFeeCode(), subTotalWithoutTax, finalTotal, warning);
+    return new FeeCalculationResponse().toBuilder()
+        .warning(warning)
+        .feeCode(feeCalculationRequest.getFeeCode())
+        .feeCalculation(FeeCalculation.builder()
+            .subTotal((toDouble(subTotalWithoutTax)))
+            .totalAmount((toDouble(finalTotal)))
+            .build())
+        .build();
   }
 
   /**

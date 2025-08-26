@@ -52,6 +52,7 @@ class FeeCalculationUtilityTest {
 
   @Test
   void shouldBuildFixedResponseForGivenFixedFee() {
+    BigDecimal fixedFee = new BigDecimal("59.62");
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("FEE1")
         .startDate(LocalDate.of(2025, 1, 1))
@@ -60,7 +61,7 @@ class FeeCalculationUtilityTest {
         .disbursementVatAmount(5.89)
         .build();
 
-    FeeCalculationResponse response = FeeCalculationUtility.buildFixedFeeResponse(new BigDecimal("59.62"), feeCalculationRequest);
+    FeeCalculationResponse response = FeeCalculationUtility.buildFixedFeeResponse(fixedFee, feeCalculationRequest);
 
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("FEE1");
