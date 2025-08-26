@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -21,7 +22,8 @@ public final class DateUtility {
    * @param inputStr the Date String value to convert
    * @return the converted LocalDate
    */
-  public static LocalDate toLocalDate(String inputStr) throws DateTimeParseException {
+  @NotNull
+  public static @NotNull LocalDate toLocalDate(String inputStr) throws DateTimeParseException {
     LocalDate localDate;
 
     String strDate = inputStr.substring(0, 6); // "120325"

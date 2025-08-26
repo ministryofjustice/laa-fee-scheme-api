@@ -5,11 +5,12 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculation
 import java.math.BigDecimal;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
+import uk.gov.justice.laa.fee.scheme.exception.PoliceStationFeeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 /**
- * Calculate the mediation fee for a given fee entity and fee data.
+ * Calculate the police station fee for a given fee entity and fee data.
  */
 public final class PoliceStationFeeCalculator {
 
@@ -19,10 +20,14 @@ public final class PoliceStationFeeCalculator {
   }
 
   /**
-   * Determines whether the calculation should include mediation sessions based presence of numberOfMediationSessions.
+   * Determines the calculation based on police fee code.
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, PoliceStationFeesEntity policeStationFeesEntity,
                                               FeeCalculationRequest feeData) {
+
+    if (policeStationFeesEntity == null) {
+      throw new PoliceStationFeeNotFoundException(feeEntity.getFeeCode(), feeData.getPoliceStationSchemeId());
+    }
     String policeStationFeeCode = feeData.getFeeCode();
 
     if (policeStationFeeCode.equals(INVC)) {

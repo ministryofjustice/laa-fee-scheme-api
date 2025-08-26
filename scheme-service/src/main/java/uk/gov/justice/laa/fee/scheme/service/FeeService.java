@@ -28,6 +28,7 @@ import uk.gov.justice.laa.fee.scheme.repository.PoliceStationFeesRepository;
 @Service
 public class FeeService {
 
+  public static final String INVC = "INVC";
   private final FeeRepository feeRepository;
   private final FeeSchemesRepository feeSchemesRepository;
   private final PoliceStationFeesRepository policeStationFeesRepository;
@@ -84,23 +85,23 @@ public class FeeService {
   private PoliceStationFeesEntity getPoliceStationFeesEntity(FeeCalculationRequest feeCalculationRequest,
                                                              FeeSchemesEntity feeSchemesEntity) {
     PoliceStationFeesEntity policeStationFeesEntity = null;
-
-    if (StringUtils.isNotBlank(feeCalculationRequest.getPoliceStationId())) {
-      policeStationFeesEntity = policeStationFeesRepository
-          .findPoliceStationFeeByPoliceStationIdAndFeeSchemeCode(feeCalculationRequest.getPoliceStationId(),
-              feeSchemesEntity.getSchemeCode())
-          .stream()
-          .findFirst()
-          .orElseThrow(() -> new PoliceStationFeeNotFoundException(feeCalculationRequest.getPoliceStationId(),
-              feeCalculationRequest.getStartDate()));
-    } else if (StringUtils.isNotBlank(feeCalculationRequest.getPoliceStationSchemeId())) {
-      policeStationFeesEntity = policeStationFeesRepository
-          .findPoliceStationFeeByPsSchemeIdAndFeeSchemeCode(feeCalculationRequest.getPoliceStationSchemeId(),
-              feeSchemesEntity.getSchemeCode())
-          .stream()
-          .findFirst()
-          .orElseThrow(() -> new PoliceStationFeeNotFoundException(feeCalculationRequest.getPoliceStationSchemeId(),
-              feeCalculationRequest.getStartDate()));
+    if (feeCalculationRequest.getFeeCode().equals(INVC)) {
+      if (StringUtils.isNotBlank(feeCalculationRequest.getPoliceStationId())) {
+        policeStationFeesEntity = policeStationFeesRepository
+            .findPoliceStationFeeByPoliceStationIdAndFeeSchemeCode(feeCalculationRequest.getPoliceStationId(),
+                feeSchemesEntity.getSchemeCode())
+            .stream()
+            .findFirst()
+            .orElseThrow(() -> new PoliceStationFeeNotFoundException(feeCalculationRequest.getPoliceStationId(),
+                feeCalculationRequest.getStartDate()));
+      } else if (StringUtils.isNotBlank(feeCalculationRequest.getPoliceStationSchemeId())) {
+        policeStationFeesEntity = policeStationFeesRepository
+            .findPoliceStationFeeByPsSchemeIdAndFeeSchemeCode(feeCalculationRequest.getPoliceStationSchemeId(),
+                feeSchemesEntity.getSchemeCode())
+            .stream()
+            .findFirst()
+            .orElseThrow(() -> new PoliceStationFeeNotFoundException(feeCalculationRequest.getPoliceStationSchemeId()));
+      }
     }
     return policeStationFeesEntity;
   }
