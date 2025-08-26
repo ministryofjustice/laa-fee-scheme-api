@@ -20,6 +20,6 @@ public final class FixedFeeCalculator {
    * @return FeeCalculationResponse with calculated fee
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
-    return FeeCalculationUtility.buildFixedFeeResponse(feeEntity, feeCalculationRequest);
+    return FeeCalculationUtility.calculate(feeEntity, feeCalculationRequest);
   }
 }

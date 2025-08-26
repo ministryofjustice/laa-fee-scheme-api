@@ -39,7 +39,7 @@ class FeeCalculationUtilityTest {
         .adjornHearingBoltOn(boltOnFee)
         .build();
 
-    FeeCalculationResponse response = FeeCalculationUtility.buildFixedFeeResponse(feeEntity, feeCalculationRequest);
+    FeeCalculationResponse response = FeeCalculationUtility.calculate(feeEntity, feeCalculationRequest);
 
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("FEE1");
@@ -61,7 +61,7 @@ class FeeCalculationUtilityTest {
         .disbursementVatAmount(5.89)
         .build();
 
-    FeeCalculationResponse response = FeeCalculationUtility.buildFixedFeeResponse(fixedFee, feeCalculationRequest);
+    FeeCalculationResponse response = FeeCalculationUtility.calculate(fixedFee, feeCalculationRequest);
 
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("FEE1");

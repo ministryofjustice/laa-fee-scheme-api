@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.exception.FeeNotFoundException;
+import uk.gov.justice.laa.fee.scheme.feecalculator.DiscriminationFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.ImmigrationAndAsylumFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.MediationFeeCalculator;
@@ -50,6 +51,7 @@ public class FeeService {
     return switch (feeEntity.getCalculationType()) {
       case CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT, HOUSING, HOUSING_HLPAS,
            MENTAL_HEALTH, MISCELLANEOUS, PUBLIC_LAW -> FixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+      case DISCRIMINATION -> DiscriminationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
       case IMMIGRATION_ASYLUM_FIXED_FEE -> ImmigrationAndAsylumFixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
       case MEDIATION -> MediationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
     };

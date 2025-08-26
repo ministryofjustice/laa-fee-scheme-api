@@ -10,7 +10,6 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.model.Warning;
 
 /**
  * Utility class for fee calculation operations.
@@ -22,28 +21,28 @@ public final class FeeCalculationUtility {
 
   /**
    * Fixed fee + bolt ons (if exists) + netDisbursementAmount = subtotal.
-   * If Applicable add VAT to fixed fee + bolt ons,
+   * If Applicable add VAT to subtotal.
    * subtotalWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
    */
-  public static FeeCalculationResponse buildFixedFeeResponse(FeeEntity feeEntity,
-                                                             FeeCalculationRequest feeCalculationRequest) {
+  public static FeeCalculationResponse calculate(FeeEntity feeEntity,
+                                                 FeeCalculationRequest feeCalculationRequest) {
     BigDecimal fixedFee = defaultToZeroIfNull(feeEntity.getFixedFee());
     BigDecimal boltOnValue = BoltOnUtility.calculateBoltOnAmount(feeCalculationRequest, feeEntity);
     BigDecimal fixedFeeWithBoltOns = fixedFee.add(boltOnValue);
-    return buildResponse(fixedFeeWithBoltOns, feeCalculationRequest, null);
+    return calculateAndBuildResponse(fixedFeeWithBoltOns, feeCalculationRequest);
   }
 
   /**
    * Given fixed fee + netDisbursementAmount = subtotal.
-   * If Applicable add VAT to fixed fee,
+   * If Applicable add VAT to subtotal.
    * subtotalWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
    */
-  public static FeeCalculationResponse buildFixedFeeResponse(BigDecimal fixedFee,
-                                                             FeeCalculationRequest feeCalculationRequest) {
-    return buildResponse(fixedFee, feeCalculationRequest, null);
+  public static FeeCalculationResponse calculate(BigDecimal fixedFee,
+                                                 FeeCalculationRequest feeCalculationRequest) {
+    return calculateAndBuildResponse(fixedFee, feeCalculationRequest);
   }
 
-  private static FeeCalculationResponse buildResponse(BigDecimal feeTotal, FeeCalculationRequest feeCalculationRequest, Warning warning) {
+  private static FeeCalculationResponse calculateAndBuildResponse(BigDecimal feeTotal, FeeCalculationRequest feeCalculationRequest) {
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
@@ -56,7 +55,6 @@ public final class FeeCalculationUtility {
         .add(netDisbursementAmount).add(disbursementVatAmount);
 
     return FeeCalculationResponse.builder()
-        .warning(warning)
         .feeCode(feeCalculationRequest.getFeeCode())
         .feeCalculation(FeeCalculation.builder()
             .subTotal(toDouble(subTotal))

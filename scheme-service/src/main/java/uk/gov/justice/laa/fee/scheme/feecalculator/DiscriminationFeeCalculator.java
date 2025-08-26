@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility.buildFixedFeeResponse;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility.calculate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
 
 import java.math.BigDecimal;
@@ -24,13 +25,19 @@ public final class DiscriminationFeeCalculator {
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
 
-    BigDecimal fixedFee = feeEntity.getFixedFee();
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal netCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());
     BigDecimal travelAndWaitingCosts = toBigDecimal(feeCalculationRequest.getTravelAndWaitingCosts());
 
-    BigDecimal feeTotal = fixedFee.add(netProfitCosts).add(netCostOfCounsel).add(travelAndWaitingCosts);
+    BigDecimal feeTotal = netProfitCosts.add(netCostOfCounsel).add(travelAndWaitingCosts);
 
-    return buildFixedFeeResponse(feeTotal, feeCalculationRequest);
+    BigDecimal escapeThresholdLimit = defaultToZeroIfNull(feeEntity.getEscapeThresholdLimit());
+
+    // @TODO: escape case logic TBC
+    if (feeTotal.compareTo(escapeThresholdLimit) <= 0) {
+      return calculate(feeTotal, feeCalculationRequest);
+    } else {
+      return calculate(escapeThresholdLimit, feeCalculationRequest);
+    }
   }
 }
