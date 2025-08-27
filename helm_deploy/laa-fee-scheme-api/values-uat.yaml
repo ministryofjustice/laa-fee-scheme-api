@@ -19,4 +19,5 @@ resources:
     memory: 256Mi
 sentry:
   enabled: true
+  environment: UAT
   dsn: https://3dba04b677b4b24e1cd3380e474f7b26@o345774.ingest.us.sentry.io/4509803102666752
