@@ -23,7 +23,7 @@ class FeeCalculationUtilityTest {
       "true, 2, 22.15, 133.37, 160.04", // true VAT indicator with bolt ons
   }, nullValues = {"null"})
   @ParameterizedTest
-  void shouldBuildFixedResponse(Boolean vatIndicator, Integer noBoltOns,  BigDecimal boltOnFee, double expectedSubTotal, double expectedTotal) {
+  void calculate_givenFeeEntity_returnsFeeCalculationResponse(Boolean vatIndicator, Integer noBoltOns,  BigDecimal boltOnFee, double expectedSubTotal, double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("FEE1")
         .startDate(LocalDate.of(2025, 1, 1))
@@ -51,7 +51,7 @@ class FeeCalculationUtilityTest {
   }
 
   @Test
-  void shouldBuildFixedResponseForGivenFixedFee() {
+  void calculate_givenFixedFee_returnsFeeCalculationResponse() {
     BigDecimal fixedFee = new BigDecimal("59.62");
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("FEE1")
