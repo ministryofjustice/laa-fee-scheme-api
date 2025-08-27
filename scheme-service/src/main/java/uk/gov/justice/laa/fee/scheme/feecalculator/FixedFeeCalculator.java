@@ -6,7 +6,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 /**
- * Calculate the fixed fee for a given fee entity and fee calculation request..
+ * Calculate the fixed fee for a given fee entity and fee calculation request.
  */
 public final class FixedFeeCalculator {
   private FixedFeeCalculator() {

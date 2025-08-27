@@ -2,17 +2,20 @@ package uk.gov.justice.laa.fee.scheme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.CLAIMS_PUBLIC_AUTHORITIES;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.CLINICAL_NEGLIGENCE;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.DEBT;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.DISCRIMINATION;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.HOUSING;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.HOUSING_HLPAS;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.IMMIGRATION_ASYLUM_FIXED_FEE;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MEDIATION;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MISCELLANEOUS;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.POLICE_STATION;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.PUBLIC_LAW;
 import static uk.gov.justice.laa.fee.scheme.testutility.TestDataUtility.buildFeeEntity;
 import static uk.gov.justice.laa.fee.scheme.testutility.TestDataUtility.buildFeeSchemesEntity;
@@ -22,6 +25,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,12 +36,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
 import uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
 import uk.gov.justice.laa.fee.scheme.repository.FeeSchemesRepository;
+import uk.gov.justice.laa.fee.scheme.repository.PoliceStationFeesRepository;
 
 @ExtendWith(MockitoExtension.class)
 class FeeServiceTest {
@@ -48,6 +54,9 @@ class FeeServiceTest {
   FeeRepository feeRepository;
   @Mock
   FeeSchemesRepository feeSchemesRepository;
+
+  @Mock
+  PoliceStationFeesRepository policeStationFeesRepository;
 
   @Test
   void shouldThrowException_feeSchemeNotFoundForDate() {
@@ -85,6 +94,34 @@ class FeeServiceTest {
     assertThatThrownBy(() -> feeService.getFeeCalculation(requestDto))
         .hasMessageContaining("Fee not found for fee code FEE123, with start date 2025-07-29");
 
+  }
+
+  @Test
+  void getFeeCalculation_shouldReturnExpectedCalculation_discrimination() {
+    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("DISC_FS2013", "Discrimination Fee Scheme 2013", LocalDate.parse("2013-04-01"));
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("DISC")
+        .escapeThresholdLimit(new BigDecimal("700.00"))
+        .calculationType(DISCRIMINATION)
+        .build();
+    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("DISC")
+        .startDate(LocalDate.of(2025, 7, 29))
+        .netProfitCosts(250.25)
+        .netCostOfCounsel(100.72)
+        .travelAndWaitingCosts(30.34)
+        .netDisbursementAmount(70.75)
+        .disbursementVatAmount(20.15)
+        .vatIndicator(true)
+        .build();
+
+    FeeCalculationResponse response = feeService.getFeeCalculation(request);
+
+    assertFeeCalculation(response, "DISC", 452.06, 548.47);
   }
 
   @Test
@@ -197,6 +234,147 @@ class FeeServiceTest {
     FeeCalculationResponse response = feeService.getFeeCalculation(request);
 
     assertFeeCalculation(response, "IMCC",  1007.70);
+  }
+
+  @Test
+  void getFeeCalculation_shouldReturnExpectedCalculation_policeStationId() {
+    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("POL_FS2022",
+        "Police Station Work 2022", LocalDate.parse("2022-04-01"));
+
+    PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder().feeSchemeCode("POL_FS2022").fixedFee(new BigDecimal("37.89")).psSchemeId("1004").build();
+
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
+
+    when(policeStationFeesRepository.findPoliceStationFeeByPoliceStationIdAndFeeSchemeCode(any(), any())).thenReturn(List.of(policeStationFeesEntity));
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("INVC")
+        .calculationType(POLICE_STATION)
+        .build();
+    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("INVC")
+        .uniqueFileNumber("120523/7382")
+        .policeStationId("NE008")
+        .policeStationSchemeId("1002")
+        .build();
+
+    FeeCalculationResponse response = feeService.getFeeCalculation(request);
+
+    assertFeeCalculation(response, "INVC", 37.89, 37.89);
+  }
+
+  @Test
+  void getFeeCalculation_shouldReturnExpectedCalculation_whenPoliceStationIdIsNullAndPoliceStationSchemeIdProvided() {
+
+    PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder().feeSchemeCode("POL_FS2022").fixedFee(new BigDecimal("37.89")).psSchemeId("1004").build();
+
+    when(policeStationFeesRepository.findPoliceStationFeeByPsSchemeIdAndFeeSchemeCode(any(), any())).thenReturn(List.of(policeStationFeesEntity));
+    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("POL_FS2022",
+        "Police Station Work 2022", LocalDate.parse("2022-04-01"));
+
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("INVC")
+        .profitCostLimit(new BigDecimal("100.00"))
+        .calculationType(POLICE_STATION)
+        .build();
+    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("INVC")
+        .uniqueFileNumber("120523/7382")
+        .policeStationId(null)
+        .policeStationSchemeId("1004")
+        .build();
+
+    FeeCalculationResponse response = feeService.getFeeCalculation(request);
+
+    assertFeeCalculation(response, "INVC", 37.89, 37.89);
+  }
+
+  @Test
+  void getFeeCalculation_shouldThrowException_whenPoliceStationOtherFeeCodeNotImplemented() {
+
+    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("POL_FS2022",
+        "Police Station Work 2022", LocalDate.parse("2022-04-01"));
+
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("INVM")
+        .profitCostLimit(new BigDecimal("100.00"))
+        .calculationType(POLICE_STATION)
+        .build();
+    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("INVM")
+        .uniqueFileNumber("120523/7382")
+        .policeStationId(null)
+        .policeStationSchemeId("1004")
+        .build();
+
+    assertThatThrownBy(() -> feeService.getFeeCalculation(request))
+        .hasMessage("Calculation Logic for Police Station Other Fee not implemented, Fee Code INVM, Police Station Scheme Id 1004");
+  }
+
+  @Test
+  void getFeeCalculation_shouldThrowException_whenPoliceFeeRecordNotFoundForPoliceStationSchemeId() {
+
+    when(policeStationFeesRepository.findPoliceStationFeeByPsSchemeIdAndFeeSchemeCode(any(), any())).thenReturn(List.of());
+
+    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("POL_FS2022",
+        "Police Station Work 2022", LocalDate.parse("2022-04-01"));
+
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("INVC")
+        .profitCostLimit(new BigDecimal("100.00"))
+        .calculationType(POLICE_STATION)
+        .build();
+    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("INVC")
+        .uniqueFileNumber("120523/7382")
+        .policeStationId(null)
+        .policeStationSchemeId("1004")
+        .build();
+
+    assertThatThrownBy(() -> feeService.getFeeCalculation(request))
+        .hasMessage("Police Station Fee not found for Police Station Scheme Id 1004");
+  }
+
+  @Test
+  void getFeeCalculation_shouldThrowException_whenPoliceFeeRecordNotFoundForPoliceStationId() {
+
+    when(policeStationFeesRepository.findPoliceStationFeeByPoliceStationIdAndFeeSchemeCode(any(), any())).thenReturn(List.of());
+
+    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("POL_FS2022",
+        "Police Station Work 2022", LocalDate.parse("2022-04-01"));
+
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("INVC")
+        .profitCostLimit(new BigDecimal("100.00"))
+        .calculationType(POLICE_STATION)
+        .build();
+    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("INVC")
+        .uniqueFileNumber("120523/7382")
+        .policeStationId("MB2004")
+        .policeStationSchemeId("1004")
+        .build();
+
+    assertThatThrownBy(() -> feeService.getFeeCalculation(request))
+        .hasMessage("Police Station Fee not found for Police Station Id MB2004, with case start date 2023-05-12");
   }
 
   private void assertFeeCalculation(FeeCalculationResponse response, String feeCode , double total) {

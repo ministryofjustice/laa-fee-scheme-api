@@ -25,6 +25,31 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   private MockMvc mockMvc;
 
   @Test
+  void shouldGetFeeCalculation_discrimination() throws Exception {
+    mockMvc
+        .perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "DISC",
+                  "startDate": "2019-09-30",
+                  "netProfitCosts": 150.25,
+                  "netCostOfCounsel": 79.19,
+                  "travelAndWaitingCosts": 88.81,
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.feeCode").value("DISC"))
+        .andExpect(jsonPath("$.feeCalculation.subTotal").value(418.46))
+        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(502.23));
+  }
+
+  @Test
   void shouldGetFeeCalculation_mediation() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")
@@ -127,6 +152,27 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.feeCode").value("MHL03"))
         .andExpect(jsonPath("$.feeCalculation.totalAmount").value(1081.53));
+  }
+
+  @Test
+  void shouldGetFeeCalculation_policeStation() throws Exception {
+    mockMvc
+        .perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "INVC",
+                  "startDate": "2019-12-12",
+                  "uniqueFileNumber": "12122019/2423",
+                  "policeStationId": "NE001",
+                  "policeStationSchemeId": "1001"
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.feeCode").value("INVC"))
+        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(131.4));
   }
 
 }
