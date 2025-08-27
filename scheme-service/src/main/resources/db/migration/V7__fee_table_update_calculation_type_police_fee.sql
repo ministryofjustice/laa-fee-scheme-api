@@ -1,1 +1,0 @@
-UPDATE fee SET calculation_type='POLICE_STATION' WHERE calculation_type is null AND fee_scheme_code LIKE 'POL%';

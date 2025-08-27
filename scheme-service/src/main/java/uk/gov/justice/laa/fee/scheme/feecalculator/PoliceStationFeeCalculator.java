@@ -38,7 +38,7 @@ public final class PoliceStationFeeCalculator {
   }
 
   /**
-   * Gets fixed fee depending on number if mediation sessions.
+   * Gets fixed fee from police station fees.
    */
   private static FeeCalculationResponse calculateFeesUsingPoliceStation(PoliceStationFeesEntity policeStationFeesEntity,
                                                                             FeeCalculationRequest feeData) {
