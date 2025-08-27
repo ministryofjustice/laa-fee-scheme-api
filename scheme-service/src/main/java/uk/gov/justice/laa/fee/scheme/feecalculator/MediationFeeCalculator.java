@@ -1,6 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility.buildFixedFeeResponse;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility.calculate;
 
 import java.math.BigDecimal;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
@@ -41,7 +41,7 @@ public final class MediationFeeCalculator {
 
     BigDecimal baseFee = (numberOfMediationSessions == 1) ? feeEntity.getMediationSessionOne() : feeEntity.getMediationSessionTwo();
 
-    return buildFixedFeeResponse(baseFee, feeData);
+    return calculate(baseFee, feeData);
   }
 
   /**
@@ -49,6 +49,6 @@ public final class MediationFeeCalculator {
    */
   private static FeeCalculationResponse getCalculationWithoutMediationSessions(FeeEntity feeEntity,
                                                                                FeeCalculationRequest feeData) {
-    return buildFixedFeeResponse(feeEntity, feeData);
+    return calculate(feeEntity, feeData);
   }
 }
