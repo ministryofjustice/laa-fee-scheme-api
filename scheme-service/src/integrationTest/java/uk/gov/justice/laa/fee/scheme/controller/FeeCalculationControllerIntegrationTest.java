@@ -45,7 +45,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.feeCode").value("DISC"))
-        .andExpect(jsonPath("$.feeCalculation.subTotal").value(418.46))
         .andExpect(jsonPath("$.feeCalculation.totalAmount").value(502.23));
   }
 

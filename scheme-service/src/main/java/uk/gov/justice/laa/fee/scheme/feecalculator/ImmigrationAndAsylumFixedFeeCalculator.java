@@ -41,15 +41,12 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
 
     // get the requested detentionAndTravelCosts amount from feeCalculationRequest
     BigDecimal detentionAndTravelCosts = toBigDecimal(feeCalculationRequest.getDetentionAndWaitingCosts());
-    BigDecimal detentionAndTravelVatCosts = VatUtility.getVatValue(detentionAndTravelCosts, startDate, vatApplicable);
 
     // get the requested jrFormFilling amount from feeCalculationRequest
     BigDecimal jrFormFillingCosts = toBigDecimal(feeCalculationRequest.getJrFormFilling());
-    BigDecimal jrFormFillingVatCosts = VatUtility.getVatValue(jrFormFillingCosts, startDate, vatApplicable);
 
     // get the total bolt on value amount from utility class
     BigDecimal boltOnValue = BoltOnUtility.calculateBoltOnAmount(feeCalculationRequest, feeEntity);
-    BigDecimal boltOnVatValue = VatUtility.getVatValue(boltOnValue, startDate, vatApplicable);
 
     BigDecimal netDisbursementAmount;
     BigDecimal netDisbursementLimit = feeEntity.getDisbursementLimit();
@@ -67,22 +64,16 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
     }
 
     BigDecimal fixedFeeAmount = feeEntity.getFixedFee();
-    BigDecimal fixedFeeVatAmount = VatUtility.getVatValue(fixedFeeAmount, startDate, vatApplicable);
-
-
-    BigDecimal calculatedVatValue = fixedFeeVatAmount
-        .add(jrFormFillingVatCosts)
-        .add(detentionAndTravelVatCosts)
-        .add(boltOnVatValue);
+    BigDecimal calculatedVatValue = VatUtility.getVatValue(fixedFeeAmount
+        .add(detentionAndTravelCosts)
+        .add(jrFormFillingCosts)
+        .add(boltOnValue), startDate, vatApplicable);
 
     BigDecimal finalTotal = fixedFeeAmount
-        .add(fixedFeeVatAmount)
         .add(jrFormFillingCosts)
-        .add(jrFormFillingVatCosts)
         .add(detentionAndTravelCosts)
-        .add(detentionAndTravelVatCosts)
         .add(boltOnValue)
-        .add(boltOnVatValue)
+        .add(calculatedVatValue)
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
 

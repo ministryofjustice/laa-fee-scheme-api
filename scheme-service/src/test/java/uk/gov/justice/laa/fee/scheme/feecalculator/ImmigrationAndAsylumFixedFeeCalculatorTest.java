@@ -19,7 +19,6 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 class ImmigrationAndAsylumFixedFeeCalculatorTest {
 
-  private static final String WARNING_CODE = "123"; // clarify what code should be
   private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
 
   @ParameterizedTest
@@ -55,7 +54,7 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2023").build())
         .fixedFee(new BigDecimal("75.50"))
         .calculationType(IMMIGRATION_ASYLUM_FIXED_FEE)
         .disbursementLimit(netDisbursementLimit)
@@ -120,7 +119,7 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2023").build())
         .fixedFee(new BigDecimal("75.50"))
         .calculationType(IMMIGRATION_ASYLUM_FIXED_FEE)
         .disbursementLimit(null)

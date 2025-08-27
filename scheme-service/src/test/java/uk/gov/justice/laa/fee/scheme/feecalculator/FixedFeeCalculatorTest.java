@@ -30,7 +30,7 @@ class FixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("COM")
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("COM_FS2013").build())
         .fixedFee(new BigDecimal("50.00"))
         .calculationType(COMMUNITY_CARE)
         .build();

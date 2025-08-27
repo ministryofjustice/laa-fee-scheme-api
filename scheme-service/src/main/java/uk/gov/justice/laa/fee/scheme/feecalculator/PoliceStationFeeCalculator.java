@@ -1,11 +1,16 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility.calculate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatRateForDate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatValue;
 
 import java.math.BigDecimal;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
 import uk.gov.justice.laa.fee.scheme.exception.PoliceStationFeeNotFoundException;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
@@ -44,7 +49,7 @@ public final class PoliceStationFeeCalculator {
                                                                             FeeCalculationRequest feeData) {
     BigDecimal baseFee = policeStationFeesEntity.getFixedFee();
 
-    return calculate(baseFee, feeData);
+    return calculateAndBuildResponsePoliceStation(baseFee, feeData, policeStationFeesEntity);
   }
 
   /**
@@ -55,6 +60,36 @@ public final class PoliceStationFeeCalculator {
 
     BigDecimal baseFee = feeEntity.getProfitCostLimit();
 
-    return calculate(baseFee, feeData);
+    return calculate(baseFee, feeData, feeEntity);
+  }
+
+  private static FeeCalculationResponse calculateAndBuildResponsePoliceStation(BigDecimal fixedFee,
+                                                                               FeeCalculationRequest feeCalculationRequest,
+                                                                               PoliceStationFeesEntity policeStationFeesEntity) {
+    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+
+    boolean vatApplicable = Boolean.TRUE.equals(feeCalculationRequest.getVatIndicator());
+    BigDecimal calculatedVatValue = getVatValue(fixedFee, feeCalculationRequest.getStartDate(), vatApplicable);
+
+    BigDecimal finalTotal = fixedFee
+        .add(calculatedVatValue)
+        .add(netDisbursementAmount)
+        .add(disbursementVatAmount);
+
+    return FeeCalculationResponse.builder()
+        .feeCode(feeCalculationRequest.getFeeCode())
+        .schemeId(policeStationFeesEntity.getFeeSchemeCode())
+        .claimId("temp hardcoded till clarification")
+        .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
+        .feeCalculation(FeeCalculation.builder()
+            .totalAmount(toDouble(finalTotal))
+            .vatIndicator(vatApplicable)
+            .vatRateApplied(toDouble(getVatRateForDate(feeCalculationRequest.getStartDate())))
+            .calculatedVatAmount(toDouble(calculatedVatValue))
+            .disbursementAmount(toDouble(netDisbursementAmount))
+            .disbursementVatAmount(toDouble(disbursementVatAmount))
+            .fixedFeeAmount(toDouble(fixedFee)).build())
+        .build();
   }
 }

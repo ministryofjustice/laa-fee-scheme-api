@@ -2,7 +2,6 @@ package uk.gov.justice.laa.fee.scheme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.CLAIMS_PUBLIC_AUTHORITIES;
@@ -25,7 +24,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -103,6 +101,7 @@ class FeeServiceTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("DISC")
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("DISC_FS2013").build())
         .escapeThresholdLimit(new BigDecimal("700.00"))
         .calculationType(DISCRIMINATION)
         .build();
@@ -121,7 +120,7 @@ class FeeServiceTest {
 
     FeeCalculationResponse response = feeService.getFeeCalculation(request);
 
-    assertFeeCalculation(response, "DISC", 452.06, 548.47);
+    assertFeeCalculation(response, "DISC", 548.47);
   }
 
   @Test
@@ -131,7 +130,7 @@ class FeeServiceTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("MED1")
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("MED_FS2013").build())
         .mediationSessionOne(new BigDecimal(50))
         .mediationSessionTwo(new BigDecimal(100))
         .calculationType(MEDIATION)
@@ -213,7 +212,7 @@ class FeeServiceTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("IMCC")
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2023").build())
         .fixedFee(new BigDecimal("764.00"))
         .disbursementLimit(new BigDecimal("600"))
         .oralCmrhBoltOn(new BigDecimal("166"))
@@ -262,7 +261,7 @@ class FeeServiceTest {
 
     FeeCalculationResponse response = feeService.getFeeCalculation(request);
 
-    assertFeeCalculation(response, "INVC", 37.89, 37.89);
+    assertFeeCalculation(response, "INVC", 37.89);
   }
 
   @Test
@@ -292,7 +291,7 @@ class FeeServiceTest {
 
     FeeCalculationResponse response = feeService.getFeeCalculation(request);
 
-    assertFeeCalculation(response, "INVC", 37.89, 37.89);
+    assertFeeCalculation(response, "INVC", 37.89);
   }
 
   @Test
@@ -377,7 +376,7 @@ class FeeServiceTest {
         .hasMessage("Police Station Fee not found for Police Station Id MB2004, with case start date 2023-05-12");
   }
 
-  private void assertFeeCalculation(FeeCalculationResponse response, String feeCode , double total) {
+  private void assertFeeCalculation(FeeCalculationResponse response, String feeCode, double total) {
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo(feeCode);
 
