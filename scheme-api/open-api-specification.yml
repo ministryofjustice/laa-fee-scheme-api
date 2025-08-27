@@ -140,6 +140,9 @@ components:
         netWaitingCosts:
           type: number
           format: double
+        travelAndWaitingCosts:
+          type: number
+          format: double
         detentionAndWaitingCosts:
           type: number
           format: double

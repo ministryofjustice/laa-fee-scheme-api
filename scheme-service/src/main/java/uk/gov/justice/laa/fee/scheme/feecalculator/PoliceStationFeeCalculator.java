@@ -1,6 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility.buildFixedFeeResponse;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility.calculate;
 
 import java.math.BigDecimal;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
@@ -44,17 +44,17 @@ public final class PoliceStationFeeCalculator {
                                                                             FeeCalculationRequest feeData) {
     BigDecimal baseFee = policeStationFeesEntity.getFixedFee();
 
-    return buildFixedFeeResponse(baseFee, feeData);
+    return calculate(baseFee, feeData);
   }
 
   /**
    * Gets fixed fee from static fixed_fee.
    */
   private static FeeCalculationResponse calculateFeesUsingFeeCode(FeeEntity feeEntity,
-                                                                               FeeCalculationRequest feeCalculationRequest) {
+                                                                               FeeCalculationRequest feeData) {
 
     BigDecimal baseFee = feeEntity.getProfitCostLimit();
 
-    return buildFixedFeeResponse(baseFee, feeCalculationRequest);
+    return calculate(baseFee, feeData);
   }
 }
