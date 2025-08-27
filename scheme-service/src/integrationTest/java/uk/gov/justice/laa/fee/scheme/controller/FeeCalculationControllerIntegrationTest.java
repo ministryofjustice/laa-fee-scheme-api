@@ -158,4 +158,25 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(jsonPath("$.feeCalculation.totalAmount").value(1081.53));
   }
 
+  @Test
+  void shouldGetFeeCalculation_policeStation() throws Exception {
+    mockMvc
+        .perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "INVC",
+                  "startDate": "2019-12-12",
+                  "uniqueFileNumber": "12122019/2423",
+                  "policeStationId": "NE001",
+                  "policeStationSchemeId": "1001"
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.feeCode").value("INVC"))
+        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(131.4));
+  }
+
 }

@@ -16,5 +16,7 @@ public enum CalculationType {
   MEDIATION,
   MENTAL_HEALTH,
   MISCELLANEOUS,
+  POLICE_STATION,
   PUBLIC_LAW
+
 }

@@ -83,4 +83,26 @@ class FeeRepositoryIntegrationTest extends PostgresContainerTestBase {
             new BigDecimal("360.00"), null, null, null, null, null, "I&A_FS2023")
     );
   }
+
+  @ParameterizedTest
+  @MethodSource("feeTestDataPoliceStationFee")
+  void testFeeByCodePoliceStationFee(String feeCode, String expectedDescription, String feeSchemeCode, String calculationType) {
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
+
+    Optional<FeeEntity> result = repository.findByFeeCodeAndFeeSchemeCode(feeCode, feeSchemesEntity);
+    assertThat(result).isPresent();
+
+    FeeEntity entity = result.get();
+
+    assertThat(entity.getFeeCode()).isEqualTo(feeCode);
+    assertThat(entity.getDescription()).isEqualTo(expectedDescription);
+    assertThat(entity.getFeeSchemeCode().getSchemeCode()).isEqualTo(feeSchemeCode);
+    assertThat(entity.getCalculationType().name()).isEqualTo(calculationType);
+  }
+
+  static Stream<Arguments> feeTestDataPoliceStationFee() {
+    return Stream.of(
+        Arguments.of("INVC", "Police station: attendance", "POL_FS2016","POLICE_STATION")
+    );
+  }
 }
