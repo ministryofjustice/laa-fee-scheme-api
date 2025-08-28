@@ -4,6 +4,8 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -32,6 +34,7 @@ public final class DiscriminationFeeCalculator {
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal netCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());
     BigDecimal travelAndWaitingCosts = toBigDecimal(feeCalculationRequest.getTravelAndWaitingCosts());
+    List<String> warningList = new ArrayList<>();
 
     BigDecimal feeTotal = netProfitCosts.add(netCostOfCounsel).add(travelAndWaitingCosts);
 
@@ -41,9 +44,7 @@ public final class DiscriminationFeeCalculator {
     Warning warning = null;
     boolean escaped = false;
     if (feeTotal.compareTo(escapeThresholdLimit) > 0) {
-      warning = Warning.builder()
-          .warningDescription(WARNING_CODE_DESCRIPTION)
-          .build();
+      warningList.add(WARNING_CODE_DESCRIPTION);
       feeTotal = escapeThresholdLimit;
       escaped = true;
     }
@@ -66,7 +67,7 @@ public final class DiscriminationFeeCalculator {
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
         .claimId("temp hardcoded till clarification")
-        .warning(warning)
+        .warning(warningList)
         .escapeCaseFlag(escaped)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))

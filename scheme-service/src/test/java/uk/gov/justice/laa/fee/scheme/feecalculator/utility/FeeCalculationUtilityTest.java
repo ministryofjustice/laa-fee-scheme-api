@@ -1,9 +1,11 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MENTAL_HEALTH;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -76,4 +78,53 @@ class FeeCalculationUtilityTest {
     assertThat(calculation.getTotalAmount()).isEqualTo(106.88);
   }
 
+  @Test
+  void calculate_givenFixedFee_returnsFeeCalculationResponse_mentalHealth() {
+    BigDecimal fixedFee = new BigDecimal("263.00");
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("MHL02")
+        .startDate(LocalDate.of(2025, 1, 1))
+        .vatIndicator(true)
+        .netDisbursementAmount(29.45)
+        .disbursementVatAmount(5.89)
+        .boltOns(BoltOnType.builder()
+            .boltOnAdjournedHearing(1)
+            .build())
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("MHL02")
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("MHL_FS2013").build())
+        .fixedFee(fixedFee)
+        .adjornHearingBoltOn(new BigDecimal(100))
+        .calculationType(MENTAL_HEALTH)
+        .build();
+
+    FeeCalculationResponse response = FeeCalculationUtility.calculate(feeEntity, feeCalculationRequest);
+
+    FeeCalculation expectedCalculation = FeeCalculation.builder()
+        .totalAmount(470.94)
+        .vatIndicator(true)
+        .vatRateApplied(20.0)
+        .disbursementAmount(29.45)
+        .disbursementVatAmount(5.89)
+        .fixedFeeAmount(263.00)
+        .calculatedVatAmount(72.60)
+        .boltOnFeeAmount(100.00)
+        .build();
+
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
+        .feeCode("MHL02")
+        .schemeId("MHL_FS2013")
+        .claimId("temp hardcoded till clarification")
+        .warning(new ArrayList<>())
+        .escapeCaseFlag(false)
+        .feeCalculation(expectedCalculation)
+        .build();
+
+    assertThat(response)
+        .usingRecursiveComparison()
+        .isEqualTo(expectedResponse);
+
+  }
 }

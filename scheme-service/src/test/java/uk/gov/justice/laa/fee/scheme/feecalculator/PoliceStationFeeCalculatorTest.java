@@ -5,6 +5,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.POLICE
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -118,7 +119,7 @@ class PoliceStationFeeCalculatorTest {
         .feeCode(feeCode)
         .schemeId(feeSchemeCode)
         .claimId("temp hardcoded till clarification")
-        .warning(null)
+        .warning(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();

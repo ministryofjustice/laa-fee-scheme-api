@@ -235,10 +235,9 @@ components:
           format: double
 
     Warning:
-      type: object
-      properties:
-        warningDescription:
-          type: string
+      type: array
+      items:
+        type: string
 
     BoltOnType:
       type: object

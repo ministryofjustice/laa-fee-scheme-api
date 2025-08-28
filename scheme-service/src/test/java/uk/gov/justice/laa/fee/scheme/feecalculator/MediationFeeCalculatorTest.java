@@ -6,6 +6,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MEDIAT
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -97,7 +98,7 @@ class MediationFeeCalculatorTest {
         .feeCode(feeCode)
         .schemeId("MED_FS2013")
         .claimId("temp hardcoded till clarification")
-        .warning(null)
+        .warning(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();

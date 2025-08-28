@@ -12,6 +12,6 @@ import org.springframework.context.annotation.Configuration;
 public class JacksonConfig {
   @Bean
   public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
-    return builder -> builder.serializationInclusion(JsonInclude.Include.NON_NULL);
+    return builder -> builder.serializationInclusion(JsonInclude.Include.NON_EMPTY);
   }
 }

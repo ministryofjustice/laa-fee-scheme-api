@@ -6,6 +6,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.IMMIGR
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -122,7 +123,7 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
         .feeCode(feeCode)
         .schemeId("I&A_FS2023")
         .claimId("temp hard coded")
-        .warning(null)
+        .warning(new ArrayList<>())
         .escapeCaseFlag(false) // hardcoded till escape logic implemented
         .feeCalculation(expectedCalculation)
         .build();
@@ -165,6 +166,6 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
     assertNotNull(response.getFeeCalculation());
     assertThat(response.getFeeCode()).isEqualTo(feeCode);
     assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
-    assertThat(response.getWarning().getWarningDescription()).isEqualTo(WARNING_CODE_DESCRIPTION);
+    assertThat(response.getWarning().getFirst()).isEqualTo(WARNING_CODE_DESCRIPTION);
   }
 }

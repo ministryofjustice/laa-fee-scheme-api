@@ -6,6 +6,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.get
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.BoltOnUtility;
@@ -13,7 +14,6 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.model.Warning;
 
 /**
  * Calculate the Immigration and asylum fee for a given fee entity and fee calculation request.
@@ -32,6 +32,7 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
     LocalDate startDate = feeCalculationRequest.getStartDate();
     boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+    List<String> warningList = new ArrayList<>();
 
     // get the requested disbursement amount from feeCalculationRequest
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
@@ -50,13 +51,10 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
 
     BigDecimal netDisbursementAmount;
     BigDecimal netDisbursementLimit = feeEntity.getDisbursementLimit();
-    Warning warning = null;
     // If fee code is "IDAS1", "IDAS2", and a requestedNetDisbursementAmount exists, return a warning, as these codes
     // are exempt from claiming disbursement
     if (isDisbursementNotAllowed(feeEntity, requestedNetDisbursementAmount)) {
-      warning = Warning.builder()
-          .warningDescription(WARNING_CODE_DESCRIPTION)
-          .build();
+      warningList.add(WARNING_CODE_DESCRIPTION);
       disbursementVatAmount = BigDecimal.ZERO;
       netDisbursementAmount = BigDecimal.ZERO;
     } else {
@@ -85,7 +83,7 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
         .claimId("temp hard coded")
-        .warning(warning)
+        .warning(warningList)
         .escapeCaseFlag(false) // temp hard coded
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
