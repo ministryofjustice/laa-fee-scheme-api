@@ -11,21 +11,21 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(ErrorLogSentryController.class)
 class ErrorLogSentryControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @Test
-    void captureErrorLogSentry_ShouldThrowRuntimeException() {
-        ErrorLogSentryController controller = new ErrorLogSentryController();
+  @Test
+  void captureErrorLogSentry_ShouldThrowRuntimeException() {
+    ErrorLogSentryController controller = new ErrorLogSentryController();
 
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                controller::captureErrorLogSentry);
+    RuntimeException ex = assertThrows(RuntimeException.class,
+        controller::captureErrorLogSentry);
 
-        // Optionally verify exception message
-        org.junit.jupiter.api.Assertions.assertEquals(
-                "Testing Sentry integration in Fee Scheme Application",
-                ex.getMessage()
-        );
-    }
+    // Optionally verify exception message
+    org.junit.jupiter.api.Assertions.assertEquals(
+        "Testing Sentry integration in Fee Scheme Application",
+        ex.getMessage()
+    );
+  }
 
 }

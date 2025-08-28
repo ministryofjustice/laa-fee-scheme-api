@@ -31,7 +31,7 @@ public final class ImmigrationAsylumFixedFeeCalculator {
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
     LocalDate startDate = feeCalculationRequest.getStartDate();
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+    boolean vatApplicable = Boolean.TRUE.equals(feeCalculationRequest.getVatIndicator());
 
     // get the requested disbursement amount from feeCalculationRequest
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
@@ -64,13 +64,15 @@ public final class ImmigrationAsylumFixedFeeCalculator {
     }
 
     BigDecimal fixedFeeAmount = feeEntity.getFixedFee();
-    BigDecimal feeTotal = fixedFeeAmount
+    BigDecimal calculatedVatValue = VatUtility.getVatValue(fixedFeeAmount
         .add(detentionAndTravelCosts)
         .add(jrFormFillingCosts)
-        .add(boltOnValue);
-    BigDecimal calculatedVatValue = VatUtility.getVatValue(feeTotal, startDate, vatApplicable);
+        .add(boltOnValue), startDate, vatApplicable);
 
-    BigDecimal finalTotal = feeTotal
+    BigDecimal finalTotal = fixedFeeAmount
+        .add(jrFormFillingCosts)
+        .add(detentionAndTravelCosts)
+        .add(boltOnValue)
         .add(calculatedVatValue)
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
@@ -121,3 +123,4 @@ public final class ImmigrationAsylumFixedFeeCalculator {
   }
 
 }
+

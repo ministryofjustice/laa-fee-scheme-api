@@ -19,7 +19,6 @@ public final class DiscriminationFeeCalculator {
   private DiscriminationFeeCalculator() {
   }
 
-  private static final String WARNING_CODE = "123"; // clarify what code should be
   private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
 
   /**
@@ -30,7 +29,6 @@ public final class DiscriminationFeeCalculator {
    * @return FeeCalculationResponse with calculated fee
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
-
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal netCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());
     BigDecimal travelAndWaitingCosts = toBigDecimal(feeCalculationRequest.getTravelAndWaitingCosts());
@@ -41,22 +39,21 @@ public final class DiscriminationFeeCalculator {
 
     // @TODO: escape case logic TBC
     Warning warning = null;
+    boolean escaped = false;
     if (feeTotal.compareTo(escapeThresholdLimit) > 0) {
       warning = Warning.builder()
           .warningDescription(WARNING_CODE_DESCRIPTION)
           .build();
       feeTotal = escapeThresholdLimit;
+      escaped = true;
     }
+
+    // Apply VAT where applicable
+    BigDecimal calculatedVatValue = VatUtility.getVatValue(feeTotal, feeCalculationRequest.getStartDate(),
+        Boolean.TRUE.equals(feeCalculationRequest.getVatIndicator()));
 
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
-
-    // Add net disbursement amount to get subtotal
-    BigDecimal subTotalWithoutTax = feeTotal.add(netDisbursementAmount);
-
-    // Add VAT if applicable to subtotal and add disbursement amounts to get final total
-    BigDecimal calculatedVatValue = VatUtility.getVatValue(feeTotal, feeCalculationRequest.getStartDate(),
-        feeCalculationRequest.getVatIndicator());
 
     BigDecimal finalTotal = feeTotal
         .add(calculatedVatValue)
@@ -64,10 +61,21 @@ public final class DiscriminationFeeCalculator {
         .add(disbursementVatAmount);
 
     return new FeeCalculationResponse().toBuilder()
-        .warning(warning)
         .feeCode(feeCalculationRequest.getFeeCode())
+        .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
+        .warning(warning)
+        .escapeCaseFlag(escaped)
         .feeCalculation(FeeCalculation.builder()
-            .totalAmount((toDouble(finalTotal)))
+            .totalAmount(toDouble(finalTotal))
+            .vatIndicator(feeCalculationRequest.getVatIndicator())
+            .vatRateApplied(toDouble(VatUtility.getVatRateForDate(feeCalculationRequest.getStartDate())))
+            .calculatedVatAmount(toDouble(calculatedVatValue))
+            .disbursementAmount(toDouble(netDisbursementAmount))
+            .disbursementVatAmount(toDouble(disbursementVatAmount))
+            .hourlyTotalAmount(toDouble(feeTotal))
+            .netCostOfCounselAmount(toDouble(netCostOfCounsel))
+            .netProfitCostsAmount(toDouble(netProfitCosts))
+            .travelAndWaitingCostAmount(toDouble(travelAndWaitingCosts))
             .build())
         .build();
   }

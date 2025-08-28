@@ -43,7 +43,8 @@ class GlobalExceptionHandlerTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getStatus()).isEqualTo(404);
-    assertThat(response.getBody().getMessage()).isEqualTo("Fee not found for fee code FEE123, with start date %s", date);
+    assertThat(response.getBody().getMessage())
+        .isEqualTo("Fee not found for fee code FEE123, with start date %s", date);
   }
 
   @Test
@@ -55,7 +56,8 @@ class GlobalExceptionHandlerTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getStatus()).isEqualTo(400);
-    assertThat(response.getBody().getMessage()).isEqualTo("Invalid mediation session for Fee code FEE123: numberOfMediationSessions required");
+    assertThat(response.getBody().getMessage())
+        .isEqualTo("Invalid mediation session for Fee code FEE123: numberOfMediationSessions required");
   }
 
   @Test
@@ -68,7 +70,8 @@ class GlobalExceptionHandlerTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getStatus()).isEqualTo(404);
-    assertThat(response.getBody().getMessage()).isEqualTo("Police Station Fee not found for Police Station Id NE021, with case start date %s", date);
+    assertThat(response.getBody().getMessage())
+        .isEqualTo("Police Station Fee not found for Police Station Id NE021, with case start date %s", date);
   }
 
 
@@ -82,18 +85,20 @@ class GlobalExceptionHandlerTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getStatus()).isEqualTo(404);
-    assertThat(response.getBody().getMessage()).isEqualTo("Police Station Fee not found for Police Station Scheme Id 1004");
+    assertThat(response.getBody().getMessage())
+        .isEqualTo("Police Station Fee not found for Police Station Scheme Id 1004");
   }
 
   @Test
   void handlePoliceStationFeeCalculationNotImplementedForPoliceStationOtherFeeCode() {
-    PoliceStationFeeNotFoundException exception = new PoliceStationFeeNotFoundException("INVM","1004");
+    PoliceStationFeeNotFoundException exception = new PoliceStationFeeNotFoundException("INVM", "1004");
 
     ResponseEntity<ErrorResponse> response = globalExceptionHandler.handlePoliceStationFeeNotfound(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getStatus()).isEqualTo(404);
-    assertThat(response.getBody().getMessage()).isEqualTo("Calculation Logic for Police Station Other Fee not implemented, Fee Code INVM, Police Station Scheme Id 1004");
+    assertThat(response.getBody().getMessage())
+        .isEqualTo("Calculation Logic for Police Station Other Fee not implemented, Fee Code INVM, Police Station Scheme Id 1004");
   }
 }

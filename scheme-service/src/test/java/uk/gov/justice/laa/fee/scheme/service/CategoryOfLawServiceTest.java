@@ -18,11 +18,10 @@ import uk.gov.justice.laa.fee.scheme.repository.CategoryOfLawLookUpRepository;
 @ExtendWith(MockitoExtension.class)
 class CategoryOfLawServiceTest {
 
-  @InjectMocks
-  private CategoryOfLawService categoryOfLawService;
-
   @Mock
   CategoryOfLawLookUpRepository categoryOfLawLookUpRepository;
+  @InjectMocks
+  private CategoryOfLawService categoryOfLawService;
 
   @Test
   void getCategoryCode_shouldReturnExpectedCategoryOfLaw() {

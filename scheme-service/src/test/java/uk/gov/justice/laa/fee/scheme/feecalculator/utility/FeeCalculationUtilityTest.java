@@ -62,7 +62,11 @@ class FeeCalculationUtilityTest {
         .disbursementVatAmount(5.89)
         .build();
 
-    FeeCalculationResponse response = FeeCalculationUtility.calculate(fixedFee, feeCalculationRequest, "FEE_SCHEME_CODE");
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
+        .build();
+
+    FeeCalculationResponse response = FeeCalculationUtility.calculate(fixedFee, feeCalculationRequest, feeEntity);
 
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("FEE1");

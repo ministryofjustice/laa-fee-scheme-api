@@ -9,7 +9,7 @@ class NumberUtilityTest {
 
   @Test
   void toDecimal_givenDouble_returnsBigDecimal() {
-    BigDecimal result = NumberUtility.toBigDecimal(99.99 );
+    BigDecimal result = NumberUtility.toBigDecimal(99.99);
 
     assertThat(result).isEqualTo(new BigDecimal("99.99"));
   }
@@ -23,28 +23,28 @@ class NumberUtilityTest {
 
   @Test
   void toDouble_givenBigDecimal_returnsDouble() {
-    Double result = NumberUtility.toDouble( new BigDecimal("129.13") );
+    Double result = NumberUtility.toDouble(new BigDecimal("129.13"));
 
     assertThat(result).isEqualTo(129.13);
   }
 
   @Test
   void toDouble_givenNull_returnsZero() {
-    Double result = NumberUtility.toDouble( null);
+    Double result = NumberUtility.toDouble(null);
 
     assertThat(result).isEqualTo(0);
   }
 
   @Test
   void defaultToZeroIfNull_givenNull_returnsZero() {
-    BigDecimal result = NumberUtility.defaultToZeroIfNull( null);
+    BigDecimal result = NumberUtility.defaultToZeroIfNull(null);
 
     assertThat(result).isEqualTo(BigDecimal.ZERO);
   }
 
   @Test
   void defaultToZeroIfNull_givenValue_returnsValue() {
-    BigDecimal value =  new BigDecimal("129.13");
+    BigDecimal value = new BigDecimal("129.13");
 
     BigDecimal result = NumberUtility.defaultToZeroIfNull(value);
 
