@@ -100,6 +100,7 @@ components:
       type: object
       required:
         - feeCode
+        - vatIndicator
       properties:
         feeCode:
           type: string
@@ -187,7 +188,7 @@ components:
           format: double
         vatIndicator:
           type: boolean
-        VatRateApplied:
+        vatRateApplied:
           type: number
           format: double
         calculatedVatAmount:

@@ -49,8 +49,10 @@ public final class DiscriminationFeeCalculator {
     }
 
     // Apply VAT where applicable
-    BigDecimal calculatedVatValue = VatUtility.getVatValue(feeTotal, feeCalculationRequest.getStartDate(),
-        Boolean.TRUE.equals(feeCalculationRequest.getVatIndicator()));
+    BigDecimal calculatedVatValue = VatUtility.getVatValue(
+        feeTotal,
+        feeCalculationRequest.getStartDate(),
+        feeCalculationRequest.getVatIndicator());
 
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
@@ -63,6 +65,7 @@ public final class DiscriminationFeeCalculator {
     return new FeeCalculationResponse().toBuilder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
+        .claimId("temp hardcoded till clarification")
         .warning(warning)
         .escapeCaseFlag(escaped)
         .feeCalculation(FeeCalculation.builder()

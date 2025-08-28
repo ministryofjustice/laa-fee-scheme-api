@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.configuration;
+package uk.gov.justice.laa.fee.scheme.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;

@@ -45,7 +45,7 @@ public final class FeeCalculationUtility {
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    boolean vatApplicable = Boolean.TRUE.equals(feeCalculationRequest.getVatIndicator());
+    boolean vatApplicable = feeCalculationRequest.getVatIndicator();
     BigDecimal boltOnVatValue = BigDecimal.ZERO;
     if (boltOnValue != null) {
       boltOnVatValue = getVatValue(boltOnValue, feeCalculationRequest.getStartDate(), vatApplicable);
@@ -73,7 +73,10 @@ public final class FeeCalculationUtility {
             .calculatedVatAmount(toDouble(calculatedVatValue))
             .disbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
-            .fixedFeeAmount(toDouble(fixedFee)).build())
+            .fixedFeeAmount(toDouble(fixedFee))
+            // Mental health has bolt on, rest do not, so check if null or zero, so empty value/null not added to response
+            .boltOnFeeAmount(boltOnValue != null && !boltOnValue.equals(BigDecimal.ZERO) ? toDouble(boltOnValue) : null)
+            .build())
         .build();
   }
 

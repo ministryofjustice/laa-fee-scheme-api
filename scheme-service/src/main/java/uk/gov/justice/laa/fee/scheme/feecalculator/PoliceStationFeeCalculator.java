@@ -69,7 +69,7 @@ public final class PoliceStationFeeCalculator {
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    boolean vatApplicable = Boolean.TRUE.equals(feeCalculationRequest.getVatIndicator());
+    boolean vatApplicable = feeCalculationRequest.getVatIndicator();
     BigDecimal calculatedVatValue = getVatValue(fixedFee, feeCalculationRequest.getStartDate(), vatApplicable);
 
     BigDecimal finalTotal = fixedFee

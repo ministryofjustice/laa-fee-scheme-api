@@ -31,7 +31,7 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
     LocalDate startDate = feeCalculationRequest.getStartDate();
-    boolean vatApplicable = Boolean.TRUE.equals(feeCalculationRequest.getVatIndicator());
+    boolean vatApplicable = feeCalculationRequest.getVatIndicator();
 
     // get the requested disbursement amount from feeCalculationRequest
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
@@ -64,15 +64,19 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
     }
 
     BigDecimal fixedFeeAmount = feeEntity.getFixedFee();
-    BigDecimal calculatedVatValue = VatUtility.getVatValue(fixedFeeAmount
-        .add(detentionAndTravelCosts)
+    BigDecimal fixedFeeAndAdditionalCosts = fixedFeeAmount
         .add(jrFormFillingCosts)
-        .add(boltOnValue), startDate, vatApplicable);
+        .add(detentionAndTravelCosts)
+        .add(boltOnValue);
 
-    BigDecimal finalTotal = fixedFeeAmount
-        .add(jrFormFillingCosts)
-        .add(detentionAndTravelCosts)
-        .add(boltOnValue)
+    // Apply VAT where applicable
+    BigDecimal calculatedVatValue = VatUtility.getVatValue(
+        fixedFeeAndAdditionalCosts,
+        startDate,
+        vatApplicable
+    );
+
+    BigDecimal finalTotal = fixedFeeAndAdditionalCosts
         .add(calculatedVatValue)
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
@@ -85,7 +89,7 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
         .escapeCaseFlag(false) // temp hard coded
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
-            .vatIndicator(Boolean.TRUE.equals(feeCalculationRequest.getVatIndicator()))
+            .vatIndicator(vatApplicable)
             .vatRateApplied(toDouble(getVatRateForDate(startDate)))
             .calculatedVatAmount(toDouble(calculatedVatValue))
             .disbursementAmount(toDouble(netDisbursementAmount))

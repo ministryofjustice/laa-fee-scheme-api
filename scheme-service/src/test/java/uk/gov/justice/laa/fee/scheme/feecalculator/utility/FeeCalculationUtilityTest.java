@@ -17,14 +17,13 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 class FeeCalculationUtilityTest {
 
   @CsvSource(value = {
-      "null, null, null, 94.96",  // null VAT indicator
       "false, null, null, 94.96", // false VAT indicator
       "true, null, null, 106.88", // true VAT indicator
       "false, 2, 22.15, 139.26", // false VAT indicator with bolt ons
       "true, 2, 22.15, 160.04", // true VAT indicator with bolt ons
   }, nullValues = {"null"})
   @ParameterizedTest
-  void shouldBuildFixedResponse(Boolean vatIndicator, Integer noBoltOns, BigDecimal boltOnFee, double expectedTotal) {
+  void calculate_givenFeeEntity_returnsFeeCalculationResponse(Boolean vatIndicator, Integer noBoltOns, BigDecimal boltOnFee, double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("FEE1")
         .startDate(LocalDate.of(2025, 1, 1))
@@ -52,7 +51,7 @@ class FeeCalculationUtilityTest {
   }
 
   @Test
-  void shouldBuildFixedResponseForGivenFixedFee() {
+  void calculate_givenFixedFee_returnsFeeCalculationResponse() {
     BigDecimal fixedFee = new BigDecimal("59.62");
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("FEE1")
