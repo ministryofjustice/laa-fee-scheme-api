@@ -26,17 +26,18 @@ class PoliceStationFeesRepositoryIntegrationTest extends PostgresContainerTestBa
                               String policeStationName,
                               String policeStationCode,
                               BigDecimal fixedFee,
-                              BigDecimal escapeThreshold) {
+                              BigDecimal escapeThreshold,
+                              String feeSchemeCode) {
 
     Optional<PoliceStationFeesEntity> result = repository.findById(policeStationFeesId);
     assertThat(result).isPresent();
-
     PoliceStationFeesEntity entity = result.get();
     assertThat(entity.getCriminalJusticeArea()).isEqualTo(criminalJusticeArea);
-    assertThat(entity.getPoliceStationName()).isEqualTo(policeStationName);
-    assertThat(entity.getPoliceStationCode()).isEqualTo(policeStationCode);
+    assertThat(entity.getPsSchemeName()).isEqualTo(policeStationName);
+    assertThat(entity.getPsSchemeId()).isEqualTo(policeStationCode);
     assertThat(entity.getFixedFee()).isEqualTo(fixedFee);
     assertThat(entity.getEscapeThreshold()).isEqualTo(escapeThreshold);
+    assertThat(entity.getFeeSchemeCode()).isEqualTo(feeSchemeCode);
   }
 
   static Stream<Arguments> feeTestPoliceStation() {
@@ -47,7 +48,8 @@ class PoliceStationFeesRepositoryIntegrationTest extends PostgresContainerTestBa
             "Hartlepool",
             "1001",
             new BigDecimal("131.40"),
-            new BigDecimal("405.40")
+            new BigDecimal("405.40"),
+            "POL_FS2016"
         )
     );
   }

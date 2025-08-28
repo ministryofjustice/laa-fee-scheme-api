@@ -57,4 +57,43 @@ class GlobalExceptionHandlerTest {
     assertThat(response.getBody().getStatus()).isEqualTo(400);
     assertThat(response.getBody().getMessage()).isEqualTo("Invalid mediation session for Fee code FEE123: numberOfMediationSessions required");
   }
+
+  @Test
+  void handlePoliceStationFeeEntityNotfoundForPoliceStationId() {
+    LocalDate date = LocalDate.of(2025, 2, 20);
+    PoliceStationFeeNotFoundException exception = new PoliceStationFeeNotFoundException("NE021", date);
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handlePoliceStationFeeNotfound(exception);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().getStatus()).isEqualTo(404);
+    assertThat(response.getBody().getMessage()).isEqualTo("Police Station Fee not found for Police Station Id NE021, with case start date %s", date);
+  }
+
+
+  @Test
+  void handlePoliceStationFeeEntityNotfoundForPoliceStationSchemeId() {
+    LocalDate date = LocalDate.of(2025, 2, 20);
+    PoliceStationFeeNotFoundException exception = new PoliceStationFeeNotFoundException("1004");
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handlePoliceStationFeeNotfound(exception);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().getStatus()).isEqualTo(404);
+    assertThat(response.getBody().getMessage()).isEqualTo("Police Station Fee not found for Police Station Scheme Id 1004");
+  }
+
+  @Test
+  void handlePoliceStationFeeCalculationNotImplementedForPoliceStationOtherFeeCode() {
+    PoliceStationFeeNotFoundException exception = new PoliceStationFeeNotFoundException("INVM","1004");
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handlePoliceStationFeeNotfound(exception);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().getStatus()).isEqualTo(404);
+    assertThat(response.getBody().getMessage()).isEqualTo("Calculation Logic for Police Station Other Fee not implemented, Fee Code INVM, Police Station Scheme Id 1004");
+  }
 }

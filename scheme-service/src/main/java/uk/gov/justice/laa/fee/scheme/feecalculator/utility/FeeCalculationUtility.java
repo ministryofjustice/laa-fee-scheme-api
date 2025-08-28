@@ -28,7 +28,8 @@ public final class FeeCalculationUtility {
   public static FeeCalculationResponse calculate(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
     BigDecimal fixedFee = defaultToZeroIfNull(feeEntity.getFixedFee());
     BigDecimal boltOnValue = BoltOnUtility.calculateBoltOnAmount(feeCalculationRequest, feeEntity);
-    return calculateAndBuildResponse(fixedFee, boltOnValue, feeCalculationRequest, feeEntity);
+    String schemeId = feeEntity.getFeeSchemeCode() != null ? feeEntity.getFeeSchemeCode().getSchemeCode() : null;
+    return calculateAndBuildResponse(fixedFee, boltOnValue, feeCalculationRequest, schemeId);
   }
 
   /**
@@ -36,12 +37,12 @@ public final class FeeCalculationUtility {
    * If Applicable add VAT to subtotal.
    * subtotalWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
    */
-  public static FeeCalculationResponse calculate(BigDecimal fixedFee, FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
-    return calculateAndBuildResponse(fixedFee, null, feeCalculationRequest, feeEntity);
+  public static FeeCalculationResponse calculate(BigDecimal fixedFee, FeeCalculationRequest feeCalculationRequest, String schemeId) {
+    return calculateAndBuildResponse(fixedFee, null, feeCalculationRequest, schemeId);
   }
 
   private static FeeCalculationResponse calculateAndBuildResponse(BigDecimal fixedFee, BigDecimal boltOnValue,
-                                                                  FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+                                                                  FeeCalculationRequest feeCalculationRequest, String schemeId) {
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
@@ -63,7 +64,7 @@ public final class FeeCalculationUtility {
 
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
+        .schemeId(schemeId)
         .claimId("temp hardcoded till clarification")
         .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
         .feeCalculation(FeeCalculation.builder()

@@ -37,6 +37,14 @@ public class GlobalExceptionHandler {
     return handleException(ex, HttpStatus.BAD_REQUEST);
   }
 
+  /**
+   * Global exception handler for FeeNotFoundException exception.
+   */
+  @ExceptionHandler(PoliceStationFeeNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handlePoliceStationFeeNotfound(PoliceStationFeeNotFoundException ex) {
+    return handleException(ex, HttpStatus.NOT_FOUND);
+  }
+
   private ResponseEntity<ErrorResponse> handleException(RuntimeException ex, HttpStatus status) {
     ErrorResponse errorResponse = new ErrorResponse()
         .timestamp(OffsetDateTime.now())

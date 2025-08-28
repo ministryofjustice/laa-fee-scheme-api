@@ -3,29 +3,25 @@ package uk.gov.justice.laa.fee.scheme.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * The entity class for police station fees.
+ * The entity class for police stations.
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "police_station_fees")
-public class PoliceStationFeesEntity {
+@Table(name = "police_stations")
+public class PoliceStationsEntity {
   @Id
-  private Long policeStationFeesId;
-  private String criminalJusticeArea;
-  private String psSchemeName;
+  private Long id;
+  private String policeStationId;
+  private String policeStationName;
   private String psSchemeId;
-  private BigDecimal fixedFee;
-  private BigDecimal escapeThreshold;
-  private String feeSchemeCode;
-
+  private String psSchemeName;
 }

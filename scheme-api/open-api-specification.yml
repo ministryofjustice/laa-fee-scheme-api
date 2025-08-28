@@ -107,6 +107,15 @@ components:
           type: string
           format: date
           description: "Civil: case start date. Crime: Representation order date."
+        policeStationId:
+          type: string
+          description: "Police Station ID."
+        policeStationSchemeId:
+          type: string
+          description: "Police Station Scheme ID."
+        uniqueFileNumber:
+          type: string
+          description: "Unique File Number (UFN) for Police Station Fees category. Format DDMMYY/NNNN"
         netProfitCosts:
           type: number
           format: double

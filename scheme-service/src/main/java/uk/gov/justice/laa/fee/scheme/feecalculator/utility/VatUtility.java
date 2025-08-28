@@ -26,12 +26,11 @@ public final class VatUtility {
   /**
    * get VAT value to for a amount.
    */
-  public static BigDecimal getVatValue(BigDecimal value, LocalDate startDate, boolean vatIndicator) {
-    if (!vatIndicator) {
-      return BigDecimal.ZERO;
+  public static BigDecimal getVatValue(BigDecimal value, LocalDate startDate, Boolean vatIndicator) {
+    if (Boolean.TRUE.equals(vatIndicator)) {
+      return calculateVatAmount(value, getVatRateForDate(startDate));
     }
-    BigDecimal rate = getVatRateForDate(startDate);
-    return calculateVatAmount(value, rate);
+    return BigDecimal.ZERO;
   }
 
   /**

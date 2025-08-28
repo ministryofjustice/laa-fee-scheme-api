@@ -17,7 +17,7 @@ import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
-class ImmigrationAndAsylumFixedFeeCalculatorTest {
+class ImmigrationAsylumFixedFeeCalculatorTest {
 
   private static final String WARNING_CODE = "123"; // clarify what code should be
   private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
@@ -61,7 +61,7 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
         .disbursementLimit(netDisbursementLimit)
         .build();
 
-    FeeCalculationResponse response = ImmigrationAndAsylumFixedFeeCalculator.getFee(feeEntity, feeData);
+    FeeCalculationResponse response = ImmigrationAsylumFixedFeeCalculator.getFee(feeEntity, feeData);
 
     assertNotNull(response.getFeeCalculation());
     assertThat(response.getFeeCode()).isEqualTo(feeCode);
@@ -126,7 +126,7 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
         .disbursementLimit(null)
         .build();
 
-    FeeCalculationResponse response = ImmigrationAndAsylumFixedFeeCalculator.getFee(feeEntity, feeData);
+    FeeCalculationResponse response = ImmigrationAsylumFixedFeeCalculator.getFee(feeEntity, feeData);
 
     assertNotNull(response.getFeeCalculation());
     assertThat(response.getFeeCode()).isEqualTo(feeCode);
