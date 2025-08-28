@@ -11,7 +11,6 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.model.Warning;
 
 /**
  * Calculate the discrimination fee for a given fee entity and fee calculation request.
@@ -41,7 +40,6 @@ public final class DiscriminationFeeCalculator {
     BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
 
     // @TODO: escape case logic TBC
-    Warning warning = null;
     boolean escaped = false;
     if (feeTotal.compareTo(escapeThresholdLimit) > 0) {
       warningList.add(WARNING_CODE_DESCRIPTION);
