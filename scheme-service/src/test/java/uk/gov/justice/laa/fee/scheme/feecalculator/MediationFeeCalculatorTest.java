@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MEDIATION;
 
@@ -15,10 +14,39 @@ import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.exception.InvalidMediationSessionException;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 class MediationFeeCalculatorTest {
+
+  public static Stream<Arguments> testData() {
+    return Stream.of(
+        arguments("1 mediation session, VAT applied", "MED1", true, 1, 130.65, null,
+            50.5, 20.15, 50, 10),
+        arguments("1 mediation session, no VAT", "MED1", false, 1, 120.65, null,
+            50.5, 20.15, 50, 0),
+        arguments("2 mediation sessions, VAT applied", "MED1", true, 2, 190.65, null,
+            50.5, 20.15, 100, 20),
+        arguments("2 mediation sessions, no VAT", "MED1", false, 2, 170.65, null,
+            50.5, 20.15, 100, 0),
+        arguments("More than 1 mediation session, VAT applied", "MED1", true, 3, 190.65, null,
+            50.5, 20.15, 100, 20),
+        arguments("More than 1 mediation session, no VAT", "MED1", false, 3, 170.65, null,
+            50.5, 20.15, 100, 0),
+        arguments("No mediation sessions, VAT applied", "MAM1", true, null, 161.25, new BigDecimal("75.50"),
+            50.5, 20.15, 75.5, 15.1),
+        arguments("No mediation sessions, no VAT", "MAM1", false, null, 146.15, new BigDecimal("75.50"),
+            50.5, 20.15, 75.5, 0)
+    );
+  }
+
+  private static Arguments arguments(String scenario, String feeCode, boolean vat, Integer sessions,
+                                     double total, BigDecimal fixedFee, double expectedDisbursementAmount,
+                                     double disbursementVatAmount, double expectedFixedFee, double expectedCalculatedVat) {
+    return Arguments.of(scenario, feeCode, vat, sessions, total, fixedFee, expectedDisbursementAmount, disbursementVatAmount,
+        expectedFixedFee, expectedCalculatedVat);
+  }
 
   @ParameterizedTest
   @MethodSource("testData")
@@ -28,7 +56,11 @@ class MediationFeeCalculatorTest {
       boolean vatIndicator,
       Integer numberOfMediationSessions,
       double expectedTotal,
-      BigDecimal fixedFee
+      BigDecimal fixedFee,
+      double expectedDisbursementAmount,
+      double disbursementVatAmount,
+      double expectedFixedFee,
+      double expectedCalculatedVat
   ) {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
@@ -51,27 +83,28 @@ class MediationFeeCalculatorTest {
 
     FeeCalculationResponse response = MediationFeeCalculator.getFee(feeEntity, feeData);
 
-    assertNotNull(response.getFeeCalculation());
-    assertThat(response.getFeeCode()).isEqualTo(feeCode);
-    assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
-  }
+    FeeCalculation expectedCalculation = FeeCalculation.builder()
+        .totalAmount(expectedTotal)
+        .vatIndicator(vatIndicator)
+        .vatRateApplied(20.0)
+        .disbursementAmount(expectedDisbursementAmount)
+        .disbursementVatAmount(disbursementVatAmount)
+        .fixedFeeAmount(expectedFixedFee)
+        .calculatedVatAmount(expectedCalculatedVat)
+        .build();
 
-  public static Stream<Arguments> testData() {
-    return Stream.of(
-        arguments("1 mediation session, VAT applied",  "MED1", true,  1, 130.65, null),
-        arguments("1 mediation session, no VAT",       "MED1", false, 1, 120.65, null),
-        arguments("2 mediation sessions, VAT applied", "MED1", true,  2, 190.65, null),
-        arguments("2 mediation sessions, no VAT",      "MED1", false, 2, 170.65, null),
-        arguments("More than 1 mediation session, VAT applied", "MED1", true,  3, 190.65, null),
-        arguments("More than 1 mediation session, no VAT",      "MED1", false, 3, 170.65, null),
-        arguments("No mediation sessions, VAT applied", "MAM1", true, null, 161.25, new BigDecimal("75.50")),
-        arguments("No mediation sessions, no VAT",     "MAM1", false, null, 146.15, new BigDecimal("75.50"))
-    );
-  }
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
+        .feeCode(feeCode)
+        .schemeId("MED_FS2013")
+        .claimId("temp hardcoded till clarification")
+        .warning(null)
+        .escapeCaseFlag(false)
+        .feeCalculation(expectedCalculation)
+        .build();
 
-  private static Arguments arguments(String scenario, String feeCode, boolean vat, Integer sessions,
-                                     double total, BigDecimal fixedFee) {
-    return Arguments.of(scenario, feeCode, vat, sessions, total, fixedFee);
+    assertThat(response)
+        .usingRecursiveComparison()
+        .isEqualTo(expectedResponse);
   }
 
   @Test

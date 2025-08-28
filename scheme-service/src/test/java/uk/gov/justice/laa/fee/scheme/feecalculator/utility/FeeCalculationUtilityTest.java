@@ -24,7 +24,7 @@ class FeeCalculationUtilityTest {
       "true, 2, 22.15, 160.04", // true VAT indicator with bolt ons
   }, nullValues = {"null"})
   @ParameterizedTest
-  void shouldBuildFixedResponse(Boolean vatIndicator, Integer noBoltOns,  BigDecimal boltOnFee, double expectedTotal) {
+  void shouldBuildFixedResponse(Boolean vatIndicator, Integer noBoltOns, BigDecimal boltOnFee, double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("FEE1")
         .startDate(LocalDate.of(2025, 1, 1))

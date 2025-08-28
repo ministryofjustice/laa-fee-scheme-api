@@ -30,7 +30,7 @@ class DiscriminationFeeCalculatorTest {
 
     FeeCalculationResponse result = DiscriminationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
 
-    assertFeeCalculation(result, expectedTotal);
+    assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
 
     assertThat(result.getWarning()).isNull();
   }
@@ -48,14 +48,14 @@ class DiscriminationFeeCalculatorTest {
 
     FeeCalculationResponse result = DiscriminationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
 
-    assertFeeCalculation(result, expectedTotal);
+    assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
 
     assertThat(result.getWarning()).isNotNull();
     assertThat(result.getWarning().getWarningDescription()).isEqualTo("123");
   }
 
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netProfitCosts,
-                                                           double costOfCounsel, double travelAndWaitingCosts) {
+                                             double costOfCounsel, double travelAndWaitingCosts) {
     return FeeCalculationRequest.builder()
         .feeCode("DISC")
         .startDate(LocalDate.of(2025, 5, 12))
@@ -77,12 +77,18 @@ class DiscriminationFeeCalculatorTest {
         .build();
   }
 
-  private void assertFeeCalculation(FeeCalculationResponse response, double total) {
+  private void assertFeeCalculation(FeeCalculationResponse response, double total, boolean vatIndicator,
+                                    double netProfitCosts, double costOfCounsel, double travelAndWaitingCosts) {
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("DISC");
 
     FeeCalculation calculation = response.getFeeCalculation();
     assertThat(calculation).isNotNull();
     assertThat(calculation.getTotalAmount()).isEqualTo(total);
+    assertThat(calculation.getVatIndicator()).isEqualTo(vatIndicator);
+    assertThat(calculation.getVatRateApplied()).isEqualTo(20);
+    assertThat(calculation.getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
+    assertThat(calculation.getNetCostOfCounselAmount()).isEqualTo(costOfCounsel);
+    assertThat(calculation.getTravelAndWaitingCostAmount()).isEqualTo(travelAndWaitingCosts);
   }
 }
