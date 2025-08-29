@@ -76,7 +76,7 @@ public final class FeeCalculationUtility {
             .disbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .fixedFeeAmount(toDouble(fixedFee))
-            // if bolt ons exist, set boltOnFeeAmount to null in response
+            // Mental health has bolt on, rest do not, so check if null or zero, so empty value/null not added to response
             .boltOnFeeAmount(boltOnValue != null && !boltOnValue.equals(BigDecimal.ZERO) ? toDouble(boltOnValue) : null)
             .build())
         .build();
