@@ -163,6 +163,8 @@ components:
         jrFormFilling:
           type: number
           format: double
+        immigrationPriorityAuthority:
+          type: string
 
     FeeCalculationResponse:
       type: object
