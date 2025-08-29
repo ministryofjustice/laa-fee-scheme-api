@@ -22,8 +22,8 @@ public final class ImmigrationAsylumHourlyRateCalculator {
   private ImmigrationAsylumHourlyRateCalculator() {
   }
 
-  private static final String WARNING_NET_PROFIT_COSTS = "123"; // @TODO: TBC
-  private static final String WARNING_NET_DISBURSEMENTS = "456"; // @TODO: TBC
+  private static final String WARNING_NET_PROFIT_COSTS = "warning net profit costs"; // @TODO: TBC
+  private static final String WARNING_NET_DISBURSEMENTS = "warning net disbursements"; // @TODO: TBC
 
   /**
    * Calculated fee based on the provided fee entity and fee calculation request.
