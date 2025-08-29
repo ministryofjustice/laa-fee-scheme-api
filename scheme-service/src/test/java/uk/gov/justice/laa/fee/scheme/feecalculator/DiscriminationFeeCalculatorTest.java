@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
+import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -16,46 +17,45 @@ class DiscriminationFeeCalculatorTest {
 
   @ParameterizedTest
   @CsvSource({
-      "false, 99.50, 300.50, 50.0, 515.2, 528.24",  // Under escape threshold (No VAT)
-      "true, 99.50, 300.50, 50.0, 515.2, 618.24",  // Under escape threshold limit (VAT applied)
-      "false, 99.50, 500.50, 100.0, 765.2, 778.24", // Equal to escape threshold limit (No VAT)
-      "true, 99.50, 500.50, 100.0, 765.2, 918.24",  // Equal to escape threshold limit (VAT applied)
+      "false, 99.50, 300.50, 50.0, 528.24",  // Under escape threshold (No VAT)
+      "true, 99.50, 300.50, 50.0, 618.24",  // Under escape threshold limit (VAT applied)
+      "false, 99.50, 500.50, 100.0, 778.24", // Equal to escape threshold limit (No VAT)
+      "true, 99.50, 500.50, 100.0, 918.24",  // Equal to escape threshold limit (VAT applied)
   })
   public void getFee_shouldReturnFeeCalculationResponse(boolean vatIndicator, double netProfitCosts,
                                                         double costOfCounsel, double travelAndWaitingCosts,
-                                                        double expectedSubTotal, double expectedTotal) {
+                                                        double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
     FeeEntity feeEntity = buildFeeEntity();
 
     FeeCalculationResponse result = DiscriminationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
 
-    assertFeeCalculation(result, expectedSubTotal, expectedTotal);
+    assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
 
-    assertThat(result.getWarning()).isNull();
+    assertThat(result.getWarnings()).isEmpty();
   }
 
   @ParameterizedTest
   @CsvSource({
-      "false, 99.50, 500.50, 201.0, 765.2, 778.24", // Over escape threshold limit (No VAT)
-      "true, 99.50, 500.50, 201.0, 765.2, 918.24",  // Over escape threshold limit (VAT applied)
+      "false, 99.50, 500.50, 201.0, 778.24", // Over escape threshold limit (No VAT)
+      "true, 99.50, 500.50, 201.0, 918.24",  // Over escape threshold limit (VAT applied)
   })
   public void getFee_shouldReturnFeeCalculationResponseWithWarning(boolean vatIndicator, double netProfitCosts,
-                                                        double costOfCounsel, double travelAndWaitingCosts,
-                                                        double expectedSubTotal, double expectedTotal) {
+                                                                   double costOfCounsel, double travelAndWaitingCosts,
+                                                                   double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
     FeeEntity feeEntity = buildFeeEntity();
 
     FeeCalculationResponse result = DiscriminationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
 
-    assertFeeCalculation(result, expectedSubTotal, expectedTotal);
+    assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
 
-    assertThat(result.getWarning()).isNotNull();
-    assertThat(result.getWarning().getWarrningCode()).isEqualTo("123");
-    assertThat(result.getWarning().getWarningDescription()).isEqualTo("123");
+    assertThat(result.getWarnings()).isNotNull();
+    assertThat(result.getWarnings().getFirst()).isEqualTo("123");
   }
 
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netProfitCosts,
-                                                           double costOfCounsel, double travelAndWaitingCosts) {
+                                             double costOfCounsel, double travelAndWaitingCosts) {
     return FeeCalculationRequest.builder()
         .feeCode("DISC")
         .startDate(LocalDate.of(2025, 5, 12))
@@ -71,18 +71,24 @@ class DiscriminationFeeCalculatorTest {
   private FeeEntity buildFeeEntity() {
     return FeeEntity.builder()
         .feeCode("DISC")
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("DISC_FS2013").build())
         .calculationType(DISCRIMINATION)
         .escapeThresholdLimit(new BigDecimal("700.00"))
         .build();
   }
 
-  private void assertFeeCalculation(FeeCalculationResponse response, double subTotal, double total) {
+  private void assertFeeCalculation(FeeCalculationResponse response, double total, boolean vatIndicator,
+                                    double netProfitCosts, double costOfCounsel, double travelAndWaitingCosts) {
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("DISC");
 
     FeeCalculation calculation = response.getFeeCalculation();
     assertThat(calculation).isNotNull();
-    assertThat(calculation.getSubTotal()).isEqualTo(subTotal);
     assertThat(calculation.getTotalAmount()).isEqualTo(total);
+    assertThat(calculation.getVatIndicator()).isEqualTo(vatIndicator);
+    assertThat(calculation.getVatRateApplied()).isEqualTo(20);
+    assertThat(calculation.getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
+    assertThat(calculation.getNetCostOfCounselAmount()).isEqualTo(costOfCounsel);
+    assertThat(calculation.getTravelAndWaitingCostAmount()).isEqualTo(travelAndWaitingCosts);
   }
 }

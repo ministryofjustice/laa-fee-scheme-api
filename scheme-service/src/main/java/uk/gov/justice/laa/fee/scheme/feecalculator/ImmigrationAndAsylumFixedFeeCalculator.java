@@ -2,8 +2,11 @@ package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatRateForDate;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.BoltOnUtility;
@@ -11,7 +14,6 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.model.Warning;
 
 /**
  * Calculate the Immigration and asylum fee for a given fee entity and fee calculation request.
@@ -22,13 +24,16 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
   }
 
   private static final List<String> FEE_CODES_WITH_NO_DISBURSEMENT = List.of("IDAS1", "IDAS2");
-  private static final String WARNING_CODE = "123"; // clarify what code should be
   private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
 
   /**
    * Calculated fee for Immigration and asylum fee based on the provided fee entity and fee calculation request.
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
+    LocalDate startDate = feeCalculationRequest.getStartDate();
+    boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+    List<String> warningList = new ArrayList<>();
+
     // get the requested disbursement amount from feeCalculationRequest
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
 
@@ -39,41 +44,58 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
     BigDecimal detentionAndTravelCosts = toBigDecimal(feeCalculationRequest.getDetentionAndWaitingCosts());
 
     // get the requested jrFormFilling amount from feeCalculationRequest
-    BigDecimal jrFormFilling = toBigDecimal(feeCalculationRequest.getJrFormFilling());
+    BigDecimal jrFormFillingCosts = toBigDecimal(feeCalculationRequest.getJrFormFilling());
 
     // get the total bolt on value amount from utility class
     BigDecimal boltOnValue = BoltOnUtility.calculateBoltOnAmount(feeCalculationRequest, feeEntity);
 
     BigDecimal netDisbursementAmount;
     BigDecimal netDisbursementLimit = feeEntity.getDisbursementLimit();
-    Warning warning = null;
     // If fee code is "IDAS1", "IDAS2", and a requestedNetDisbursementAmount exists, return a warning, as these codes
     // are exempt from claiming disbursement
     if (isDisbursementNotAllowed(feeEntity, requestedNetDisbursementAmount)) {
-      warning = Warning.builder()
-          .warrningCode(WARNING_CODE)
-          .warningDescription(WARNING_CODE_DESCRIPTION)
-          .build();
+      warningList.add(WARNING_CODE_DESCRIPTION);
       disbursementVatAmount = BigDecimal.ZERO;
       netDisbursementAmount = BigDecimal.ZERO;
     } else {
       netDisbursementAmount = getNetDisbursement(requestedNetDisbursementAmount, netDisbursementLimit, feeCalculationRequest);
     }
 
-    BigDecimal fixedFee = feeEntity.getFixedFee();
-    BigDecimal taxableSubTotal = fixedFee.add(boltOnValue).add(detentionAndTravelCosts).add(jrFormFilling);
-    taxableSubTotal = VatUtility.addVatIfApplicable(taxableSubTotal, feeCalculationRequest.getStartDate(),
-        feeCalculationRequest.getVatIndicator());
+    BigDecimal fixedFeeAmount = feeEntity.getFixedFee();
+    BigDecimal fixedFeeAndAdditionalCosts = fixedFeeAmount
+        .add(jrFormFillingCosts)
+        .add(detentionAndTravelCosts)
+        .add(boltOnValue);
 
-    BigDecimal subTotalWithoutTax = fixedFee.add(boltOnValue).add(detentionAndTravelCosts).add(jrFormFilling).add(netDisbursementAmount);
-    BigDecimal finalTotal = taxableSubTotal.add(netDisbursementAmount).add(disbursementVatAmount);
+    // Apply VAT where applicable
+    BigDecimal calculatedVatValue = VatUtility.getVatValue(
+        fixedFeeAndAdditionalCosts,
+        startDate,
+        vatApplicable
+    );
+
+    BigDecimal finalTotal = fixedFeeAndAdditionalCosts
+        .add(calculatedVatValue)
+        .add(netDisbursementAmount)
+        .add(disbursementVatAmount);
 
     return new FeeCalculationResponse().toBuilder()
-        .warning(warning)
         .feeCode(feeCalculationRequest.getFeeCode())
+        .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
+        .claimId("temp hard coded")
+        .warnings(warningList)
+        .escapeCaseFlag(false) // temp hard coded
         .feeCalculation(FeeCalculation.builder()
-            .subTotal((toDouble(subTotalWithoutTax)))
-            .totalAmount((toDouble(finalTotal)))
+            .totalAmount(toDouble(finalTotal))
+            .vatIndicator(vatApplicable)
+            .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+            .calculatedVatAmount(toDouble(calculatedVatValue))
+            .disbursementAmount(toDouble(netDisbursementAmount))
+            .disbursementVatAmount(toDouble(disbursementVatAmount))
+            .fixedFeeAmount(toDouble(fixedFeeAmount))
+            .detentionAndWaitingCostsAmount(toDouble(detentionAndTravelCosts))
+            .jrFormFillingAmount(toDouble(jrFormFillingCosts))
+            .boltOnFeeAmount(toDouble(boltOnValue))
             .build())
         .build();
   }

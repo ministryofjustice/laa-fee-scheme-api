@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
+import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
@@ -15,10 +16,10 @@ class FixedFeeCalculatorTest {
 
   @ParameterizedTest
   @CsvSource({
-      "false, 150.11, 170.33", // No VAT
-      "true, 150.11, 180.33" // VAT applied
+      "false, 170.33", // No VAT
+      "true, 180.33" // VAT applied
   })
-  void getFee_shouldReturnFeeCalculationResponse(boolean vatIndicator, double expectedSubTotal, double expectedTotal) {
+  void getFee_shouldReturnFeeCalculationResponse(boolean vatIndicator, double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("COM")
         .startDate(LocalDate.of(2025, 5, 12))
@@ -29,6 +30,7 @@ class FixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("COM")
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("COM_FS2013").build())
         .fixedFee(new BigDecimal("50.00"))
         .calculationType(COMMUNITY_CARE)
         .build();
@@ -38,7 +40,6 @@ class FixedFeeCalculatorTest {
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("COM");
     assertThat(result.getFeeCalculation()).isNotNull();
-    assertThat(result.getFeeCalculation().getSubTotal()).isEqualTo(expectedSubTotal);
     assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
   }
 

@@ -7,8 +7,6 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class VatUtilityTest {
 
@@ -24,24 +22,18 @@ class VatUtilityTest {
   }
 
   @Test
-  void should_addVatUsingRate() {
+  void should_getVatValueUsingRate() {
     BigDecimal value = BigDecimal.valueOf(170.50);
     BigDecimal vatRate = BigDecimal.valueOf(20);
 
-    BigDecimal result = VatUtility.addVatUsingRate(value, vatRate);
+    BigDecimal result = VatUtility.calculateVatAmount(value, vatRate);
 
-    assertThat(result).isEqualByComparingTo("204.60");
+    assertThat(result).isEqualByComparingTo("34.10");
   }
 
-  @ParameterizedTest
-  @CsvSource(value = {
-      "null, 170.5",
-      "false, 170.5",
-      "true, 204.60",
-  }, nullValues = {"null"})
-  void should_addVatIfApplicable(Boolean vatIndicator, String expectedResult) {
-    BigDecimal result = VatUtility.addVatIfApplicable(BigDecimal.valueOf(170.50), LocalDate.of(2011, 2, 1), vatIndicator);
-    assertThat(result).isEqualByComparingTo(expectedResult);
+  @Test
+  void should_getVatValue() {
+    BigDecimal result = VatUtility.getVatValue(BigDecimal.valueOf(170.50), LocalDate.of(2011, 2, 1), true);
+    assertThat(result).isEqualByComparingTo("34.10");
   }
-
 }

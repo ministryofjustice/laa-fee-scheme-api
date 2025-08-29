@@ -41,7 +41,7 @@ public final class MediationFeeCalculator {
 
     BigDecimal baseFee = (numberOfMediationSessions == 1) ? feeEntity.getMediationSessionOne() : feeEntity.getMediationSessionTwo();
 
-    return calculate(baseFee, feeData);
+    return calculate(baseFee, feeData, feeEntity);
   }
 
   /**

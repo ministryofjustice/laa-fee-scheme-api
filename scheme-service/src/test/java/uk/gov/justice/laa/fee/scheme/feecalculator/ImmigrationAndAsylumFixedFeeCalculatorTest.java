@@ -6,20 +6,60 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.IMMIGR
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
+import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 class ImmigrationAndAsylumFixedFeeCalculatorTest {
 
-  private static final String WARNING_CODE = "123"; // clarify what code should be
   private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
+
+  public static Stream<Arguments> testDataWithDisbursement() {
+    return Stream.of(
+        arguments("IACA, Has Vat, eligible for disbursement, below limit",
+            "IACA", true, null, 399, 50, BigDecimal.valueOf(600),
+            50, 50, 1274.0, 399, 512,
+            137.5, 75.5),
+        arguments("IACA, Has Vat, eligible for disbursement, above limit, with prior auth",
+            "IACA", true, "hasPriorAuth", 800, 100, BigDecimal.valueOf(600),
+            50, 50, 1725.0, 800, 512,
+            137.5, 75.5),
+        arguments("IACA, Has Vat, eligible for disbursement, above limit, without prior auth",
+            "IACA", true, null, 800, 100, BigDecimal.valueOf(600),
+            50, 50, 1525.0, 600, 512,
+            137.5, 75.5),
+        arguments("IACA, No Vat, eligible for disbursement, below limit",
+            "IACA", false, null, 399, 50, BigDecimal.valueOf(600),
+            50, 50, 1136.50, 399, 512,
+            0, 75.5),
+        arguments("IACA, No Vat, eligible for disbursement, above limit, with prior auth",
+            "IACA", false, "hasPriorAuth", 800, 100, BigDecimal.valueOf(600),
+            50, 50, 1587.50, 800, 512,
+            0, 75.5),
+        arguments("IACA, No Vat, eligible for disbursement, above limit, without prior auth",
+            "IACA", false, null, 800, 100, BigDecimal.valueOf(600),
+            50, 50, 1387.50, 600, 512,
+            0, 75.5)
+    );
+  }
+
+  private static Arguments arguments(String scenario, String feeCode, boolean vat, String priorAuthority, double netDisbursementAmount,
+                                     double disbursementVatAmount, BigDecimal netDisbursementLimit, double detentionAndWaitingCosts,
+                                     double jrFormfilling, double total, double expectedDisbursementAmount, double expectedBoltonValue,
+                                     double expectedCalculatedVatAmount, double expectedFixedFeeAmount) {
+    return Arguments.of(scenario, feeCode, vat, priorAuthority, netDisbursementAmount, disbursementVatAmount, netDisbursementLimit,
+        detentionAndWaitingCosts, jrFormfilling, total, expectedDisbursementAmount, expectedBoltonValue,
+        expectedCalculatedVatAmount, expectedFixedFeeAmount);
+  }
 
   @ParameterizedTest
   @MethodSource("testDataWithDisbursement")
@@ -33,8 +73,11 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
       BigDecimal netDisbursementLimit,
       double detentionAndWaitingCosts,
       double jrFormfilling,
-      double expectedSubTotal,
-      double expectedTotal) {
+      double expectedTotal,
+      double expectedDisbursementAmount,
+      double expectedBoltonValue,
+      double expectedCalculatedVat,
+      double expectedFixedFee) {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -44,9 +87,7 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
         .vatIndicator(vatIndicator)
         .disbursementPriorAuthority(disbursementPriorAuthority)
         .boltOns(BoltOnType.builder()
-            .boltOnAdjournedHearing(1)
-            .boltOnHomeOfficeInterview(2)
-            .boltOnCmrhOral(1)
+            .boltOnCmrhOral(2)
             .boltOnCrmhTelephone(2)
             .build())
         .detentionAndWaitingCosts(detentionAndWaitingCosts)
@@ -55,56 +96,51 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2023").build())
         .fixedFee(new BigDecimal("75.50"))
         .calculationType(IMMIGRATION_ASYLUM_FIXED_FEE)
         .disbursementLimit(netDisbursementLimit)
+        .oralCmrhBoltOn(BigDecimal.valueOf(166))
+        .telephoneCmrhBoltOn(BigDecimal.valueOf(90))
         .build();
 
     FeeCalculationResponse response = ImmigrationAndAsylumFixedFeeCalculator.getFee(feeEntity, feeData);
 
-    assertNotNull(response.getFeeCalculation());
-    assertThat(response.getFeeCode()).isEqualTo(feeCode);
-    assertThat(response.getFeeCalculation().getSubTotal()).isEqualTo(expectedSubTotal);
-    assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
-  }
+    FeeCalculation expectedCalculation = FeeCalculation.builder()
+        .totalAmount(expectedTotal)
+        .vatIndicator(vatIndicator)
+        .vatRateApplied(20.0)
+        .disbursementAmount(expectedDisbursementAmount)
+        .disbursementVatAmount(disbursementVatAmount)
+        .detentionAndWaitingCostsAmount(detentionAndWaitingCosts)
+        .jrFormFillingAmount(jrFormfilling)
+        .boltOnFeeAmount(expectedBoltonValue)
+        .fixedFeeAmount(expectedFixedFee)
+        .calculatedVatAmount(expectedCalculatedVat)
+        .build();
 
-  public static Stream<Arguments> testDataWithDisbursement() {
-    return Stream.of(
-        arguments("IACA, Has Vat, eligible for disbursement, below limit",
-            "IACA", true, null, 399, 50, BigDecimal.valueOf(600),
-            50, 50, 574.50, 659.60),
-        arguments("IACA, Has Vat, eligible for disbursement, above limit, with prior auth",
-            "IACA", true, "hasPriorAuth", 800, 100, BigDecimal.valueOf(600),
-            50, 50, 975.50, 1110.60),
-        arguments("IACA, Has Vat, eligible for disbursement, above limit, without prior auth",
-            "IACA", true, null, 800, 100,  BigDecimal.valueOf(600),
-            50, 50, 775.50, 910.60),
-        arguments("IACA, No Vat, eligible for disbursement, below limit",
-            "IACA", false, null, 399, 50, BigDecimal.valueOf(600),
-            50, 50, 574.50, 624.50),
-        arguments("IACA, No Vat, eligible for disbursement, above limit, with prior auth",
-            "IACA", false, "hasPriorAuth", 800, 100, BigDecimal.valueOf(600),
-            50, 50, 975.50, 1075.50),
-        arguments("IACA, No Vat, eligible for disbursement, above limit, without prior auth",
-            "IACA", false, null, 800, 100,  BigDecimal.valueOf(600),
-            50, 50, 775.50, 875.50)
-    );
-  }
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
+        .feeCode(feeCode)
+        .schemeId("I&A_FS2023")
+        .claimId("temp hard coded")
+        .warnings(new ArrayList<>())
+        .escapeCaseFlag(false) // hardcoded till escape logic implemented
+        .feeCalculation(expectedCalculation)
+        .build();
 
-  private static Arguments arguments(String scenario, String feeCode, boolean vat, String priorAuthority, double netDisbursementAmount,
-                                     double disbursementVatAmount, BigDecimal netDisbursementLimit, double detentionAndWaitingCosts,
-                                     double jrFormfilling, double subtotal, double total) {
-    return Arguments.of(scenario, feeCode, vat, priorAuthority, netDisbursementAmount, disbursementVatAmount, netDisbursementLimit,
-        detentionAndWaitingCosts, jrFormfilling, subtotal, total);
+    assertThat(response)
+        .usingRecursiveComparison()
+        .isEqualTo(expectedResponse);
   }
 
   @ParameterizedTest
   @CsvSource({
-      "IDAS1, true, 75.5, 90.60",
-      "IDAS1, false, 75.5, 75.5",
-      "IDAS2, true, 75.5, 90.60",
-      "IDAS2, false, 75.5, 75.5"})
-  void getFee_whenImmigrationAndAsylum_withoutDisbursement(String feeCode, boolean vatIndicator, double expectedSubTotal,
+      "IDAS1, true, 90.60",
+      "IDAS1, false, 75.5",
+      "IDAS2, true, 90.60",
+      "IDAS2, false, 75.5"
+  })
+  void getFee_whenImmigrationAndAsylum_withoutDisbursement(String feeCode, boolean vatIndicator,
                                                            double expectedTotal) {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
@@ -119,6 +155,7 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2023").build())
         .fixedFee(new BigDecimal("75.50"))
         .calculationType(IMMIGRATION_ASYLUM_FIXED_FEE)
         .disbursementLimit(null)
@@ -128,9 +165,7 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
 
     assertNotNull(response.getFeeCalculation());
     assertThat(response.getFeeCode()).isEqualTo(feeCode);
-    assertThat(response.getFeeCalculation().getSubTotal()).isEqualTo(expectedSubTotal);
     assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
-    assertThat(response.getWarning().getWarrningCode()).isEqualTo(WARNING_CODE);
-    assertThat(response.getWarning().getWarningDescription()).isEqualTo(WARNING_CODE_DESCRIPTION);
+    assertThat(response.getWarnings().getFirst()).isEqualTo(WARNING_CODE_DESCRIPTION);
   }
 }

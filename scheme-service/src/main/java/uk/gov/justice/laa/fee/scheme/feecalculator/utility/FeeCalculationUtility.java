@@ -3,7 +3,8 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.addVatIfApplicable;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatRateForDate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatValue;
 
 import java.math.BigDecimal;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
@@ -24,12 +25,10 @@ public final class FeeCalculationUtility {
    * If Applicable add VAT to subtotal.
    * subtotalWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
    */
-  public static FeeCalculationResponse calculate(FeeEntity feeEntity,
-                                                 FeeCalculationRequest feeCalculationRequest) {
+  public static FeeCalculationResponse calculate(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
     BigDecimal fixedFee = defaultToZeroIfNull(feeEntity.getFixedFee());
     BigDecimal boltOnValue = BoltOnUtility.calculateBoltOnAmount(feeCalculationRequest, feeEntity);
-    BigDecimal fixedFeeWithBoltOns = fixedFee.add(boltOnValue);
-    return calculateAndBuildResponse(fixedFeeWithBoltOns, feeCalculationRequest);
+    return calculateAndBuildResponse(fixedFee, boltOnValue, feeCalculationRequest, feeEntity);
   }
 
   /**
@@ -37,28 +36,48 @@ public final class FeeCalculationUtility {
    * If Applicable add VAT to subtotal.
    * subtotalWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
    */
-  public static FeeCalculationResponse calculate(BigDecimal fixedFee,
-                                                 FeeCalculationRequest feeCalculationRequest) {
-    return calculateAndBuildResponse(fixedFee, feeCalculationRequest);
+  public static FeeCalculationResponse calculate(BigDecimal fixedFee, FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+    return calculateAndBuildResponse(fixedFee, null, feeCalculationRequest, feeEntity);
   }
 
-  private static FeeCalculationResponse calculateAndBuildResponse(BigDecimal feeTotal, FeeCalculationRequest feeCalculationRequest) {
+  private static FeeCalculationResponse calculateAndBuildResponse(BigDecimal fixedFee, BigDecimal boltOnValue,
+                                                                  FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    // Add net disbursement amount to get subtotal
-    BigDecimal subTotal = feeTotal.add(netDisbursementAmount);
+    boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+    BigDecimal boltOnVatValue = BigDecimal.ZERO;
+    if (boltOnValue != null) {
+      boltOnVatValue = getVatValue(boltOnValue, feeCalculationRequest.getStartDate(), vatApplicable);
+    }
+    BigDecimal fixedFeeVatValue = getVatValue(fixedFee, feeCalculationRequest.getStartDate(), vatApplicable);
 
-    // Add VAT if applicable to subtotal and add disbursement amounts to get final total
-    BigDecimal finalTotal = addVatIfApplicable(feeTotal, feeCalculationRequest.getStartDate(),
-        feeCalculationRequest.getVatIndicator())
-        .add(netDisbursementAmount).add(disbursementVatAmount);
+    BigDecimal calculatedVatValue = boltOnVatValue.add(fixedFeeVatValue);
+
+    BigDecimal finalTotal = fixedFee
+        .add(fixedFeeVatValue)
+        .add(boltOnValue != null ? boltOnValue : BigDecimal.ZERO)
+        .add(boltOnVatValue)
+        .add(netDisbursementAmount)
+        .add(disbursementVatAmount);
 
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
+        .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
+        .claimId("temp hardcoded till clarification")
+        .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
         .feeCalculation(FeeCalculation.builder()
-            .subTotal(toDouble(subTotal))
-            .totalAmount(toDouble(finalTotal)).build()).build();
+            .totalAmount(toDouble(finalTotal))
+            .vatIndicator(vatApplicable)
+            .vatRateApplied(toDouble(getVatRateForDate(feeCalculationRequest.getStartDate())))
+            .calculatedVatAmount(toDouble(calculatedVatValue))
+            .disbursementAmount(toDouble(netDisbursementAmount))
+            .disbursementVatAmount(toDouble(disbursementVatAmount))
+            .fixedFeeAmount(toDouble(fixedFee))
+            // Mental health has bolt on, rest do not, so check if null or zero, so empty value/null not added to response
+            .boltOnFeeAmount(boltOnValue != null && !boltOnValue.equals(BigDecimal.ZERO) ? toDouble(boltOnValue) : null)
+            .build())
+        .build();
   }
 
 }

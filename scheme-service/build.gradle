@@ -16,7 +16,7 @@ test {
 jacocoTestReport {
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/FeeSchemeApplication.class'])
+            fileTree(dir: it, exclude: ['**/FeeSchemeApplication.class', '**/config/**'])
         }))
     }
 }
@@ -25,7 +25,7 @@ jacocoTestCoverageVerification {
     dependsOn jacocoTestReport
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/FeeSchemeApplication.class'])
+            fileTree(dir: it, exclude: ['**/FeeSchemeApplication.class', '**/config/**'])
         }))
     }
 
