@@ -32,7 +32,7 @@ class DiscriminationFeeCalculatorTest {
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
 
-    assertThat(result.getWarning()).isNull();
+    assertThat(result.getWarning()).isEmpty();
   }
 
   @ParameterizedTest
@@ -51,7 +51,7 @@ class DiscriminationFeeCalculatorTest {
     assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
 
     assertThat(result.getWarning()).isNotNull();
-    assertThat(result.getWarning().getWarningDescription()).isEqualTo("123");
+    assertThat(result.getWarning().getFirst()).isEqualTo("123");
   }
 
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netProfitCosts,

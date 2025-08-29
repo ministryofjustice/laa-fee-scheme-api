@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.configuration;
+package uk.gov.justice.laa.fee.scheme.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
@@ -12,6 +12,6 @@ import org.springframework.context.annotation.Configuration;
 public class JacksonConfig {
   @Bean
   public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
-    return builder -> builder.serializationInclusion(JsonInclude.Include.NON_NULL);
+    return builder -> builder.serializationInclusion(JsonInclude.Include.NON_EMPTY);
   }
 }

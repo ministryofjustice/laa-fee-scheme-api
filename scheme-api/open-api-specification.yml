@@ -100,6 +100,7 @@ components:
       type: object
       required:
         - feeCode
+        - vatIndicator
       properties:
         feeCode:
           type: string
@@ -189,7 +190,7 @@ components:
           format: double
         vatIndicator:
           type: boolean
-        VatRateApplied:
+        vatRateApplied:
           type: number
           format: double
         calculatedVatAmount:
@@ -236,10 +237,9 @@ components:
           format: double
 
     Warning:
-      type: object
-      properties:
-        warningDescription:
-          type: string
+      type: array
+      items:
+        type: string
 
     BoltOnType:
       type: object

@@ -4,12 +4,13 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.model.Warning;
 
 /**
  * Calculate the discrimination fee for a given fee entity and fee calculation request.
@@ -32,25 +33,25 @@ public final class DiscriminationFeeCalculator {
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal netCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());
     BigDecimal travelAndWaitingCosts = toBigDecimal(feeCalculationRequest.getTravelAndWaitingCosts());
+    List<String> warningList = new ArrayList<>();
 
     BigDecimal feeTotal = netProfitCosts.add(netCostOfCounsel).add(travelAndWaitingCosts);
 
     BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
 
     // @TODO: escape case logic TBC
-    Warning warning = null;
     boolean escaped = false;
     if (feeTotal.compareTo(escapeThresholdLimit) > 0) {
-      warning = Warning.builder()
-          .warningDescription(WARNING_CODE_DESCRIPTION)
-          .build();
+      warningList.add(WARNING_CODE_DESCRIPTION);
       feeTotal = escapeThresholdLimit;
       escaped = true;
     }
 
     // Apply VAT where applicable
-    BigDecimal calculatedVatValue = VatUtility.getVatValue(feeTotal, feeCalculationRequest.getStartDate(),
-        Boolean.TRUE.equals(feeCalculationRequest.getVatIndicator()));
+    BigDecimal calculatedVatValue = VatUtility.getVatValue(
+        feeTotal,
+        feeCalculationRequest.getStartDate(),
+        feeCalculationRequest.getVatIndicator());
 
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
@@ -63,7 +64,8 @@ public final class DiscriminationFeeCalculator {
     return new FeeCalculationResponse().toBuilder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
-        .warning(warning)
+        .claimId("temp hardcoded till clarification")
+        .warning(warningList)
         .escapeCaseFlag(escaped)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))

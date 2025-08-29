@@ -45,12 +45,12 @@ public final class FeeCalculationUtility {
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    boolean vatApplicable = Boolean.TRUE.equals(feeCalculationRequest.getVatIndicator());
+    boolean vatApplicable = feeCalculationRequest.getVatIndicator();
     BigDecimal boltOnVatValue = BigDecimal.ZERO;
     if (boltOnValue != null) {
       boltOnVatValue = getVatValue(boltOnValue, feeCalculationRequest.getStartDate(), vatApplicable);
     }
-    BigDecimal fixedFeeVatValue = getVatValue(fixedFee, feeCalculationRequest.getStartDate(), vatApplicable);
+    BigDecimal fixedFeeVatValue = getVatValue(fixedFee, feeCalculationRequest.getStartDate(), feeCalculationRequest.getVatIndicator());
 
     BigDecimal calculatedVatValue = boltOnVatValue.add(fixedFeeVatValue);
 
@@ -73,7 +73,10 @@ public final class FeeCalculationUtility {
             .calculatedVatAmount(toDouble(calculatedVatValue))
             .disbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
-            .fixedFeeAmount(toDouble(fixedFee)).build())
+            .fixedFeeAmount(toDouble(fixedFee))
+            // if bolt ons exist, set boltOnFeeAmount to null in response
+            .boltOnFeeAmount(boltOnValue != null && !boltOnValue.equals(BigDecimal.ZERO) ? toDouble(boltOnValue) : null)
+            .build())
         .build();
   }
 

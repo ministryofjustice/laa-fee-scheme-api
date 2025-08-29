@@ -4,13 +4,14 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.model.Warning;
 
 /**
  * Calculate the Immigration and Asylum hourly rate fee for a given fee entity and fee calculation request.
@@ -33,7 +34,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
     // LocalDate startDate = feeCalculationRequest.getStartDate();
-    Warning warning = null;
+    List<String> warningList = new ArrayList<>();
 
 
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
@@ -41,9 +42,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
     if (netProfitCosts.compareTo(profitCostLimit) > 0
         && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorityAuthority())) {
       netProfitCosts = profitCostLimit;
-      warning = Warning.builder()
-          .warningDescription(WARNING_NET_PROFIT_COSTS)
-          .build();
+      warningList.add(WARNING_NET_PROFIT_COSTS);
     }
 
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
@@ -51,9 +50,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
     if (netDisbursementAmount.compareTo(disbursementLimit) > 0
         && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorityAuthority())) {
       netProfitCosts = profitCostLimit;
-      warning = Warning.builder()
-          .warningDescription(WARNING_NET_DISBURSEMENTS)
-          .build();
+      warningList.add(WARNING_NET_DISBURSEMENTS);
     }
 
     BigDecimal jrFormFilling = toBigDecimal(feeCalculationRequest.getJrFormFilling());
@@ -73,7 +70,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
     return new FeeCalculationResponse().toBuilder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
-        .warning(warning)
+        .warning(warningList)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(feeCalculationRequest.getVatIndicator())

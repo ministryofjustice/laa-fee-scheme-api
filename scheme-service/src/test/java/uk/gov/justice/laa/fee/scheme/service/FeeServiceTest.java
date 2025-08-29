@@ -261,6 +261,7 @@ class FeeServiceTest {
         .uniqueFileNumber("120523/7382")
         .policeStationId("NE008")
         .policeStationSchemeId("1002")
+        .vatIndicator(false)
         .build();
 
     FeeCalculationResponse response = feeService.getFeeCalculation(request);
@@ -293,6 +294,7 @@ class FeeServiceTest {
         .uniqueFileNumber("120523/7382")
         .policeStationId(null)
         .policeStationSchemeId("1004")
+        .vatIndicator(false)
         .build();
 
     FeeCalculationResponse response = feeService.getFeeCalculation(request);
