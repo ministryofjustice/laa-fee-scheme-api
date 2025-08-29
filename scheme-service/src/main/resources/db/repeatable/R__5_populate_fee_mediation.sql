@@ -1,4 +1,4 @@
-INSERT INTO fee (fee_code, description, fixed_fee, mediation_session_one, mediation_session_two, fee_scheme_code, calculation_type)
+INSERT INTO fee (fee_code, description, fixed_fee, mediation_fee_lower, mediation_fee_higher, fee_scheme_code, calculation_type)
 VALUES ('MAM1', 'Mediation Assesment (alone)', 87.00, NULL, NULL, 'MED_FS2013', 'MEDIATION'),
        ('MAM2', 'Mediation Assesment (separate)', 87.00, NULL, NULL, 'MED_FS2013', 'MEDIATION'),
        ('MAM3', 'Mediation Assesment (together)', 130.00, NULL, NULL, 'MED_FS2013', 'MEDIATION'),
@@ -21,11 +21,11 @@ VALUES ('MAM1', 'Mediation Assesment (alone)', 87.00, NULL, NULL, 'MED_FS2013', 
     SET
         description = EXCLUDED.description,
         fixed_fee = EXCLUDED.fixed_fee,
-        mediation_session_one = EXCLUDED.mediation_session_one,
-        mediation_session_two = EXCLUDED.mediation_session_two,
+        mediation_fee_lower = EXCLUDED.mediation_fee_lower,
+        mediation_fee_higher = EXCLUDED.mediation_fee_higher,
         calculation_type = EXCLUDED.calculation_type;
 
-INSERT INTO fee (fee_code, description, fixed_fee, mediation_session_one, mediation_session_two, fee_scheme_code, calculation_type)
+INSERT INTO fee (fee_code, description, fixed_fee, mediation_fee_lower, mediation_fee_higher, fee_scheme_code, calculation_type)
 VALUES ('MED16', 'All issues co-mediation -  1 party eligible, agreement on Children only ', NULL, 293.00, 710.00, 'MED_FS2013', 'MEDIATION'),
        ('MED17', 'Property & Finance sole -  2 parties eligible, no agreement', NULL, 168.00, 588.00, 'MED_FS2013', 'MEDIATION'),
        ('MED18', 'Property & Finance sole -  1 party eligible, no agreement', NULL, 168.00, 378.00, 'MED_FS2013', 'MEDIATION'),
@@ -47,6 +47,6 @@ VALUES ('MED16', 'All issues co-mediation -  1 party eligible, agreement on Chil
     SET
         description = EXCLUDED.description,
         fixed_fee = EXCLUDED.fixed_fee,
-        mediation_session_one = EXCLUDED.mediation_session_one,
-        mediation_session_two = EXCLUDED.mediation_session_two,
+        mediation_fee_lower = EXCLUDED.mediation_fee_lower,
+        mediation_fee_higher = EXCLUDED.mediation_fee_higher,
         calculation_type = EXCLUDED.calculation_type;

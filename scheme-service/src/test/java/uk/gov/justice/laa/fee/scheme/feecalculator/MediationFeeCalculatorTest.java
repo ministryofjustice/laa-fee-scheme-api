@@ -77,8 +77,8 @@ class MediationFeeCalculatorTest {
         .feeCode(feeCode)
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("MED_FS2013").build())
         .fixedFee(fixedFee)
-        .mediationSessionOne(new BigDecimal("50"))
-        .mediationSessionTwo(new BigDecimal("100"))
+        .mediationFeeLower(new BigDecimal("50"))
+        .mediationFeeHigher(new BigDecimal("100"))
         .calculationType(MEDIATION)
         .build();
 
@@ -123,8 +123,8 @@ class MediationFeeCalculatorTest {
         .feeCode("MED1")
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("MED_FS2013").build())
         .fixedFee(null)
-        .mediationSessionOne(new BigDecimal("50"))
-        .mediationSessionTwo(new BigDecimal("100"))
+        .mediationFeeLower(new BigDecimal("50"))
+        .mediationFeeHigher(new BigDecimal("100"))
         .calculationType(MEDIATION)
         .build();
 

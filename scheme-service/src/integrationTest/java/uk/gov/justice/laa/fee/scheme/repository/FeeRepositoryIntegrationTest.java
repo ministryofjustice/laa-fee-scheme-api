@@ -34,8 +34,8 @@ class FeeRepositoryIntegrationTest extends PostgresContainerTestBase {
     assertThat(entity.getFeeCode()).isEqualTo(feeCode);
     assertThat(entity.getDescription()).isEqualTo(expectedDescription);
     assertThat(entity.getFixedFee()).isEqualTo(expectedFixedFee);
-    assertThat(entity.getMediationSessionOne()).isEqualTo(expectedOneMediation);
-    assertThat(entity.getMediationSessionTwo()).isEqualTo(expectedTwoMediation);
+    assertThat(entity.getMediationFeeLower()).isEqualTo(expectedOneMediation);
+    assertThat(entity.getMediationFeeHigher()).isEqualTo(expectedTwoMediation);
     assertThat(entity.getFeeSchemeCode().getSchemeCode()).isEqualTo(feeSchemeCode);
   }
 
