@@ -4,6 +4,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +25,6 @@ public final class ImmigrationAsylumHourlyRateCalculator {
   private static final String WARNING_NET_PROFIT_COSTS = "123"; // @TODO: TBC
   private static final String WARNING_NET_DISBURSEMENTS = "456"; // @TODO: TBC
 
-
   /**
    * Calculated fee based on the provided fee entity and fee calculation request.
    *
@@ -33,16 +33,14 @@ public final class ImmigrationAsylumHourlyRateCalculator {
    * @return FeeCalculationResponse with calculated fee
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
-    // LocalDate startDate = feeCalculationRequest.getStartDate();
-    List<String> warningList = new ArrayList<>();
-
+    List<String> warnings = new ArrayList<>();
 
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal profitCostLimit = feeEntity.getProfitCostLimit();
     if (netProfitCosts.compareTo(profitCostLimit) > 0
         && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorityAuthority())) {
       netProfitCosts = profitCostLimit;
-      warningList.add(WARNING_NET_PROFIT_COSTS);
+      warnings.add(WARNING_NET_PROFIT_COSTS);
     }
 
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
@@ -50,32 +48,33 @@ public final class ImmigrationAsylumHourlyRateCalculator {
     if (netDisbursementAmount.compareTo(disbursementLimit) > 0
         && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorityAuthority())) {
       netProfitCosts = profitCostLimit;
-      warningList.add(WARNING_NET_DISBURSEMENTS);
+      warnings.add(WARNING_NET_DISBURSEMENTS);
     }
 
     BigDecimal jrFormFilling = toBigDecimal(feeCalculationRequest.getJrFormFilling());
     BigDecimal feeTotal = netProfitCosts.add(jrFormFilling);
 
     // Apply VAT where applicable
-    BigDecimal calculatedVatValue = VatUtility.getVatValue(feeTotal, feeCalculationRequest.getStartDate(),
-        Boolean.TRUE.equals(feeCalculationRequest.getVatIndicator()));
+    LocalDate startDate = feeCalculationRequest.getStartDate();
+    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+    BigDecimal calculatedVatAmount = VatUtility.getVatAmount(feeTotal, startDate, vatApplicable);
 
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
     BigDecimal finalTotal = feeTotal
-        .add(calculatedVatValue)
+        .add(calculatedVatAmount)
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
 
     return new FeeCalculationResponse().toBuilder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
-        .warnings(warningList)
+        .warnings(warnings)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(feeCalculationRequest.getVatIndicator())
             .vatRateApplied(toDouble(VatUtility.getVatRateForDate(feeCalculationRequest.getStartDate())))
-            .calculatedVatAmount(toDouble(calculatedVatValue))
+            .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .hourlyTotalAmount(toDouble(feeTotal))

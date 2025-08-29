@@ -22,7 +22,7 @@ class VatUtilityTest {
   }
 
   @Test
-  void should_getVatValueUsingRate() {
+  void should_getVatAmountUsingRate() {
     BigDecimal value = BigDecimal.valueOf(170.50);
     BigDecimal vatRate = BigDecimal.valueOf(20);
 
@@ -32,8 +32,8 @@ class VatUtilityTest {
   }
 
   @Test
-  void should_getVatValue() {
-    BigDecimal result = VatUtility.getVatValue(BigDecimal.valueOf(170.50), LocalDate.of(2011, 2, 1), true);
+  void should_getVatAmount() {
+    BigDecimal result = VatUtility.getVatAmount(BigDecimal.valueOf(170.50), LocalDate.of(2011, 2, 1), true);
     assertThat(result).isEqualByComparingTo("34.10");
   }
 }

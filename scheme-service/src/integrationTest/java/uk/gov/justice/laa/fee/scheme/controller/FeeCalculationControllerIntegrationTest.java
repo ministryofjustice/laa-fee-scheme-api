@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.json.JsonCompareMode;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import uk.gov.justice.laa.fee.scheme.postgresTestContainer.PostgresContainerTestBase;
@@ -63,7 +64,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "travelAndWaitingCostAmount": 88.81
             }
           }
-          """, true));
+          """, JsonCompareMode.STRICT));
   }
 
   @Test
@@ -100,7 +101,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "fixedFeeAmount": 168.00
             }
           }
-          """, true));
+          """, JsonCompareMode.STRICT));
   }
 
   @ParameterizedTest
@@ -151,7 +152,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(expectedJson, true));
+        .andExpect(content().json(expectedJson, JsonCompareMode.STRICT));
   }
 
   @Test
@@ -197,7 +198,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "boltOnFeeAmount": 758.00
             }
           }
-          """, true));
+          """, JsonCompareMode.STRICT));
   }
 
   @Test
@@ -237,7 +238,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "boltOnFeeAmount": 351.00
             }
           }
-          """, true));
+          """, JsonCompareMode.STRICT));
 
   }
 
@@ -275,7 +276,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "fixedFeeAmount": 131.40
             }
           }
-          """, true));
+          """, JsonCompareMode.STRICT));
   }
 
 }

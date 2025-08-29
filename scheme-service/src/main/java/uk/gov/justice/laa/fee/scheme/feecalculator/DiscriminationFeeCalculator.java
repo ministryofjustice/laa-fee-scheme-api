@@ -4,6 +4,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
@@ -48,16 +49,15 @@ public final class DiscriminationFeeCalculator {
     }
 
     // Apply VAT where applicable
-    BigDecimal calculatedVatValue = VatUtility.getVatValue(
-        feeTotal,
-        feeCalculationRequest.getStartDate(),
-        feeCalculationRequest.getVatIndicator());
+    LocalDate startDate = feeCalculationRequest.getStartDate();
+    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+    BigDecimal calculatedVatAmount = VatUtility.getVatAmount(feeTotal, startDate, vatApplicable);
 
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
     BigDecimal finalTotal = feeTotal
-        .add(calculatedVatValue)
+        .add(calculatedVatAmount)
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
 
@@ -69,9 +69,9 @@ public final class DiscriminationFeeCalculator {
         .escapeCaseFlag(escaped)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
-            .vatIndicator(feeCalculationRequest.getVatIndicator())
-            .vatRateApplied(toDouble(VatUtility.getVatRateForDate(feeCalculationRequest.getStartDate())))
-            .calculatedVatAmount(toDouble(calculatedVatValue))
+            .vatIndicator(vatApplicable)
+            .vatRateApplied(toDouble(VatUtility.getVatRateForDate(startDate)))
+            .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .hourlyTotalAmount(toDouble(feeTotal))

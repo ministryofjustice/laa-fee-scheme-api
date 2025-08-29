@@ -30,8 +30,6 @@ public final class ImmigrationAsylumFixedFeeCalculator {
    * Calculated fee for Immigration and asylum fee based on the provided fee entity and fee calculation request.
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
-    LocalDate startDate = feeCalculationRequest.getStartDate();
-    boolean vatApplicable = feeCalculationRequest.getVatIndicator();
     List<String> warningList = new ArrayList<>();
 
     // get the requested disbursement amount from feeCalculationRequest
@@ -68,14 +66,12 @@ public final class ImmigrationAsylumFixedFeeCalculator {
         .add(boltOnValue);
 
     // Apply VAT where applicable
-    BigDecimal calculatedVatValue = VatUtility.getVatValue(
-        fixedFeeAndAdditionalCosts,
-        startDate,
-        vatApplicable
-    );
+    LocalDate startDate = feeCalculationRequest.getStartDate();
+    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+    BigDecimal calculatedVatAmount = VatUtility.getVatAmount(fixedFeeAndAdditionalCosts, startDate, vatApplicable);
 
     BigDecimal finalTotal = fixedFeeAndAdditionalCosts
-        .add(calculatedVatValue)
+        .add(calculatedVatAmount)
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
 
@@ -89,7 +85,7 @@ public final class ImmigrationAsylumFixedFeeCalculator {
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(vatApplicable)
             .vatRateApplied(toDouble(getVatRateForDate(startDate)))
-            .calculatedVatAmount(toDouble(calculatedVatValue))
+            .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .fixedFeeAmount(toDouble(fixedFeeAmount))
