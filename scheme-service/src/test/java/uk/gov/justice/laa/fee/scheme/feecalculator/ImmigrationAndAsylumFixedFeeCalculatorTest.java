@@ -123,7 +123,7 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
         .feeCode(feeCode)
         .schemeId("I&A_FS2023")
         .claimId("temp hard coded")
-        .warning(new ArrayList<>())
+        .warnings(new ArrayList<>())
         .escapeCaseFlag(false) // hardcoded till escape logic implemented
         .feeCalculation(expectedCalculation)
         .build();
@@ -166,6 +166,6 @@ class ImmigrationAndAsylumFixedFeeCalculatorTest {
     assertNotNull(response.getFeeCalculation());
     assertThat(response.getFeeCode()).isEqualTo(feeCode);
     assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
-    assertThat(response.getWarning().getFirst()).isEqualTo(WARNING_CODE_DESCRIPTION);
+    assertThat(response.getWarnings().getFirst()).isEqualTo(WARNING_CODE_DESCRIPTION);
   }
 }

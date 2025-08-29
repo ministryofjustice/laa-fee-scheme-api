@@ -173,7 +173,7 @@ components:
           type: string
         claimId:
           type: string
-        warning:
+        warnings:
           $ref: "#/components/schemas/Warning"
         escapeCaseFlag:
           type: boolean

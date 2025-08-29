@@ -65,7 +65,7 @@ public final class DiscriminationFeeCalculator {
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
         .claimId("temp hardcoded till clarification")
-        .warning(warningList)
+        .warnings(warningList)
         .escapeCaseFlag(escaped)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))

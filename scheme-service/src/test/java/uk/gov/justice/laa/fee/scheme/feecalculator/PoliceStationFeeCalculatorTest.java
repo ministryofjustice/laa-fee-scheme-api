@@ -119,7 +119,7 @@ class PoliceStationFeeCalculatorTest {
         .feeCode(feeCode)
         .schemeId(feeSchemeCode)
         .claimId("temp hardcoded till clarification")
-        .warning(new ArrayList<>())
+        .warnings(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();

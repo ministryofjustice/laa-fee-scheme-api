@@ -83,7 +83,7 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
         .claimId("temp hard coded")
-        .warning(warningList)
+        .warnings(warningList)
         .escapeCaseFlag(false) // temp hard coded
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
