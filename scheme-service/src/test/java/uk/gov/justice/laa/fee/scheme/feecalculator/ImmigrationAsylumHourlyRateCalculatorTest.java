@@ -23,37 +23,39 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
   static Stream<Arguments> feeTestData() {
     return Stream.of(
-        Arguments.of("IAXL", true, null, 166.25, 800.00,        // IAXL under profit costs limit
-            429.02, 46.83, 234.14, 166.25, List.of()),
-        Arguments.of("IAXL", true, "priorAuth", 919.16, 800.00, // IAXL over profit costs limit with prior auth
-            1332.51, 197.41, 987.05, 919.16, List.of()),
-        Arguments.of("IAXL", true, null, 919.16, 800.00,        // IAXL over profit costs limit without prior auth
-            1189.52, 173.58, 867.89, 800.00, List.of("warning net profit costs")),
-        Arguments.of("IMXL", true, null, 166.25, 800.00,        // IXML under profit costs limit
-            429.02, 46.83, 234.14, 166.25, List.of()),
-        Arguments.of("IMXL", true, "priorAuth", 536.71, 500.00, // IXML over profit costs limit with prior auth
-            873.57, 120.92, 604.60, 536.71, List.of()),
-        Arguments.of("IMXL", true, null, 536.71, 500.00,        // IXML over profit costs limit without prior auth
-            829.52, 113.58, 567.89, 500.00, List.of("warning net profit costs"))
-
+        Arguments.of(true, null, 166.25, 123.38, 24.67,          // under profit costs and disbursements limits
+            429.02, 46.83, 234.14, 166.25, 123.38, List.of()),
+        Arguments.of(true, "priorAuth", 919.16, 123.38, 24.67,   // over profit costs limit with prior auth
+            1332.51, 197.41, 987.05, 919.16, 123.38, List.of()),
+        Arguments.of(true, null, 919.16, 123.38, 24.67,          // over profit costs limit without prior auth
+            1189.52, 173.58, 867.89, 800.00, 123.38, List.of("warning net profit costs")),
+        Arguments.of(true, "priorAuth", 166.25, 425.17, 85.03,   // over disbursements limit with prior auth
+            791.17, 46.83, 234.14, 166.25, 425.17, List.of()),
+        Arguments.of(true, null, 166.25, 425.17, 85.03,          // over disbursements limit without prior auth
+            766.00, 46.83, 234.14, 166.25, 400.00, List.of("warning net disbursements")),
+        Arguments.of(true, "priorAuth", 919.16, 425.17, 85.03,   // over profit costs and disbursements limits with prior auth
+            1694.66, 197.41, 987.05, 919.16, 425.17, List.of()),
+        Arguments.of(true, null, 919.16, 425.17, 85.03,          // over profit costs and disbursements limits without prior auth
+            1526.50, 173.58, 867.89, 800.0, 400.00, List.of("warning net profit costs", "warning net disbursements"))
     );
   }
 
   @ParameterizedTest
   @MethodSource("feeTestData")
-  void getFee_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority,
-                                                             double netProfitCosts, double profitCostLimit,
-                                                             double expectedTotal, double expectedCalculatedVat,
-                                                             double expectedHourlyTotal, double expectedNetProfitCosts,
-                                                             List<String> expectedWarnings) {
+  void getFee_shouldReturnFeeCalculationResponse(boolean vatIndicator, String priorAuthority,
+                                                 double netProfitCosts, double netDisbursement, double disbursementVat,
+                                                 double expectedTotal, double expectedCalculatedVat,
+                                                 double expectedHourlyTotal, double expectedNetProfitCosts,
+                                                 double expectedNetDisbursement, List<String> expectedWarnings) {
 
+    String feeCode = "IAXL";
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .startDate(LocalDate.of(2025, 5, 11))
         .netProfitCosts(netProfitCosts)
         .jrFormFilling(67.89)
-        .netDisbursementAmount(123.38)
-        .disbursementVatAmount(24.67)
+        .netDisbursementAmount(netDisbursement)
+        .disbursementVatAmount(disbursementVat)
         .vatIndicator(vatIndicator)
         .immigrationPriorityAuthority(priorAuthority)
         .build();
@@ -62,8 +64,8 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
         .feeCode(feeCode)
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2023").build())
         .calculationType(IMMIGRATION_ASYLUM_HOURLY_RATE)
-        .profitCostLimit(new BigDecimal(profitCostLimit))
-        .disbursementLimit(new BigDecimal("800.00"))
+        .profitCostLimit(new BigDecimal("800.00"))
+        .disbursementLimit(new BigDecimal("400.00"))
         .build();
 
     FeeCalculationResponse result = ImmigrationAsylumHourlyRateCalculator.getFee(feeEntity, feeCalculationRequest);
@@ -76,8 +78,8 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     assertThat(result.getFeeCalculation().getVatIndicator()).isEqualTo(vatIndicator);
     assertThat(result.getFeeCalculation().getVatRateApplied()).isEqualTo(20.0);
     assertThat(result.getFeeCalculation().getCalculatedVatAmount()).isEqualTo(expectedCalculatedVat);
-    assertThat(result.getFeeCalculation().getDisbursementAmount()).isEqualTo(123.38);
-    assertThat(result.getFeeCalculation().getDisbursementVatAmount()).isEqualTo(24.67);
+    assertThat(result.getFeeCalculation().getDisbursementAmount()).isEqualTo(expectedNetDisbursement);
+    assertThat(result.getFeeCalculation().getDisbursementVatAmount()).isEqualTo(disbursementVat);
     assertThat(result.getFeeCalculation().getHourlyTotalAmount()).isEqualTo(expectedHourlyTotal);
     assertThat(result.getFeeCalculation().getNetProfitCostsAmount()).isEqualTo(expectedNetProfitCosts);
     assertThat(result.getFeeCalculation().getJrFormFillingAmount()).isEqualTo(67.89);

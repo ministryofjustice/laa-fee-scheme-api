@@ -47,7 +47,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
     BigDecimal disbursementLimit = feeEntity.getDisbursementLimit();
     if (netDisbursementAmount.compareTo(disbursementLimit) > 0
         && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorityAuthority())) {
-      netProfitCosts = profitCostLimit;
+      netDisbursementAmount = disbursementLimit;
       warnings.add(WARNING_NET_DISBURSEMENTS);
     }
 
