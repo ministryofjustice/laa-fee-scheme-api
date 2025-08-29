@@ -117,7 +117,7 @@ class FeeCalculationUtilityTest {
         .feeCode("MHL02")
         .schemeId("MHL_FS2013")
         .claimId("temp hardcoded till clarification")
-        .warning(new ArrayList<>())
+        .warnings(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();

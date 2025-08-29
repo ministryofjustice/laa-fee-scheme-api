@@ -98,7 +98,7 @@ class MediationFeeCalculatorTest {
         .feeCode(feeCode)
         .schemeId("MED_FS2013")
         .claimId("temp hardcoded till clarification")
-        .warning(new ArrayList<>())
+        .warnings(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();
