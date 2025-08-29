@@ -1,7 +1,7 @@
 INSERT INTO fee (fee_code, fee_scheme_code, fixed_fee, profit_cost_limit, disbursement_limit, escape_threshold_limit,
                  prior_authority_applicable, schedule_reference, ho_interview_bolt_on, oral_cmrh_bolt_on,
-                 telephone_cmrh_bolt_on, substantive_hearing_bolt_on, adjorn_hearing_bolt_on, mediation_session_one,
-                 mediation_session_two, region, description, calculation_type)
+                 telephone_cmrh_bolt_on, substantive_hearing_bolt_on, adjorn_hearing_bolt_on, mediation_fee_lower,
+                 mediation_fee_higher, region, description, calculation_type)
 VALUES ('INVA', 'POL_FS2016', NULL, 273.75, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
         'Advice and Assistance (not at the police station)','POLICE_STATION'),
        ('INVE', 'POL_FS2016', NULL, 1368.75, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -26,8 +26,8 @@ ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
 INSERT INTO fee (fee_code, fee_scheme_code, fixed_fee, profit_cost_limit, disbursement_limit, escape_threshold_limit,
                  prior_authority_applicable, schedule_reference, ho_interview_bolt_on, oral_cmrh_bolt_on,
-                 telephone_cmrh_bolt_on, substantive_hearing_bolt_on, adjorn_hearing_bolt_on, mediation_session_one,
-                 mediation_session_two, region, description, calculation_type)
+                 telephone_cmrh_bolt_on, substantive_hearing_bolt_on, adjorn_hearing_bolt_on, mediation_fee_lower,
+                 mediation_fee_higher, region, description, calculation_type)
 VALUES ('INVH', 'POL_FS2022', NULL, 1574.06, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
         'Police Station: Post-charge attendance – breach of bail/arrest on warrant','POLICE_STATION'),
        ('INVK', 'POL_FS2022', NULL, 1574.06, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -52,8 +52,8 @@ ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
 INSERT INTO fee (fee_code, fee_scheme_code, fixed_fee, profit_cost_limit, disbursement_limit, escape_threshold_limit,
                  prior_authority_applicable, schedule_reference, ho_interview_bolt_on, oral_cmrh_bolt_on,
-                 telephone_cmrh_bolt_on, substantive_hearing_bolt_on, adjorn_hearing_bolt_on, mediation_session_one,
-                 mediation_session_two, region, description, calculation_type)
+                 telephone_cmrh_bolt_on, substantive_hearing_bolt_on, adjorn_hearing_bolt_on, mediation_fee_lower,
+                 mediation_fee_higher, region, description, calculation_type)
 VALUES ('INVB1', 'POL_FS2022', NULL, 33.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
         'Police station: telephone advice only (London)','POLICE_STATION'),
        ('INVB2', 'POL_FS2022', NULL, 31.74, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,

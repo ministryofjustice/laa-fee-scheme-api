@@ -161,8 +161,8 @@ class FeeServiceTest {
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("MED1")
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("MED_FS2013").build())
-        .mediationSessionOne(new BigDecimal(50))
-        .mediationSessionTwo(new BigDecimal(100))
+        .mediationFeeLower(new BigDecimal(50))
+        .mediationFeeHigher(new BigDecimal(100))
         .calculationType(MEDIATION)
         .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));

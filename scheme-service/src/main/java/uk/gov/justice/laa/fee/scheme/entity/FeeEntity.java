@@ -43,8 +43,8 @@ public class FeeEntity {
   private BigDecimal telephoneCmrhBoltOn;
   private BigDecimal substantiveHearingBoltOn;
   private BigDecimal adjornHearingBoltOn;
-  private BigDecimal mediationSessionOne;
-  private BigDecimal mediationSessionTwo;
+  private BigDecimal mediationFeeLower;
+  private BigDecimal mediationFeeHigher;
   private String region;
   @Enumerated(EnumType.STRING)
   @Column(name = "calculation_type")

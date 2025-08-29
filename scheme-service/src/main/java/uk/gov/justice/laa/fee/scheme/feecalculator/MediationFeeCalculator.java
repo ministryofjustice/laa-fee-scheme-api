@@ -39,7 +39,7 @@ public final class MediationFeeCalculator {
       throw new InvalidMediationSessionException(feeEntity.getFeeCode());
     }
 
-    BigDecimal baseFee = (numberOfMediationSessions == 1) ? feeEntity.getMediationSessionOne() : feeEntity.getMediationSessionTwo();
+    BigDecimal baseFee = (numberOfMediationSessions == 1) ? feeEntity.getMediationFeeLower() : feeEntity.getMediationFeeHigher();
 
     return calculate(baseFee, feeData, feeEntity);
   }
