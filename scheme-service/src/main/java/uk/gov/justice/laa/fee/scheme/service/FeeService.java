@@ -13,6 +13,7 @@ import uk.gov.justice.laa.fee.scheme.exception.PoliceStationFeeNotFoundException
 import uk.gov.justice.laa.fee.scheme.feecalculator.DiscriminationFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.ImmigrationAsylumFixedFeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.ImmigrationAsylumHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.MediationFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.PoliceStationFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.DateUtility;
@@ -71,6 +72,7 @@ public class FeeService {
            MENTAL_HEALTH, MISCELLANEOUS, PUBLIC_LAW -> FixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
       case DISCRIMINATION -> DiscriminationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
       case IMMIGRATION_ASYLUM_FIXED_FEE -> ImmigrationAsylumFixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+      case IMMIGRATION_ASYLUM_HOURLY_RATE -> ImmigrationAsylumHourlyRateCalculator.getFee(feeEntity, feeCalculationRequest);
       case MEDIATION -> MediationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
       case POLICE_STATION -> PoliceStationFeeCalculator.getFee(feeEntity, policeStationFeesEntity,
               feeCalculationRequest);
