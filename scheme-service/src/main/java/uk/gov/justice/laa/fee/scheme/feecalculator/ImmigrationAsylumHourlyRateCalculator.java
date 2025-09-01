@@ -22,8 +22,8 @@ public final class ImmigrationAsylumHourlyRateCalculator {
   private ImmigrationAsylumHourlyRateCalculator() {
   }
 
-  public static final String IAXL = "IAXL";
-  public static final String IMXL = "IMXL";
+  private static final String IAXL = "IAXL";
+  private static final String IMXL = "IMXL";
 
   private static final String WARNING_NET_PROFIT_COSTS = "warning net profit costs"; // @TODO: TBC
   private static final String WARNING_NET_DISBURSEMENTS = "warning net disbursements"; // @TODO: TBC
