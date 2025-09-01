@@ -79,7 +79,7 @@ class FeeCalculationUtilityTest {
   }
 
   @Test
-  void calculate_givenFixedFee_returnsFeeCalculationResponse_mentalHealth() {
+  void calculate_givenFixedFeeWithBoltOns_returnsFeeCalculationResponse() {
     BigDecimal fixedFee = new BigDecimal("263.00");
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("MHL02")

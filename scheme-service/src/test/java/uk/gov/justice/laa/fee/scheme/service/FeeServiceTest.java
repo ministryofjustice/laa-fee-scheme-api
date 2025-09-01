@@ -12,6 +12,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.DISCRI
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.HOUSING;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.HOUSING_HLPAS;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.IMMIGRATION_ASYLUM_FIXED_FEE;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.IMMIGRATION_ASYLUM_HOURLY_RATE;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MEDIATION;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MISCELLANEOUS;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.POLICE_STATION;
@@ -235,6 +236,37 @@ class FeeServiceTest {
     FeeCalculationResponse response = feeService.getFeeCalculation(request);
 
     assertFeeCalculation(response, "IMCC", 1007.70);
+  }
+
+  @Test
+  void getFeeCalculation_shouldReturnExpectedCalculation_immigrationAsylumHourlyRate_legalHelp() {
+    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("I&A_FS2013",
+        "Immigration and Asylum Scheme 2013", LocalDate.parse("2013-04-01"));
+
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("IAXL")
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2013").build())
+        .profitCostLimit(new BigDecimal("800"))
+        .disbursementLimit(new BigDecimal("400"))
+        .calculationType(IMMIGRATION_ASYLUM_HOURLY_RATE)
+        .build();
+    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("IAXL")
+        .startDate(LocalDate.of(2025, 6, 14))
+        .netProfitCosts(166.25)
+        .jrFormFilling(635.44)
+        .netDisbursementAmount(89.56)
+        .disbursementVatAmount(17.91)
+        .vatIndicator(true)
+        .build();
+
+    FeeCalculationResponse response = feeService.getFeeCalculation(request);
+
+    assertFeeCalculation(response, "IAXL", 1069.5);
   }
 
   @Test

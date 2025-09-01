@@ -1,6 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.controller;
 
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import static org.springframework.test.json.JsonCompareMode.STRICT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import uk.gov.justice.laa.fee.scheme.postgresTestContainer.PostgresContainerTestBase;
 
@@ -27,7 +26,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
 
   @Test
   void shouldGetFeeCalculation_discrimination() throws Exception {
-    MvcResult result = mockMvc
+    mockMvc
         .perform(post("/api/v1/fee-calculation")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
@@ -45,133 +44,31 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn();
-
-    String resultJson = result.getResponse().getContentAsString();
-
-    String expectedJson = """
-        {
-          "feeCode": "DISC",
-          "schemeId": "DISC_FS2013",
-          "claimId": "temp hardcoded till clarification",
-          "escapeCaseFlag": false,
-          "feeCalculation": {
-            "totalAmount": 502.23,
-            "vatIndicator": true,
-            "vatRateApplied": 20.00,
-            "calculatedVatAmount": 63.65,
-            "disbursementAmount": 100.21,
-            "disbursementVatAmount": 20.12,
-            "hourlyTotalAmount": 318.25,
-            "netCostOfCounselAmount": 79.19,
-            "netProfitCostsAmount": 150.25,
-            "travelAndWaitingCostAmount": 88.81
+        .andExpect(content().json("""
+          {
+            "feeCode": "DISC",
+            "schemeId": "DISC_FS2013",
+            "claimId": "temp hardcoded till clarification",
+            "escapeCaseFlag": false,
+            "feeCalculation": {
+              "totalAmount": 502.23,
+              "vatIndicator": true,
+              "vatRateApplied": 20.00,
+              "calculatedVatAmount": 63.65,
+              "disbursementAmount": 100.21,
+              "disbursementVatAmount": 20.12,
+              "hourlyTotalAmount": 318.25,
+              "netCostOfCounselAmount": 79.19,
+              "netProfitCostsAmount": 150.25,
+              "travelAndWaitingCostAmount": 88.81
+            }
           }
-        }
-        """;
-    assertEquals(expectedJson, resultJson, true);
-  }
-
-  @Test
-  void shouldGetFeeCalculation_mediation() throws Exception {
-    MvcResult result = mockMvc
-        .perform(post("/api/v1/fee-calculation")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "MED21",
-                  "startDate": "2019-09-30",
-                  "netDisbursementAmount": 100.21,
-                  "disbursementVatAmount": 20.12,
-                  "vatIndicator": true,
-                  "numberOfMediationSessions": 1
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn();
-
-    String resultJson = result.getResponse().getContentAsString();
-
-    String expectedJson = """
-        {
-          "feeCode": "MED21",
-          "schemeId": "MED_FS2013",
-          "claimId": "temp hardcoded till clarification",
-          "escapeCaseFlag": false,
-          "feeCalculation": {
-            "totalAmount": 321.93,
-            "vatIndicator": true,
-            "vatRateApplied": 20.00,
-            "calculatedVatAmount": 33.60,
-            "disbursementAmount": 100.21,
-            "disbursementVatAmount": 20.12,
-            "fixedFeeAmount": 168.00
-          }
-        }
-        """;
-    assertEquals(expectedJson, resultJson, true);
-  }
-
-  @ParameterizedTest
-  @CsvSource({
-      "CAPA, CAPA_FS2013, 434.85, 47.8, 239.0",
-      "CLIN, CLIN_FS2013, 382.05, 39.0, 195.0",
-      "COM, COM_FS2013, 467.25, 53.2, 266.0",
-      "DEBT, DEBT_FS2013, 364.05, 36.0, 180.0",
-      "ELA, ELA_FS2024, 336.45, 31.4, 157.0",
-      "HOUS, HOUS_FS2013, 336.45, 31.4, 157.0",
-      "MISCCON, MISCCON_FS2013, 338.85, 31.8, 159.0",
-      "PUB, PUB_FS2013, 458.85, 51.8, 259.0"
-  })
-  void shouldGetFeeCalculation_otherCivilCategories(String feeCode,
-                                                    String schemeId,
-                                                    String expectedTotal,
-                                                    String expectedVatAmount,
-                                                    String fixedFeeAmount) throws Exception {
-    MvcResult result = mockMvc
-        .perform(post("/api/v1/fee-calculation")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "%s",
-                  "startDate": "2025-02-01",
-                  "netDisbursementAmount": 123.38,
-                  "disbursementVatAmount": 24.67,
-                  "vatIndicator": true
-                }
-                """.formatted(feeCode))
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn();
-
-    String resultJson = result.getResponse().getContentAsString();
-
-    String expectedJson = """
-        {
-          "feeCode": "%s",
-          "schemeId": "%s",
-          "claimId": "temp hardcoded till clarification",
-          "escapeCaseFlag": false,
-          "feeCalculation": {
-            "totalAmount": %s,
-            "vatIndicator": true,
-            "vatRateApplied": 20.00,
-            "calculatedVatAmount": %s,
-            "disbursementAmount": 123.38,
-            "disbursementVatAmount": 24.67,
-            "fixedFeeAmount": %s
-          }
-        }
-        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount);
-    assertEquals(expectedJson, resultJson, true);
+          """, STRICT));
   }
 
   @Test
   void shouldGetFeeCalculation_immigrationAndAsylumFixedFee() throws Exception {
-    MvcResult result = mockMvc
+    mockMvc
         .perform(post("/api/v1/fee-calculation")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
@@ -193,37 +90,106 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn();
-
-    String resultJson = result.getResponse().getContentAsString();
-
-    String expectedJson = """
-        {
-          "feeCode": "IMCF",
-          "schemeId": "I&A_FS2023",
-          "claimId": "temp hard coded",
-          "escapeCaseFlag": false,
-          "feeCalculation": {
-            "totalAmount": 2533.53,
-            "vatIndicator": true,
-            "vatRateApplied": 20.00,
-            "calculatedVatAmount": 402.20,
-            "disbursementAmount": 100.21,
-            "disbursementVatAmount": 20.12,
-            "fixedFeeAmount": 1092.00,
-            "detentionAndWaitingCostsAmount": 111.00,
-            "jrFormFillingAmount": 50,
-            "boltOnFeeAmount": 758.00
+        .andExpect(content().json("""
+          {
+            "feeCode": "IMCF",
+            "schemeId": "I&A_FS2023",
+            "claimId": "temp hard coded",
+            "escapeCaseFlag": false,
+            "feeCalculation": {
+              "totalAmount": 2533.53,
+              "vatIndicator": true,
+              "vatRateApplied": 20.00,
+              "calculatedVatAmount": 402.20,
+              "disbursementAmount": 100.21,
+              "disbursementVatAmount": 20.12,
+              "fixedFeeAmount": 1092.00,
+              "detentionAndWaitingCostsAmount": 111.00,
+              "jrFormFillingAmount": 50,
+              "boltOnFeeAmount": 758.00
+            }
           }
-        }
-        """;
+          """, STRICT));
+  }
 
-    assertEquals(expectedJson, resultJson, true);
+  @Test
+  void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate_legalHelp() throws Exception {
+    mockMvc
+        .perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "IMXL",
+                  "startDate": "2025-02-11",
+                  "netProfitCosts": 116.89,
+                  "jrFormFilling": 25.00,
+                  "netDisbursementAmount": 125.70,
+                  "disbursementVatAmount": 25.14,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+          {
+            "feeCode": "IMXL",
+            "schemeId": "I&A_FS2013",
+            "feeCalculation": {
+              "totalAmount": 321.11,
+              "vatIndicator": true,
+              "vatRateApplied": 20.00,
+              "calculatedVatAmount": 28.38,
+              "disbursementAmount": 125.70,
+              "disbursementVatAmount": 25.14,
+              "hourlyTotalAmount": 141.89,
+              "netProfitCostsAmount": 116.89,
+              "jrFormFillingAmount": 25.00
+            }
+          }
+          """, STRICT));
+  }
+
+  @Test
+  void shouldGetFeeCalculation_mediation() throws Exception {
+    mockMvc
+        .perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "MED21",
+                  "startDate": "2019-09-30",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true,
+                  "numberOfMediationSessions": 1
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+          {
+            "feeCode": "MED21",
+            "schemeId": "MED_FS2013",
+            "claimId": "temp hardcoded till clarification",
+            "escapeCaseFlag": false,
+            "feeCalculation": {
+              "totalAmount": 321.93,
+              "vatIndicator": true,
+              "vatRateApplied": 20.00,
+              "calculatedVatAmount": 33.60,
+              "disbursementAmount": 100.21,
+              "disbursementVatAmount": 20.12,
+              "fixedFeeAmount": 168.00
+            }
+          }
+          """, STRICT));
   }
 
   @Test
   void shouldGetFeeCalculation_mentalHealth() throws Exception {
-    MvcResult result = mockMvc
+    mockMvc
         .perform(post("/api/v1/fee-calculation")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
@@ -241,35 +207,81 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn();
-
-    String resultJson = result.getResponse().getContentAsString();
-
-    String expectedJson = """
-        
-        {
-          "feeCode": "MHL03",
-          "schemeId": "MHL_FS2013",
-          "claimId": "temp hardcoded till clarification",
-          "escapeCaseFlag": false,
-          "feeCalculation": {
-            "totalAmount": 1081.53,
-            "vatIndicator": true,
-            "vatRateApplied": 20.00,
-            "calculatedVatAmount": 160.20,
-            "disbursementAmount": 100.21,
-            "disbursementVatAmount": 20.12,
-            "fixedFeeAmount": 450.00,
-            "boltOnFeeAmount": 351.00
+        .andExpect(content().json("""
+          {
+            "feeCode": "MHL03",
+            "schemeId": "MHL_FS2013",
+            "claimId": "temp hardcoded till clarification",
+            "escapeCaseFlag": false,
+            "feeCalculation": {
+              "totalAmount": 1081.53,
+              "vatIndicator": true,
+              "vatRateApplied": 20.00,
+              "calculatedVatAmount": 160.20,
+              "disbursementAmount": 100.21,
+              "disbursementVatAmount": 20.12,
+              "fixedFeeAmount": 450.00,
+              "boltOnFeeAmount": 351.00
+            }
           }
+          """, STRICT));
+
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "CAPA, CAPA_FS2013, 434.85, 47.8, 239.0",
+      "CLIN, CLIN_FS2013, 382.05, 39.0, 195.0",
+      "COM, COM_FS2013, 467.25, 53.2, 266.0",
+      "DEBT, DEBT_FS2013, 364.05, 36.0, 180.0",
+      "ELA, ELA_FS2024, 336.45, 31.4, 157.0",
+      "HOUS, HOUS_FS2013, 336.45, 31.4, 157.0",
+      "MISCCON, MISCCON_FS2013, 338.85, 31.8, 159.0",
+      "PUB, PUB_FS2013, 458.85, 51.8, 259.0"
+  })
+  void shouldGetFeeCalculation_otherCivilCategories(String feeCode,
+                                                    String schemeId,
+                                                    String expectedTotal,
+                                                    String expectedVatAmount,
+                                                    String fixedFeeAmount) throws Exception {
+    String expectedJson = """
+      {
+        "feeCode": "%s",
+        "schemeId": "%s",
+        "claimId": "temp hardcoded till clarification",
+        "escapeCaseFlag": false,
+        "feeCalculation": {
+          "totalAmount": %s,
+          "vatIndicator": true,
+          "vatRateApplied": 20.00,
+          "calculatedVatAmount": %s,
+          "disbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "fixedFeeAmount": %s
         }
-        """;
-    assertEquals(expectedJson, resultJson, true);
+      }
+      """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount);
+
+    mockMvc.perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+              {
+                "feeCode": "%s",
+                "startDate": "2025-02-01",
+                "netDisbursementAmount": 123.38,
+                "disbursementVatAmount": 24.67,
+                "vatIndicator": true
+              }
+              """.formatted(feeCode))
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json(expectedJson, STRICT));
   }
 
   @Test
   void shouldGetFeeCalculation_policeStation() throws Exception {
-    MvcResult result = mockMvc
+    mockMvc
         .perform(post("/api/v1/fee-calculation")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
@@ -284,27 +296,24 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                 """)
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andReturn();
-
-    String resultJson = result.getResponse().getContentAsString();
-
-    String expectedJson = """
-        {
-          "feeCode": "INVC",
-          "schemeId": "POL_FS2016",
-          "claimId": "temp hardcoded till clarification",
-          "escapeCaseFlag": false,
-          "feeCalculation": {
-            "totalAmount": 131.40,
-            "vatIndicator": false,
-            "vatRateApplied": 20.00,
-            "calculatedVatAmount": 0,
-            "disbursementAmount": 0,
-            "disbursementVatAmount": 0,
-            "fixedFeeAmount": 131.40
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+          {
+            "feeCode": "INVC",
+            "schemeId": "POL_FS2016",
+            "claimId": "temp hardcoded till clarification",
+            "escapeCaseFlag": false,
+            "feeCalculation": {
+              "totalAmount": 131.40,
+              "vatIndicator": false,
+              "vatRateApplied": 20.00,
+              "calculatedVatAmount": 0,
+              "disbursementAmount": 0,
+              "disbursementVatAmount": 0,
+              "fixedFeeAmount": 131.40
+            }
           }
-        }
-        """;
-    assertEquals(expectedJson, resultJson, true);
+          """, STRICT));
   }
+
 }
