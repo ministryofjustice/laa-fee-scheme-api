@@ -28,6 +28,8 @@ class CategoryOfLawControllerIntegrationTest extends PostgresContainerTestBase {
         .perform(get("/api/v1/category-of-law/CAPA"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.categoryOfLawCode").value("AAP"));
+        .andExpect(jsonPath("$.categoryOfLawCode").value("AAP"))
+        .andExpect(jsonPath("$.feeCodeDescription").value("Claims Against Public Authorities Legal Help Fixed Fee"))
+        .andExpect(jsonPath("$.feeType").value("FIXED"));
   }
 }
