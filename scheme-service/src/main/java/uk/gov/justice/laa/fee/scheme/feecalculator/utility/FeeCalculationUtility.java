@@ -3,10 +3,11 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatRateForDate;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatValue;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -45,19 +46,20 @@ public final class FeeCalculationUtility {
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal boltOnVatValue = BigDecimal.ZERO;
+    LocalDate startDate = feeCalculationRequest.getStartDate();
+    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+    BigDecimal boltOnVatAmount = BigDecimal.ZERO;
     if (boltOnValue != null) {
-      boltOnVatValue = getVatValue(boltOnValue, feeCalculationRequest.getStartDate(), vatApplicable);
+      boltOnVatAmount = getVatAmount(boltOnValue, feeCalculationRequest.getStartDate(), vatApplicable);
     }
-    BigDecimal fixedFeeVatValue = getVatValue(fixedFee, feeCalculationRequest.getStartDate(), vatApplicable);
+    BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, startDate, vatApplicable);
 
-    BigDecimal calculatedVatValue = boltOnVatValue.add(fixedFeeVatValue);
+    BigDecimal calculatedVatAmount = boltOnVatAmount.add(fixedFeeVatAmount);
 
     BigDecimal finalTotal = fixedFee
-        .add(fixedFeeVatValue)
-        .add(boltOnValue != null ? boltOnValue : BigDecimal.ZERO)
-        .add(boltOnVatValue)
+        .add(fixedFeeVatAmount)
+        .add(defaultToZeroIfNull(boltOnValue))
+        .add(boltOnVatAmount)
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
 
@@ -69,8 +71,8 @@ public final class FeeCalculationUtility {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(feeCalculationRequest.getStartDate())))
-            .calculatedVatAmount(toDouble(calculatedVatValue))
+            .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+            .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .fixedFeeAmount(toDouble(fixedFee))

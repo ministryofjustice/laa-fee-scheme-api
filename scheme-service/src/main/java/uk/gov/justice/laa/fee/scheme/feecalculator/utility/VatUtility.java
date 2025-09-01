@@ -24,9 +24,9 @@ public final class VatUtility {
   }
 
   /**
-   * get VAT value to for a amount.
+   * Get VAT value to for an amount.
    */
-  public static BigDecimal getVatValue(BigDecimal value, LocalDate startDate, boolean vatIndicator) {
+  public static BigDecimal getVatAmount(BigDecimal value, LocalDate startDate, boolean vatIndicator) {
     if (!vatIndicator) {
       return BigDecimal.ZERO;
     }
@@ -42,7 +42,7 @@ public final class VatUtility {
   }
 
   /**
-   * get VAT amount to a given value using the tax rate.
+   * Get VAT amount to a given value using the tax rate.
    */
   public static BigDecimal calculateVatAmount(BigDecimal value, BigDecimal taxRate) {
     return value.multiply(taxRate)
