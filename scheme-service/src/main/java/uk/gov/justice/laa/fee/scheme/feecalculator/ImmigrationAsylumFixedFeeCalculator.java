@@ -18,9 +18,9 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 /**
  * Calculate the Immigration and asylum fee for a given fee entity and fee calculation request.
  */
-public final class ImmigrationAndAsylumFixedFeeCalculator {
+public final class ImmigrationAsylumFixedFeeCalculator {
 
-  private ImmigrationAndAsylumFixedFeeCalculator() {
+  private ImmigrationAsylumFixedFeeCalculator() {
   }
 
   private static final List<String> FEE_CODES_WITH_NO_DISBURSEMENT = List.of("IDAS1", "IDAS2");
@@ -30,8 +30,6 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
    * Calculated fee for Immigration and asylum fee based on the provided fee entity and fee calculation request.
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
-    LocalDate startDate = feeCalculationRequest.getStartDate();
-    boolean vatApplicable = feeCalculationRequest.getVatIndicator();
     List<String> warningList = new ArrayList<>();
 
     // get the requested disbursement amount from feeCalculationRequest
@@ -68,14 +66,12 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
         .add(boltOnValue);
 
     // Apply VAT where applicable
-    BigDecimal calculatedVatValue = VatUtility.getVatValue(
-        fixedFeeAndAdditionalCosts,
-        startDate,
-        vatApplicable
-    );
+    LocalDate startDate = feeCalculationRequest.getStartDate();
+    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+    BigDecimal calculatedVatAmount = VatUtility.getVatAmount(fixedFeeAndAdditionalCosts, startDate, vatApplicable);
 
     BigDecimal finalTotal = fixedFeeAndAdditionalCosts
-        .add(calculatedVatValue)
+        .add(calculatedVatAmount)
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
 
@@ -89,7 +85,7 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(vatApplicable)
             .vatRateApplied(toDouble(getVatRateForDate(startDate)))
-            .calculatedVatAmount(toDouble(calculatedVatValue))
+            .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .fixedFeeAmount(toDouble(fixedFeeAmount))
@@ -112,7 +108,7 @@ public final class ImmigrationAndAsylumFixedFeeCalculator {
     }
     // Where requestedNetDisbursementAmount is above limit, we allow request as is, if they have authorisation,
     // if no authorisation default to limit.
-    return feeData.getDisbursementPriorAuthority() != null
+    return feeData.getImmigrationPriorAuthority() != null
         ? requestedNetDisbursementAmount
         : netDisbursementLimit;
   }

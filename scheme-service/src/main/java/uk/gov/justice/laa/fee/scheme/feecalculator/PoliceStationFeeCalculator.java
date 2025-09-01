@@ -3,10 +3,11 @@ package uk.gov.justice.laa.fee.scheme.feecalculator;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility.calculate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatRateForDate;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatValue;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
 import uk.gov.justice.laa.fee.scheme.exception.PoliceStationFeeNotFoundException;
@@ -69,11 +70,13 @@ public final class PoliceStationFeeCalculator {
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal calculatedVatValue = getVatValue(fixedFee, feeCalculationRequest.getStartDate(), vatApplicable);
+    // Apply VAT where applicable
+    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+    LocalDate startDate = feeCalculationRequest.getStartDate();
+    BigDecimal calculatedVatAmount = getVatAmount(fixedFee, startDate, vatApplicable);
 
     BigDecimal finalTotal = fixedFee
-        .add(calculatedVatValue)
+        .add(calculatedVatAmount)
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
 
@@ -85,8 +88,8 @@ public final class PoliceStationFeeCalculator {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(feeCalculationRequest.getStartDate())))
-            .calculatedVatAmount(toDouble(calculatedVatValue))
+            .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+            .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .fixedFeeAmount(toDouble(fixedFee)).build())
