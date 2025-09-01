@@ -24,7 +24,7 @@ public final class VatUtility {
   }
 
   /**
-   * Get VAT amount to for a given value.
+   * Get VAT amount for a given value.
    */
   public static BigDecimal getVatAmount(BigDecimal value, LocalDate startDate, boolean vatIndicator) {
     if (!vatIndicator) {

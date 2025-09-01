@@ -113,7 +113,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   }
 
   @Test
-  void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate() throws Exception {
+  void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate_legalHelp() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")
             .contentType(MediaType.APPLICATION_JSON)
