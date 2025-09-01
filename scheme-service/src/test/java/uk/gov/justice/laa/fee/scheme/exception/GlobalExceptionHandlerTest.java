@@ -30,7 +30,7 @@ class GlobalExceptionHandlerTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getStatus()).isEqualTo(404);
-    assertThat(response.getBody().getMessage()).isEqualTo("Category of code not found for fee: FEE123");
+    assertThat(response.getBody().getMessage()).isEqualTo("Category of law code not found for fee: FEE123");
   }
 
   @Test
