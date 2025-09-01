@@ -43,7 +43,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
       BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
       BigDecimal profitCostLimit = feeEntity.getProfitCostLimit();
       if (netProfitCosts.compareTo(profitCostLimit) > 0
-          && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorityAuthority())) {
+          && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorAuthority())) {
         netProfitCosts = profitCostLimit;
         warnings.add(WARNING_NET_PROFIT_COSTS);
       }
@@ -51,7 +51,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
       BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
       BigDecimal disbursementLimit = feeEntity.getDisbursementLimit();
       if (netDisbursementAmount.compareTo(disbursementLimit) > 0
-          && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorityAuthority())) {
+          && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorAuthority())) {
         netDisbursementAmount = disbursementLimit;
         warnings.add(WARNING_NET_DISBURSEMENTS);
       }

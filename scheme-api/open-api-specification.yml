@@ -131,8 +131,6 @@ components:
           format: double
         vatIndicator:
           type: boolean
-        disbursementPriorAuthority:
-          type: string
         boltOns:
           $ref: "#/components/schemas/BoltOnType"
         netTravelCosts:
@@ -163,7 +161,7 @@ components:
         jrFormFilling:
           type: number
           format: double
-        immigrationPriorityAuthority:
+        immigrationPriorAuthority:
           type: string
 
     FeeCalculationResponse:

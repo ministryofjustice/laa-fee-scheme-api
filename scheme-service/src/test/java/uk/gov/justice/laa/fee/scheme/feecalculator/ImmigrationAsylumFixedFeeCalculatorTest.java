@@ -67,7 +67,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
       String description,
       String feeCode,
       boolean vatIndicator,
-      String disbursementPriorAuthority,
+      String immigrationPriorityAuthority,
       double netDisbursementAmount,
       double disbursementVatAmount,
       BigDecimal netDisbursementLimit,
@@ -85,7 +85,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         .netDisbursementAmount(netDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)
         .vatIndicator(vatIndicator)
-        .disbursementPriorAuthority(disbursementPriorAuthority)
+        .immigrationPriorAuthority(immigrationPriorityAuthority)
         .boltOns(BoltOnType.builder()
             .boltOnCmrhOral(2)
             .boltOnCrmhTelephone(2)
@@ -149,7 +149,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         .netDisbursementAmount(null)
         .disbursementVatAmount(null)
         .vatIndicator(vatIndicator)
-        .disbursementPriorAuthority(null)
+        .immigrationPriorAuthority(null)
         .boltOns(BoltOnType.builder().build())
         .build();
 

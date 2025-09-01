@@ -108,7 +108,7 @@ public final class ImmigrationAsylumFixedFeeCalculator {
     }
     // Where requestedNetDisbursementAmount is above limit, we allow request as is, if they have authorisation,
     // if no authorisation default to limit.
-    return feeData.getDisbursementPriorAuthority() != null
+    return feeData.getImmigrationPriorAuthority() != null
         ? requestedNetDisbursementAmount
         : netDisbursementLimit;
   }

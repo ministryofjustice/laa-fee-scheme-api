@@ -41,7 +41,7 @@ class FeeCalculationControllerTest {
     requestDto.setNetDisbursementAmount(200.75);
     requestDto.setDisbursementVatAmount(40.15);
     requestDto.setVatIndicator(true);
-    requestDto.setDisbursementPriorAuthority("AUTH123");
+    requestDto.setImmigrationPriorAuthority("AUTH123");
     requestDto.boltOns(BoltOnType.builder()
         .boltOnHomeOfficeInterview(2)
         .boltOnAdjournedHearing(1)
