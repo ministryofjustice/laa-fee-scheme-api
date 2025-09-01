@@ -67,6 +67,90 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   }
 
   @Test
+  void shouldGetFeeCalculation_immigrationAndAsylumFixedFee() throws Exception {
+    mockMvc
+        .perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "IMCF",
+                  "startDate": "2024-09-30",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true,
+                  "boltOns": {
+                        "boltOnAdjournedHearing": 2.00,
+                        "boltOnCmrhOral": 1.00,
+                        "boltOnCrmhTelephone": 3.00
+                  },
+                  "detentionAndWaitingCosts": 111.00,
+                  "jrFormFilling": 50.00
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+          {
+            "feeCode": "IMCF",
+            "schemeId": "I&A_FS2023",
+            "claimId": "temp hard coded",
+            "escapeCaseFlag": false,
+            "feeCalculation": {
+              "totalAmount": 2533.53,
+              "vatIndicator": true,
+              "vatRateApplied": 20.00,
+              "calculatedVatAmount": 402.20,
+              "disbursementAmount": 100.21,
+              "disbursementVatAmount": 20.12,
+              "fixedFeeAmount": 1092.00,
+              "detentionAndWaitingCostsAmount": 111.00,
+              "jrFormFillingAmount": 50,
+              "boltOnFeeAmount": 758.00
+            }
+          }
+          """, STRICT));
+  }
+
+  @Test
+  void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate() throws Exception {
+    mockMvc
+        .perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "IMXL",
+                  "startDate": "2025-02-11",
+                  "netProfitCosts": 116.89,
+                  "jrFormFilling": 25.00,
+                  "netDisbursementAmount": 125.70,
+                  "disbursementVatAmount": 25.14,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+          {
+            "feeCode": "IMXL",
+            "schemeId": "I&A_FS2013",
+            "feeCalculation": {
+              "totalAmount": 321.11,
+              "vatIndicator": true,
+              "vatRateApplied": 20.00,
+              "calculatedVatAmount": 28.38,
+              "disbursementAmount": 125.70,
+              "disbursementVatAmount": 25.14,
+              "hourlyTotalAmount": 141.89,
+              "netProfitCostsAmount": 116.89,
+              "jrFormFillingAmount": 25.00
+            }
+          }
+          """, STRICT));
+  }
+
+  @Test
   void shouldGetFeeCalculation_mediation() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")
@@ -101,6 +185,47 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             }
           }
           """, STRICT));
+  }
+
+  @Test
+  void shouldGetFeeCalculation_mentalHealth() throws Exception {
+    mockMvc
+        .perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "MHL03",
+                  "startDate": "2021-11-05",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true,
+                  "boltOns": {
+                    "boltOnAdjournedHearing": 3.00
+                  }
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+          {
+            "feeCode": "MHL03",
+            "schemeId": "MHL_FS2013",
+            "claimId": "temp hardcoded till clarification",
+            "escapeCaseFlag": false,
+            "feeCalculation": {
+              "totalAmount": 1081.53,
+              "vatIndicator": true,
+              "vatRateApplied": 20.00,
+              "calculatedVatAmount": 160.20,
+              "disbursementAmount": 100.21,
+              "disbursementVatAmount": 20.12,
+              "fixedFeeAmount": 450.00,
+              "boltOnFeeAmount": 351.00
+            }
+          }
+          """, STRICT));
+
   }
 
   @ParameterizedTest
@@ -152,93 +277,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json(expectedJson, STRICT));
-  }
-
-  @Test
-  void shouldGetFeeCalculation_immigrationAndAsylumFixedFee() throws Exception {
-    mockMvc
-        .perform(post("/api/v1/fee-calculation")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "IMCF",
-                  "startDate": "2024-09-30",
-                  "netDisbursementAmount": 100.21,
-                  "disbursementVatAmount": 20.12,
-                  "vatIndicator": true,
-                  "boltOns": {
-                        "boltOnAdjournedHearing": 2.00,
-                        "boltOnCmrhOral": 1.00,
-                        "boltOnCrmhTelephone": 3.00
-                  },
-                  "detentionAndWaitingCosts": 111.00,
-                  "jrFormFilling": 50.00
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-          {
-            "feeCode": "IMCF",
-            "schemeId": "I&A_FS2023",
-            "claimId": "temp hard coded",
-            "escapeCaseFlag": false,
-            "feeCalculation": {
-              "totalAmount": 2533.53,
-              "vatIndicator": true,
-              "vatRateApplied": 20.00,
-              "calculatedVatAmount": 402.20,
-              "disbursementAmount": 100.21,
-              "disbursementVatAmount": 20.12,
-              "fixedFeeAmount": 1092.00,
-              "detentionAndWaitingCostsAmount": 111.00,
-              "jrFormFillingAmount": 50,
-              "boltOnFeeAmount": 758.00
-            }
-          }
-          """, STRICT));
-  }
-
-  @Test
-  void shouldGetFeeCalculation_mentalHealth() throws Exception {
-    mockMvc
-        .perform(post("/api/v1/fee-calculation")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "MHL03",
-                  "startDate": "2021-11-05",
-                  "netDisbursementAmount": 100.21,
-                  "disbursementVatAmount": 20.12,
-                  "vatIndicator": true,
-                  "boltOns": {
-                    "boltOnAdjournedHearing": 3.00
-                  }
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-          {
-            "feeCode": "MHL03",
-            "schemeId": "MHL_FS2013",
-            "claimId": "temp hardcoded till clarification",
-            "escapeCaseFlag": false,
-            "feeCalculation": {
-              "totalAmount": 1081.53,
-              "vatIndicator": true,
-              "vatRateApplied": 20.00,
-              "calculatedVatAmount": 160.20,
-              "disbursementAmount": 100.21,
-              "disbursementVatAmount": 20.12,
-              "fixedFeeAmount": 450.00,
-              "boltOnFeeAmount": 351.00
-            }
-          }
-          """, STRICT));
-
   }
 
   @Test
