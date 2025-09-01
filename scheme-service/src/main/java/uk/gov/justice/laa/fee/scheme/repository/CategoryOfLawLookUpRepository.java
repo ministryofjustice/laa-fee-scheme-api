@@ -14,8 +14,6 @@ import uk.gov.justice.laa.fee.scheme.repository.projection.FeeCategoryProjection
 @Repository
 public interface CategoryOfLawLookUpRepository extends JpaRepository<CategoryOfLawLookUpEntity, Long> {
 
-  Optional<CategoryOfLawLookUpEntity> findByFeeCode(String feeCode);
-
   @Query("""
       SELECT categoryLookup.categoryCode AS categoryCode,
              fee.description AS description,
