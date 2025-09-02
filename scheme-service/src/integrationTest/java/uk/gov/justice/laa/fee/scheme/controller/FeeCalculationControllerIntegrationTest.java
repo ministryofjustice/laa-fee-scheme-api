@@ -32,6 +32,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "DISC",
+                  "claimId": "claim_123",
                   "startDate": "2019-09-30",
                   "netProfitCosts": 150.25,
                   "netCostOfCounsel": 79.19,
@@ -48,7 +49,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
           {
             "feeCode": "DISC",
             "schemeId": "DISC_FS2013",
-            "claimId": "temp hardcoded till clarification",
+            "claimId": "claim_123",
             "escapeCaseFlag": false,
             "feeCalculation": {
               "totalAmount": 502.23,
@@ -74,6 +75,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "IMCF",
+                  "claimId": "claim_123",
                   "startDate": "2024-09-30",
                   "netDisbursementAmount": 100.21,
                   "disbursementVatAmount": 20.12,
@@ -81,7 +83,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "boltOns": {
                         "boltOnAdjournedHearing": 2.00,
                         "boltOnCmrhOral": 1.00,
-                        "boltOnCrmhTelephone": 3.00
+                        "boltOnCmrhTelephone": 3.00
                   },
                   "detentionAndWaitingCosts": 111.00,
                   "jrFormFilling": 50.00
@@ -94,7 +96,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
           {
             "feeCode": "IMCF",
             "schemeId": "I&A_FS2023",
-            "claimId": "temp hard coded",
+            "claimId": "claim_123",
             "escapeCaseFlag": false,
             "feeCalculation": {
               "totalAmount": 2533.53,
@@ -120,6 +122,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "IMXL",
+                  "claimId": "claim_123",
                   "startDate": "2025-02-11",
                   "netProfitCosts": 116.89,
                   "jrFormFilling": 25.00,
@@ -135,6 +138,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
           {
             "feeCode": "IMXL",
             "schemeId": "I&A_FS2013",
+            "claimId": "claim_123",
             "feeCalculation": {
               "totalAmount": 321.11,
               "vatIndicator": true,
@@ -158,6 +162,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "MED21",
+                  "claimId": "claim_123",
                   "startDate": "2019-09-30",
                   "netDisbursementAmount": 100.21,
                   "disbursementVatAmount": 20.12,
@@ -172,7 +177,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
           {
             "feeCode": "MED21",
             "schemeId": "MED_FS2013",
-            "claimId": "temp hardcoded till clarification",
+            "claimId": "claim_123",
             "escapeCaseFlag": false,
             "feeCalculation": {
               "totalAmount": 321.93,
@@ -195,6 +200,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "MHL03",
+                  "claimId": "claim_123",
                   "startDate": "2021-11-05",
                   "netDisbursementAmount": 100.21,
                   "disbursementVatAmount": 20.12,
@@ -211,7 +217,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
           {
             "feeCode": "MHL03",
             "schemeId": "MHL_FS2013",
-            "claimId": "temp hardcoded till clarification",
+            "claimId": "claim_123",
             "escapeCaseFlag": false,
             "feeCalculation": {
               "totalAmount": 1081.53,
@@ -248,7 +254,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
       {
         "feeCode": "%s",
         "schemeId": "%s",
-        "claimId": "temp hardcoded till clarification",
+        "claimId": "claim_123",
         "escapeCaseFlag": false,
         "feeCalculation": {
           "totalAmount": %s,
@@ -267,6 +273,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
               {
                 "feeCode": "%s",
+                "claimId": "claim_123",
                 "startDate": "2025-02-01",
                 "netDisbursementAmount": 123.38,
                 "disbursementVatAmount": 24.67,
@@ -287,6 +294,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "INVC",
+                  "claimId": "claim_123",
                   "startDate": "2019-12-12",
                   "uniqueFileNumber": "12122019/2423",
                   "policeStationId": "NE001",
@@ -301,7 +309,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
           {
             "feeCode": "INVC",
             "schemeId": "POL_FS2016",
-            "claimId": "temp hardcoded till clarification",
+            "claimId": "claim_123",
             "escapeCaseFlag": false,
             "feeCalculation": {
               "totalAmount": 131.40,

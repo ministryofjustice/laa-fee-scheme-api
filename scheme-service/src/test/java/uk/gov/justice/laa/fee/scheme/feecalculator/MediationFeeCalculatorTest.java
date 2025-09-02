@@ -66,6 +66,7 @@ class MediationFeeCalculatorTest {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
+        .claimId("claim_123")
         .startDate(LocalDate.of(2025, 7, 29))
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
@@ -97,7 +98,7 @@ class MediationFeeCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode(feeCode)
         .schemeId("MED_FS2013")
-        .claimId("temp hardcoded till clarification")
+        .claimId("claim_123")
         .warnings(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
@@ -112,6 +113,7 @@ class MediationFeeCalculatorTest {
   void getFee_whenMediationSessionIsNull_thenThrowsException() {
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode("MED1")
+        .claimId("claim_123")
         .startDate(LocalDate.of(2025, 7, 29))
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)

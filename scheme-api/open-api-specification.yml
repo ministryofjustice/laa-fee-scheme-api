@@ -183,8 +183,8 @@ components:
           type: number
           format: double
           description: "Value of form filling."
-        immigrationPriorAuthority:
-          type: number
+        immigrationPriorAuthorityNumber:
+          type: string
           description: "Authorisation specific to immigration, used for net profit costs over limit or disbursements over limit."
 
     FeeCalculationResponse:

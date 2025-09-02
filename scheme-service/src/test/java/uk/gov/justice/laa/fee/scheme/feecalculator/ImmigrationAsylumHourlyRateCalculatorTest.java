@@ -74,7 +74,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
         .netDisbursementAmount(netDisbursement)
         .disbursementVatAmount(disbursementVat)
         .vatIndicator(vatIndicator)
-        .immigrationPriorAuthority(priorAuthority)
+        .immigrationPriorAuthorityNumber(priorAuthority)
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()

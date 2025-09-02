@@ -36,6 +36,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
    * @return FeeCalculationResponse with calculated fee
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
+    String claimId = feeCalculationRequest.getClaimId();
     String feeCode = feeEntity.getFeeCode();
     if (IAXL.equals(feeCode) || IMXL.equals(feeCode)) {
       List<String> warnings = new ArrayList<>();
@@ -43,7 +44,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
       BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
       BigDecimal profitCostLimit = feeEntity.getProfitCostLimit();
       if (netProfitCosts.compareTo(profitCostLimit) > 0
-          && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorAuthority())) {
+          && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorAuthorityNumber())) {
         netProfitCosts = profitCostLimit;
         warnings.add(WARNING_NET_PROFIT_COSTS);
       }
@@ -51,7 +52,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
       BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
       BigDecimal disbursementLimit = feeEntity.getDisbursementLimit();
       if (netDisbursementAmount.compareTo(disbursementLimit) > 0
-          && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorAuthority())) {
+          && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorAuthorityNumber())) {
         netDisbursementAmount = disbursementLimit;
         warnings.add(WARNING_NET_DISBURSEMENTS);
       }
@@ -74,6 +75,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
       return new FeeCalculationResponse().toBuilder()
           .feeCode(feeCalculationRequest.getFeeCode())
           .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
+          .claimId(claimId)
           .warnings(warnings)
           .feeCalculation(FeeCalculation.builder()
               .totalAmount(toDouble(finalTotal))

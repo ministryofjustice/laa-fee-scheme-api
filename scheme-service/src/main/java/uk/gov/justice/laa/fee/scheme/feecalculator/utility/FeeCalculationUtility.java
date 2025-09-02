@@ -45,6 +45,7 @@ public final class FeeCalculationUtility {
                                                                   FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+    String claimId = feeCalculationRequest.getClaimId();
 
     LocalDate startDate = feeCalculationRequest.getStartDate();
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
@@ -66,7 +67,7 @@ public final class FeeCalculationUtility {
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
-        .claimId("temp hardcoded till clarification")
+        .claimId(claimId)
         .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
