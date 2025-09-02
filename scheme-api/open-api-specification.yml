@@ -111,7 +111,7 @@ components:
       properties:
         feeCode:
           type: string
-          description: "fee code corresponding to a category of law."
+          description: "Fee code corresponding to a category of law."
         claimId:
           type: string
           description: "Unique identifier for a Claim record."
