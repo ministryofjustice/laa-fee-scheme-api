@@ -83,6 +83,7 @@ class FeeCalculationUtilityTest {
     BigDecimal fixedFee = new BigDecimal("263.00");
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("MHL02")
+        .claimId("claim_123")
         .startDate(LocalDate.of(2025, 1, 1))
         .vatIndicator(true)
         .netDisbursementAmount(29.45)
@@ -116,7 +117,7 @@ class FeeCalculationUtilityTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode("MHL02")
         .schemeId("MHL_FS2013")
-        .claimId("temp hardcoded till clarification")
+        .claimId("claim_123")
         .warnings(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)

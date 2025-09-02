@@ -24,7 +24,7 @@ public class BoltOnUtility {
           new BoltOnPair(feeCalculationRequest.getBoltOns().getBoltOnAdjournedHearing(), feeEntity.getAdjornHearingBoltOn()),
           new BoltOnPair(feeCalculationRequest.getBoltOns().getBoltOnHomeOfficeInterview(), feeEntity.getHoInterviewBoltOn()),
           new BoltOnPair(feeCalculationRequest.getBoltOns().getBoltOnCmrhOral(), feeEntity.getOralCmrhBoltOn()),
-          new BoltOnPair(feeCalculationRequest.getBoltOns().getBoltOnCrmhTelephone(), feeEntity.getTelephoneCmrhBoltOn())
+          new BoltOnPair(feeCalculationRequest.getBoltOns().getBoltOnCmrhTelephone(), feeEntity.getTelephoneCmrhBoltOn())
       );
 
       return boltOns.stream()

@@ -78,6 +78,7 @@ class PoliceStationFeeCalculatorTest {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
+        .claimId("claim_123")
         .startDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(vatIndicator)
         .policeStationSchemeId(policeStationSchemeId)
@@ -118,7 +119,7 @@ class PoliceStationFeeCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode(feeCode)
         .schemeId(feeSchemeCode)
-        .claimId("temp hardcoded till clarification")
+        .claimId("claim_123")
         .warnings(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
