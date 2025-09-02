@@ -111,6 +111,10 @@ components:
       properties:
         feeCode:
           type: string
+          description: "fee code corresponding to a category of law."
+        claimId:
+          type: string
+          description: "Unique identifier for a Claim record."
         startDate:
           type: string
           format: date
@@ -127,63 +131,79 @@ components:
         netProfitCosts:
           type: number
           format: double
-        netDisbursementAmount:
-          type: number
-          format: double
+          description: "Used for hourly Fee calculation."
         netCostOfCounsel:
           type: number
           format: double
+          description: "Value of cost of counsel."
+        netDisbursementAmount:
+          type: number
+          format: double
+          description: "Value of disbursement requested."
         disbursementVatAmount:
           type: number
           format: double
+          description: "Vat Value of disbursement."
         vatIndicator:
           type: boolean
+          description: "Indicates if VAT should be applied to Fee calculation."
         boltOns:
           $ref: "#/components/schemas/BoltOnType"
         netTravelCosts:
           type: number
           format: double
+          description: "Value of travel costs."
         netWaitingCosts:
           type: number
           format: double
+          description: "Value of waiting costs."
         travelAndWaitingCosts:
           type: number
           format: double
+          description: "Value of travel and waiting."
         detentionAndWaitingCosts:
           type: number
           format: double
+          description: "Value of detention and waiting costs costs"
         caseConcludedDate:
           type: string
           format: date
         policeCourtOrPrisonId:
           type: string
+          description: "ID corresponding with police, court or prison."
         dutySolicitor:
           type: string
         schemeId:
           type: string
-        ufn:
-          type: string
+          description: "Scheme Id for police station fixed fee calculation."
         numberOfMediationSessions:
           type: integer
+          description: "Number of mediation sessions, where applicable this will determine fixed fee for mediation category of law."
         jrFormFilling:
           type: number
           format: double
+          description: "Value of form filling."
         immigrationPriorAuthority:
-          type: string
+          type: number
+          description: "Authorisation specific to immigration, used for net profit costs over limit or disbursements over limit."
 
     FeeCalculationResponse:
       type: object
       properties:
         feeCode:
           type: string
+          description: "Fee code that was supplied via request."
         schemeId:
           type: string
+          description: "Scheme ID that was used for calculation."
         claimId:
           type: string
+          description: "Unique identifier for a Claim record."
         warnings:
           $ref: "#/components/schemas/Warning"
         escapeCaseFlag:
           type: boolean
+          description: "For hourly fee code, If escape threshold has been passed, will be true, false otherwise."
         feeCalculation:
           $ref: "#/components/schemas/FeeCalculation"
 
@@ -193,53 +213,66 @@ components:
         totalAmount:
           type: number
           format: double
+          description: "The total fee amount that has been calculated."
         vatIndicator:
           type: boolean
+          description: "Whether Vat was requested to be added onto calculation (excluding disbursement)."
         vatRateApplied:
           type: number
           format: double
+          description: "The Vat rate that was used in calculation."
         calculatedVatAmount:
           type: number
           format: double
+          description: "Total amount of Vat that was calculated (excluding disbursement)."
         disbursementAmount:
           type: number
           format: double
+          description: "The disbursement amount calculated to be added."
         disbursementVatAmount:
           type: number
           format: double
+          description: "The disbursement Vat amount calculated to be added."
         hourlyTotalAmount:
           type: number
           format: double
-        hourlyVatAmount:
-          type: number
-          format: double
+          description: "Hourly total amount calculated."
         fixedFeeAmount:
           type: number
           format: double
+          description: "Fixed Fee amount calculated."
         netProfitCostsAmount:
           type: number
           format: double
+          description: "The profit cost amount requested."
         netCostOfCounselAmount:
           type: number
           format: double
+          description: "The cost of counsel requested."
         netTravelCostsAmount:
           type: number
           format: double
+          description: "The net travel cost requested."
         netWaitingCosts:
           type: number
           format: double
+          description: "The net waiting cost requested."
         detentionAndWaitingCostsAmount:
           type: number
           format: double
+          description: "The detention and waiting costs requested."
         jrFormFillingAmount:
           type: number
           format: double
+          description: "The Jr form filling costs requested."
         travelAndWaitingCostAmount:
           type: number
           format: double
+          description: "The Travel and waiting costs requested."
         boltOnFeeAmount:
           type: number
           format: double
+          description: "The total value of bolt ons that was calculated."
 
     Warning:
       type: array
@@ -253,7 +286,7 @@ components:
           type: integer
         boltOnCmrhOral:
           type: integer
-        boltOnCrmhTelephone:
+        boltOnCmrhTelephone:
           type: integer
         boltOnAdditionalTravel:
           type: integer
