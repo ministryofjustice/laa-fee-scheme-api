@@ -95,6 +95,13 @@ components:
       properties:
         categoryOfLawCode:
           type: string
+          description: "Category of law corresponding to fee code"
+        feeCodeDescription:
+          type: string
+          description: "Description of fee code"
+        feeType:
+          type: string
+          description: "Type of fee, Fixed, Hourly, disbursement only"
 
     FeeCalculationRequest:
       type: object

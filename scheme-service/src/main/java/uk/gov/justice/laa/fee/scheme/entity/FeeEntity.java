@@ -49,4 +49,5 @@ public class FeeEntity {
   @Enumerated(EnumType.STRING)
   @Column(name = "calculation_type")
   private CalculationType calculationType;
+  private String feeType;
 }

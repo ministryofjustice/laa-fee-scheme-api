@@ -46,6 +46,6 @@ class CategoryOfLawControllerTest {
     mockMvc.perform(get("/api/v1/category-of-law/FEE123"))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.status").value(404))
-        .andExpect(jsonPath("$.message").value("Category of code not found for fee: FEE123"));
+        .andExpect(jsonPath("$.message").value("Category of law code not found for fee: FEE123"));
   }
 }
