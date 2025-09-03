@@ -161,7 +161,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
-                  "feeCode": "MED21",
+                  "feeCode": "MDAS2B",
                   "claimId": "claim_123",
                   "startDate": "2019-09-30",
                   "netDisbursementAmount": 100.21,
@@ -175,7 +175,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json("""
           {
-            "feeCode": "MED21",
+            "feeCode": "MDAS2B",
             "schemeId": "MED_FS2013",
             "claimId": "claim_123",
             "escapeCaseFlag": false,
