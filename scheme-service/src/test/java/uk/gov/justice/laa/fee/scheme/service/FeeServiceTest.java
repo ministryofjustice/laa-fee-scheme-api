@@ -71,13 +71,13 @@ class FeeServiceTest {
             "DEBT_FS2013", "DEBT Fee Scheme 2013", LocalDate.parse("2013-04-01"),
             new BigDecimal("133.00"), DEBT, 235.12),
         Arguments.of("ELA", // Housing - HLPAS
-            "ELA_FS2024", "ELA Fee Scheme 2013", LocalDate.parse("2024-09-01"),
+            "ELA_FS2024", "ELA Fee Scheme 2024", LocalDate.parse("2024-09-01"),
             new BigDecimal("209.00"), HOUSING_HLPAS, 326.32),
         Arguments.of("HOUS", // Housing
             "HOUS_FS2013", "HOUS Fee Scheme 2013", LocalDate.parse("2013-04-01"),
             new BigDecimal("98.00"), HOUSING, 193.12),
         Arguments.of("MISCCON", // Miscellaneous
-            "MISCCON", "MISCCON Fee Scheme 2015", LocalDate.parse("2015-03-23"),
+            "MISCCON_FS2015", "MISCCON Fee Scheme 2015", LocalDate.parse("2015-03-23"),
             new BigDecimal("375.00"), MISCELLANEOUS, 525.52),
         Arguments.of("PUB", // Public Law
             "PUB_FS2013", "PUB Fee Scheme 2015", LocalDate.parse("2013-04-01"),

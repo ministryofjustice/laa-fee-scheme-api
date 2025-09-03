@@ -162,6 +162,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "IAXC",
+                  "claimId": "claim_123",
                   "startDate": "2025-02-11",
                   "netProfitCosts": 612.67,
                   "netCostOfCounsel": 312.29,
@@ -178,6 +179,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
           {
             "feeCode": "IAXC",
             "schemeId": "I&A_FS2013",
+            "claimId": "claim_123",
             "feeCalculation": {
               "totalAmount": 1302.79,
               "vatIndicator": true,

@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
@@ -16,10 +17,10 @@ class FixedFeeCalculatorTest {
 
   @ParameterizedTest
   @CsvSource({
-      "false, 170.33", // No VAT
-      "true, 180.33" // VAT applied
+      "false, 170.33, 0",   // No VAT
+      "true, 180.33, 10.0"  // VAT applied
   })
-  void getFee_shouldReturnFeeCalculationResponse(boolean vatIndicator, double expectedTotal) {
+  void getFee_shouldReturnFeeCalculationResponse(boolean vatIndicator, double expectedTotal, double expectedCalculatedVat) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("COM")
         .startDate(LocalDate.of(2025, 5, 12))
@@ -39,8 +40,16 @@ class FixedFeeCalculatorTest {
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("COM");
-    assertThat(result.getFeeCalculation()).isNotNull();
-    assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
+
+    FeeCalculation feeCalculation = result.getFeeCalculation();
+    assertThat(feeCalculation).isNotNull();
+    assertThat(feeCalculation.getTotalAmount()).isEqualTo(expectedTotal);
+    assertThat(feeCalculation.getVatIndicator()).isEqualTo(vatIndicator);
+    assertThat(feeCalculation.getVatRateApplied()).isEqualTo(20);
+    assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(expectedCalculatedVat);
+    assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(100.11);
+    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.22);
+    assertThat(feeCalculation.getFixedFeeAmount()).isEqualTo(50);
   }
 
 }
