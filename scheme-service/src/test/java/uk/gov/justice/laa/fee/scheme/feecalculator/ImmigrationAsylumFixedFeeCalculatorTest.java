@@ -81,14 +81,15 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
+        .claimId("claim_123")
         .startDate(LocalDate.of(2025, 7, 29))
         .netDisbursementAmount(netDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)
         .vatIndicator(vatIndicator)
-        .immigrationPriorAuthority(immigrationPriorityAuthority)
+        .immigrationPriorAuthorityNumber(immigrationPriorityAuthority)
         .boltOns(BoltOnType.builder()
             .boltOnCmrhOral(2)
-            .boltOnCrmhTelephone(2)
+            .boltOnCmrhTelephone(2)
             .build())
         .detentionAndWaitingCosts(detentionAndWaitingCosts)
         .jrFormFilling(jrFormfilling)
@@ -122,7 +123,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode(feeCode)
         .schemeId("I&A_FS2023")
-        .claimId("temp hard coded")
+        .claimId("claim_123")
         .warnings(new ArrayList<>())
         .escapeCaseFlag(false) // hardcoded till escape logic implemented
         .feeCalculation(expectedCalculation)
@@ -145,11 +146,12 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
+        .claimId("claim_123")
         .startDate(LocalDate.of(2025, 7, 29))
         .netDisbursementAmount(null)
         .disbursementVatAmount(null)
         .vatIndicator(vatIndicator)
-        .immigrationPriorAuthority(null)
+        .immigrationPriorAuthorityNumber(null)
         .boltOns(BoltOnType.builder().build())
         .build();
 

@@ -34,6 +34,7 @@ public final class DiscriminationFeeCalculator {
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal netCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());
     BigDecimal travelAndWaitingCosts = toBigDecimal(feeCalculationRequest.getTravelAndWaitingCosts());
+    String claimId = feeCalculationRequest.getClaimId();
     List<String> warningList = new ArrayList<>();
 
     BigDecimal feeTotal = netProfitCosts.add(netCostOfCounsel).add(travelAndWaitingCosts);
@@ -64,7 +65,7 @@ public final class DiscriminationFeeCalculator {
     return new FeeCalculationResponse().toBuilder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
-        .claimId("temp hardcoded till clarification")
+        .claimId(claimId)
         .warnings(warningList)
         .escapeCaseFlag(escaped)
         .feeCalculation(FeeCalculation.builder()

@@ -31,6 +31,7 @@ public final class ImmigrationAsylumFixedFeeCalculator {
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
     List<String> warningList = new ArrayList<>();
+    String claimId = feeCalculationRequest.getClaimId();
 
     // get the requested disbursement amount from feeCalculationRequest
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
@@ -78,7 +79,7 @@ public final class ImmigrationAsylumFixedFeeCalculator {
     return new FeeCalculationResponse().toBuilder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
-        .claimId("temp hard coded")
+        .claimId(claimId)
         .warnings(warningList)
         .escapeCaseFlag(false) // temp hard coded
         .feeCalculation(FeeCalculation.builder()
@@ -108,7 +109,7 @@ public final class ImmigrationAsylumFixedFeeCalculator {
     }
     // Where requestedNetDisbursementAmount is above limit, we allow request as is, if they have authorisation,
     // if no authorisation default to limit.
-    return feeData.getImmigrationPriorAuthority() != null
+    return feeData.getImmigrationPriorAuthorityNumber() != null
         ? requestedNetDisbursementAmount
         : netDisbursementLimit;
   }

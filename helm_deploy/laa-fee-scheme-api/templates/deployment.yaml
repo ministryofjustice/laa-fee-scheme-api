@@ -11,7 +11,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "laa-fee-scheme-api.selectorLabels" . | nindent 6 }}
+      {{ include "laa-fee-scheme-api.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       name: {{ .Chart.Name }}
@@ -34,9 +34,9 @@ spec:
               containerPort: {{ .Values.actuator.port }}
               protocol: TCP
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{ toYaml .Values.resources | nindent 12 }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{ toYaml .Values.securityContext | nindent 12 }}
           livenessProbe:
             httpGet:
               path: {{ .Values.actuator.health.path }}

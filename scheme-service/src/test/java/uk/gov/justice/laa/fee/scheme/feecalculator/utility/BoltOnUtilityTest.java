@@ -20,7 +20,7 @@ class BoltOnUtilityTest {
             FeeCalculationRequest.builder()
                 .boltOns(BoltOnType.builder()
                     .boltOnAdjournedHearing(2)
-                    .boltOnCrmhTelephone(2)
+                    .boltOnCmrhTelephone(2)
                     .boltOnCmrhOral(2)
                     .boltOnHomeOfficeInterview(2)
                     .build())
@@ -49,7 +49,7 @@ class BoltOnUtilityTest {
                 .boltOns(BoltOnType.builder()
                     .boltOnAdjournedHearing(3)
                     .boltOnCmrhOral(2)
-                    .boltOnCrmhTelephone(null)
+                    .boltOnCmrhTelephone(null)
                     .boltOnHomeOfficeInterview(null)
                     .build())
                 .build(),

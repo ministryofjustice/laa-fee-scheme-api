@@ -69,6 +69,7 @@ public final class PoliceStationFeeCalculator {
                                                                                PoliceStationFeesEntity policeStationFeesEntity) {
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+    String claimId = feeCalculationRequest.getClaimId();
 
     // Apply VAT where applicable
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
@@ -83,7 +84,7 @@ public final class PoliceStationFeeCalculator {
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(policeStationFeesEntity.getFeeSchemeCode())
-        .claimId("temp hardcoded till clarification")
+        .claimId(claimId)
         .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
