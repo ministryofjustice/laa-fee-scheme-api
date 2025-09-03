@@ -1,21 +1,19 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.IMMIGRATION_ASYLUM_HOURLY_RATE;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.IMMIGRATION_ASYLUM;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.FeeType.HOURLY;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.feecalculator.type.FeeType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
@@ -80,7 +78,8 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2023").build())
-        .calculationType(IMMIGRATION_ASYLUM_HOURLY_RATE)
+        .categoryType(IMMIGRATION_ASYLUM)
+        .feeType(HOURLY)
         .profitCostLimit(new BigDecimal("800.00"))
         .disbursementLimit(new BigDecimal("400.00"))
         .build();

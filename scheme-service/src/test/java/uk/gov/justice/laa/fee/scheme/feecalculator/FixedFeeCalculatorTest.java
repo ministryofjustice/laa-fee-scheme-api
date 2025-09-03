@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.COMMUNITY_CARE;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.COMMUNITY_CARE;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -32,7 +32,7 @@ class FixedFeeCalculatorTest {
         .feeCode("COM")
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("COM_FS2013").build())
         .fixedFee(new BigDecimal("50.00"))
-        .calculationType(COMMUNITY_CARE)
+        .categoryType(COMMUNITY_CARE)
         .build();
 
     FeeCalculationResponse result = FixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);

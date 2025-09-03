@@ -2,7 +2,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MEDIATION;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.MEDIATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -80,7 +80,7 @@ class MediationFeeCalculatorTest {
         .fixedFee(fixedFee)
         .mediationFeeLower(new BigDecimal("50"))
         .mediationFeeHigher(new BigDecimal("100"))
-        .calculationType(MEDIATION)
+        .categoryType(MEDIATION)
         .build();
 
     FeeCalculationResponse response = MediationFeeCalculator.getFee(feeEntity, feeData);
@@ -127,7 +127,7 @@ class MediationFeeCalculatorTest {
         .fixedFee(null)
         .mediationFeeLower(new BigDecimal("50"))
         .mediationFeeHigher(new BigDecimal("100"))
-        .calculationType(MEDIATION)
+        .categoryType(MEDIATION)
         .build();
 
     assertThrows(InvalidMediationSessionException.class, () -> MediationFeeCalculator.getFee(feeEntity, feeData));

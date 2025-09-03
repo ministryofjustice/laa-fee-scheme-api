@@ -1,4 +1,4 @@
-INSERT INTO fee (fee_code, description, fixed_fee, escape_threshold_limit, adjorn_hearing_bolt_on, fee_scheme_code, calculation_type, fee_type)
+INSERT INTO fee (fee_code, description, fixed_fee, escape_threshold_limit, adjorn_hearing_bolt_on, fee_scheme_code, category_type, fee_type)
 VALUES ('MHL01', 'Non-Mental Health Tribunal Fee', 263.00, 759.00, NULL, 'MHL_FS2013', 'MENTAL_HEALTH', 'FIXED'),
        ('MHL02', 'Mental Health Tribunal Fee - Level 1 only', 129.00, 387.00, 117.00,'MHL_FS2013', 'MENTAL_HEALTH', 'FIXED'),
        ('MHL03', 'Mental Health Tribunal Fee - Levels 1 and 2', 450.00, 1350.00, 117.00,'MHL_FS2013', 'MENTAL_HEALTH', 'FIXED'),

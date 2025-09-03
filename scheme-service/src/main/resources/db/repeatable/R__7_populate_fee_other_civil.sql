@@ -1,4 +1,4 @@
-INSERT INTO fee (fee_code, description, fixed_fee, escape_threshold_limit, fee_scheme_code, calculation_type, fee_type)
+INSERT INTO fee (fee_code, description, fixed_fee, escape_threshold_limit, fee_scheme_code, category_type, fee_type)
 VALUES ('CAPA', 'Claims Against Public Authorities Legal Help Fixed Fee', 239.00, 717.00, 'CAPA_FS2013','CLAIMS_PUBLIC_AUTHORITIES', 'FIXED'),
        ('CLIN', 'Clinical Negligence Legal Help Fixed Fee', 195.00, 585.00, 'CLIN_FS2013', 'CLINICAL_NEGLIGENCE', 'FIXED'),
        ('COM', 'Community Care Legal Help Fixed Fee', 266.00, 798.00, 'COM_FS2013', 'COMMUNITY_CARE', 'FIXED'),

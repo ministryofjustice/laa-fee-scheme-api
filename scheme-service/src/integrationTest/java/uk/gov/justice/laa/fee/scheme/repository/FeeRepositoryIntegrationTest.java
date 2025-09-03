@@ -86,7 +86,7 @@ class FeeRepositoryIntegrationTest extends PostgresContainerTestBase {
 
   @ParameterizedTest
   @MethodSource("feeTestDataPoliceStationFee")
-  void testFeeByCodePoliceStationFee(String feeCode, String expectedDescription, String feeSchemeCode, String calculationType) {
+  void testFeeByCodePoliceStationFee(String feeCode, String expectedDescription, String feeSchemeCode, String categoryType) {
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
 
     Optional<FeeEntity> result = repository.findByFeeCodeAndFeeSchemeCode(feeCode, feeSchemesEntity);
@@ -97,7 +97,7 @@ class FeeRepositoryIntegrationTest extends PostgresContainerTestBase {
     assertThat(entity.getFeeCode()).isEqualTo(feeCode);
     assertThat(entity.getDescription()).isEqualTo(expectedDescription);
     assertThat(entity.getFeeSchemeCode().getSchemeCode()).isEqualTo(feeSchemeCode);
-    assertThat(entity.getCalculationType().name()).isEqualTo(calculationType);
+    assertThat(entity.getCategoryType().name()).isEqualTo(categoryType);
   }
 
   static Stream<Arguments> feeTestDataPoliceStationFee() {

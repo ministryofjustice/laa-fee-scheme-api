@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.fee.scheme.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -13,7 +12,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.type.FeeType;
 
 /**
  * The entity class for fees.
@@ -47,7 +47,7 @@ public class FeeEntity {
   private BigDecimal mediationFeeHigher;
   private String region;
   @Enumerated(EnumType.STRING)
-  @Column(name = "calculation_type")
-  private CalculationType calculationType;
-  private String feeType;
+  private CategoryType categoryType;
+  @Enumerated(EnumType.STRING)
+  private FeeType feeType;
 }

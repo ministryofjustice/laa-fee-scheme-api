@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MENTAL_HEALTH;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.MENTAL_HEALTH;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -98,7 +98,7 @@ class FeeCalculationUtilityTest {
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("MHL_FS2013").build())
         .fixedFee(fixedFee)
         .adjornHearingBoltOn(new BigDecimal(100))
-        .calculationType(MENTAL_HEALTH)
+        .categoryType(MENTAL_HEALTH)
         .build();
 
     FeeCalculationResponse response = FeeCalculationUtility.calculate(feeEntity, feeCalculationRequest);
