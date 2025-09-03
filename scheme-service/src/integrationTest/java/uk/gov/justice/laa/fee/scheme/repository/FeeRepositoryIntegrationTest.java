@@ -41,9 +41,9 @@ class FeeRepositoryIntegrationTest extends PostgresContainerTestBase {
 
   static Stream<Arguments> feeTestDataMediation() {
     return Stream.of(
-        Arguments.of("MAM1", "Mediation Assesment (alone)", new BigDecimal("87.00"), null, null, "MED_FS2013"),
-        Arguments.of("MED8", "All issues sole -  1 party eligible, agreement on P&F only", null, new BigDecimal("262.50"), new BigDecimal("556.50"), "MED_FS2013"),
-        Arguments.of("MED32", "Child only Co - single session 1 party eligible, with agreed proposal", null, new BigDecimal("293.00"), new BigDecimal("501.50"), "MED_FS2013")
+        Arguments.of("ASSA", "Mediation Assesment (alone)", new BigDecimal("87.00"), null, null, "MED_FS2013"),
+        Arguments.of("MDAS2C", "All issues sole - 2 parties eligible, agreement on Child only", null, new BigDecimal("294.00"), new BigDecimal("882.00"), "MED_FS2013"),
+        Arguments.of("MDCC2B", "Child only Co - 2 parties eligible, no agreement", null, new BigDecimal("230.00"), new BigDecimal("647.00"), "MED_FS2013")
     );
   }
 
