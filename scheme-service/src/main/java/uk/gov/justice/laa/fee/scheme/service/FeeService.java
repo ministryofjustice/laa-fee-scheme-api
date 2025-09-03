@@ -69,7 +69,7 @@ public class FeeService {
 
     return switch (feeEntity.getCalculationType()) {
       case CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT, HOUSING, HOUSING_HLPAS,
-           MENTAL_HEALTH, MISCELLANEOUS, PUBLIC_LAW -> FixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+           MENTAL_HEALTH, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS -> FixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
       case DISCRIMINATION -> DiscriminationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
       case IMMIGRATION_ASYLUM_FIXED_FEE -> ImmigrationAsylumFixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
       case IMMIGRATION_ASYLUM_HOURLY_RATE -> ImmigrationAsylumHourlyRateCalculator.getFee(feeEntity, feeCalculationRequest);
