@@ -23,21 +23,21 @@ class MediationFeeCalculatorTest {
 
   public static Stream<Arguments> testData() {
     return Stream.of(
-        arguments("1 mediation session, VAT applied", "MED1", true, 1, 130.65, null,
+        arguments("1 mediation session, VAT applied", "MDAS2B", true, 1, 130.65, null,
             50.5, 20.15, 50, 10),
-        arguments("1 mediation session, no VAT", "MED1", false, 1, 120.65, null,
+        arguments("1 mediation session, no VAT", "MDAS2B", false, 1, 120.65, null,
             50.5, 20.15, 50, 0),
-        arguments("2 mediation sessions, VAT applied", "MED1", true, 2, 190.65, null,
+        arguments("2 mediation sessions, VAT applied", "MDAS2B", true, 2, 190.65, null,
             50.5, 20.15, 100, 20),
-        arguments("2 mediation sessions, no VAT", "MED1", false, 2, 170.65, null,
+        arguments("2 mediation sessions, no VAT", "MDAS2B", false, 2, 170.65, null,
             50.5, 20.15, 100, 0),
-        arguments("More than 1 mediation session, VAT applied", "MED1", true, 3, 190.65, null,
+        arguments("More than 1 mediation session, VAT applied", "MDAS2B", true, 3, 190.65, null,
             50.5, 20.15, 100, 20),
-        arguments("More than 1 mediation session, no VAT", "MED1", false, 3, 170.65, null,
+        arguments("More than 1 mediation session, no VAT", "MDAS2B", false, 3, 170.65, null,
             50.5, 20.15, 100, 0),
-        arguments("No mediation sessions, VAT applied", "MAM1", true, null, 161.25, new BigDecimal("75.50"),
+        arguments("No mediation sessions, VAT applied", "ASSA", true, null, 161.25, new BigDecimal("75.50"),
             50.5, 20.15, 75.5, 15.1),
-        arguments("No mediation sessions, no VAT", "MAM1", false, null, 146.15, new BigDecimal("75.50"),
+        arguments("No mediation sessions, no VAT", "ASSA", false, null, 146.15, new BigDecimal("75.50"),
             50.5, 20.15, 75.5, 0)
     );
   }
@@ -112,7 +112,7 @@ class MediationFeeCalculatorTest {
   @Test
   void getFee_whenMediationSessionIsNull_thenThrowsException() {
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
-        .feeCode("MED1")
+        .feeCode("MDAS2B")
         .claimId("claim_123")
         .startDate(LocalDate.of(2025, 7, 29))
         .netDisbursementAmount(50.50)
@@ -122,7 +122,7 @@ class MediationFeeCalculatorTest {
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("MED1")
+        .feeCode("MDAS2B")
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("MED_FS2013").build())
         .fixedFee(null)
         .mediationFeeLower(new BigDecimal("50"))
