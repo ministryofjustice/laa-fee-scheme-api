@@ -160,7 +160,7 @@ class FeeServiceTest {
     when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
 
     FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("MED1")
+        .feeCode("MDAS2B")
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("MED_FS2013").build())
         .mediationFeeLower(new BigDecimal(50))
         .mediationFeeHigher(new BigDecimal(100))
@@ -169,7 +169,7 @@ class FeeServiceTest {
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 
     FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .feeCode("MED1")
+        .feeCode("MDAS2B")
         .startDate(LocalDate.of(2025, 7, 29))
         .netDisbursementAmount(70.75)
         .disbursementVatAmount(20.15)
@@ -179,7 +179,7 @@ class FeeServiceTest {
 
     FeeCalculationResponse response = feeService.getFeeCalculation(request);
 
-    assertFeeCalculation(response, "MED1", 210.90);
+    assertFeeCalculation(response, "MDAS2B", 210.90);
   }
 
   @ParameterizedTest
