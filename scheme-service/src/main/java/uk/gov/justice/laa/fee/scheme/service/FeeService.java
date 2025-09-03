@@ -15,7 +15,8 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.FixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.ImmigrationAsylumFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.ImmigrationAsylumHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.MediationFeeCalculator;
-import uk.gov.justice.laa.fee.scheme.feecalculator.PoliceStationFeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.PoliceStationFixedFeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.PoliceStationHourlyFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.DateUtility;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -74,8 +75,14 @@ public class FeeService {
       case IMMIGRATION_ASYLUM_FIXED_FEE -> ImmigrationAsylumFixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
       case IMMIGRATION_ASYLUM_HOURLY_RATE -> ImmigrationAsylumHourlyRateCalculator.getFee(feeEntity, feeCalculationRequest);
       case MEDIATION -> MediationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
-      case POLICE_STATION -> PoliceStationFeeCalculator.getFee(feeEntity, policeStationFeesEntity,
+      case POLICE_STATION -> {
+        if (feeEntity.getFeeType().equals("FIXED")) {
+          yield PoliceStationFixedFeeCalculator.getFee(feeEntity, policeStationFeesEntity,
               feeCalculationRequest);
+        } else {
+          yield PoliceStationHourlyFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+        }
+      }
     };
   }
 

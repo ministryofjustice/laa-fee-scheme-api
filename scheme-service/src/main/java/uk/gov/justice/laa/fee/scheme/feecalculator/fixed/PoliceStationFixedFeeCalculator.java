@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator;
+package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility.calculate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
-import uk.gov.justice.laa.fee.scheme.exception.PoliceStationFeeNotFoundException;
+import uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -18,11 +18,17 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 /**
  * Calculate the police station fee for a given fee entity and fee data.
  */
-public final class PoliceStationFeeCalculator {
+public final class PoliceStationFixedFeeCalculator {
 
-  public static final String INVC = "INVC";
+  private static final String INVC = "INVC";
 
-  private PoliceStationFeeCalculator() {
+  private static final String INVB1 = "INVB1";
+
+  private static final String INVB2 = "INVB2";
+
+  private static final String WARNING_NET_PROFIT_COSTS = "warning net profit costs";
+
+  private PoliceStationFixedFeeCalculator() {
   }
 
   /**
@@ -31,12 +37,7 @@ public final class PoliceStationFeeCalculator {
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, PoliceStationFeesEntity policeStationFeesEntity,
                                               FeeCalculationRequest feeData) {
 
-    if (policeStationFeesEntity == null) {
-      throw new PoliceStationFeeNotFoundException(feeEntity.getFeeCode(), feeData.getPoliceStationSchemeId());
-    }
-    String policeStationFeeCode = feeData.getFeeCode();
-
-    if (policeStationFeeCode.equals(INVC)) {
+    if (feeData.getFeeCode().equals(INVC)) {
       return calculateFeesUsingPoliceStation(policeStationFeesEntity, feeData);
     } else {
       return calculateFeesUsingFeeCode(feeEntity, feeData);
@@ -59,9 +60,15 @@ public final class PoliceStationFeeCalculator {
   private static FeeCalculationResponse calculateFeesUsingFeeCode(FeeEntity feeEntity,
                                                                                FeeCalculationRequest feeData) {
 
-    BigDecimal baseFee = feeEntity.getProfitCostLimit();
+    BigDecimal baseFee;
+    FeeCalculationResponse feeCalculationResponse =null;
 
-    return calculate(baseFee, feeData, feeEntity);
+    if(feeData.getFeeCode().equals(INVB1) || feeData.getFeeCode().equals(INVB2)) {
+      baseFee = feeEntity.getFixedFee();
+      feeCalculationResponse = FeeCalculationUtility.calculate(baseFee, feeData, feeEntity);
+    }
+
+    return feeCalculationResponse;
   }
 
   private static FeeCalculationResponse calculateAndBuildResponsePoliceStation(BigDecimal fixedFee,
@@ -95,4 +102,5 @@ public final class PoliceStationFeeCalculator {
             .fixedFeeAmount(toDouble(fixedFee)).build())
         .build();
   }
+
 }

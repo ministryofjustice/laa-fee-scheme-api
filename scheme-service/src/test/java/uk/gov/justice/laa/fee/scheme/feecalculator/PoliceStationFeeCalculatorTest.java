@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
+import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.PoliceStationHourlyFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -24,17 +25,17 @@ class PoliceStationFeeCalculatorTest {
         arguments("INVC Police Fee Code, VAT applied", "INVC", "NE001",
             "1001", "121216/7899", true, 87.93,
             new BigDecimal("14.4"), null, "POL_2016", 2.88,
-            50.5, 20.15, 14.4),
+            50.5, 20.15, 14.4, 0.0, 0.0),
 
         arguments("INVC Police Fee Code, VAT not applied", "INVC", "NE013",
             "1004", "121223/6655", false, 85.05,
             new BigDecimal("14.4"), null, "POL_2023", 0,
-            50.5, 20.15, 14.4),
+            50.5, 20.15, 14.4,0.0,0.0),
 
         arguments("INVM Police Fee Code, VAT applied", "INVM", "NE024",
-            "1007", "041223/6655", true, 100.65,
+            "1007", "041223/6655", true, 131.25,
             null, new BigDecimal("25.0"), "POL_2023", 5.0,
-            50.5, 20.15, 25.0)
+            50.5, 20.15, 0,12.45,34.56)
     );
   }
 
@@ -51,10 +52,12 @@ class PoliceStationFeeCalculatorTest {
                                      double expectedCalculatedVat,
                                      double disbursementAmount,
                                      double disbursementVatAmount,
-                                     double fixedFeeAmount) {
+                                     double fixedFeeAmount,
+                                     double travelAndWaitingCostAmount,
+                                     double netProfitCostsAmount) {
     return Arguments.of(testDescription, feeCode, policeStationId, policeStationSchemeId, uniqueFileNumber, vatIndicator,
         expectedTotal, fixedFee, profitCostLimit, feeSchemeCode, expectedCalculatedVat, disbursementAmount,
-        disbursementVatAmount, fixedFeeAmount);
+        disbursementVatAmount, fixedFeeAmount, travelAndWaitingCostAmount, netProfitCostsAmount);
   }
 
   @ParameterizedTest
@@ -73,7 +76,9 @@ class PoliceStationFeeCalculatorTest {
       double expectedCalculatedVat,
       double expectedDisbursementAmount,
       double disbursementVatAmount,
-      double expectedFixedFee
+      double expectedFixedFee,
+      double travelAndWaitingCostAmount,
+      double netProfitCostsAmount
   ) {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
@@ -85,6 +90,8 @@ class PoliceStationFeeCalculatorTest {
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
         .uniqueFileNumber(uniqueFileNumber)
+        .travelAndWaitingCosts(travelAndWaitingCostAmount)
+        .netProfitCosts(netProfitCostsAmount)
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
@@ -103,7 +110,7 @@ class PoliceStationFeeCalculatorTest {
         .fixedFee(fixedFee)
         .build();
 
-    FeeCalculationResponse response = PoliceStationFeeCalculator.getFee(feeEntity, policeStationFeesEntity, feeData);
+    FeeCalculationResponse response = PoliceStationHourlyFeeCalculator.getFee(feeEntity, policeStationFeesEntity, feeData);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(expectedTotal)
