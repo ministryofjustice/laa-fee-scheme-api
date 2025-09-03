@@ -7,12 +7,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
@@ -155,17 +155,20 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo(feeCode);
     assertThat(result.getSchemeId()).isEqualTo("I&A_FS2013");
-    assertThat(result.getFeeCalculation()).isNotNull();
-    assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
-    assertThat(result.getFeeCalculation().getVatIndicator()).isEqualTo(vatIndicator);
-    assertThat(result.getFeeCalculation().getVatRateApplied()).isEqualTo(20.0);
-    assertThat(result.getFeeCalculation().getCalculatedVatAmount()).isEqualTo(expectedCalculatedVat);
-    assertThat(result.getFeeCalculation().getDisbursementAmount()).isEqualTo(89.50);
-    assertThat(result.getFeeCalculation().getDisbursementVatAmount()).isEqualTo(17.90);
-    assertThat(result.getFeeCalculation().getHourlyTotalAmount()).isEqualTo(expectedHourlyTotal);
-    assertThat(result.getFeeCalculation().getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
-    assertThat(result.getFeeCalculation().getJrFormFillingAmount()).isEqualTo(75.00);
     assertThat(result.getWarnings()).isEqualTo(expectedWarnings);
+
+    FeeCalculation feeCalculation = result.getFeeCalculation();
+    assertThat(feeCalculation).isNotNull();
+    assertThat(feeCalculation.getTotalAmount()).isEqualTo(expectedTotal);
+    assertThat(feeCalculation.getVatIndicator()).isEqualTo(vatIndicator);
+    assertThat(feeCalculation.getVatRateApplied()).isEqualTo(20.0);
+    assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(expectedCalculatedVat);
+    assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(89.50);
+    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(17.90);
+    assertThat(feeCalculation.getHourlyTotalAmount()).isEqualTo(expectedHourlyTotal);
+    assertThat(feeCalculation.getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
+    assertThat(feeCalculation.getJrFormFillingAmount()).isEqualTo(75.00);
+
   }
 
   // @TODO: IA100 will move to Legal Help in future, hence why it is tested separately here
@@ -205,18 +208,18 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo(feeCode);
     assertThat(result.getSchemeId()).isEqualTo("I&A_FS2013");
-    assertThat(result.getFeeCalculation()).isNotNull();
-    assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
-    assertThat(result.getFeeCalculation().getVatIndicator()).isEqualTo(true);
-    assertThat(result.getFeeCalculation().getVatRateApplied()).isEqualTo(20.0);
-    assertThat(result.getFeeCalculation().getCalculatedVatAmount()).isEqualTo(expectedCalculatedVat);
-    assertThat(result.getFeeCalculation().getDisbursementAmount()).isEqualTo(14.30);
-    assertThat(result.getFeeCalculation().getDisbursementVatAmount()).isEqualTo(2.86);
-    assertThat(result.getFeeCalculation().getHourlyTotalAmount()).isEqualTo(expectedHourlyTotal);
-    assertThat(result.getFeeCalculation().getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
-    assertThat(result.getFeeCalculation().getJrFormFillingAmount()).isEqualTo(5.00);
     assertThat(result.getWarnings()).isEqualTo(expectedWarnings);
+
+    FeeCalculation feeCalculation = result.getFeeCalculation();
+    assertThat(feeCalculation).isNotNull();
+    assertThat(feeCalculation.getTotalAmount()).isEqualTo(expectedTotal);
+    assertThat(feeCalculation.getVatIndicator()).isEqualTo(true);
+    assertThat(feeCalculation.getVatRateApplied()).isEqualTo(20.0);
+    assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(expectedCalculatedVat);
+    assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(14.30);
+    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(2.86);
+    assertThat(feeCalculation.getHourlyTotalAmount()).isEqualTo(expectedHourlyTotal);
+    assertThat(feeCalculation.getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
+    assertThat(feeCalculation.getJrFormFillingAmount()).isEqualTo(5.00);
   }
-
-
 }

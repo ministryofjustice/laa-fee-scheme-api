@@ -270,6 +270,37 @@ class FeeServiceTest {
   }
 
   @Test
+  void getFeeCalculation_shouldReturnExpectedCalculation_immigrationAsylumHourlyRate_clr() {
+    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("I&A_FS2013",
+        "Immigration and Asylum Scheme 2013", LocalDate.parse("2013-04-01"));
+
+    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("IAXC")
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2013").build())
+        .totalLimit(new BigDecimal("1600"))
+        .calculationType(IMMIGRATION_ASYLUM_HOURLY_RATE)
+        .build();
+    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("IAXC")
+        .startDate(LocalDate.of(2025, 6, 14))
+        .netProfitCosts(530.14)
+        .netCostOfCounsel(482.56)
+        .jrFormFilling(45.00)
+        .netDisbursementAmount(89.56)
+        .disbursementVatAmount(17.91)
+        .vatIndicator(true)
+        .build();
+
+    FeeCalculationResponse response = feeService.getFeeCalculation(request);
+
+    assertFeeCalculation(response, "IAXC", 1376.71);
+  }
+
+  @Test
   void getFeeCalculation_shouldReturnExpectedCalculation_policeStationId() {
     FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("POL_FS2022",
         "Police Station Work 2022", LocalDate.parse("2022-04-01"));

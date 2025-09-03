@@ -151,6 +151,46 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   }
 
   @Test
+  void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate_clr() throws Exception {
+    mockMvc
+        .perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "IAXC",
+                  "startDate": "2025-02-11",
+                  "netProfitCosts": 612.67,
+                  "netCostOfCounsel": 312.29,
+                  "jrFormFilling": 35.00,
+                  "netDisbursementAmount": 125.70,
+                  "disbursementVatAmount": 25.14,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+          {
+            "feeCode": "IAXC",
+            "schemeId": "I&A_FS2013",
+            "feeCalculation": {
+              "totalAmount": 1302.79,
+              "vatIndicator": true,
+              "vatRateApplied": 20.00,
+              "calculatedVatAmount": 191.99,
+              "disbursementAmount": 125.70,
+              "disbursementVatAmount": 25.14,
+              "hourlyTotalAmount": 959.96,
+              "netProfitCostsAmount": 612.67,
+              "netCostOfCounselAmount": 312.29,
+              "jrFormFillingAmount": 35.00
+            }
+          }
+          """, STRICT));
+  }
+
+  @Test
   void shouldGetFeeCalculation_mediation() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")

@@ -80,35 +80,8 @@ public final class ImmigrationAsylumHourlyRateCalculator {
     BigDecimal jrFormFilling = toBigDecimal(feeCalculationRequest.getJrFormFilling());
     BigDecimal feeTotal = netProfitCosts.add(jrFormFilling);
 
-    // Apply VAT where applicable
-    LocalDate startDate = feeCalculationRequest.getStartDate();
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal calculatedVatAmount = VatUtility.getVatAmount(feeTotal, startDate, vatApplicable);
-
-    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
-
-    BigDecimal finalTotal = feeTotal
-        .add(calculatedVatAmount)
-        .add(netDisbursementAmount)
-        .add(disbursementVatAmount);
-
-    return new FeeCalculationResponse().toBuilder()
-        .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
-        .warnings(warnings)
-        .feeCalculation(FeeCalculation.builder()
-            .totalAmount(toDouble(finalTotal))
-            .vatIndicator(feeCalculationRequest.getVatIndicator())
-            .vatRateApplied(toDouble(VatUtility.getVatRateForDate(feeCalculationRequest.getStartDate())))
-            .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(toDouble(netDisbursementAmount))
-            .disbursementVatAmount(toDouble(disbursementVatAmount))
-            .hourlyTotalAmount(toDouble(feeTotal))
-            .netProfitCostsAmount(toDouble(netProfitCosts))
-            .netCostOfCounselAmount(feeCalculationRequest.getNetCostOfCounsel())
-            .jrFormFillingAmount(feeCalculationRequest.getJrFormFilling())
-            .build())
-        .build();
+    return buildResponse(feeEntity, feeCalculationRequest, feeTotal,
+        netDisbursementAmount, netProfitCosts, null, warnings);
   }
 
   /**
@@ -136,6 +109,23 @@ public final class ImmigrationAsylumHourlyRateCalculator {
       }
     }
 
+    return buildResponse(feeEntity, feeCalculationRequest, feeTotal,
+        netDisbursementAmount, netProfitCosts, netCostOfCounsel, warnings);
+
+  }
+
+  private static boolean isLegalHelpFeeCode(String feeCode) {
+    return IAXL.equals(feeCode) || IMXL.equals(feeCode);
+  }
+
+  private static boolean isClrFeeCode(String feeCode) {
+    return IAXC.equals(feeCode) || IMXC.equals(feeCode) || IA100.equals(feeCode) || IRAR.equals(feeCode);
+  }
+
+  private static FeeCalculationResponse buildResponse(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest,
+                                                      BigDecimal feeTotal, BigDecimal netDisbursementAmount,
+                                                      BigDecimal netProfitCosts, BigDecimal netCostOfCounsel,
+                                                      List<String> warnings) {
     // Apply VAT where applicable
     LocalDate startDate = feeCalculationRequest.getStartDate();
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
@@ -155,24 +145,16 @@ public final class ImmigrationAsylumHourlyRateCalculator {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(feeCalculationRequest.getVatIndicator())
-            .vatRateApplied(toDouble(VatUtility.getVatRateForDate(feeCalculationRequest.getStartDate())))
+            .vatRateApplied(toDouble(VatUtility.getVatRateForDate(startDate)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .hourlyTotalAmount(toDouble(feeTotal))
             .netProfitCostsAmount(toDouble(netProfitCosts))
-            .netCostOfCounselAmount(feeCalculationRequest.getNetCostOfCounsel())
+            .netCostOfCounselAmount(netCostOfCounsel != null ? feeCalculationRequest.getNetCostOfCounsel() : null)
             .jrFormFillingAmount(feeCalculationRequest.getJrFormFilling())
             .build())
         .build();
 
-  }
-
-  private static boolean isLegalHelpFeeCode(String feeCode) {
-    return IAXL.equals(feeCode) || IMXL.equals(feeCode);
-  }
-
-  private static boolean isClrFeeCode(String feeCode) {
-    return IAXC.equals(feeCode) || IMXC.equals(feeCode) || IA100.equals(feeCode) || IRAR.equals(feeCode);
   }
 }
