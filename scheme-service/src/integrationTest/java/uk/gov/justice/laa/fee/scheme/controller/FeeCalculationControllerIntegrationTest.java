@@ -310,7 +310,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
           {
             "feeCode": "INVC",
             "schemeId": "POL_FS2016",
-            "claimId": "claim_123",
             "escapeCaseFlag": false,
             "feeCalculation": {
               "totalAmount": 131.40,

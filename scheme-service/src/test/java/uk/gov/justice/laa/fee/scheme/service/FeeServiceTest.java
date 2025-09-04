@@ -292,6 +292,7 @@ class FeeServiceTest {
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVC")
         .categoryType(POLICE_STATION)
+        .feeType(FIXED)
         .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 
@@ -325,6 +326,7 @@ class FeeServiceTest {
         .feeCode("INVC")
         .profitCostLimit(new BigDecimal("100.00"))
         .categoryType(POLICE_STATION)
+        .feeType(FIXED)
         .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 
@@ -342,7 +344,7 @@ class FeeServiceTest {
   }
 
   @Test
-  void getFeeCalculation_shouldThrowException_whenPoliceStationOtherFeeCodeNotImplemented() {
+  void getFeeCalculation_shouldReturnExpectedCalculation_whenOtherPoliceStationFeeCodeUsedInClaim() {
 
     FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("POL_FS2022",
         "Police Station Work 2022", LocalDate.parse("2022-04-01"));
@@ -353,18 +355,25 @@ class FeeServiceTest {
         .feeCode("INVM")
         .profitCostLimit(new BigDecimal("100.00"))
         .categoryType(POLICE_STATION)
+        .feeSchemeCode(feeSchemesEntity)
+        .feeType(HOURLY)
         .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 
     FeeCalculationRequest request = FeeCalculationRequest.builder()
         .feeCode("INVM")
+        .netProfitCosts(59.8)
+        .netDisbursementAmount(20.1)
+        .travelAndWaitingCosts(10.4)
         .uniqueFileNumber("120523/7382")
         .policeStationId(null)
         .policeStationSchemeId("1004")
+        .vatIndicator(true)
         .build();
 
-    assertThatThrownBy(() -> feeService.getFeeCalculation(request))
-        .hasMessage("Calculation Logic for Police Station Other Fee not implemented, Fee Code INVM, Police Station Scheme Id 1004");
+    FeeCalculationResponse response = feeService.getFeeCalculation(request);
+
+    assertFeeCalculation(response, "INVM", 128.46);
   }
 
   @Test

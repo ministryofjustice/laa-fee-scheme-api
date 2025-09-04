@@ -17,15 +17,15 @@ import uk.gov.justice.laa.fee.scheme.postgresTestContainer.PostgresContainerTest
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-class CategoryOfLawControllerIntegrationTest extends PostgresContainerTestBase {
+class FeeDetailsControllerIntegrationTest extends PostgresContainerTestBase {
 
   @Autowired
   private MockMvc mockMvc;
 
   @Test
-  void shouldGetCategoryOfLaw() throws Exception {
+  void shouldGetFeeDetails() throws Exception {
     mockMvc
-        .perform(get("/api/v1/category-of-law/CAPA"))
+        .perform(get("/api/v1/fee-details/CAPA"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.categoryOfLawCode").value("AAP"))
