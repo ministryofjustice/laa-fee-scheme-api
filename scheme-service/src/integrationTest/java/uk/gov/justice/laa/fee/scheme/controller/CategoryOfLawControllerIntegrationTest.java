@@ -25,7 +25,7 @@ class CategoryOfLawControllerIntegrationTest extends PostgresContainerTestBase {
   @Test
   void shouldGetCategoryOfLaw() throws Exception {
     mockMvc
-        .perform(get("/api/v1/category-of-law/CAPA"))
+        .perform(get("/api/v1/fee-details/CAPA"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.categoryOfLawCode").value("AAP"))

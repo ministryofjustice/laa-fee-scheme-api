@@ -33,7 +33,7 @@ class CategoryOfLawControllerTest {
         .categoryOfLawCode("ASY")
         .build());
 
-    mockMvc.perform(get("/api/v1/category-of-law/FEE123")
+    mockMvc.perform(get("/api/v1/fee-details/FEE123")
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.categoryOfLawCode").value("ASY"));
@@ -43,7 +43,7 @@ class CategoryOfLawControllerTest {
   void throwExceptionWhenCategoryOfLawNotFound() throws Exception {
     when(categoryOfLawService.getCategoryCode(anyString())).thenThrow(new CategoryCodeNotFoundException("FEE123"));
 
-    mockMvc.perform(get("/api/v1/category-of-law/FEE123"))
+    mockMvc.perform(get("/api/v1/fee-details/FEE123"))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.status").value(404))
         .andExpect(jsonPath("$.message").value("Category of law code not found for fee: FEE123"));

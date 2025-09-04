@@ -3,7 +3,7 @@ info:
   version: 1.0.0
   title: Fee Scheme API
 paths:
-  /api/v1/category-of-law/{feeCode}:
+  /api/v1/fee-details/{feeCode}:
     get:
       tags:
         - categoryOfLaw
