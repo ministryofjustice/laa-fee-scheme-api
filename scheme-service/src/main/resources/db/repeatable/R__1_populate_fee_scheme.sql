@@ -84,3 +84,9 @@ INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('PUB_FS2013', 'Public Law Fee Scheme 2013', '2013-04-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
+
+-- Fee Scheme for 'Public Law' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('EDU_FS2013', 'Education Fee Scheme 2013', '2013-04-01', NULL)
+ON CONFLICT (scheme_code) DO NOTHING;
