@@ -14,34 +14,38 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.justice.laa.fee.scheme.exception.CategoryCodeNotFoundException;
-import uk.gov.justice.laa.fee.scheme.model.CategoryOfLawResponse;
-import uk.gov.justice.laa.fee.scheme.service.CategoryOfLawService;
+import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponse;
+import uk.gov.justice.laa.fee.scheme.service.FeeDetailsService;
 
-@WebMvcTest(CategoryOfLawController.class)
-class CategoryOfLawControllerTest {
+@WebMvcTest(FeeDetailsController.class)
+class FeeDetailsControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
 
   @MockitoBean
-  private CategoryOfLawService categoryOfLawService;
+  private FeeDetailsService feeDetailsService;
 
   @Test
-  void getCategoryOfLawByFeeByCode() throws Exception {
+  void getFeeDetailsFeeByCode() throws Exception {
 
-    when(categoryOfLawService.getCategoryCode(any())).thenReturn(CategoryOfLawResponse.builder()
+    when(feeDetailsService.getFeeDetails(any())).thenReturn(FeeDetailsResponse.builder()
         .categoryOfLawCode("ASY")
+        .feeCodeDescription("fee_code_description")
+        .feeType("FIXED")
         .build());
 
     mockMvc.perform(get("/api/v1/fee-details/FEE123")
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.categoryOfLawCode").value("ASY"));
+        .andExpect(jsonPath("$.categoryOfLawCode").value("ASY"))
+        .andExpect(jsonPath("$.categoryOfLawCode").value("fee_code_description"))
+        .andExpect(jsonPath("$.categoryOfLawCode").value("FIXED"));
   }
 
   @Test
   void throwExceptionWhenCategoryOfLawNotFound() throws Exception {
-    when(categoryOfLawService.getCategoryCode(anyString())).thenThrow(new CategoryCodeNotFoundException("FEE123"));
+    when(feeDetailsService.getFeeDetails(anyString())).thenThrow(new CategoryCodeNotFoundException("FEE123"));
 
     mockMvc.perform(get("/api/v1/fee-details/FEE123"))
         .andExpect(status().isNotFound())

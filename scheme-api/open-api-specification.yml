@@ -6,7 +6,7 @@ paths:
   /api/v1/fee-details/{feeCode}:
     get:
       tags:
-        - categoryOfLaw
+        - feeDetails
       parameters:
         - name: feeCode
           in: path
@@ -14,15 +14,15 @@ paths:
           description: Fee Code to retrieve Category of Law
           schema:
             type: string
-      summary: Get Category of Law
-      operationId: getCategoryOfLaw
+      summary: Get Category of Law and Fee details
+      operationId: getFeeDetails
       responses:
         '200':
           description: 'Success'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CategoryOfLawResponse"
+                $ref: "#/components/schemas/FeeDetailsResponse"
         '400':
           description: 'Bad request'
         '401':
@@ -89,7 +89,7 @@ paths:
 
 components:
   schemas:
-    CategoryOfLawResponse:
+    FeeDetailsResponse:
       required:
         - categoryOfLawCode
       properties:
