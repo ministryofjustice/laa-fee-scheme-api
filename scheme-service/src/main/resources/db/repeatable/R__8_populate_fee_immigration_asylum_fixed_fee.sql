@@ -28,6 +28,7 @@ VALUES ('IACA', 'Asylum CLR Fixed Fee 2a', 227, 681, 600, 'I&A_FS2020', 'IMMIGRA
        ('IDAS2', 'Detained Duty Advice Scheme (5+ clients seen)', 360, NULL, NULL, 'I&A_FS2020', 'IMMIGRATION_ASYLUM', NULL, NULL, NULL, NULL, 'FIXED')
     ON CONFLICT (fee_code, fee_scheme_code) DO UPDATE
     SET
+        category_type = EXCLUDED.category_type,
         fee_type = EXCLUDED.fee_type;
 
 -- 2023 SCHEME (I&A_FS2023)
@@ -43,4 +44,5 @@ VALUES ('IACE', 'Asylum CLR Fixed Fee 2d', 669, 1338, 600, 'I&A_FS2023', 'IMMIGR
        ('IDAS2', 'Detained Duty Advice Scheme (5+ clients seen)', 360, NULL, NULL, 'I&A_FS2023', 'IMMIGRATION_ASYLUM', NULL, NULL, NULL, NULL, 'FIXED')
     ON CONFLICT (fee_code, fee_scheme_code) DO UPDATE
     SET
+        category_type = EXCLUDED.category_type,
         fee_type = EXCLUDED.fee_type;
