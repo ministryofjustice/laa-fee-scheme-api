@@ -4,19 +4,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.CLAIMS_PUBLIC_AUTHORITIES;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.CLINICAL_NEGLIGENCE;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.COMMUNITY_CARE;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.DEBT;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.DISCRIMINATION;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.HOUSING;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.HOUSING_HLPAS;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.IMMIGRATION_ASYLUM_FIXED_FEE;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.IMMIGRATION_ASYLUM_HOURLY_RATE;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MEDIATION;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.MISCELLANEOUS;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.POLICE_STATION;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.PUBLIC_LAW;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.CLAIMS_PUBLIC_AUTHORITIES;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.CLINICAL_NEGLIGENCE;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.COMMUNITY_CARE;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.DEBT;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.DISCRIMINATION;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.HOUSING;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.HOUSING_HLPAS;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.IMMIGRATION_ASYLUM;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.MEDIATION;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.MISCELLANEOUS;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.POLICE_STATION;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.PUBLIC_LAW;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.FeeType.FIXED;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.FeeType.HOURLY;
 import static uk.gov.justice.laa.fee.scheme.testutility.TestDataUtility.buildFeeEntity;
 import static uk.gov.justice.laa.fee.scheme.testutility.TestDataUtility.buildFeeSchemesEntity;
 
@@ -36,7 +37,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.type.FeeType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -133,7 +135,7 @@ class FeeServiceTest {
         .feeCode("DISC")
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("DISC_FS2013").build())
         .escapeThresholdLimit(new BigDecimal("700.00"))
-        .calculationType(DISCRIMINATION)
+        .categoryType(DISCRIMINATION)
         .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 
@@ -164,7 +166,7 @@ class FeeServiceTest {
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("MED_FS2013").build())
         .mediationFeeLower(new BigDecimal(50))
         .mediationFeeHigher(new BigDecimal(100))
-        .calculationType(MEDIATION)
+        .categoryType(MEDIATION)
         .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 
@@ -186,12 +188,12 @@ class FeeServiceTest {
   @MethodSource("testDataOtherCivil")
   void getFeeCalculation_shouldReturnExpectedCalculation_otherCivil(String feeCode, String schemeCode, String schemeName,
                                                                     LocalDate validFrom, BigDecimal fixedFee,
-                                                                    CalculationType calculationType, double expectedTotal) {
+                                                                    CategoryType categoryType, double expectedTotal) {
 
     when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any()))
         .thenReturn(List.of(buildFeeSchemesEntity(schemeCode, schemeName, validFrom)));
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any()))
-        .thenReturn(Optional.of(buildFeeEntity(feeCode, fixedFee, calculationType, schemeCode)));
+        .thenReturn(Optional.of(buildFeeEntity(feeCode, fixedFee, categoryType, schemeCode)));
 
     FeeCalculationRequest request = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -221,7 +223,8 @@ class FeeServiceTest {
         .oralCmrhBoltOn(new BigDecimal("166"))
         .telephoneCmrhBoltOn(new BigDecimal("90"))
         .adjornHearingBoltOn(new BigDecimal("161"))
-        .calculationType(IMMIGRATION_ASYLUM_FIXED_FEE)
+        .categoryType(IMMIGRATION_ASYLUM)
+        .feeType(FIXED)
         .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 
@@ -250,7 +253,8 @@ class FeeServiceTest {
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2013").build())
         .profitCostLimit(new BigDecimal("800"))
         .disbursementLimit(new BigDecimal("400"))
-        .calculationType(IMMIGRATION_ASYLUM_HOURLY_RATE)
+        .categoryType(IMMIGRATION_ASYLUM)
+        .feeType(HOURLY)
         .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 
@@ -284,7 +288,7 @@ class FeeServiceTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVC")
-        .calculationType(POLICE_STATION)
+        .categoryType(POLICE_STATION)
         .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 
@@ -317,7 +321,7 @@ class FeeServiceTest {
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVC")
         .profitCostLimit(new BigDecimal("100.00"))
-        .calculationType(POLICE_STATION)
+        .categoryType(POLICE_STATION)
         .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 
@@ -345,7 +349,7 @@ class FeeServiceTest {
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVM")
         .profitCostLimit(new BigDecimal("100.00"))
-        .calculationType(POLICE_STATION)
+        .categoryType(POLICE_STATION)
         .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 
@@ -374,7 +378,7 @@ class FeeServiceTest {
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVC")
         .profitCostLimit(new BigDecimal("100.00"))
-        .calculationType(POLICE_STATION)
+        .categoryType(POLICE_STATION)
         .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 
@@ -403,7 +407,7 @@ class FeeServiceTest {
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVC")
         .profitCostLimit(new BigDecimal("100.00"))
-        .calculationType(POLICE_STATION)
+        .categoryType(POLICE_STATION)
         .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 

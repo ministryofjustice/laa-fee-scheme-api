@@ -67,12 +67,11 @@ public class FeeService {
   private FeeCalculationResponse getCalculation(FeeEntity feeEntity, PoliceStationFeesEntity policeStationFeesEntity,
                                                 FeeCalculationRequest feeCalculationRequest) {
 
-    return switch (feeEntity.getCalculationType()) {
+    return switch (feeEntity.getCategoryType()) {
       case CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT, HOUSING, HOUSING_HLPAS,
            MENTAL_HEALTH, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS -> FixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
       case DISCRIMINATION -> DiscriminationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
-      case IMMIGRATION_ASYLUM_FIXED_FEE -> ImmigrationAsylumFixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
-      case IMMIGRATION_ASYLUM_HOURLY_RATE -> ImmigrationAsylumHourlyRateCalculator.getFee(feeEntity, feeCalculationRequest);
+      case IMMIGRATION_ASYLUM -> getImmigrationAsylumFee(feeEntity, feeCalculationRequest);
       case MEDIATION -> MediationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
       case POLICE_STATION -> PoliceStationFeeCalculator.getFee(feeEntity, policeStationFeesEntity,
               feeCalculationRequest);
@@ -108,6 +107,14 @@ public class FeeService {
       }
     }
     return policeStationFeesEntity;
+  }
+
+  private FeeCalculationResponse getImmigrationAsylumFee(FeeEntity feeEntity,
+                                                         FeeCalculationRequest feeCalculationRequest) {
+    return switch (feeEntity.getFeeType()) {
+      case FIXED -> ImmigrationAsylumFixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+      case HOURLY -> ImmigrationAsylumHourlyRateCalculator.getFee(feeEntity, feeCalculationRequest);
+    };
   }
 }
 

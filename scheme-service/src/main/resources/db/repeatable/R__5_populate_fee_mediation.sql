@@ -4,7 +4,7 @@ WHERE fee_code IN ('MAM1','MAM2','MAM3','MED1','MED2','MED3','MED4','MED5','MED6
                    'MED17','MED18','MED19','MED20','MED21','MED22','MED23','MED24','MED25',
                    'MED26','MED27','MED28','MED29','MED30','MED31','MED32');
 
-INSERT INTO fee (fee_code, description, fixed_fee, mediation_fee_lower, mediation_fee_higher, fee_scheme_code, calculation_type, fee_type)
+INSERT INTO fee (fee_code, description, fixed_fee, mediation_fee_lower, mediation_fee_higher, fee_scheme_code, category_type, fee_type)
 VALUES ('ASSA', 'Mediation Assesment (alone)', 87.00, NULL, NULL, 'MED_FS2013', 'MEDIATION', 'FIXED'),
        ('ASSS', 'Mediation Assesment (separate)', 87.00, NULL, NULL, 'MED_FS2013', 'MEDIATION', 'FIXED'),
        ('ASST', 'Mediation Assesment (together)', 130.00, NULL, NULL, 'MED_FS2013', 'MEDIATION', 'FIXED'),
@@ -29,10 +29,10 @@ VALUES ('ASSA', 'Mediation Assesment (alone)', 87.00, NULL, NULL, 'MED_FS2013', 
        fixed_fee = EXCLUDED.fixed_fee,
        mediation_fee_lower = EXCLUDED.mediation_fee_lower,
        mediation_fee_higher = EXCLUDED.mediation_fee_higher,
-       calculation_type = EXCLUDED.calculation_type,
+       category_type = EXCLUDED.category_type,
        fee_type = EXCLUDED.fee_type;
 
-INSERT INTO fee (fee_code, description, fixed_fee, mediation_fee_lower, mediation_fee_higher, fee_scheme_code, calculation_type, fee_type)
+INSERT INTO fee (fee_code, description, fixed_fee, mediation_fee_lower, mediation_fee_higher, fee_scheme_code, category_type, fee_type)
 VALUES ('MDAC1C', 'All issues co-mediation -  1 party eligible, agreement on Child only', NULL, 293.00, 710.00, 'MED_FS2013', 'MEDIATION', 'FIXED'),
        ('MDPS2B', 'Property & Finance sole -  2 parties eligible, no agreement', NULL, 168.00, 588.00, 'MED_FS2013', 'MEDIATION', 'FIXED'),
        ('MDPS1B', 'Property & Finance sole -  1 party eligible, no agreement', NULL, 168.00, 378.00, 'MED_FS2013', 'MEDIATION', 'FIXED'),
@@ -56,5 +56,5 @@ VALUES ('MDAC1C', 'All issues co-mediation -  1 party eligible, agreement on Chi
        fixed_fee = EXCLUDED.fixed_fee,
        mediation_fee_lower = EXCLUDED.mediation_fee_lower,
        mediation_fee_higher = EXCLUDED.mediation_fee_higher,
-       calculation_type = EXCLUDED.calculation_type,
+       category_type = EXCLUDED.category_type,
        fee_type = EXCLUDED.fee_type;

@@ -2,7 +2,8 @@ package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.IMMIGRATION_ASYLUM_FIXED_FEE;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.IMMIGRATION_ASYLUM;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.FeeType.FIXED;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.feecalculator.type.FeeType;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -99,7 +101,8 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         .feeCode(feeCode)
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2023").build())
         .fixedFee(new BigDecimal("75.50"))
-        .calculationType(IMMIGRATION_ASYLUM_FIXED_FEE)
+        .categoryType(IMMIGRATION_ASYLUM)
+        .feeType(FIXED)
         .disbursementLimit(netDisbursementLimit)
         .oralCmrhBoltOn(BigDecimal.valueOf(166))
         .telephoneCmrhBoltOn(BigDecimal.valueOf(90))
@@ -159,7 +162,8 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         .feeCode(feeCode)
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2023").build())
         .fixedFee(new BigDecimal("75.50"))
-        .calculationType(IMMIGRATION_ASYLUM_FIXED_FEE)
+        .categoryType(IMMIGRATION_ASYLUM)
+        .feeType(FIXED)
         .disbursementLimit(null)
         .build();
 

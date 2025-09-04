@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType;
 
 /**
  * Utility for building test data.
@@ -27,13 +27,13 @@ public final class TestDataUtility {
   /**
    * Build fee entity.
    */
-  public static FeeEntity buildFeeEntity(String feeCode, BigDecimal fixedFee, CalculationType calculationType,
+  public static FeeEntity buildFeeEntity(String feeCode, BigDecimal fixedFee, CategoryType categoryType,
                                          String schemeCode) {
     return FeeEntity.builder()
         .feeCode(feeCode)
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode(schemeCode).build())
         .fixedFee(fixedFee)
-        .calculationType(calculationType)
+        .categoryType(categoryType)
         .build();
   }
 }
