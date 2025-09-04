@@ -285,6 +285,7 @@ class FeeServiceTest {
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVC")
         .calculationType(POLICE_STATION)
+        .feeType("FIXED")
         .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 
@@ -318,6 +319,7 @@ class FeeServiceTest {
         .feeCode("INVC")
         .profitCostLimit(new BigDecimal("100.00"))
         .calculationType(POLICE_STATION)
+        .feeType("FIXED")
         .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 
@@ -347,6 +349,7 @@ class FeeServiceTest {
         .profitCostLimit(new BigDecimal("100.00"))
         .calculationType(POLICE_STATION)
         .feeSchemeCode(feeSchemesEntity)
+        .feeType("HOURLY")
         .build();
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
 

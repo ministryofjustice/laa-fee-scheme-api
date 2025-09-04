@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility.calculate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatAmount;
@@ -61,9 +60,9 @@ public final class PoliceStationFixedFeeCalculator {
                                                                                FeeCalculationRequest feeData) {
 
     BigDecimal baseFee;
-    FeeCalculationResponse feeCalculationResponse =null;
+    FeeCalculationResponse feeCalculationResponse = null;
 
-    if(feeData.getFeeCode().equals(INVB1) || feeData.getFeeCode().equals(INVB2)) {
+    if (feeData.getFeeCode().equals(INVB1) || feeData.getFeeCode().equals(INVB2)) {
       baseFee = feeEntity.getFixedFee();
       feeCalculationResponse = FeeCalculationUtility.calculate(baseFee, feeData, feeEntity);
     }
