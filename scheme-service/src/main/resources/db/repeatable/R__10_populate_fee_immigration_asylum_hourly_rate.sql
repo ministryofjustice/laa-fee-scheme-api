@@ -8,6 +8,7 @@ VALUES ('IAXL', 'LH Hourly Rates - Asylum', 800.00, 400.00, NULL, 'I&A_FS2013', 
        ('IRAR', 'CLR Upper Tribunal Transitional cases', NULL, NULL, NULL, 'I&A_FS2013', 'IMMIGRATION_ASYLUM', 'HOURLY')
 ON CONFLICT (fee_code, fee_scheme_code) DO UPDATE
 SET
+    category_type = EXCLUDED.category_type,
     fee_type = EXCLUDED.fee_type;
 
 INSERT INTO fee
@@ -20,5 +21,6 @@ VALUES ('IACD', 'Interim hourly rates - Asylum CLR', NULL, NULL, 1600.00, NULL, 
        ('IMCD', 'Interim hourly rates - Immigration Interim CLR', NULL, NULL, 1200.00, NULL, NULL, NULL, 'I&A_FS2023', 'IMMIGRATION_ASYLUM', 'HOURLY')
 ON CONFLICT (fee_code, fee_scheme_code) DO UPDATE
 SET
+    category_type = EXCLUDED.category_type,
     fee_type = EXCLUDED.fee_type;
 
