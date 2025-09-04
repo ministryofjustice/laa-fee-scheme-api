@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.POLICE_STATION;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.POLICE_STATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -95,7 +95,7 @@ class PoliceStationFeeCalculatorTest {
         .feeSchemeCode(feeSchemesEntity)
         .profitCostLimit(profitCostLimit)
         .fixedFee(fixedFee)
-        .calculationType(POLICE_STATION)
+        .categoryType(POLICE_STATION)
         .build();
 
     PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder()

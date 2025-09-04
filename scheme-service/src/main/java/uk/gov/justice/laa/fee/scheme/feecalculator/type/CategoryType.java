@@ -1,9 +1,9 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator;
+package uk.gov.justice.laa.fee.scheme.feecalculator.type;
 
 /**
- * enum for the types of calculations.
+ * Enum for the types of category of law.
  */
-public enum CalculationType {
+public enum CategoryType {
 
   CLAIMS_PUBLIC_AUTHORITIES,
   CLINICAL_NEGLIGENCE,
@@ -12,8 +12,7 @@ public enum CalculationType {
   DISCRIMINATION,
   HOUSING,
   HOUSING_HLPAS,
-  IMMIGRATION_ASYLUM_FIXED_FEE,
-  IMMIGRATION_ASYLUM_HOURLY_RATE,
+  IMMIGRATION_ASYLUM,
   MEDIATION,
   MENTAL_HEALTH,
   MISCELLANEOUS,

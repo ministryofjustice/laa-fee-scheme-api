@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.DISCRIMINATION;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.DISCRIMINATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -72,7 +72,7 @@ class DiscriminationFeeCalculatorTest {
     return FeeEntity.builder()
         .feeCode("DISC")
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("DISC_FS2013").build())
-        .calculationType(DISCRIMINATION)
+        .categoryType(DISCRIMINATION)
         .escapeThresholdLimit(new BigDecimal("700.00"))
         .build();
   }
