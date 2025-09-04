@@ -146,7 +146,6 @@ class PoliceStationFixedFeeCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode(feeCode)
         .schemeId(feeSchemeCode)
-        .claimId("temp hardcoded till clarification")
         .warnings(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)

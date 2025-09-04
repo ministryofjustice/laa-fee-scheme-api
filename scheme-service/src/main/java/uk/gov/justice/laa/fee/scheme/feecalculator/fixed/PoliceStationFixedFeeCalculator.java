@@ -73,7 +73,6 @@ public final class PoliceStationFixedFeeCalculator {
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(policeStationFeesEntity.getFeeSchemeCode())
-        .claimId("temp hardcoded till clarification")
         .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
@@ -90,8 +89,6 @@ public final class PoliceStationFixedFeeCalculator {
                                                                   FeeCalculationRequest feeCalculationRequest) {
 
     BigDecimal fixedFee = feeEntity.getFixedFee();
-    String claimId = feeCalculationRequest.getClaimId();
-
     LocalDate startDate = feeCalculationRequest.getStartDate();
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
     BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, startDate, vatApplicable);
@@ -101,7 +98,6 @@ public final class PoliceStationFixedFeeCalculator {
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
-        .claimId(claimId)
         .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
