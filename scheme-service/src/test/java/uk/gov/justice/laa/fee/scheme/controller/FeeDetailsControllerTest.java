@@ -39,8 +39,8 @@ class FeeDetailsControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.categoryOfLawCode").value("ASY"))
-        .andExpect(jsonPath("$.categoryOfLawCode").value("fee_code_description"))
-        .andExpect(jsonPath("$.categoryOfLawCode").value("FIXED"));
+        .andExpect(jsonPath("$.feeCodeDescription").value("fee_code_description"))
+        .andExpect(jsonPath("$.feeType").value("FIXED"));
   }
 
   @Test
