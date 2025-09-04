@@ -1,9 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.repository.projection;
 
 /**
- * Projection class for category of law repository.
+ * Projection class for Fee details repository.
  */
-public interface FeeCategoryProjection {
+public interface FeeDetailsProjection {
 
   String getCategoryCode();
 
