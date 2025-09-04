@@ -1,42 +1,39 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator;
+package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.POLICE_STATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
-import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
+import uk.gov.justice.laa.fee.scheme.feecalculator.type.FeeType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
-class PoliceStationFeeCalculatorTest {
+class PoliceStationHourlyFeeCalculatorTest {
 
-  public static Stream<Arguments> testData() {
+  public static Stream<Arguments> testPoliceOtherData() {
     return Stream.of(
-        arguments("INVC Police Fee Code, VAT applied", "INVC", "NE001",
-            "1001", "121216/7899", true, 87.93,
-            new BigDecimal("14.4"), null, "POL_2016", 2.88,
-            50.5, 20.15, 14.4),
-
-        arguments("INVC Police Fee Code, VAT not applied", "INVC", "NE013",
-            "1004", "121223/6655", false, 85.05,
-            new BigDecimal("14.4"), null, "POL_2023", 0,
-            50.5, 20.15, 14.4),
-
         arguments("INVM Police Fee Code, VAT applied", "INVM", "NE024",
-            "1007", "041223/6655", true, 100.65,
-            null, new BigDecimal("25.0"), "POL_2023", 5.0,
-            50.5, 20.15, 25.0)
+            "1007", "041223/6655", true, 187.66,
+            null, new BigDecimal("25.0"), "POL_2023", 19.5,
+            50.5, 20.15, 0,12.45,
+            34.56, 97.51),
+        arguments("INVM Police Fee Code, VAT applied", "INVM", "NE024",
+            "1007", "041223/6655", false, 168.16,
+            null, new BigDecimal("25.0"), "POL_2023", 0,
+            50.5, 20.15, 0,12.45,
+            34.56, 97.51)
     );
   }
+
 
   private static Arguments arguments(String testDescription,
                                      String feeCode,
@@ -51,14 +48,17 @@ class PoliceStationFeeCalculatorTest {
                                      double expectedCalculatedVat,
                                      double disbursementAmount,
                                      double disbursementVatAmount,
-                                     double fixedFeeAmount) {
+                                     double fixedFeeAmount,
+                                     double travelAndWaitingCostAmount,
+                                     double netProfitCostsAmount,
+                                     double hourlyTotalAmount) {
     return Arguments.of(testDescription, feeCode, policeStationId, policeStationSchemeId, uniqueFileNumber, vatIndicator,
         expectedTotal, fixedFee, profitCostLimit, feeSchemeCode, expectedCalculatedVat, disbursementAmount,
-        disbursementVatAmount, fixedFeeAmount);
+        disbursementVatAmount, fixedFeeAmount, travelAndWaitingCostAmount, netProfitCostsAmount,hourlyTotalAmount);
   }
 
   @ParameterizedTest
-  @MethodSource("testData")
+  @MethodSource("testPoliceOtherData")
   void test_whenPoliceStation_shouldReturnFee(
       String description,
       String feeCode,
@@ -73,12 +73,14 @@ class PoliceStationFeeCalculatorTest {
       double expectedCalculatedVat,
       double expectedDisbursementAmount,
       double disbursementVatAmount,
-      double expectedFixedFee
+      double expectedFixedFee,
+      double travelAndWaitingCostAmount,
+      double netProfitCostsAmount,
+      double hourlyTotalAmount
   ) {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
-        .claimId("claim_123")
         .startDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(vatIndicator)
         .policeStationSchemeId(policeStationSchemeId)
@@ -86,6 +88,8 @@ class PoliceStationFeeCalculatorTest {
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
         .uniqueFileNumber(uniqueFileNumber)
+        .travelAndWaitingCosts(travelAndWaitingCostAmount)
+        .netProfitCosts(netProfitCostsAmount)
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
@@ -96,15 +100,10 @@ class PoliceStationFeeCalculatorTest {
         .profitCostLimit(profitCostLimit)
         .fixedFee(fixedFee)
         .categoryType(POLICE_STATION)
+        .feeType(FeeType.HOURLY)
         .build();
 
-    PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder()
-        .psSchemeId(policeStationSchemeId)
-        .feeSchemeCode(feeSchemeCode)
-        .fixedFee(fixedFee)
-        .build();
-
-    FeeCalculationResponse response = PoliceStationFeeCalculator.getFee(feeEntity, policeStationFeesEntity, feeData);
+    FeeCalculationResponse response = PoliceStationHourlyFeeCalculator.getFee(feeEntity, feeData);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(expectedTotal)
@@ -112,16 +111,16 @@ class PoliceStationFeeCalculatorTest {
         .vatRateApplied(20.0)
         .disbursementAmount(expectedDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)
-        .fixedFeeAmount(expectedFixedFee)
         .calculatedVatAmount(expectedCalculatedVat)
+        .netProfitCostsAmount(netProfitCostsAmount)
+        .hourlyTotalAmount(hourlyTotalAmount)
+        .travelAndWaitingCostAmount(travelAndWaitingCostAmount)
         .build();
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode(feeCode)
         .schemeId(feeSchemeCode)
-        .claimId("claim_123")
-        .warnings(new ArrayList<>())
-        .escapeCaseFlag(false)
+        .warnings(List.of("warning net profit costs"))
         .feeCalculation(expectedCalculation)
         .build();
 
