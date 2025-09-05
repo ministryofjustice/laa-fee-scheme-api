@@ -85,8 +85,18 @@ VALUES
     ('PUB_FS2013', 'Public Law Fee Scheme 2013', '2013-04-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
--- Fee Scheme for 'Public Law' category
+
+-- Fee Scheme for 'Education' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('EDU_FS2013', 'Education Fee Scheme 2013', '2013-04-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
+
+-- Fee Scheme for 'Welfare Benefits' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('WB_FS2023', 'Welfare Benefits Fee Scheme 2023', '2023-04-01', '2025-04-30'),
+    ('WB_FS2025', 'Welfare Benefits Fee Scheme 2025', '2025-05-01', NULL)
+ON CONFLICT (scheme_code) DO NOTHING;
+
+

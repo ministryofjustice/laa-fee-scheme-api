@@ -83,7 +83,10 @@ class FeeServiceTest {
             new BigDecimal("375.00"), MISCELLANEOUS, 525.52),
         Arguments.of("PUB", // Public Law
             "PUB_FS2013", "PUB Fee Scheme 2015", LocalDate.parse("2013-04-01"),
-            new BigDecimal("112.00"), PUBLIC_LAW, 209.92)
+            new BigDecimal("112.00"), PUBLIC_LAW, 209.92),
+        Arguments.of("PUB", // welfare benefits
+            "WB_FS2025", "Welfare benefits claims", LocalDate.parse("2025-04-01"),
+            new BigDecimal("208.00"), PUBLIC_LAW, 325.12)
     );
   }
 
