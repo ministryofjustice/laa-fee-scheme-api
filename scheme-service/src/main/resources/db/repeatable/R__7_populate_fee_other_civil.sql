@@ -11,7 +11,9 @@ VALUES ('CAPA', 'Claims Against Public Authorities Legal Help Fixed Fee', 239.00
        ('MISCEMP', 'Miscellaneous (Employment) Legal Help Fixed Fee', 207.00, 621.00, 'MISCEMP_FS2013', 'MISCELLANEOUS', 'FIXED'),
        ('MISCGEN', 'Miscellaneous Legal Help Fixed Fee', 79.00, 237.00, 'MISCGEN_FS2013', 'MISCELLANEOUS', 'FIXED'),
        ('MISCPI', 'Miscellaneous (Personal Injury) Legal Help Fixed Fee', 203.00, 609.00, 'MISCPI_FS2013', 'MISCELLANEOUS', 'FIXED'),
-       ('PUB', 'Public Law', 259.00, 777.00, 'PUB_FS2013', 'PUBLIC_LAW', 'FIXED')
-ON CONFLICT (fee_code, fee_scheme_code) DO UPDATE
+       ('PUB', 'Public Law', 259.00, 777.00, 'PUB_FS2013', 'PUBLIC_LAW', 'FIXED'),
+       ('WFB1', 'Welfare benefits claims', 208.00, NULL, 'WB_FS2023', 'WELFARE_BENEFITS', 'FIXED'),
+       ('WFB1', 'Welfare benefits claims', 208.00, 624.00, 'WB_FS2025', 'WELFARE_BENEFITS', 'FIXED')
+    ON CONFLICT (fee_code, fee_scheme_code) DO UPDATE
 SET
     fee_type = EXCLUDED.fee_type;
