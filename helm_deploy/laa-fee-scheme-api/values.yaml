@@ -45,6 +45,7 @@ actuator:
     failureThreshold: 5
 
 ingress:
+  enabled: false
   className: "modsec"
   annotations:
     external-dns.alpha.kubernetes.io/aws-weight: "100"
@@ -72,3 +73,4 @@ autoscaling:
 
 sentry:
   enabled: false
+

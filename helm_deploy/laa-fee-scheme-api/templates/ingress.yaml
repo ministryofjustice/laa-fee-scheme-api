@@ -1,13 +1,14 @@
+{{- if .Values.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Chart.Name }}-ingress
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "laa-fee-scheme-api.labels" . | nindent 4 }}
+    {{ include "laa-fee-scheme-api.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
+    {{ toYaml . | nindent 4 }}
   {{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
@@ -28,4 +29,5 @@ spec:
                 name: {{ $.Chart.Name }}-service
                 port:
                   number: {{ $.Values.service.port }}
-    {{- end }}
+  {{- end }}
+{{- end -}}
