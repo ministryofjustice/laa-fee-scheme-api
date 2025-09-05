@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.controller;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.json.JsonCompareMode.LENIENT;
 import static org.springframework.test.json.JsonCompareMode.STRICT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -23,6 +25,60 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
 
   @Autowired
   private MockMvc mockMvc;
+
+  @Test
+  void shouldGetBadResponse_whenDuplicateField() throws Exception {
+    mockMvc.perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "MDAS2B",
+                  "feeCode": "MDAS2B",
+                  "claimId": "claim_123",
+                  "startDate": "2019-09-30",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true,
+                  "numberOfMediationSessions": 1
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().json("""
+          {
+            "status": 400,
+            "error": "Bad Request",
+            "message": "JSON parse error: Duplicate field 'feeCode'"
+          }
+          """, LENIENT));
+  }
+
+  @Test
+  void shouldGetBadResponse_whenMissingField() throws Exception {
+    mockMvc.perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "claimId": "claim_123",
+                  "startDate": "2019-09-30",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true,
+                  "numberOfMediationSessions": 1
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().json("""
+          {
+            "status": 400,
+            "error": "Bad Request"
+          }
+          """, LENIENT))
+        .andExpect(result ->
+            assertTrue(result.getResponse().getContentAsString().contains("default message [feeCode]]; default message [must not be null]]"))
+        );;
+  }
 
   @Test
   void shouldGetFeeCalculation_discrimination() throws Exception {
