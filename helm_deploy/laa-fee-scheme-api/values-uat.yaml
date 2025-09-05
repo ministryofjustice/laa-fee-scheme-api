@@ -5,6 +5,7 @@
 replicaCount: 1
 
 ingress:
+  enabled: true
   hosts:
     - laa-fee-scheme-api-uat.apps.live.cloud-platform.service.justice.gov.uk
   annotations:
@@ -17,6 +18,7 @@ resources:
   requests:
     cpu: 200m
     memory: 256Mi
+
 sentry:
   enabled: true
   environment: UAT
