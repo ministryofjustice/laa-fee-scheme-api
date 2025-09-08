@@ -48,7 +48,7 @@ laa.springboot.starter:
             "roles": [
                 "ALL"
             ],
-            "token": ${DATA_CLAIMS_EVENT_SERVICE_TOKEN}
+            "token": "${DATA_CLAIMS_EVENT_SERVICE_TOKEN}"
         }
     ]'
     authorized-roles: '[
