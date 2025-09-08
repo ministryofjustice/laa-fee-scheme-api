@@ -3,6 +3,8 @@ package uk.gov.justice.laa.fee.scheme.exception;
 import java.time.OffsetDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
@@ -12,6 +14,23 @@ import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+  /**
+   * Global exception handler for HttpMessageNotReadableException exception.
+   * Duplicate fields, malformed request, type mismatch.
+   */
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+    return handleException(ex, HttpStatus.BAD_REQUEST);
+  }
+
+  /**
+   * Handle missing request fields.
+   */
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ErrorResponse> handleMethodArgumentException(MethodArgumentNotValidException ex) {
+    return handleException(ex, HttpStatus.BAD_REQUEST);
+  }
 
   /**
    * Global exception handler for CategoryCodeNotFoundException exception.
@@ -45,7 +64,7 @@ public class GlobalExceptionHandler {
     return handleException(ex, HttpStatus.NOT_FOUND);
   }
 
-  private ResponseEntity<ErrorResponse> handleException(RuntimeException ex, HttpStatus status) {
+  private ResponseEntity<ErrorResponse> handleException(Throwable ex, HttpStatus status) {
     ErrorResponse errorResponse = new ErrorResponse()
         .timestamp(OffsetDateTime.now())
         .status(status.value())
