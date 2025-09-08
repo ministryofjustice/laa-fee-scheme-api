@@ -38,3 +38,26 @@ management:
   endpoint:
     health:
       show-details: always
+
+laa.springboot.starter:
+  auth:
+    authentication-header: "Authorization"
+    authorized-clients: '[
+        {
+            "name": "data-claims-event-service",
+            "roles": [
+                "ALL"
+            ],
+            "token": ${DATA_CLAIMS_EVENT_SERVICE_TOKEN}
+        }
+    ]'
+    authorized-roles: '[
+        {
+            "name": "ALL",
+            "URIs": [
+                "/**"
+            ]
+        }
+    ]'
+    unprotected-uris: [ "/actuator/**", "/swagger-ui.html",
+                        "/swagger-ui/**", "/v3/api-docs/**", "/favicon.ico", "/open-api-specification.yml" ]

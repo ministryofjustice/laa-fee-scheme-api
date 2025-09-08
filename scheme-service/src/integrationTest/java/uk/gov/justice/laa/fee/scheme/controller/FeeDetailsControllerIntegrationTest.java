@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -25,7 +26,8 @@ class FeeDetailsControllerIntegrationTest extends PostgresContainerTestBase {
   @Test
   void shouldGetFeeDetails() throws Exception {
     mockMvc
-        .perform(get("/api/v1/fee-details/CAPA"))
+        .perform(get("/api/v1/fee-details/CAPA")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.categoryOfLawCode").value("AAP"))

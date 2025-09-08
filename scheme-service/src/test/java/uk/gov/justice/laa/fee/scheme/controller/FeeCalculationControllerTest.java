@@ -11,7 +11,9 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,7 +23,8 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.service.FeeService;
 
-@WebMvcTest(FeeCalculationController.class)
+@WebMvcTest(value = FeeCalculationController.class)
+@AutoConfigureMockMvc(addFilters = false) // disable security filters for testing
 class FeeCalculationControllerTest {
 
   @Autowired
@@ -66,6 +69,7 @@ class FeeCalculationControllerTest {
         .thenReturn(responseDto);
 
     mockMvc.perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(requestDto)))
         .andExpect(status().isOk())

@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -28,6 +29,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   void shouldGetFeeCalculation_discrimination() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -71,6 +73,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   void shouldGetFeeCalculation_immigrationAndAsylumFixedFee() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -118,6 +121,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate_legalHelp() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -158,6 +162,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   void shouldGetFeeCalculation_mediation() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -196,6 +201,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   void shouldGetFeeCalculation_mentalHealth() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -270,6 +276,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
       """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount);
 
     mockMvc.perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
               {
@@ -291,6 +298,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   void shouldGetFeeCalculation_policeStation() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - LFSP-152-setup-authentication
   workflow_dispatch:
 
 jobs:
@@ -58,19 +59,19 @@ jobs:
           image_repo: ${{ vars.ECR_REPOSITORY }}
           image_tag: ${{ github.sha }}
 
-  deploy-dev:
-    needs: ecr
-    uses: ./.github/workflows/_deploy-to-env.yml
-    with:
-      environment: dev
-    secrets: inherit
-
-  deploy-uat:
-    needs: deploy-dev
-    uses: ./.github/workflows/_deploy-to-env.yml
-    with:
-      environment: uat
-    secrets: inherit
+#  deploy-dev:
+#    needs: ecr
+#    uses: ./.github/workflows/_deploy-to-env.yml
+#    with:
+#      environment: dev
+#    secrets: inherit
+#
+#  deploy-uat:
+#    needs: deploy-dev
+#    uses: ./.github/workflows/_deploy-to-env.yml
+#    with:
+#      environment: uat
+#    secrets: inherit
 
   deploy-staging:
     needs: deploy-uat
