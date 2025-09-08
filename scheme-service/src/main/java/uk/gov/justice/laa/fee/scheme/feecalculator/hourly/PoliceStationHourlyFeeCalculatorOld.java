@@ -16,11 +16,11 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 /**
  * Calculate the police station fee for a given fee entity and fee data.
  */
-public final class PoliceStationHourlyFeeCalculator {
+public final class PoliceStationHourlyFeeCalculatorOld {
 
   private static final String WARNING_NET_PROFIT_COSTS = "warning net profit costs";
 
-  private PoliceStationHourlyFeeCalculator() {
+  private PoliceStationHourlyFeeCalculatorOld() {
   }
 
   /**
