@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator;
+package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.DISCRIMINATION;
