@@ -115,6 +115,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         .vatIndicator(vatIndicator)
         .vatRateApplied(20.0)
         .disbursementAmount(expectedDisbursementAmount)
+        .requestedNetDisbursementAmount(feeData.getNetDisbursementAmount())
         .disbursementVatAmount(disbursementVatAmount)
         .detentionAndWaitingCostsAmount(detentionAndWaitingCosts)
         .jrFormFillingAmount(jrFormfilling)

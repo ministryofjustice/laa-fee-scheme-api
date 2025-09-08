@@ -57,10 +57,12 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 63.65,
               "disbursementAmount": 100.21,
+              "requestedNetDisbursementAmount": 100.21,
               "disbursementVatAmount": 20.12,
               "hourlyTotalAmount": 318.25,
               "netCostOfCounselAmount": 79.19,
               "netProfitCostsAmount": 150.25,
+              "requestedNetProfitCostsAmount": 150.25,
               "travelAndWaitingCostAmount": 88.81
             }
           }
@@ -104,6 +106,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 402.20,
               "disbursementAmount": 100.21,
+              "requestedNetDisbursementAmount": 100.21,
               "disbursementVatAmount": 20.12,
               "fixedFeeAmount": 1092.00,
               "detentionAndWaitingCostsAmount": 111.00,
@@ -145,9 +148,11 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 28.38,
               "disbursementAmount": 125.70,
+              "requestedNetDisbursementAmount": 125.70,
               "disbursementVatAmount": 25.14,
               "hourlyTotalAmount": 141.89,
               "netProfitCostsAmount": 116.89,
+              "requestedNetProfitCostsAmount": 116.89,
               "jrFormFillingAmount": 25.00
             }
           }
@@ -185,6 +190,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 33.60,
               "disbursementAmount": 100.21,
+              "requestedNetDisbursementAmount": 100.21,
               "disbursementVatAmount": 20.12,
               "fixedFeeAmount": 168.00
             }
@@ -225,6 +231,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 160.20,
               "disbursementAmount": 100.21,
+              "requestedNetDisbursementAmount": 100.21,
               "disbursementVatAmount": 20.12,
               "fixedFeeAmount": 450.00,
               "boltOnFeeAmount": 351.00
@@ -263,6 +270,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
           "vatRateApplied": 20.00,
           "calculatedVatAmount": %s,
           "disbursementAmount": 123.38,
+          "requestedNetDisbursementAmount": 123.38,
           "disbursementVatAmount": 24.67,
           "fixedFeeAmount": %s
         }
@@ -317,6 +325,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 0,
               "disbursementAmount": 0,
+              "requestedNetDisbursementAmount": 0,
               "disbursementVatAmount": 0,
               "fixedFeeAmount": 131.40
             }

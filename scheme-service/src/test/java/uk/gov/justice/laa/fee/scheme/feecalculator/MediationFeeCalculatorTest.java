@@ -90,6 +90,7 @@ class MediationFeeCalculatorTest {
         .vatIndicator(vatIndicator)
         .vatRateApplied(20.0)
         .disbursementAmount(expectedDisbursementAmount)
+        .requestedNetDisbursementAmount(expectedDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)
         .fixedFeeAmount(expectedFixedFee)
         .calculatedVatAmount(expectedCalculatedVat)

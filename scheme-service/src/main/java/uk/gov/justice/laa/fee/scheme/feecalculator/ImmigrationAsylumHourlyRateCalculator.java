@@ -42,6 +42,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
       List<String> warnings = new ArrayList<>();
 
       BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
+      BigDecimal requestedNetProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
       BigDecimal profitCostLimit = feeEntity.getProfitCostLimit();
       if (netProfitCosts.compareTo(profitCostLimit) > 0
           && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorAuthorityNumber())) {
@@ -50,6 +51,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
       }
 
       BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+      BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
       BigDecimal disbursementLimit = feeEntity.getDisbursementLimit();
       if (netDisbursementAmount.compareTo(disbursementLimit) > 0
           && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorAuthorityNumber())) {
@@ -83,9 +85,11 @@ public final class ImmigrationAsylumHourlyRateCalculator {
               .vatRateApplied(toDouble(VatUtility.getVatRateForDate(feeCalculationRequest.getStartDate())))
               .calculatedVatAmount(toDouble(calculatedVatAmount))
               .disbursementAmount(toDouble(netDisbursementAmount))
+              .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
               .disbursementVatAmount(toDouble(disbursementVatAmount))
               .hourlyTotalAmount(toDouble(feeTotal))
               .netProfitCostsAmount(toDouble(netProfitCosts))
+              .requestedNetProfitCostsAmount(toDouble(requestedNetProfitCosts))
               .jrFormFillingAmount(toDouble(jrFormFilling))
               .build())
           .build();

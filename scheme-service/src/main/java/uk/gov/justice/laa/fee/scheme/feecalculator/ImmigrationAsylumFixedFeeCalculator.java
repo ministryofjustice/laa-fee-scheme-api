@@ -88,6 +88,7 @@ public final class ImmigrationAsylumFixedFeeCalculator {
             .vatRateApplied(toDouble(getVatRateForDate(startDate)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
+            .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .fixedFeeAmount(toDouble(fixedFeeAmount))
             .detentionAndWaitingCostsAmount(toDouble(detentionAndTravelCosts))

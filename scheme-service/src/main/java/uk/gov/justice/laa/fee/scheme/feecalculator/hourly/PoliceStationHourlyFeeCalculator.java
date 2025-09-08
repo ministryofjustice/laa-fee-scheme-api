@@ -70,10 +70,14 @@ public final class PoliceStationHourlyFeeCalculator {
             .vatRateApplied(toDouble(VatUtility.getVatRateForDate(feeCalculationRequest.getStartDate())))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
+            // disbursement not capped, so requested and calculated will be same
+            .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .hourlyTotalAmount(toDouble(feeTotal))
             .travelAndWaitingCostAmount(toDouble(travelAndWaitingExpenses))
             .netProfitCostsAmount(toDouble(netProfitCosts))
+            // net profit cost not capped, so requested and calculated will be same
+            .requestedNetProfitCostsAmount(toDouble(netProfitCosts))
             .build())
         .build();
   }

@@ -88,6 +88,7 @@ class DiscriminationFeeCalculatorTest {
     assertThat(calculation.getVatIndicator()).isEqualTo(vatIndicator);
     assertThat(calculation.getVatRateApplied()).isEqualTo(20);
     assertThat(calculation.getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
+    assertThat(calculation.getRequestedNetProfitCostsAmount()).isEqualTo(netProfitCosts);
     assertThat(calculation.getNetCostOfCounselAmount()).isEqualTo(costOfCounsel);
     assertThat(calculation.getTravelAndWaitingCostAmount()).isEqualTo(travelAndWaitingCosts);
   }
