@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.controller;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.json.JsonCompareMode.LENIENT;
 import static org.springframework.test.json.JsonCompareMode.STRICT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -24,6 +26,60 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
 
   @Autowired
   private MockMvc mockMvc;
+
+  @Test
+  void shouldGetBadResponse_whenDuplicateField() throws Exception {
+    mockMvc.perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "MDAS2B",
+                  "feeCode": "MDAS2B",
+                  "claimId": "claim_123",
+                  "startDate": "2019-09-30",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true,
+                  "numberOfMediationSessions": 1
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().json("""
+          {
+            "status": 400,
+            "error": "Bad Request",
+            "message": "JSON parse error: Duplicate field 'feeCode'"
+          }
+          """, LENIENT));
+  }
+
+  @Test
+  void shouldGetBadResponse_whenMissingField() throws Exception {
+    mockMvc.perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "claimId": "claim_123",
+                  "startDate": "2019-09-30",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true,
+                  "numberOfMediationSessions": 1
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().json("""
+          {
+            "status": 400,
+            "error": "Bad Request"
+          }
+          """, LENIENT))
+        .andExpect(result ->
+            assertTrue(result.getResponse().getContentAsString().contains("default message [feeCode]]; default message [must not be null]]"))
+        );;
+  }
 
   @Test
   void shouldGetFeeCalculation_discrimination() throws Exception {
@@ -59,10 +115,12 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 63.65,
               "disbursementAmount": 100.21,
+              "requestedNetDisbursementAmount": 100.21,
               "disbursementVatAmount": 20.12,
               "hourlyTotalAmount": 318.25,
               "netCostOfCounselAmount": 79.19,
               "netProfitCostsAmount": 150.25,
+              "requestedNetProfitCostsAmount": 150.25,
               "travelAndWaitingCostAmount": 88.81
             }
           }
@@ -107,6 +165,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 402.20,
               "disbursementAmount": 100.21,
+              "requestedNetDisbursementAmount": 100.21,
               "disbursementVatAmount": 20.12,
               "fixedFeeAmount": 1092.00,
               "detentionAndWaitingCostsAmount": 111.00,
@@ -149,9 +208,11 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 28.38,
               "disbursementAmount": 125.70,
+              "requestedNetDisbursementAmount": 125.70,
               "disbursementVatAmount": 25.14,
               "hourlyTotalAmount": 141.89,
               "netProfitCostsAmount": 116.89,
+              "requestedNetProfitCostsAmount": 116.89,
               "jrFormFillingAmount": 25.00
             }
           }
@@ -190,6 +251,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 33.60,
               "disbursementAmount": 100.21,
+              "requestedNetDisbursementAmount": 100.21,
               "disbursementVatAmount": 20.12,
               "fixedFeeAmount": 168.00
             }
@@ -231,6 +293,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 160.20,
               "disbursementAmount": 100.21,
+              "requestedNetDisbursementAmount": 100.21,
               "disbursementVatAmount": 20.12,
               "fixedFeeAmount": 450.00,
               "boltOnFeeAmount": 351.00
@@ -269,6 +332,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
           "vatRateApplied": 20.00,
           "calculatedVatAmount": %s,
           "disbursementAmount": 123.38,
+          "requestedNetDisbursementAmount": 123.38,
           "disbursementVatAmount": 24.67,
           "fixedFeeAmount": %s
         }
@@ -325,6 +389,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 0,
               "disbursementAmount": 0,
+              "requestedNetDisbursementAmount": 0,
               "disbursementVatAmount": 0,
               "fixedFeeAmount": 131.40
             }

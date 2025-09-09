@@ -6,10 +6,18 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import uk.gov.justice.laa.fee.scheme.controller.FeeCalculationController;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 
 @ExtendWith(MockitoExtension.class)
 class GlobalExceptionHandlerTest {
@@ -19,6 +27,37 @@ class GlobalExceptionHandlerTest {
   @BeforeEach
   void setup() {
     globalExceptionHandler = new GlobalExceptionHandler();
+  }
+
+  @Test
+  void handleHttpMessageNotReadable() {
+    HttpMessageNotReadableException exception = new HttpMessageNotReadableException("Duplicate field 'feeCode'", null, null);
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadable(exception);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().getStatus()).isEqualTo(400);
+    assertThat(response.getBody().getMessage()).contains("Duplicate field 'feeCode'");
+  }
+
+  @Test
+  void handleMethodArgumentException() throws NoSuchMethodException {
+    MethodParameter methodParameter = new MethodParameter(
+        FeeCalculationController.class.getMethod("getFeeCalculation", FeeCalculationRequest.class), 0);
+
+    FeeCalculationRequest request = new FeeCalculationRequest();
+    BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(request, "feeCalculationRequest");
+    bindingResult.rejectValue("feeCode", "NotBlank", "Fee code must not be blank");
+
+    MethodArgumentNotValidException exception = new MethodArgumentNotValidException(methodParameter, bindingResult);
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleMethodArgumentException(exception);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().getStatus()).isEqualTo(400);
+    assertThat(response.getBody().getMessage()).contains("Fee code must not be blank");
   }
 
   @Test
