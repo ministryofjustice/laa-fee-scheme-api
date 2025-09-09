@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
-import uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType;
+import java.util.Set;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
@@ -9,7 +10,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
  */
 public interface FeeCalculator {
 
-  CategoryType getCategory();
+  Set<CategoryType> getSupportedCategories();
 
   FeeCalculationResponse calculate(FeeCalculationRequest request);
   

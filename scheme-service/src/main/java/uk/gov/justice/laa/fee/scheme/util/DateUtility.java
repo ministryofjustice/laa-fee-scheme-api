@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
+package uk.gov.justice.laa.fee.scheme.util;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;

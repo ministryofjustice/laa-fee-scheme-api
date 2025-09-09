@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.MENTAL_HEALTH;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MENTAL_HEALTH;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

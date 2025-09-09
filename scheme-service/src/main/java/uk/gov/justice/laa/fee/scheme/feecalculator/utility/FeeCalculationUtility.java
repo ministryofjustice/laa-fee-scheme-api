@@ -1,8 +1,8 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.defaultToZeroIfNull;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.defaultToZeroIfNull;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toBigDecimal;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toDouble;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatRateForDate;
 

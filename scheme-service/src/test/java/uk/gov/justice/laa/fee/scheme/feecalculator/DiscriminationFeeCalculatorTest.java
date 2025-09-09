@@ -1,12 +1,13 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.DISCRIMINATION;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.InjectMocks;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -14,6 +15,9 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 class DiscriminationFeeCalculatorTest {
+
+  @InjectMocks
+  DiscriminationFeeCalculator discriminationFeeCalculator;
 
   @ParameterizedTest
   @CsvSource({
@@ -28,7 +32,7 @@ class DiscriminationFeeCalculatorTest {
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
     FeeEntity feeEntity = buildFeeEntity();
 
-    FeeCalculationResponse result = DiscriminationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+    FeeCalculationResponse result = discriminationFeeCalculator.calculate(feeCalculationRequest);
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
 
@@ -46,7 +50,7 @@ class DiscriminationFeeCalculatorTest {
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
     FeeEntity feeEntity = buildFeeEntity();
 
-    FeeCalculationResponse result = DiscriminationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+    FeeCalculationResponse result = discriminationFeeCalculator.calculate(feeCalculationRequest);
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
 

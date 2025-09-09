@@ -1,13 +1,14 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator;
+package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toBigDecimal;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -17,15 +18,18 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 /**
  * Calculate the Immigration and Asylum hourly rate fee for a given fee entity and fee calculation request.
  */
+
+@Component
 public final class ImmigrationAsylumHourlyRateCalculator {
 
-  private ImmigrationAsylumHourlyRateCalculator() {
-  }
+  private ImmigrationAsylumHourlyRateCalculator() {}
 
   private static final String IAXL = "IAXL";
+
   private static final String IMXL = "IMXL";
 
   private static final String WARNING_NET_PROFIT_COSTS = "warning net profit costs"; // @TODO: TBC
+
   private static final String WARNING_NET_DISBURSEMENTS = "warning net disbursements"; // @TODO: TBC
 
   /**
@@ -77,21 +81,29 @@ public final class ImmigrationAsylumHourlyRateCalculator {
           .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
           .claimId(claimId)
           .warnings(warnings)
-          .feeCalculation(FeeCalculation.builder()
-              .totalAmount(toDouble(finalTotal))
-              .vatIndicator(feeCalculationRequest.getVatIndicator())
-              .vatRateApplied(toDouble(VatUtility.getVatRateForDate(feeCalculationRequest.getStartDate())))
-              .calculatedVatAmount(toDouble(calculatedVatAmount))
-              .disbursementAmount(toDouble(netDisbursementAmount))
-              .disbursementVatAmount(toDouble(disbursementVatAmount))
-              .hourlyTotalAmount(toDouble(feeTotal))
-              .netProfitCostsAmount(toDouble(netProfitCosts))
-              .jrFormFillingAmount(toDouble(jrFormFilling))
-              .build())
+          .feeCalculation(getFeeCalculation(feeCalculationRequest, finalTotal, calculatedVatAmount, netDisbursementAmount,
+                disbursementVatAmount, feeTotal, netProfitCosts, jrFormFilling))
           .build();
     } else {
       //@TODO: to be removed once bus rules for all fee codes are implemented
       throw new IllegalArgumentException("Fee code not supported: " + feeCode);
     }
+  }
+
+  private static FeeCalculation getFeeCalculation(FeeCalculationRequest feeCalculationRequest, BigDecimal finalTotal,
+                                                    BigDecimal calculatedVatAmount, BigDecimal netDisbursementAmount,
+                                                      BigDecimal disbursementVatAmount, BigDecimal feeTotal,
+                                                        BigDecimal netProfitCosts, BigDecimal jrFormFilling) {
+    return FeeCalculation.builder()
+        .totalAmount(toDouble(finalTotal))
+        .vatIndicator(feeCalculationRequest.getVatIndicator())
+        .vatRateApplied(toDouble(VatUtility.getVatRateForDate(feeCalculationRequest.getStartDate())))
+        .calculatedVatAmount(toDouble(calculatedVatAmount))
+        .disbursementAmount(toDouble(netDisbursementAmount))
+        .disbursementVatAmount(toDouble(disbursementVatAmount))
+        .hourlyTotalAmount(toDouble(feeTotal))
+        .netProfitCostsAmount(toDouble(netProfitCosts))
+        .jrFormFillingAmount(toDouble(jrFormFilling))
+        .build();
   }
 }

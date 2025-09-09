@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
-import uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 
 /**
  * Factory class to return category specific calculators.
@@ -16,7 +16,9 @@ public class FeeCalculatorFactory {
 
   public FeeCalculatorFactory(List<FeeCalculator> calculators) {
     this.calculators = calculators.stream()
-        .collect(Collectors.toMap(FeeCalculator::getCategory, c -> c));
+        .flatMap(feeCalculator -> feeCalculator.getSupportedCategories().stream()
+            .map(categoryType -> Map.entry(categoryType, feeCalculator)))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
   public FeeCalculator getCalculator(CategoryType category) {

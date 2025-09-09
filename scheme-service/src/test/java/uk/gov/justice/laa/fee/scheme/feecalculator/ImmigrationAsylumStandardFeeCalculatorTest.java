@@ -2,8 +2,8 @@ package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.IMMIGRATION_ASYLUM;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.type.FeeType.FIXED;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
+import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,13 +15,13 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.type.FeeType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.ImmigrationAsylumFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
-class ImmigrationAsylumFixedFeeCalculatorTest {
+class ImmigrationAsylumStandardFeeCalculatorTest {
 
   private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
 

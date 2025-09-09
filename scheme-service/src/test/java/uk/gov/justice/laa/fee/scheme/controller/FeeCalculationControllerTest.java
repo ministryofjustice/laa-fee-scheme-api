@@ -62,7 +62,7 @@ class FeeCalculationControllerTest {
             .build())
         .build();
 
-    when(feeService.getFeeCalculation(ArgumentMatchers.any(FeeCalculationRequest.class)))
+    when(feeService.calculateFee(ArgumentMatchers.any(FeeCalculationRequest.class)))
         .thenReturn(responseDto);
 
     mockMvc.perform(post("/api/v1/fee-calculation")

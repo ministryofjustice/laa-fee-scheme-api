@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.POLICE_STATION;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,15 +10,19 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.type.FeeType;
+import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
-class PoliceStationFixedFeeCalculatorTest {
+class PoliceStationStandardFeeCalculatorTest {
+
+  @InjectMocks
+  PoliceStationFixedFeeCalculator policeStationFixedFeeCalculator;
 
   public static Stream<Arguments> testPoliceStationAttendanceClaims() {
     return Stream.of(
@@ -131,7 +135,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .fixedFee(fixedFee)
         .build();
 
-    FeeCalculationResponse response = PoliceStationFixedFeeCalculator.getFee(feeEntity, policeStationFeesEntity, feeData);
+    FeeCalculationResponse response = policeStationFixedFeeCalculator.getFee(feeEntity, feeData);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(expectedTotal)
@@ -205,7 +209,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .fixedFee(fixedFee)
         .build();
 
-    FeeCalculationResponse response = PoliceStationFixedFeeCalculator.getFee(feeEntity, policeStationFeesEntity, feeData);
+    FeeCalculationResponse response = policeStationFixedFeeCalculator.getFee(feeEntity, feeData);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(expectedTotal)

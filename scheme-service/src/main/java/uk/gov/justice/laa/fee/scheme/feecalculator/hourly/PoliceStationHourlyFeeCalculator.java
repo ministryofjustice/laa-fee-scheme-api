@@ -1,12 +1,13 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toBigDecimal;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
@@ -18,12 +19,10 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
  * Calculate the police station fee for a given fee entity and fee data.
  */
 @Component
-public final class PoliceStationHourlyFeeCalculator {
+@RequiredArgsConstructor
+public class PoliceStationHourlyFeeCalculator {
 
   private static final String WARNING_NET_PROFIT_COSTS = "warning net profit costs";
-
-  private PoliceStationHourlyFeeCalculator() {
-  }
 
   /**
    * Calculated fee based on the provided fee entity and fee calculation request.

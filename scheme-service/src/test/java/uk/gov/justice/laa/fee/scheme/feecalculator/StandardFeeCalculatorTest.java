@@ -1,18 +1,23 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.COMMUNITY_CARE;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.InjectMocks;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.PoliceStationFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
-class FixedFeeCalculatorTest {
+class StandardFeeCalculatorTest {
+
+  @InjectMocks
+  StandardFeeCalculator standardFeeCalculator;
 
   @ParameterizedTest
   @CsvSource({
@@ -35,7 +40,7 @@ class FixedFeeCalculatorTest {
         .categoryType(COMMUNITY_CARE)
         .build();
 
-    FeeCalculationResponse result = FixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+    FeeCalculationResponse result = standardFeeCalculator.calculate(feeCalculationRequest);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("COM");

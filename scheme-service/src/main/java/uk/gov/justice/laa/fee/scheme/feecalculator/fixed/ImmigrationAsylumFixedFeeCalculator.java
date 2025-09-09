@@ -1,13 +1,14 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator;
+package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toBigDecimal;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toDouble;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatRateForDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.BoltOnUtility;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
@@ -18,12 +19,14 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 /**
  * Calculate the Immigration and asylum fee for a given fee entity and fee calculation request.
  */
+
+@Component
 public final class ImmigrationAsylumFixedFeeCalculator {
 
-  private ImmigrationAsylumFixedFeeCalculator() {
-  }
+  private ImmigrationAsylumFixedFeeCalculator(){}
 
   private static final List<String> FEE_CODES_WITH_NO_DISBURSEMENT = List.of("IDAS1", "IDAS2");
+
   private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
 
   /**
@@ -76,24 +79,26 @@ public final class ImmigrationAsylumFixedFeeCalculator {
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
 
+    FeeCalculation feeCalculation = FeeCalculation.builder()
+        .totalAmount(toDouble(finalTotal))
+        .vatIndicator(vatApplicable)
+        .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+        .calculatedVatAmount(toDouble(calculatedVatAmount))
+        .disbursementAmount(toDouble(netDisbursementAmount))
+        .disbursementVatAmount(toDouble(disbursementVatAmount))
+        .fixedFeeAmount(toDouble(fixedFeeAmount))
+        .detentionAndWaitingCostsAmount(toDouble(detentionAndTravelCosts))
+        .jrFormFillingAmount(toDouble(jrFormFillingCosts))
+        .boltOnFeeAmount(toDouble(boltOnValue))
+        .build();
+
     return new FeeCalculationResponse().toBuilder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
         .claimId(claimId)
         .warnings(warningList)
         .escapeCaseFlag(false) // temp hard coded
-        .feeCalculation(FeeCalculation.builder()
-            .totalAmount(toDouble(finalTotal))
-            .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(startDate)))
-            .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(toDouble(netDisbursementAmount))
-            .disbursementVatAmount(toDouble(disbursementVatAmount))
-            .fixedFeeAmount(toDouble(fixedFeeAmount))
-            .detentionAndWaitingCostsAmount(toDouble(detentionAndTravelCosts))
-            .jrFormFillingAmount(toDouble(jrFormFillingCosts))
-            .boltOnFeeAmount(toDouble(boltOnValue))
-            .build())
+        .feeCalculation(feeCalculation)
         .build();
   }
 
