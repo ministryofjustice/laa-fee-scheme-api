@@ -75,6 +75,8 @@ public final class FeeCalculationUtility {
             .vatRateApplied(toDouble(getVatRateForDate(startDate)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
+            // disbursement not capped, so requested and calculated will be same
+            .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .fixedFeeAmount(toDouble(fixedFee))
             // Mental health has bolt on, rest do not, so check if null or zero, so empty value/null not added to response

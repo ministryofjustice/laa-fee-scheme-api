@@ -229,6 +229,10 @@ components:
           type: number
           format: double
           description: "The disbursement amount calculated to be added."
+        requestedNetDisbursementAmount:
+          type: number
+          format: double
+          description: "The disbursement amount that was requested."
         disbursementVatAmount:
           type: number
           format: double
@@ -242,6 +246,10 @@ components:
           format: double
           description: "Fixed Fee amount calculated."
         netProfitCostsAmount:
+          type: number
+          format: double
+          description: "The net profit cost amount calculated to be added."
+        requestedNetProfitCostsAmount:
           type: number
           format: double
           description: "The profit cost amount requested."

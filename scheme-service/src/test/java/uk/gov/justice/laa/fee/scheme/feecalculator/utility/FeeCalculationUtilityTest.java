@@ -108,6 +108,7 @@ class FeeCalculationUtilityTest {
         .vatIndicator(true)
         .vatRateApplied(20.0)
         .disbursementAmount(29.45)
+        .requestedNetDisbursementAmount(29.45)
         .disbursementVatAmount(5.89)
         .fixedFeeAmount(263.00)
         .calculatedVatAmount(72.60)

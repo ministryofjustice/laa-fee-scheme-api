@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator;
+package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
@@ -74,10 +74,14 @@ public final class DiscriminationFeeCalculator {
             .vatRateApplied(toDouble(VatUtility.getVatRateForDate(startDate)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
+            // disbursement not capped, so requested and calculated will be same
+            .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .hourlyTotalAmount(toDouble(feeTotal))
             .netCostOfCounselAmount(toDouble(netCostOfCounsel))
             .netProfitCostsAmount(toDouble(netProfitCosts))
+            // net profit cost not capped, so requested and calculated will be same
+            .requestedNetProfitCostsAmount(toDouble(netProfitCosts))
             .travelAndWaitingCostAmount(toDouble(travelAndWaitingCosts))
             .build())
         .build();
