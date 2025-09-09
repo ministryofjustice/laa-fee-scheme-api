@@ -30,6 +30,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   @Test
   void shouldGetBadResponse_whenDuplicateField() throws Exception {
     mockMvc.perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -57,6 +58,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   @Test
   void shouldGetBadResponse_whenMissingField() throws Exception {
     mockMvc.perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
