@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -16,11 +17,12 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 /**
  * Calculate the police station fee for a given fee entity and fee data.
  */
-public final class PoliceStationHourlyFeeCalculatorOld {
+@Component
+public final class PoliceStationHourlyFeeCalculator {
 
   private static final String WARNING_NET_PROFIT_COSTS = "warning net profit costs";
 
-  private PoliceStationHourlyFeeCalculatorOld() {
+  private PoliceStationHourlyFeeCalculator() {
   }
 
   /**
@@ -30,7 +32,7 @@ public final class PoliceStationHourlyFeeCalculatorOld {
    * @param feeCalculationRequest the request containing fee calculation data
    * @return FeeCalculationResponse with calculated fee
    */
-  public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
+  public FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
     List<String> warnings = new ArrayList<>();
 
     BigDecimal profitCostLimit = feeEntity.getProfitCostLimit();

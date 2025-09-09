@@ -103,7 +103,7 @@ class PoliceStationHourlyFeeCalculatorTest {
         .feeType(FeeType.HOURLY)
         .build();
 
-    FeeCalculationResponse response = PoliceStationHourlyFeeCalculatorOld.getFee(feeEntity, feeData);
+    FeeCalculationResponse response = PoliceStationHourlyFeeCalculator.getFee(feeEntity, feeData);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(expectedTotal)
