@@ -24,7 +24,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.service.FeeService;
 
 @WebMvcTest(value = FeeCalculationController.class)
-@AutoConfigureMockMvc(addFilters = false) // disable security filters for testing
+@AutoConfigureMockMvc(addFilters = false) // disable security filter for testing
 class FeeCalculationControllerTest {
 
   @Autowired
@@ -69,7 +69,6 @@ class FeeCalculationControllerTest {
         .thenReturn(responseDto);
 
     mockMvc.perform(post("/api/v1/fee-calculation")
-            .header(HttpHeaders.AUTHORIZATION, "test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(requestDto)))
         .andExpect(status().isOk())

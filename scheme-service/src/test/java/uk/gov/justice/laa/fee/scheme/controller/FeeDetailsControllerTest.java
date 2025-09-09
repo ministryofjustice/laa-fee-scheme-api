@@ -20,7 +20,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponse;
 import uk.gov.justice.laa.fee.scheme.service.FeeDetailsService;
 
 @WebMvcTest(FeeDetailsController.class)
-@AutoConfigureMockMvc(addFilters = false) // disable security filters for testing
+@AutoConfigureMockMvc(addFilters = false) // disable security filter for testing
 class FeeDetailsControllerTest {
 
   @Autowired
