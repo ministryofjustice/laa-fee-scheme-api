@@ -83,7 +83,7 @@ jobs:
     needs: ecr # deploy-staging
     uses: ./.github/workflows/_deploy-to-env.yml
     with:
-      environment: staging
+      environment: prod
     secrets: inherit
 
   vulnerability-report:
