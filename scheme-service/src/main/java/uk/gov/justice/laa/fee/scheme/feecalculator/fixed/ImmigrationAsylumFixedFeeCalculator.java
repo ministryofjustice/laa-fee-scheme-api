@@ -1,8 +1,8 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toDouble;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatRateForDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -23,7 +23,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 @Component
 public final class ImmigrationAsylumFixedFeeCalculator {
 
-  private ImmigrationAsylumFixedFeeCalculator(){}
+  private ImmigrationAsylumFixedFeeCalculator() {}
 
   private static final List<String> FEE_CODES_WITH_NO_DISBURSEMENT = List.of("IDAS1", "IDAS2");
 

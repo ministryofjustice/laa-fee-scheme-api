@@ -14,6 +14,12 @@ public class FeeCalculatorFactory {
 
   private final Map<CategoryType, FeeCalculator> calculators;
 
+  /**
+   *  Loading all Category Fee Calculators.
+   *
+   * @param calculators List
+   */
+
   public FeeCalculatorFactory(List<FeeCalculator> calculators) {
     this.calculators = calculators.stream()
         .flatMap(feeCalculator -> feeCalculator.getSupportedCategories().stream()

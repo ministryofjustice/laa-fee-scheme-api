@@ -1,16 +1,23 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
@@ -18,11 +25,17 @@ import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.repository.PoliceStationFeesRepository;
+import uk.gov.justice.laa.fee.scheme.service.DataService;
 
-class PoliceStationStandardFeeCalculatorTest {
+@ExtendWith(MockitoExtension.class)
+class PoliceStationFixedFeeCalculatorTest {
 
   @InjectMocks
   PoliceStationFixedFeeCalculator policeStationFixedFeeCalculator;
+
+  @Mock
+  PoliceStationFeesRepository policeStationFeesRepository;
 
   public static Stream<Arguments> testPoliceStationAttendanceClaims() {
     return Stream.of(
@@ -84,6 +97,72 @@ class PoliceStationStandardFeeCalculatorTest {
         disbursementVatAmount, fixedFeeAmount, travelAndWaitingCostAmount, netProfitCostsAmount);
   }
 
+  @Test
+  void test_whenPoliceStationClaimForInvoiceSubmitted_shouldReturnValidResponse() {
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("INVC")
+        .feeSchemeCode(feeSchemesEntity)
+        .profitCostLimit(new BigDecimal("123.56"))
+        .fixedFee(new BigDecimal("200.56"))
+        .categoryType(POLICE_STATION)
+        .feeType(FeeType.FIXED)
+        .build();
+
+    PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder()
+        .psSchemeId("1004")
+        .feeSchemeCode("POL_FS2022")
+        .fixedFee(new BigDecimal("200.56"))
+        .build();
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode("INVC")
+        .startDate(LocalDate.of(2017, 7, 29))
+        .vatIndicator(true)
+        .policeStationSchemeId("1001")
+        .policeStationId("NE001")
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .uniqueFileNumber("121222/4523")
+        .travelAndWaitingCosts(45.0)
+        .netProfitCosts(676.0)
+        .build();
+
+    when(policeStationFeesRepository.findPoliceStationFeeByPoliceStationIdAndFeeSchemeCode(any(),
+        any())).thenReturn(List.of(policeStationFeesEntity));
+
+
+    FeeCalculationResponse response = policeStationFixedFeeCalculator.getFee(feeEntity, feeData);
+
+
+    FeeCalculation expectedCalculation = FeeCalculation.builder()
+        .totalAmount(311.32)
+        .vatIndicator(Boolean.TRUE)
+        .vatRateApplied(20.0)
+        .calculatedVatAmount(40.11)
+        .disbursementAmount(50.5)
+        .disbursementVatAmount(20.15)
+        .fixedFeeAmount(200.56)
+        .calculatedVatAmount(40.11)
+        .build();
+
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
+        .feeCode("INVC")
+        .schemeId("POL_FS2022")
+        .warnings(new ArrayList<>())
+        .escapeCaseFlag(false)
+        .feeCalculation(expectedCalculation)
+        .build();
+
+    assertThat(response)
+        .usingRecursiveComparison()
+        .isEqualTo(expectedResponse);
+
+  }
+
+
   @ParameterizedTest
   @MethodSource("testPoliceStationAttendanceClaims")
   void test_whenClaimsSubmittedForPoliceStationAttendance_shouldReturnFee(
@@ -107,7 +186,7 @@ class PoliceStationStandardFeeCalculatorTest {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
-        .startDate(LocalDate.of(2017, 7, 29))
+        .startDate(LocalDate.of(2021, 7, 29))
         .vatIndicator(vatIndicator)
         .policeStationSchemeId(policeStationSchemeId)
         .policeStationId(policeStationId)
@@ -134,6 +213,9 @@ class PoliceStationStandardFeeCalculatorTest {
         .feeSchemeCode(feeSchemeCode)
         .fixedFee(fixedFee)
         .build();
+
+    when(policeStationFeesRepository.findPoliceStationFeeByPoliceStationIdAndFeeSchemeCode(policeStationId,
+        feeSchemeCode)).thenReturn(List.of(policeStationFeesEntity));
 
     FeeCalculationResponse response = policeStationFixedFeeCalculator.getFee(feeEntity, feeData);
 
@@ -203,11 +285,6 @@ class PoliceStationStandardFeeCalculatorTest {
         .feeType(FeeType.FIXED)
         .build();
 
-    PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder()
-        .psSchemeId(policeStationSchemeId)
-        .feeSchemeCode(feeSchemeCode)
-        .fixedFee(fixedFee)
-        .build();
 
     FeeCalculationResponse response = policeStationFixedFeeCalculator.getFee(feeEntity, feeData);
 

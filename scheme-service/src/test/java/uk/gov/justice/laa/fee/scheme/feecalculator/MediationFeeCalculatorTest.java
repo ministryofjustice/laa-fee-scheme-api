@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MEDIATION;
 
 import java.math.BigDecimal;
@@ -12,11 +13,13 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.exception.InvalidMediationSessionException;
@@ -25,17 +28,16 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
 import uk.gov.justice.laa.fee.scheme.repository.FeeSchemesRepository;
+import uk.gov.justice.laa.fee.scheme.service.DataService;
 
+@ExtendWith(MockitoExtension.class)
 class MediationFeeCalculatorTest {
 
   @InjectMocks
   private MediationFeeCalculator mediationFeeCalculator;
 
   @Mock
-  private FeeRepository feeRepository;
-
-  @Mock
-  private FeeSchemesRepository feeSchemesRepository;
+  private DataService dataService;
 
   public static Stream<Arguments> testData() {
     return Stream.of(
@@ -82,6 +84,7 @@ class MediationFeeCalculatorTest {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
+        .areaOfLaw(MEDIATION.name())
         .claimId("claim_123")
         .startDate(LocalDate.of(2025, 7, 29))
         .netDisbursementAmount(50.50)
@@ -100,7 +103,7 @@ class MediationFeeCalculatorTest {
         .categoryType(MEDIATION)
         .build();
 
-    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+    when(dataService.getFeeEntity(any())).thenReturn(feeEntity);
 
     FeeCalculationResponse response = mediationFeeCalculator.calculate(feeData);
 
@@ -132,6 +135,7 @@ class MediationFeeCalculatorTest {
   void getFee_whenMediationSessionIsNull_thenThrowsException() {
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode("MDAS2B")
+        .areaOfLaw(MEDIATION.name())
         .claimId("claim_123")
         .startDate(LocalDate.of(2025, 7, 29))
         .netDisbursementAmount(50.50)
@@ -149,7 +153,7 @@ class MediationFeeCalculatorTest {
         .categoryType(MEDIATION)
         .build();
 
-    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+    when(dataService.getFeeEntity(any())).thenReturn(feeEntity);
 
     assertThrows(InvalidMediationSessionException.class, () -> mediationFeeCalculator.calculate(feeData));
   }

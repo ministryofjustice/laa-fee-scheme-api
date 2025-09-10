@@ -1,67 +1,44 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLAIMS_PUBLIC_AUTHORITIES;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLINICAL_NEGLIGENCE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DEBT;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING_HLPAS;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MEDIATION;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MISCELLANEOUS;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PUBLIC_LAW;
-import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
-import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
-import static uk.gov.justice.laa.fee.scheme.testutility.TestDataUtility.buildFeeEntity;
-import static uk.gov.justice.laa.fee.scheme.testutility.TestDataUtility.buildFeeSchemesEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import java.util.ArrayList;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
-import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
+import org.mockito.MockitoAnnotations;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.ImmigrationAsylumFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
-import uk.gov.justice.laa.fee.scheme.repository.FeeSchemesRepository;
-import uk.gov.justice.laa.fee.scheme.repository.PoliceStationFeesRepository;
 
-@ExtendWith(MockitoExtension.class)
 class FeeServiceTest {
-
-  @Mock
-  FeeRepository feeRepository;
-  @Mock
-  FeeSchemesRepository feeSchemesRepository;
-  @Mock
-  PoliceStationFeesRepository policeStationFeesRepository;
-  @InjectMocks
-  private FeeService feeService;
 
   @Mock
   FeeCalculatorFactory feeCalculatorFactory;
 
-  @Mock
-  FeeCalculator feeCalculator;
+
+  @InjectMocks
+  private FeeService feeService;
 
   static Stream<Arguments> testDataOtherCivil() {
     return Stream.of(
@@ -95,8 +72,18 @@ class FeeServiceTest {
     );
   }
 
+
+  @BeforeEach
+  void setUp() {
+    MockitoAnnotations.openMocks(this);
+  }
+
   @Test
-  void shouldThrowException_feeSchemeNotFoundForDate() {
+  void calculateFee_DelegatesToCalculator() {
+
+    FeeCalculator immigrationCalculator = mock(ImmigrationAsylumFeeCalculator.class);
+    // Arrange
+    CategoryType category = CategoryType.valueOf(IMMIGRATION_ASYLUM.name());
     FeeCalculationRequest requestDto = FeeCalculationRequest.builder()
         .feeCode("FEE123")
         .areaOfLaw(IMMIGRATION_ASYLUM.name())
@@ -107,348 +94,38 @@ class FeeServiceTest {
         .numberOfMediationSessions(2)
         .build();
 
-    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of());
+    when(feeCalculatorFactory.getCalculator(category)).thenReturn(immigrationCalculator);
 
-    assertThatThrownBy(() -> feeService.calculateFee(requestDto))
-        .hasMessageContaining("Fee not found for fee code FEE123, with start date 2025-07-29");
-  }
-
-  @Test
-  void shouldThrowException_feeEntityNotFoundForSchemeId() {
-    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("scheme123").build();
-    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
-    when(feeRepository.findByFeeCodeAndFeeSchemeCode("FEE123", feeSchemesEntity))
-        .thenReturn(Optional.empty());
-
-    FeeCalculationRequest requestDto = FeeCalculationRequest.builder()
-        .feeCode("FEE123")
-        .areaOfLaw(PUBLIC_LAW.name())
-        .startDate(LocalDate.of(2025, 7, 29))
-        .netDisbursementAmount(70.75)
-        .disbursementVatAmount(20.15)
+    FeeCalculation expectedCalculation = FeeCalculation.builder()
+        .totalAmount(1587.50)
         .vatIndicator(true)
-        .numberOfMediationSessions(2)
+        .vatRateApplied(20.0)
+        .disbursementAmount(800.0)
+        .disbursementVatAmount(40.0)
+        .fixedFeeAmount(456.00)
+        .calculatedVatAmount(236.00)
         .build();
 
-    assertThatThrownBy(() -> feeService.calculateFee(requestDto))
-        .hasMessageContaining("Fee not found for fee code FEE123, with start date 2025-07-29");
-
-  }
-
-  @Test
-  void getFeeCalculation_shouldReturnExpectedCalculation_discrimination() {
-    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("DISC_FS2013",
-        "Discrimination Fee Scheme 2013", LocalDate.parse("2013-04-01"));
-    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("DISC")
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("DISC_FS2013").build())
-        .escapeThresholdLimit(new BigDecimal("700.00"))
-        .categoryType(DISCRIMINATION)
-        .build();
-    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
-
-    FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .feeCode("DISC")
-        .areaOfLaw(DISCRIMINATION.name())
-        .startDate(LocalDate.of(2025, 7, 29))
-        .netProfitCosts(250.25)
-        .netCostOfCounsel(100.72)
-        .travelAndWaitingCosts(30.34)
-        .netDisbursementAmount(70.75)
-        .disbursementVatAmount(20.15)
-        .vatIndicator(true)
-        .build();
-
-    FeeCalculationResponse response = feeService.calculateFee(request);
-
-    assertFeeCalculation(response, "DISC", 548.47);
-  }
-
-  @Test
-  void getFeeCalculation_shouldReturnExpectedCalculation_mediation() {
-    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("MED_FS2013",
-        "Mediation Fee Scheme 2013", LocalDate.parse("2013-04-01"));
-    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("MDAS2B")
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("MED_FS2013").build())
-        .mediationFeeLower(new BigDecimal(50))
-        .mediationFeeHigher(new BigDecimal(100))
-        .categoryType(MEDIATION)
-        .build();
-    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
-
-    FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .feeCode("MDAS2B")
-        .areaOfLaw(MEDIATION.name())
-        .startDate(LocalDate.of(2025, 7, 29))
-        .netDisbursementAmount(70.75)
-        .disbursementVatAmount(20.15)
-        .vatIndicator(true)
-        .numberOfMediationSessions(2)
-        .build();
-
-    FeeCalculationResponse response = feeService.calculateFee(request);
-
-    assertFeeCalculation(response, "MDAS2B", 210.90);
-  }
-
-  @ParameterizedTest
-  @MethodSource("testDataOtherCivil")
-  void getFeeCalculation_shouldReturnExpectedCalculation_otherCivil(String feeCode, String schemeCode, String schemeName,
-                                                                    LocalDate validFrom, BigDecimal fixedFee,
-                                                                    CategoryType categoryType, double expectedTotal) {
-
-    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any()))
-        .thenReturn(List.of(buildFeeSchemesEntity(schemeCode, schemeName, validFrom)));
-    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any()))
-        .thenReturn(Optional.of(buildFeeEntity(feeCode, fixedFee, categoryType, schemeCode)));
-
-    FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .feeCode(feeCode)
-        .startDate(LocalDate.of(2025, 3, 5))
-        .vatIndicator(true)
-        .netDisbursementAmount(62.93)
-        .disbursementVatAmount(12.59)
-        .build();
-
-    FeeCalculationResponse response = feeService.calculateFee(request);
-
-    assertFeeCalculation(response, feeCode, expectedTotal);
-  }
-
-  @Test
-  void getFeeCalculation_shouldReturnExpectedCalculation_immigrationAsylumFixedFee() {
-    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("I&A_FS2020",
-        "Standard Fee - Immigration CLR (2c + advocacy substantive hearing fee)", LocalDate.parse("2025-04-01"));
-
-    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("IMCC")
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2023").build())
-        .fixedFee(new BigDecimal("764.00"))
-        .disbursementLimit(new BigDecimal("600"))
-        .oralCmrhBoltOn(new BigDecimal("166"))
-        .telephoneCmrhBoltOn(new BigDecimal("90"))
-        .adjornHearingBoltOn(new BigDecimal("161"))
-        .categoryType(IMMIGRATION_ASYLUM)
-        .feeType(FIXED)
-        .build();
-    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
-
-    FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .feeCode("IMCC")
-        .areaOfLaw(IMMIGRATION_ASYLUM.name())
-        .startDate(LocalDate.of(2025, 7, 29))
-        .netDisbursementAmount(70.75)
-        .disbursementVatAmount(20.15)
-        .vatIndicator(true)
-        .build();
-
-    FeeCalculationResponse response = feeService.calculateFee(request);
-
-    assertFeeCalculation(response, "IMCC", 1007.70);
-  }
-
-  @Test
-  void getFeeCalculation_shouldReturnExpectedCalculation_immigrationAsylumHourlyRate_legalHelp() {
-    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("I&A_FS2013",
-        "Immigration and Asylum Scheme 2013", LocalDate.parse("2013-04-01"));
-
-    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("IAXL")
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2013").build())
-        .profitCostLimit(new BigDecimal("800"))
-        .disbursementLimit(new BigDecimal("400"))
-        .categoryType(IMMIGRATION_ASYLUM)
-        .feeType(HOURLY)
-        .build();
-    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
-
-    FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .feeCode("IAXL")
-        .areaOfLaw(IMMIGRATION_ASYLUM.name())
-        .startDate(LocalDate.of(2025, 6, 14))
-        .netProfitCosts(166.25)
-        .jrFormFilling(635.44)
-        .netDisbursementAmount(89.56)
-        .disbursementVatAmount(17.91)
-        .vatIndicator(true)
-        .build();
-
-    FeeCalculationResponse response = feeService.calculateFee(request);
-
-    assertFeeCalculation(response, "IAXL", 1069.5);
-  }
-
-  @Test
-  void getFeeCalculation_shouldReturnExpectedCalculation_policeStationId() {
-    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("POL_FS2022",
-        "Police Station Work 2022", LocalDate.parse("2022-04-01"));
-
-    PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder().feeSchemeCode("POL_FS2022")
-        .fixedFee(new BigDecimal("37.89")).psSchemeId("1004").build();
-
-    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
-
-    when(policeStationFeesRepository.findPoliceStationFeeByPoliceStationIdAndFeeSchemeCode(any(), any()))
-        .thenReturn(List.of(policeStationFeesEntity));
-
-    FeeEntity feeEntity = FeeEntity.builder()
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode("INVC")
-        .categoryType(POLICE_STATION)
-        .feeType(FIXED)
+        .schemeId("I&A_FS2023")
+        .claimId("claim_123")
+        .warnings(new ArrayList<>())
+        .escapeCaseFlag(false) // hardcoded till escape logic implemented
+        .feeCalculation(expectedCalculation)
         .build();
-    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
+    when(immigrationCalculator.calculate(requestDto)).thenReturn(expectedResponse);
 
-    FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .feeCode("INVC")
-        .areaOfLaw(POLICE_STATION.name())
-        .uniqueFileNumber("120523/7382")
-        .policeStationId("NE008")
-        .policeStationSchemeId("1002")
-        .vatIndicator(false)
-        .build();
+    FeeCalculationResponse response = feeService.calculateFee(requestDto);
 
-    FeeCalculationResponse response = feeService.calculateFee(request);
+    assertFeeCalculation(response, "INVC", 1587.5);
 
-    assertFeeCalculation(response, "INVC", 37.89);
+    verify(feeCalculatorFactory, times(1)).getCalculator(category);
+
+    verify(immigrationCalculator).calculate(requestDto);
   }
 
-  @Test
-  void getFeeCalculation_shouldReturnExpectedCalculation_whenPoliceStationIdIsNullAndPoliceStationSchemeIdProvided() {
 
-    PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder().feeSchemeCode("POL_FS2022")
-        .fixedFee(new BigDecimal("37.89")).psSchemeId("1004").build();
-
-    when(policeStationFeesRepository.findPoliceStationFeeByPsSchemeIdAndFeeSchemeCode(any(), any()))
-        .thenReturn(List.of(policeStationFeesEntity));
-    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("POL_FS2022",
-        "Police Station Work 2022", LocalDate.parse("2022-04-01"));
-
-    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("INVC")
-        .profitCostLimit(new BigDecimal("100.00"))
-        .categoryType(POLICE_STATION)
-        .feeType(FIXED)
-        .build();
-    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
-
-    FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .feeCode("INVC")
-        .areaOfLaw(POLICE_STATION.name())
-        .uniqueFileNumber("120523/7382")
-        .policeStationId(null)
-        .policeStationSchemeId("1004")
-        .vatIndicator(false)
-        .build();
-
-    FeeCalculationResponse response = feeService.calculateFee(request);
-
-    assertFeeCalculation(response, "INVC", 37.89);
-  }
-
-  @Test
-  void getFeeCalculation_shouldReturnExpectedCalculation_whenOtherPoliceStationFeeCodeUsedInClaim() {
-
-    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("POL_FS2022",
-        "Police Station Work 2022", LocalDate.parse("2022-04-01"));
-
-    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("INVM")
-        .profitCostLimit(new BigDecimal("100.00"))
-        .categoryType(POLICE_STATION)
-        .feeSchemeCode(feeSchemesEntity)
-        .feeType(HOURLY)
-        .build();
-    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
-
-    FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .feeCode("INVM")
-        .areaOfLaw(POLICE_STATION.name())
-        .netProfitCosts(59.8)
-        .netDisbursementAmount(20.1)
-        .travelAndWaitingCosts(10.4)
-        .uniqueFileNumber("120523/7382")
-        .policeStationId(null)
-        .policeStationSchemeId("1004")
-        .vatIndicator(true)
-        .build();
-
-    FeeCalculationResponse response = feeService.calculateFee(request);
-
-    assertFeeCalculation(response, "INVM", 128.46);
-  }
-
-  @Test
-  void getFeeCalculation_shouldThrowException_whenPoliceFeeRecordNotFoundForPoliceStationSchemeId() {
-
-    when(policeStationFeesRepository.findPoliceStationFeeByPsSchemeIdAndFeeSchemeCode(any(), any()))
-        .thenReturn(List.of());
-
-    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("POL_FS2022",
-        "Police Station Work 2022", LocalDate.parse("2022-04-01"));
-
-    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("INVC")
-        .profitCostLimit(new BigDecimal("100.00"))
-        .categoryType(POLICE_STATION)
-        .build();
-    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
-
-    FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .feeCode("INVC")
-        .areaOfLaw(POLICE_STATION.name())
-        .uniqueFileNumber("120523/7382")
-        .policeStationId(null)
-        .policeStationSchemeId("1004")
-        .build();
-
-    assertThatThrownBy(() -> feeService.calculateFee(request))
-        .hasMessage("Police Station Fee not found for Police Station Scheme Id 1004");
-  }
-
-  @Test
-  void getFeeCalculation_shouldThrowException_whenPoliceFeeRecordNotFoundForPoliceStationId() {
-
-    when(policeStationFeesRepository.findPoliceStationFeeByPoliceStationIdAndFeeSchemeCode(any(), any()))
-        .thenReturn(List.of());
-
-    FeeSchemesEntity feeSchemesEntity = buildFeeSchemesEntity("POL_FS2022",
-        "Police Station Work 2022", LocalDate.parse("2022-04-01"));
-
-    when(feeSchemesRepository.findValidSchemeForDate(any(), any(), any())).thenReturn(List.of(feeSchemesEntity));
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("INVC")
-        .profitCostLimit(new BigDecimal("100.00"))
-        .categoryType(POLICE_STATION)
-        .build();
-    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(), any())).thenReturn(Optional.of(feeEntity));
-
-    FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .feeCode("INVC")
-        .areaOfLaw(POLICE_STATION.name())
-        .uniqueFileNumber("120523/7382")
-        .policeStationId("MB2004")
-        .policeStationSchemeId("1004")
-        .build();
-
-    assertThatThrownBy(() -> feeService.calculateFee(request))
-        .hasMessage("Police Station Fee not found for Police Station Id MB2004, with case start date 2023-05-12");
-  }
 
   private void assertFeeCalculation(FeeCalculationResponse response, String feeCode, double total) {
     assertThat(response).isNotNull();

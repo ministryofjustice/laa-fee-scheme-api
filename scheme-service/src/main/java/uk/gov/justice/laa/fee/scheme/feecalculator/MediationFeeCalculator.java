@@ -8,12 +8,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.exception.InvalidMediationSessionException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.service.DataService;
 import uk.gov.justice.laa.fee.scheme.service.FeeCalculator;
-import uk.gov.justice.laa.fee.scheme.exception.InvalidMediationSessionException;
+
 /**
  * Calculate the mediation fee for a given fee entity and fee data.
  */

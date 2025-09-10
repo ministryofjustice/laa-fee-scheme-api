@@ -39,6 +39,7 @@ public class DiscriminationFeeCalculator implements FeeCalculator {
   /**
    * Calculated fee based on the provided fee entity and fee calculation request.
    *          the fee entity containing fee details
+   *
    * @param feeCalculationRequest the request containing fee calculation data
    * @return FeeCalculationResponse with calculated fee
    */

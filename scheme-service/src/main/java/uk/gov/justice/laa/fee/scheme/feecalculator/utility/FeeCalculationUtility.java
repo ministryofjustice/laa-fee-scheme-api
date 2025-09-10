@@ -1,10 +1,10 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
 
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toDouble;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatRateForDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,6 +19,12 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 public final class FeeCalculationUtility {
 
   private FeeCalculationUtility() {
+  }
+
+
+
+  public static boolean isFixedFee(String feeType) {
+    return feeType.equals("FIXED");
   }
 
   /**

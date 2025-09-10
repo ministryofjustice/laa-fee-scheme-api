@@ -11,31 +11,32 @@ import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
 import uk.gov.justice.laa.fee.scheme.repository.FeeSchemesRepository;
 
 /**
- * Service for retrieving category of law and Fee details based on fee code.
+ * Service for retrieving Database Table entities.
  */
 @RequiredArgsConstructor
 @Service
 public class DataService {
 
-
   private final FeeRepository feeRepository;
 
   private final FeeSchemesRepository feeSchemesRepository;
 
-    /**
-     * Determines the calculation based on police fee code.
-     */
 
+  /**
+   * Returns FeeEntity after making calls to database.
+   *
+   * @param feeCalculationRequest FeeCalculationRequest
+   * @return FeeEntity
+   */
   public FeeEntity getFeeEntity(FeeCalculationRequest feeCalculationRequest) {
+    FeeSchemesEntity feeSchemesEntity = feeSchemesRepository
+        .findValidSchemeForDate(feeCalculationRequest.getFeeCode(), feeCalculationRequest.getStartDate(), PageRequest.of(0, 1))
+        .stream()
+        .findFirst()
+        .orElseThrow(() -> new FeeNotFoundException(feeCalculationRequest.getFeeCode(), feeCalculationRequest.getStartDate()));
 
-      FeeSchemesEntity feeSchemesEntity = feeSchemesRepository
-          .findValidSchemeForDate(feeCalculationRequest.getFeeCode(), feeCalculationRequest.getStartDate(), PageRequest.of(0, 1))
-          .stream()
-          .findFirst()
-          .orElseThrow(() -> new FeeNotFoundException(feeCalculationRequest.getFeeCode(), feeCalculationRequest.getStartDate()));
-
-      return feeRepository.findByFeeCodeAndFeeSchemeCode(feeCalculationRequest.getFeeCode(), feeSchemesEntity)
-          .orElseThrow(() -> new FeeNotFoundException(feeCalculationRequest.getFeeCode(), feeCalculationRequest.getStartDate()));
+    return feeRepository.findByFeeCodeAndFeeSchemeCode(feeCalculationRequest.getFeeCode(), feeSchemesEntity)
+        .orElseThrow(() -> new FeeNotFoundException(feeCalculationRequest.getFeeCode(), feeCalculationRequest.getStartDate()));
 
   }
 }

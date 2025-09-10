@@ -32,6 +32,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "DISC",
+                  "areaOfLaw": "DISCRIMINATION",
                   "claimId": "claim_123",
                   "startDate": "2019-09-30",
                   "netProfitCosts": 150.25,
@@ -75,6 +76,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "IMCF",
+                  "areaOfLaw": "IMMIGRATION_ASYLUM",
                   "claimId": "claim_123",
                   "startDate": "2024-09-30",
                   "netDisbursementAmount": 100.21,
@@ -122,6 +124,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "IMXL",
+                  "areaOfLaw": "IMMIGRATION_ASYLUM",
                   "claimId": "claim_123",
                   "startDate": "2025-02-11",
                   "netProfitCosts": 116.89,
@@ -162,6 +165,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "MDAS2B",
+                  "areaOfLaw": "MEDIATION",
                   "claimId": "claim_123",
                   "startDate": "2019-09-30",
                   "netDisbursementAmount": 100.21,
@@ -200,6 +204,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "MHL03",
+                  "areaOfLaw": "MENTAL_HEALTH",
                   "claimId": "claim_123",
                   "startDate": "2021-11-05",
                   "netDisbursementAmount": 100.21,
@@ -274,6 +279,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
               {
                 "feeCode": "%s",
+                "areaOfLaw": "COMMUNITY_CARE",
                 "claimId": "claim_123",
                 "startDate": "2025-02-01",
                 "netDisbursementAmount": 123.38,
@@ -295,6 +301,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "INVC",
+                  "areaOfLaw": "POLICE_STATION",
                   "claimId": "claim_123",
                   "startDate": "2019-12-12",
                   "uniqueFileNumber": "12122019/2423",

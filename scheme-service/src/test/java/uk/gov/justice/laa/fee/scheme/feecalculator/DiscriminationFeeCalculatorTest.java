@@ -1,23 +1,33 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.service.DataService;
 
+@ExtendWith(MockitoExtension.class)
 class DiscriminationFeeCalculatorTest {
 
   @InjectMocks
   DiscriminationFeeCalculator discriminationFeeCalculator;
+
+  @Mock
+  DataService dataService;
 
   @ParameterizedTest
   @CsvSource({
@@ -31,6 +41,7 @@ class DiscriminationFeeCalculatorTest {
                                                         double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
     FeeEntity feeEntity = buildFeeEntity();
+    when(dataService.getFeeEntity(any())).thenReturn(feeEntity);
 
     FeeCalculationResponse result = discriminationFeeCalculator.calculate(feeCalculationRequest);
 
@@ -49,6 +60,8 @@ class DiscriminationFeeCalculatorTest {
                                                                    double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
     FeeEntity feeEntity = buildFeeEntity();
+
+    when(dataService.getFeeEntity(any())).thenReturn(feeEntity);
 
     FeeCalculationResponse result = discriminationFeeCalculator.calculate(feeCalculationRequest);
 
