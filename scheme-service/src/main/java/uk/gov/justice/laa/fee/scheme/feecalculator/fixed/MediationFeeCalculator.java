@@ -21,10 +21,11 @@ public final class MediationFeeCalculator {
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeData) {
     if (feeEntity.getFixedFee() == null) {
-      // Where fee code type is MED numberOfMediationSessions is required, numberOfMediationSessions will determine fixed fee amount.
+      // Where fee code type is not ASSA, ASST, ASSS, numberOfMediationSessions is required, numberOfMediationSessions
+      // will determine fixed fee amount.
       return getCalculationWithMediationSessions(feeEntity, feeData);
     } else {
-      // Where fee code type is MAM numberOfMediationSessions is not required, and will be omitted from calculation
+      // Where fee code type is ASSA, ASST, ASSS,  numberOfMediationSessions is not required, and will be omitted from calculation
       return getCalculationWithoutMediationSessions(feeEntity, feeData);
     }
   }
