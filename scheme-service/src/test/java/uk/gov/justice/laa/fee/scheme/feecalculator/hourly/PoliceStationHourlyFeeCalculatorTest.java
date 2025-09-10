@@ -24,12 +24,12 @@ class PoliceStationHourlyFeeCalculatorTest {
         arguments("INVM Police Fee Code, VAT applied", "INVM", "NE024",
             "1007", "041223/6655", true, 187.66,
             null, new BigDecimal("25.0"), "POL_2023", 19.5,
-            50.5, 20.15, 0,12.45,
+            50.5, 20.15, 0, 12.45,
             34.56, 97.51),
         arguments("INVM Police Fee Code, VAT applied", "INVM", "NE024",
             "1007", "041223/6655", false, 168.16,
             null, new BigDecimal("25.0"), "POL_2023", 0,
-            50.5, 20.15, 0,12.45,
+            50.5, 20.15, 0, 12.45,
             34.56, 97.51)
     );
   }
@@ -54,7 +54,7 @@ class PoliceStationHourlyFeeCalculatorTest {
                                      double hourlyTotalAmount) {
     return Arguments.of(testDescription, feeCode, policeStationId, policeStationSchemeId, uniqueFileNumber, vatIndicator,
         expectedTotal, fixedFee, profitCostLimit, feeSchemeCode, expectedCalculatedVat, disbursementAmount,
-        disbursementVatAmount, fixedFeeAmount, travelAndWaitingCostAmount, netProfitCostsAmount,hourlyTotalAmount);
+        disbursementVatAmount, fixedFeeAmount, travelAndWaitingCostAmount, netProfitCostsAmount, hourlyTotalAmount);
   }
 
   @ParameterizedTest

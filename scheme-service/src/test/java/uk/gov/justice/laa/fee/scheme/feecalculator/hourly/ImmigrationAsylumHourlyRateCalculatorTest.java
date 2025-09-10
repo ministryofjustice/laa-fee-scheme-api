@@ -20,37 +20,50 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
   static Stream<Arguments> feeTestData() {
     return Stream.of(
-        Arguments.of("IAXL", false, null, 166.25, 123.38, 24.67,          // under profit costs and disbursements limits (No VAT)
+        // under profit costs and disbursements limits (No VAT)
+        Arguments.of("IAXL", false, null, 166.25, 123.38, 24.67,
             382.19, 0, 234.14, 166.25, 123.38, List.of()),
-        Arguments.of("IAXL", false, "priorAuth", 919.16, 123.38, 24.67,   // over profit costs limit with prior auth (No VAT)
+        // over profit costs limit with prior auth (No VAT)
+        Arguments.of("IAXL", false, "priorAuth", 919.16, 123.38, 24.67,
             1135.10, 0, 987.05, 919.16, 123.38, List.of()),
-        Arguments.of("IAXL", false, null, 919.16, 123.38, 24.67,          // over profit costs limit without prior auth (No VAT)
+        // over profit costs limit without prior auth (No VAT)
+        Arguments.of("IAXL", false, null, 919.16, 123.38, 24.67,
             1015.94, 0, 867.89, 800.00, 123.38, List.of("warning net profit costs")),
-        Arguments.of("IAXL", false, "priorAuth", 166.25, 425.17, 85.03,   // over disbursements limit with prior auth (No VAT)
+        // over disbursements limit with prior auth (No VAT)
+        Arguments.of("IAXL", false, "priorAuth", 166.25, 425.17, 85.03,
             744.34, 0, 234.14, 166.25, 425.17, List.of()),
-        Arguments.of("IAXL", false, null, 166.25, 425.17, 85.03,          // over disbursements limit without prior auth (No VAT)
+        // over disbursements limit without prior auth (No VAT)
+        Arguments.of("IAXL", false, null, 166.25, 425.17, 85.03,
             719.17, 0, 234.14, 166.25, 400.00, List.of("warning net disbursements")),
-        Arguments.of("IAXL", false, "priorAuth", 919.16, 425.17, 85.03,   // over profit costs and disbursements limits with prior auth (No VAT)
+        // over profit costs and disbursements limits with prior auth (No VAT)
+        Arguments.of("IAXL", false, "priorAuth", 919.16, 425.17, 85.03,
             1497.25, 0, 987.05, 919.16, 425.17, List.of()),
-        Arguments.of("IAXL", false, null, 919.16, 425.17, 85.03,          // over profit costs and disbursements limits without prior auth (No VAT)
+        // over profit costs and disbursements limits without prior auth (No VAT)
+        Arguments.of("IAXL", false, null, 919.16, 425.17, 85.03,
             1352.92, 0, 867.89, 800.00, 400.00, List.of("warning net profit costs", "warning net disbursements")),
-
-        Arguments.of("IAXL", true, null, 166.25, 123.38, 24.67,          // under profit costs and disbursements limits (VAT applied)
+        // under profit costs and disbursements limits (VAT applied)
+        Arguments.of("IAXL", true, null, 166.25, 123.38, 24.67,
             429.02, 46.83, 234.14, 166.25, 123.38, List.of()),
-        Arguments.of("IAXL", true, "priorAuth", 919.16, 123.38, 24.67,   // over profit costs limit with prior auth (VAT applied)
+        // over profit costs limit with prior auth (VAT applied)
+        Arguments.of("IAXL", true, "priorAuth", 919.16, 123.38, 24.67,
             1332.51, 197.41, 987.05, 919.16, 123.38, List.of()),
-        Arguments.of("IAXL", true, null, 919.16, 123.38, 24.67,          // over profit costs limit without prior auth (VAT applied)
+        // over profit costs limit without prior auth (VAT applied)
+        Arguments.of("IAXL", true, null, 919.16, 123.38, 24.67,
             1189.52, 173.58, 867.89, 800.00, 123.38, List.of("warning net profit costs")),
-        Arguments.of("IAXL", true, "priorAuth", 166.25, 425.17, 85.03,   // over disbursements limit with prior auth (VAT applied)
+        // over disbursements limit with prior auth (VAT applied)
+        Arguments.of("IAXL", true, "priorAuth", 166.25, 425.17, 85.03,
             791.17, 46.83, 234.14, 166.25, 425.17, List.of()),
-        Arguments.of("IAXL", true, null, 166.25, 425.17, 85.03,          // over disbursements limit without prior auth (VAT applied)
+        // over disbursements limit without prior auth (VAT applied)
+        Arguments.of("IAXL", true, null, 166.25, 425.17, 85.03,
             766.00, 46.83, 234.14, 166.25, 400.00, List.of("warning net disbursements")),
-        Arguments.of("IAXL", true, "priorAuth", 919.16, 425.17, 85.03,   // over profit costs and disbursements limits with prior auth (VAT applied)
+        // over profit costs and disbursements limits with prior auth (VAT applied)
+        Arguments.of("IAXL", true, "priorAuth", 919.16, 425.17, 85.03,
             1694.66, 197.41, 987.05, 919.16, 425.17, List.of()),
-        Arguments.of("IAXL", true, null, 919.16, 425.17, 85.03,          // over profit costs and disbursements limits without prior auth (VAT applied)
+        // over profit costs and disbursements limits without prior auth (VAT applied)
+        Arguments.of("IAXL", true, null, 919.16, 425.17, 85.03,
             1526.50, 173.58, 867.89, 800.0, 400.00, List.of("warning net profit costs", "warning net disbursements")),
-
-        Arguments.of("IMXL", false, null, 166.25, 123.38, 24.67,          // IMXL
+        // IMXL
+        Arguments.of("IMXL", false, null, 166.25, 123.38, 24.67,
             382.19, 0, 234.14, 166.25, 123.38, List.of())
     );
   }

@@ -30,7 +30,7 @@ class PoliceStationFixedFeeCalculatorTest {
         arguments("INVC Police Fee Code, VAT not applied", "INVC", "NE013",
             "1004", "121223/6655", false, 85.05,
             new BigDecimal("14.4"), null, "POL_2023", 0,
-            50.5, 20.15, 14.4,0.0,0.0)
+            50.5, 20.15, 14.4, 0.0, 0.0)
         );
   }
 
@@ -45,7 +45,7 @@ class PoliceStationFixedFeeCalculatorTest {
         arguments("INVB1 Police Fee Code, VAT not applied", "INVB1", "NE013",
             "1004", "121223/6655", false, 14.4,
             new BigDecimal("14.4"), null, "POL_2023", 0,
-            50.5, 20.15, 14.4,0.0,0.0),
+            50.5, 20.15, 14.4, 0.0, 0.0),
 
         arguments("INVB2 Police Fee Code, VAT applied", "INVB2", "NE001",
             "1001", "121221/7899", true, 17.28,
@@ -55,7 +55,7 @@ class PoliceStationFixedFeeCalculatorTest {
         arguments("INVB2 Police Fee Code, VAT not applied", "INVB2", "NE013",
             "1004", "121223/6655", false, 14.4,
             new BigDecimal("14.4"), null, "POL_2023", 0,
-            50.5, 20.15, 14.4,0.0,0.0)
+            50.5, 20.15, 14.4, 0.0, 0.0)
     );
   }
 

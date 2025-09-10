@@ -9,8 +9,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.utility.BoltOnUtility;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
+import uk.gov.justice.laa.fee.scheme.feecalculator.utility.boltons.BoltOnUtility;
+import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -45,8 +46,8 @@ public final class ImmigrationAsylumFixedFeeCalculator {
     // get the requested jrFormFilling amount from feeCalculationRequest
     BigDecimal jrFormFillingCosts = toBigDecimal(feeCalculationRequest.getJrFormFilling());
 
-    // get the total bolt on value amount from utility class
-    BigDecimal boltOnValue = BoltOnUtility.calculateBoltOnAmount(feeCalculationRequest, feeEntity);
+    // get the bolt fee details from utility class
+    BoltOnFeeDetails boltOnFeeDetails = BoltOnUtility.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
 
     BigDecimal netDisbursementAmount;
     BigDecimal netDisbursementLimit = feeEntity.getDisbursementLimit();
@@ -64,7 +65,7 @@ public final class ImmigrationAsylumFixedFeeCalculator {
     BigDecimal fixedFeeAndAdditionalCosts = fixedFeeAmount
         .add(jrFormFillingCosts)
         .add(detentionAndTravelCosts)
-        .add(boltOnValue);
+        .add(toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount()));
 
     // Apply VAT where applicable
     LocalDate startDate = feeCalculationRequest.getStartDate();
@@ -93,7 +94,7 @@ public final class ImmigrationAsylumFixedFeeCalculator {
             .fixedFeeAmount(toDouble(fixedFeeAmount))
             .detentionAndWaitingCostsAmount(toDouble(detentionAndTravelCosts))
             .jrFormFillingAmount(toDouble(jrFormFillingCosts))
-            .boltOnFeeAmount(toDouble(boltOnValue))
+            .boltOnFeeDetails(boltOnFeeDetails)
             .build())
         .build();
   }
