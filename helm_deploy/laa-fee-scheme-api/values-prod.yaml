@@ -1,0 +1,21 @@
+# Default values for helm_deploy.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+ingress:
+  enabled: false
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+sentry:
+  enabled: true
+  environment: STAGING
+  dsn: https://3dba04b677b4b24e1cd3380e474f7b26@o345774.ingest.us.sentry.io/4509803102666752
