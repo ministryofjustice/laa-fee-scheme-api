@@ -15,6 +15,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.model.BoltOn;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -55,10 +56,10 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
 
   private static Arguments arguments(String scenario, String feeCode, boolean vat, String priorAuthority, double netDisbursementAmount,
                                      double disbursementVatAmount, BigDecimal netDisbursementLimit, double detentionAndWaitingCosts,
-                                     double jrFormfilling, double total, double expectedDisbursementAmount, double expectedBoltonValue,
+                                     double jrFormfilling, double total, double expectedDisbursementAmount, double expectedTotalBoltOnFeeAmount,
                                      double expectedCalculatedVatAmount, double expectedFixedFeeAmount) {
     return Arguments.of(scenario, feeCode, vat, priorAuthority, netDisbursementAmount, disbursementVatAmount, netDisbursementLimit,
-        detentionAndWaitingCosts, jrFormfilling, total, expectedDisbursementAmount, expectedBoltonValue,
+        detentionAndWaitingCosts, jrFormfilling, total, expectedDisbursementAmount, expectedTotalBoltOnFeeAmount,
         expectedCalculatedVatAmount, expectedFixedFeeAmount);
   }
 
@@ -76,7 +77,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
       double jrFormfilling,
       double expectedTotal,
       double expectedDisbursementAmount,
-      double expectedBoltonValue,
+      double expectedTotalBoltOnFeeAmount,
       double expectedCalculatedVat,
       double expectedFixedFee) {
 
@@ -118,7 +119,13 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         .disbursementVatAmount(disbursementVatAmount)
         .detentionAndWaitingCostsAmount(detentionAndWaitingCosts)
         .jrFormFillingAmount(jrFormfilling)
-        .boltOnFeeAmount(expectedBoltonValue)
+        .boltOnFeeDetails(BoltOn.builder()
+            .boltOnTotalFeeAmount(expectedTotalBoltOnFeeAmount)
+            .boltOnCmrhOralCount(2)
+            .boltOnCmrhOralFee(332.0)
+            .boltOnCmrhTelephoneCount(2)
+            .boltOnCmrhTelephoneFee(180.0)
+            .build())
         .fixedFeeAmount(expectedFixedFee)
         .calculatedVatAmount(expectedCalculatedVat)
         .build();
