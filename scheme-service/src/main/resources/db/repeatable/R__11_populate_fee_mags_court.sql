@@ -1,6 +1,6 @@
 -- Fee Scheme for 2016 'Criminal proceedings - Magistrates court' Undesignated
 INSERT INTO fee
-(fee_code, description, fixed_fee, category_typem, fee_type, fee_scheme_code)
+(fee_code, description, fixed_fee, category_type, fee_type, fee_scheme_code)
 VALUES
     ('PROE1', 'Representation in the Magistrates Court - category 1A - lower standard fee - undesignated area', 194.68, 'MAGS_COURT_UNDESIGNATED', 'FIXED', 'MAGS_FS2016'),
     ('PROE2', 'Representation in the Magistrates Court - category 1B - lower standard fee - undesignated area', 158.27, 'MAGS_COURT_UNDESIGNATED', 'FIXED', 'MAGS_FS2016'),
@@ -15,7 +15,7 @@ VALUES
 
 -- Fee Scheme for 2016 'Criminal proceedings - Magistrates court' Designated
 INSERT INTO fee
-(fee_code, description, fixed_fee, category_typem, fee_type, fee_scheme_code)
+(fee_code, description, fixed_fee, category_type, fee_type, fee_scheme_code)
 VALUES
     ('PROJ5', 'Representation in the Magistrates Court - second claim for deferred sentence - category 1A - lower standard fee - designated area', 248.71, 'MAGS_COURT_DESIGNATED', 'FIXED', 'MAGS_FS2016'),
     ('PROJ6', 'Representation in the Magistrates Court - second claim for deferred sentence - category 1B - lower standard fee - designated area', 202.20, 'MAGS_COURT_DESIGNATED', 'FIXED', 'MAGS_FS2016'),
@@ -30,7 +30,7 @@ VALUES
 
 -- Fee Scheme for 2022 'Criminal proceedings - Magistrates court' Undesignated
 INSERT INTO fee
-(fee_code, description, fixed_fee, category_typem, fee_type, fee_scheme_code)
+(fee_code, description, fixed_fee, category_type, fee_type, fee_scheme_code)
 VALUES
     ('PROE1', 'Representation in the Magistrates Court - category 1A - lower standard fee - undesignated area', 223.88, 'MAGS_COURT_UNDESIGNATED', 'FIXED', 'MAGS_FS2022'),
     ('PROE2', 'Representation in the Magistrates Court - category 1B - lower standard fee - undesignated area', 182.01, 'MAGS_COURT_UNDESIGNATED', 'FIXED', 'MAGS_FS2022'),
@@ -45,7 +45,7 @@ VALUES
 
 -- Fee Scheme for 2022 'Criminal proceedings - Magistrates court' Designated
 INSERT INTO fee
-(fee_code, description, fixed_fee, category_typem, fee_type, fee_scheme_code)
+(fee_code, description, fixed_fee, category_type, fee_type, fee_scheme_code)
 VALUES
     ('PROJ5', 'Representation in the Magistrates Court - second claim for deferred sentence - category 1A - lower standard fee - designated area', 286.02, 'MAGS_COURT_DESIGNATED', 'FIXED', 'MAGS_FS2022'),
     ('PROJ6', 'Representation in the Magistrates Court - second claim for deferred sentence - category 1B - lower standard fee - designated area', 232.53, 'MAGS_COURT_DESIGNATED', 'FIXED', 'MAGS_FS2022'),
@@ -60,7 +60,7 @@ VALUES
 
 -- Fee Scheme for 2024 'Criminal proceedings - Youth court' Undesignated
 INSERT INTO fee
-(fee_code, description, fixed_fee, category_typem, fee_type, fee_scheme_code)
+(fee_code, description, fixed_fee, category_type, fee_type, fee_scheme_code)
 VALUES
     ('YOUE1', 'Youth Representation Order - category 1A - lower standard fee - undesignated area', 822.47, 'MAGS_COURT_UNDESIGNATED', 'FIXED', 'MAGS_YOUTH_FS2024'),
     ('YOUE2', 'Youth Representation Order - category 1B - lower standard fee - undesignated area', 182.01, 'MAGS_COURT_UNDESIGNATED', 'FIXED', 'MAGS_YOUTH_FS2024'),
@@ -77,7 +77,7 @@ VALUES
 
 -- Fee Scheme for 2024 'Criminal proceedings - Youth court' Designated
 INSERT INTO fee
-(fee_code, description, fixed_fee, category_typem, fee_type, fee_scheme_code)
+(fee_code, description, fixed_fee, category_type, fee_type, fee_scheme_code)
 VALUES
     ('YOUK1', 'Youth Representation Order - category 1A - lower standard fee - designated area', 884.61, 'MAGS_COURT_DESIGNATED', 'FIXED', 'MAGS_YOUTH_FS2024'),
     ('YOUK2', 'Youth Representation Order - category 1B - lower standard fee - designated area', 232.53, 'MAGS_COURT_DESIGNATED', 'FIXED', 'MAGS_YOUTH_FS2024'),
