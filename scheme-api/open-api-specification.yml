@@ -278,14 +278,14 @@ components:
           format: double
           description: "The Travel and waiting costs requested."
         boltOnFeeDetails:
-          $ref: "#/components/schemas/BoltOn"
+          $ref: "#/components/schemas/BoltOnFeeDetails"
 
     Warning:
       type: array
       items:
         type: string
 
-    BoltOn:
+    BoltOnFeeDetails:
       type: object
       properties:
         boltOnTotalFeeAmount:

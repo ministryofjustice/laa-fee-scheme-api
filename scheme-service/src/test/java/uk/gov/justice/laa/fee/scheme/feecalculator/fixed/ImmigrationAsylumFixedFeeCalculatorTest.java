@@ -15,7 +15,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
-import uk.gov.justice.laa.fee.scheme.model.BoltOn;
+import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -56,8 +56,9 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
 
   private static Arguments arguments(String scenario, String feeCode, boolean vat, String priorAuthority, double netDisbursementAmount,
                                      double disbursementVatAmount, BigDecimal netDisbursementLimit, double detentionAndWaitingCosts,
-                                     double jrFormfilling, double total, double expectedDisbursementAmount, double expectedTotalBoltOnFeeAmount,
-                                     double expectedCalculatedVatAmount, double expectedFixedFeeAmount) {
+                                     double jrFormfilling, double total, double expectedDisbursementAmount,
+                                     double expectedTotalBoltOnFeeAmount, double expectedCalculatedVatAmount,
+                                     double expectedFixedFeeAmount) {
     return Arguments.of(scenario, feeCode, vat, priorAuthority, netDisbursementAmount, disbursementVatAmount, netDisbursementLimit,
         detentionAndWaitingCosts, jrFormfilling, total, expectedDisbursementAmount, expectedTotalBoltOnFeeAmount,
         expectedCalculatedVatAmount, expectedFixedFeeAmount);
@@ -119,7 +120,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         .disbursementVatAmount(disbursementVatAmount)
         .detentionAndWaitingCostsAmount(detentionAndWaitingCosts)
         .jrFormFillingAmount(jrFormfilling)
-        .boltOnFeeDetails(BoltOn.builder()
+        .boltOnFeeDetails(BoltOnFeeDetails.builder()
             .boltOnTotalFeeAmount(expectedTotalBoltOnFeeAmount)
             .boltOnCmrhOralCount(2)
             .boltOnCmrhOralFee(332.0)

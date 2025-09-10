@@ -12,7 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
-import uk.gov.justice.laa.fee.scheme.model.BoltOn;
+import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -116,7 +116,7 @@ class FeeCalculationUtilityTest {
         .disbursementVatAmount(5.89)
         .fixedFeeAmount(263.00)
         .calculatedVatAmount(72.60)
-        .boltOnFeeDetails(BoltOn.builder()
+        .boltOnFeeDetails(BoltOnFeeDetails.builder()
             .boltOnTotalFeeAmount(100.00)
             .boltOnAdjournedHearingCount(1)
             .boltOnAdjournedHearingFee(100.00)

@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.model.BoltOn;
+import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 
 /**
@@ -28,8 +28,8 @@ public class BoltOnUtility {
    * Multiply count by bolt on fee for boltOnXXXXXXFee
    * Add each boltOnXXXXXXFee for a total, boltOnTotalFeeAmount 
    */
-  public static BoltOn calculateBoltOnAmounts(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
-    BoltOn boltOnTotal = BoltOn.builder().boltOnTotalFeeAmount(toDouble(BigDecimal.ZERO)).build();
+  public static BoltOnFeeDetails calculateBoltOnAmounts(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+    BoltOnFeeDetails boltOnTotal = BoltOnFeeDetails.builder().boltOnTotalFeeAmount(toDouble(BigDecimal.ZERO)).build();
 
     if (feeCalculationRequest.getBoltOns() != null) {
 

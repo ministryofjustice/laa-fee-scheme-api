@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.boltons.BoltOnUtility;
-import uk.gov.justice.laa.fee.scheme.model.BoltOn;
+import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 
@@ -89,22 +89,26 @@ class BoltOnUtilityTest {
     );
   }
 
-  private static Arguments arguments(String scenario, FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity, Double boltOnTotalFeeAmount, Integer boltOnAdjournedHearingCount,
-                                     Integer boltOnCmrhTelephoneCount, Integer boltOnCmrhOralCount, Integer boltOnHomeOfficeInterviewCount,
-                                     Double boltOnAdjournedHearingFee, Double boltOnCmrhTelephoneFee, Double boltOnCmrhOralFee, Double boltOnHomeOfficeInterviewFee) {
-    return Arguments.of(scenario, feeCalculationRequest, feeEntity, boltOnTotalFeeAmount, boltOnAdjournedHearingCount, boltOnCmrhTelephoneCount, boltOnCmrhOralCount,
-        boltOnHomeOfficeInterviewCount, boltOnAdjournedHearingFee, boltOnCmrhTelephoneFee, boltOnCmrhOralFee, boltOnHomeOfficeInterviewFee);
+  private static Arguments arguments(String scenario, FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
+                                     Double boltOnTotalFeeAmount, Integer boltOnAdjournedHearingCount,
+                                     Integer boltOnCmrhTelephoneCount, Integer boltOnCmrhOralCount,
+                                     Integer boltOnHomeOfficeInterviewCount, Double boltOnAdjournedHearingFee,
+                                     Double boltOnCmrhTelephoneFee, Double boltOnCmrhOralFee, Double boltOnHomeOfficeInterviewFee) {
+    return Arguments.of(scenario, feeCalculationRequest, feeEntity, boltOnTotalFeeAmount, boltOnAdjournedHearingCount,
+        boltOnCmrhTelephoneCount, boltOnCmrhOralCount, boltOnHomeOfficeInterviewCount, boltOnAdjournedHearingFee,
+        boltOnCmrhTelephoneFee, boltOnCmrhOralFee, boltOnHomeOfficeInterviewFee);
   }
 
   @ParameterizedTest
   @MethodSource("boltOnTestData")
-  void shouldCalculateBoltOnAmount(String scenario, FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity, Double boltOnTotalFeeAmount, Integer boltOnAdjournedHearingCount,
-                                   Integer boltOnCmrhTelephoneCount, Integer boltOnCmrhOralCount, Integer boltOnHomeOfficeInterviewCount,
-                                   Double boltOnAdjournedHearingFee, Double boltOnCmrhTelephoneFee, Double boltOnCmrhOralFee, Double boltOnHomeOfficeInterviewFee) {
+  void shouldCalculateBoltOnAmount(String scenario, FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
+                                   Double boltOnTotalFeeAmount, Integer boltOnAdjournedHearingCount, Integer boltOnCmrhTelephoneCount,
+                                   Integer boltOnCmrhOralCount, Integer boltOnHomeOfficeInterviewCount, Double boltOnAdjournedHearingFee,
+                                   Double boltOnCmrhTelephoneFee, Double boltOnCmrhOralFee, Double boltOnHomeOfficeInterviewFee) {
 
-    BoltOn result = BoltOnUtility.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
+    BoltOnFeeDetails result = BoltOnUtility.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
 
-    BoltOn expectedBoltOnFeeDetails = BoltOn.builder()
+    BoltOnFeeDetails expectedBoltOnFeeDetails = BoltOnFeeDetails.builder()
         .boltOnTotalFeeAmount(boltOnTotalFeeAmount)
         .boltOnAdjournedHearingCount(boltOnAdjournedHearingCount)
         .boltOnAdjournedHearingFee(boltOnAdjournedHearingFee)
