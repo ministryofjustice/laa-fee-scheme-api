@@ -24,7 +24,7 @@ public class BoltOnUtility {
 
   /**
    * Where bolt on exists, 
-   * Assign each boltOnXXXXXCount to number of bolt on type request.
+   * Assign each boltOnXXXXXCount to number of bolt on type requested.
    * Multiply count by bolt on fee for boltOnXXXXXXFee
    * Add each boltOnXXXXXXFee for a total, boltOnTotalFeeAmount 
    */
