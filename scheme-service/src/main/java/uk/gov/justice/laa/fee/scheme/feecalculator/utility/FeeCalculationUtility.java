@@ -56,7 +56,8 @@ public final class FeeCalculationUtility {
     BigDecimal boltOnVatAmount = BigDecimal.ZERO;
     // Mental health has bolt on, rest do not
     BigDecimal boltOnValue = null;
-    if (feeEntity.getCategoryType().equals(CategoryType.MENTAL_HEALTH)) {
+    boolean isMentalHealth = feeEntity.getCategoryType().equals(CategoryType.MENTAL_HEALTH);
+    if (isMentalHealth) {
       boltOnValue = toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount());
       boltOnVatAmount = getVatAmount(boltOnValue, feeCalculationRequest.getStartDate(), vatApplicable);
     }
@@ -87,7 +88,7 @@ public final class FeeCalculationUtility {
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .fixedFeeAmount(toDouble(fixedFee))
             // Mental health has bolt on, rest do not
-            .boltOnFeeDetails(feeEntity.getCategoryType().equals(CategoryType.MENTAL_HEALTH) ? boltOnFeeDetails : null)
+            .boltOnFeeDetails(isMentalHealth ? boltOnFeeDetails : null)
             .build())
         .build();
   }
