@@ -277,15 +277,40 @@ components:
           type: number
           format: double
           description: "The Travel and waiting costs requested."
-        boltOnFeeAmount:
-          type: number
-          format: double
-          description: "The total value of bolt ons that was calculated."
+        boltOnFeeDetails:
+          $ref: "#/components/schemas/BoltOnFeeDetails"
 
     Warning:
       type: array
       items:
         type: string
+
+    BoltOnFeeDetails:
+      type: object
+      properties:
+        boltOnTotalFeeAmount:
+          type: number
+          format: double
+        boltOnAdjournedHearingCount:
+          type: integer
+        boltOnAdjournedHearingFee:
+          type: number
+          format: double
+        boltOnCmrhTelephoneCount:
+          type: integer
+        boltOnCmrhTelephoneFee:
+          type: number
+          format: double
+        boltOnCmrhOralCount:
+          type: integer
+        boltOnCmrhOralFee:
+          type: number
+          format: double
+        boltOnHomeOfficeInterviewCount:
+          type: integer
+        boltOnHomeOfficeInterviewFee:
+          type: number
+          format: double
 
     BoltOnType:
       type: object
