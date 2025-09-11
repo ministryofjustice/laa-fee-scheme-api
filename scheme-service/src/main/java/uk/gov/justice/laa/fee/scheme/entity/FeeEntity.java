@@ -12,8 +12,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType;
-import uk.gov.justice.laa.fee.scheme.feecalculator.type.FeeType;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 
 /**
  * The entity class for fees.

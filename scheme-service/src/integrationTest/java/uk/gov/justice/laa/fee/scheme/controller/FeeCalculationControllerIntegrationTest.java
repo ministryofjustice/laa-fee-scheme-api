@@ -323,6 +323,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
       "CLIN, CLIN_FS2013, 382.05, 39.0, 195.0",
       "COM, COM_FS2013, 467.25, 53.2, 266.0",
       "DEBT, DEBT_FS2013, 364.05, 36.0, 180.0",
+      "EDUFIN, EDU_FS2013, 474.45, 54.4, 272.0",
       "ELA, ELA_FS2024, 336.45, 31.4, 157.0",
       "HOUS, HOUS_FS2013, 336.45, 31.4, 157.0",
       "MISCCON, MISCCON_FS2013, 338.85, 31.8, 159.0",
@@ -403,7 +404,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 0,
               "disbursementAmount": 0,
-              "requestedNetDisbursementAmount": 0,
               "disbursementVatAmount": 0,
               "fixedFeeAmount": 131.40
             }
