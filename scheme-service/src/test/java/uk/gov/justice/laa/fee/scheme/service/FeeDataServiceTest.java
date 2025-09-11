@@ -22,7 +22,7 @@ import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
 import uk.gov.justice.laa.fee.scheme.repository.FeeSchemesRepository;
 
 @ExtendWith(MockitoExtension.class)
-class DataServiceTest {
+class FeeDataServiceTest {
 
   @Mock
   FeeRepository feeRepository;
@@ -31,7 +31,7 @@ class DataServiceTest {
   FeeSchemesRepository feeSchemesRepository;
 
   @InjectMocks
-  private DataService dataService;
+  private FeeDataService feeDataService;
 
 
   @Test
@@ -63,7 +63,7 @@ class DataServiceTest {
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(),
         any())).thenReturn(Optional.of(feeEntity));
 
-    FeeEntity feeEntityResponse = dataService.getFeeEntity(feeData);
+    FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeData);
 
     assertThat(feeEntityResponse).isNotNull();
     assertThat(feeEntityResponse.getFeeCode()).isEqualTo("INVC");

@@ -26,19 +26,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculatorFactory;
 import uk.gov.justice.laa.fee.scheme.feecalculator.ImmigrationAsylumFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
-class FeeServiceTest {
+class FeeCalculationServiceTest {
 
   @Mock
   FeeCalculatorFactory feeCalculatorFactory;
 
 
   @InjectMocks
-  private FeeService feeService;
+  private FeeCalculationService feeCalculationService;
 
   static Stream<Arguments> testDataOtherCivil() {
     return Stream.of(
@@ -117,7 +119,7 @@ class FeeServiceTest {
         .build();
     when(immigrationCalculator.calculate(requestDto)).thenReturn(expectedResponse);
 
-    FeeCalculationResponse response = feeService.calculateFee(requestDto);
+    FeeCalculationResponse response = feeCalculationService.calculateFee(requestDto);
 
     assertFeeCalculation(response, "INVC", 1587.5);
 

@@ -18,11 +18,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.PoliceStationFixedFeeCalculator;
-import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.PoliceStationHourlyFeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.PoliceStationHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.DataService;
+import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 @ExtendWith(MockitoExtension.class)
 class PoliceStationFeeCalculatorTest {
@@ -31,13 +31,13 @@ class PoliceStationFeeCalculatorTest {
   PoliceStationFeeCalculator policeStationFeeCalculator;
 
   @Mock
-  DataService dataService;
+  FeeDataService feeDataService;
 
   @Mock
   PoliceStationFixedFeeCalculator policeStationFixedFeeCalculator;
 
   @Mock
-  PoliceStationHourlyFeeCalculator policeStationHourlyFeeCalculator;
+  PoliceStationHourlyRateCalculator policeStationHourlyRateCalculator;
 
   @Test
   void getFee_whenPoliceStationFeeFixed_shouldReturnFeeCalculationResponse() {
@@ -88,7 +88,7 @@ class PoliceStationFeeCalculatorTest {
 
 
 
-    when(dataService.getFeeEntity(any())).thenReturn(feeEntity);
+    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
     when(policeStationFixedFeeCalculator.getFee(feeEntity,feeCalculationRequest)).thenReturn(expectedResponse);
 
     FeeCalculationResponse result = policeStationFeeCalculator.calculate(feeCalculationRequest);
@@ -139,8 +139,8 @@ class PoliceStationFeeCalculatorTest {
         .build();
 
 
-    when(dataService.getFeeEntity(any())).thenReturn(feeEntity);
-    when(policeStationHourlyFeeCalculator.getFee(feeEntity,feeCalculationRequest)).thenReturn(expectedResponse);
+    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
+    when(policeStationHourlyRateCalculator.getFee(feeEntity,feeCalculationRequest)).thenReturn(expectedResponse);
 
 
     FeeCalculationResponse result = policeStationFeeCalculator.calculate(feeCalculationRequest);

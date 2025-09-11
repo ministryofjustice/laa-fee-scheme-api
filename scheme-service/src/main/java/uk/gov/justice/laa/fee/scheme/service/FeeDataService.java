@@ -15,7 +15,7 @@ import uk.gov.justice.laa.fee.scheme.repository.FeeSchemesRepository;
  */
 @RequiredArgsConstructor
 @Service
-public class DataService {
+public class FeeDataService {
 
   private final FeeRepository feeRepository;
 

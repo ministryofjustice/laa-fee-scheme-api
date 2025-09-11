@@ -19,18 +19,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.StandardFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.DataService;
+import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 @ExtendWith(MockitoExtension.class)
-class StandardFeeCalculatorTest {
+class StandardFixedFeeCalculatorTest {
 
   @InjectMocks
-  StandardFeeCalculator standardFeeCalculator;
+  StandardFixedFeeCalculator standardFixedFeeCalculator;
 
   @Mock
-  DataService dataService;
+  FeeDataService feeDataService;
 
   @ParameterizedTest
   @CsvSource({
@@ -53,9 +54,9 @@ class StandardFeeCalculatorTest {
         .categoryType(COMMUNITY_CARE)
         .build();
 
-    when(dataService.getFeeEntity(any())).thenReturn(feeEntity);
+    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
 
-    FeeCalculationResponse result = standardFeeCalculator.calculate(feeCalculationRequest);
+    FeeCalculationResponse result = standardFixedFeeCalculator.calculate(feeCalculationRequest);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("COM");
@@ -67,7 +68,7 @@ class StandardFeeCalculatorTest {
   void getSupportedCategories_ShouldReturnAllExpectedCategories() {
 
 
-    Set<CategoryType> categories = standardFeeCalculator.getSupportedCategories();
+    Set<CategoryType> categories = standardFixedFeeCalculator.getSupportedCategories();
 
 
     Assertions.assertNotNull(categories);

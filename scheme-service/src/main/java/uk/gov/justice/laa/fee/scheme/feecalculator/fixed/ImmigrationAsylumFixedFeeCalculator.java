@@ -1,8 +1,8 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatRateForDate;
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toBigDecimal;
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toDouble;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
-import uk.gov.justice.laa.fee.scheme.feecalculator.utility.boltons.BoltOnUtility;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -49,8 +49,8 @@ public final class ImmigrationAsylumFixedFeeCalculator {
     // get the requested jrFormFilling amount from feeCalculationRequest
     BigDecimal jrFormFillingCosts = toBigDecimal(feeCalculationRequest.getJrFormFilling());
 
-    // get the bolt fee details from utility class
-    BoltOnFeeDetails boltOnFeeDetails = BoltOnUtility.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
+    // get the bolt fee details from util class
+    BoltOnFeeDetails boltOnFeeDetails = BoltOnUtil.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
 
     BigDecimal netDisbursementAmount;
     BigDecimal netDisbursementLimit = feeEntity.getDisbursementLimit();
@@ -73,7 +73,7 @@ public final class ImmigrationAsylumFixedFeeCalculator {
     // Apply VAT where applicable
     LocalDate startDate = feeCalculationRequest.getStartDate();
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal calculatedVatAmount = VatUtility.getVatAmount(fixedFeeAndAdditionalCosts, startDate, vatApplicable);
+    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(fixedFeeAndAdditionalCosts, startDate, vatApplicable);
 
     BigDecimal finalTotal = fixedFeeAndAdditionalCosts
         .add(calculatedVatAmount)

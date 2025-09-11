@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
+package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,12 +8,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.utility.boltons.BoltOnUtility;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 
-class BoltOnUtilityTest {
+class BoltOnUtilTest {
 
   private static Stream<Arguments> boltOnTestData() {
     return Stream.of(
@@ -106,7 +106,7 @@ class BoltOnUtilityTest {
                                    Integer boltOnCmrhOralCount, Integer boltOnHomeOfficeInterviewCount, Double boltOnAdjournedHearingFee,
                                    Double boltOnCmrhTelephoneFee, Double boltOnCmrhOralFee, Double boltOnHomeOfficeInterviewFee) {
 
-    BoltOnFeeDetails result = BoltOnUtility.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
+    BoltOnFeeDetails result = BoltOnUtil.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
 
     BoltOnFeeDetails expectedBoltOnFeeDetails = BoltOnFeeDetails.builder()
         .boltOnTotalFeeAmount(boltOnTotalFeeAmount)

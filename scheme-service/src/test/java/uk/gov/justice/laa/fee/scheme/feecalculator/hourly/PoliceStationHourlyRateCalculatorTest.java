@@ -21,10 +21,10 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 @ExtendWith(MockitoExtension.class)
-class PoliceStationHourlyFeeCalculatorTest {
+class PoliceStationHourlyRateCalculatorTest {
 
   @InjectMocks
-  private PoliceStationHourlyFeeCalculator policeStationHourlyFeeCalculator;
+  private PoliceStationHourlyRateCalculator policeStationHourlyRateCalculator;
 
   public static Stream<Arguments> testPoliceOtherData() {
     return Stream.of(
@@ -115,7 +115,7 @@ class PoliceStationHourlyFeeCalculatorTest {
         .feeType(FeeType.HOURLY)
         .build();
 
-    FeeCalculationResponse response = policeStationHourlyFeeCalculator.getFee(feeEntity, feeData);
+    FeeCalculationResponse response = policeStationHourlyRateCalculator.getFee(feeEntity, feeData);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(expectedTotal)
@@ -188,7 +188,7 @@ class PoliceStationHourlyFeeCalculatorTest {
         .feeType(FeeType.HOURLY)
         .build();
 
-    FeeCalculationResponse response = policeStationHourlyFeeCalculator.getFee(feeEntity, feeData);
+    FeeCalculationResponse response = policeStationHourlyRateCalculator.getFee(feeEntity, feeData);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(expectedTotal)

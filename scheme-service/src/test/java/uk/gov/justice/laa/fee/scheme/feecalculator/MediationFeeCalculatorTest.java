@@ -21,19 +21,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.exception.InvalidMediationSessionException;
+import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.MediationFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.DataService;
+import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 @ExtendWith(MockitoExtension.class)
 class MediationFeeCalculatorTest {
 
   @InjectMocks
-  private MediationFeeCalculator mediationFeeCalculator;
+  private MediationFixedFeeCalculator mediationFeeCalculator;
 
   @Mock
-  private DataService dataService;
+  private FeeDataService feeDataService;
 
   public static Stream<Arguments> testData() {
     return Stream.of(
@@ -99,7 +100,7 @@ class MediationFeeCalculatorTest {
         .categoryType(MEDIATION)
         .build();
 
-    when(dataService.getFeeEntity(any())).thenReturn(feeEntity);
+    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
 
     FeeCalculationResponse response = mediationFeeCalculator.calculate(feeData);
 
@@ -150,7 +151,7 @@ class MediationFeeCalculatorTest {
         .categoryType(MEDIATION)
         .build();
 
-    when(dataService.getFeeEntity(any())).thenReturn(feeEntity);
+    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
 
     assertThrows(InvalidMediationSessionException.class, () -> mediationFeeCalculator.calculate(feeData));
   }

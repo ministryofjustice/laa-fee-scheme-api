@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toBigDecimal;
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,7 +10,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -73,7 +73,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
       // Apply VAT where applicable
       LocalDate startDate = feeCalculationRequest.getStartDate();
       Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-      BigDecimal calculatedVatAmount = VatUtility.getVatAmount(feeTotal, startDate, vatApplicable);
+      BigDecimal calculatedVatAmount = VatUtil.getVatAmount(feeTotal, startDate, vatApplicable);
 
       BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
@@ -105,7 +105,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
     return FeeCalculation.builder()
         .totalAmount(toDouble(finalTotal))
         .vatIndicator(feeCalculationRequest.getVatIndicator())
-        .vatRateApplied(toDouble(VatUtility.getVatRateForDate(feeCalculationRequest.getStartDate())))
+        .vatRateApplied(toDouble(VatUtil.getVatRateForDate(feeCalculationRequest.getStartDate())))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(toDouble(netDisbursementAmount))
         .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))

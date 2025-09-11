@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.service;
+package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import java.util.List;
 import java.util.Map;

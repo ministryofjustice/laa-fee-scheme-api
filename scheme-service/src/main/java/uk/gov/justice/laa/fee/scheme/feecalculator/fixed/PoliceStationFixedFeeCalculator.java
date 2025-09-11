@@ -1,9 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatRateForDate;
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toBigDecimal;
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toDouble;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

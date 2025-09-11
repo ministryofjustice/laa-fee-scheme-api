@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator;
+package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MEDIATION;
 
@@ -9,20 +9,20 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.exception.InvalidMediationSessionException;
-import uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility;
+import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.DataService;
-import uk.gov.justice.laa.fee.scheme.service.FeeCalculator;
+import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 /**
  * Calculate the mediation fee for a given fee entity and fee data.
  */
 @RequiredArgsConstructor
 @Component
-public class MediationFeeCalculator implements FeeCalculator {
+public class MediationFixedFeeCalculator implements FeeCalculator {
 
-  private final DataService dataService;
+  private final FeeDataService feeDataService;
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -35,14 +35,14 @@ public class MediationFeeCalculator implements FeeCalculator {
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest) {
 
-    FeeEntity feeEntity = dataService.getFeeEntity(feeCalculationRequest);
+    FeeEntity feeEntity = feeDataService.getFeeEntity(feeCalculationRequest);
 
     if (feeEntity.getFixedFee() == null) {
       // Where fee code type is MED numberOfMediationSessions is required, numberOfMediationSessions will determine fixed fee amount.
       return getCalculationWithMediationSessions(feeEntity, feeCalculationRequest);
     } else {
       // Where fee code type is MAM numberOfMediationSessions is not required, and will be omitted from calculation
-      return FeeCalculationUtility.calculate(feeEntity, feeCalculationRequest);
+      return FeeCalculationUtil.calculate(feeEntity, feeCalculationRequest);
     }
   }
 
@@ -58,7 +58,7 @@ public class MediationFeeCalculator implements FeeCalculator {
 
     BigDecimal baseFee = (numberOfMediationSessions == 1) ? feeEntity.getMediationFeeLower() : feeEntity.getMediationFeeHigher();
 
-    return FeeCalculationUtility.calculate(baseFee, feeData, feeEntity);
+    return FeeCalculationUtil.calculate(baseFee, feeData, feeEntity);
   }
 
 }

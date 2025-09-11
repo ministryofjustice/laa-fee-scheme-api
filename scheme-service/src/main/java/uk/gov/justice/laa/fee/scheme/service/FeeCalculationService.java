@@ -3,6 +3,8 @@ package uk.gov.justice.laa.fee.scheme.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculatorFactory;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
@@ -11,7 +13,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
  */
 @RequiredArgsConstructor
 @Service
-public class FeeService {
+public class FeeCalculationService {
 
   private final FeeCalculatorFactory calculatorFactory;
 

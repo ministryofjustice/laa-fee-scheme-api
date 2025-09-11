@@ -15,19 +15,20 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.DiscriminationHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.DataService;
+import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 @ExtendWith(MockitoExtension.class)
-class DiscriminationFeeCalculatorTest {
+class DiscriminationHourlyRateCalculatorTest {
 
   @InjectMocks
-  DiscriminationFeeCalculator discriminationFeeCalculator;
+  DiscriminationHourlyRateCalculator discriminationHourlyRateCalculator;
 
   @Mock
-  DataService dataService;
+  FeeDataService feeDataService;
 
   @ParameterizedTest
   @CsvSource({
@@ -41,9 +42,9 @@ class DiscriminationFeeCalculatorTest {
                                                         double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
     FeeEntity feeEntity = buildFeeEntity();
-    when(dataService.getFeeEntity(any())).thenReturn(feeEntity);
+    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
 
-    FeeCalculationResponse result = discriminationFeeCalculator.calculate(feeCalculationRequest);
+    FeeCalculationResponse result = discriminationHourlyRateCalculator.calculate(feeCalculationRequest);
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
 
@@ -61,9 +62,9 @@ class DiscriminationFeeCalculatorTest {
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
     FeeEntity feeEntity = buildFeeEntity();
 
-    when(dataService.getFeeEntity(any())).thenReturn(feeEntity);
+    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
 
-    FeeCalculationResponse result = discriminationFeeCalculator.calculate(feeCalculationRequest);
+    FeeCalculationResponse result = discriminationHourlyRateCalculator.calculate(feeCalculationRequest);
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
 

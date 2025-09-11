@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator;
+package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLAIMS_PUBLIC_AUTHORITIES;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLINICAL_NEGLIGENCE;
@@ -17,11 +17,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility;
+import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.DataService;
-import uk.gov.justice.laa.fee.scheme.service.FeeCalculator;
+import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 /**
  * Calculate the fixed fee for a given fee entity and fee calculation request.
@@ -29,9 +29,9 @@ import uk.gov.justice.laa.fee.scheme.service.FeeCalculator;
 
 @RequiredArgsConstructor
 @Component
-public class StandardFeeCalculator implements FeeCalculator {
+public class StandardFixedFeeCalculator implements FeeCalculator {
 
-  private final DataService dataService;
+  private final FeeDataService feeDataService;
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -49,8 +49,8 @@ public class StandardFeeCalculator implements FeeCalculator {
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest) {
 
-    FeeEntity feeEntity = dataService.getFeeEntity(feeCalculationRequest);
+    FeeEntity feeEntity = feeDataService.getFeeEntity(feeCalculationRequest);
 
-    return FeeCalculationUtility.calculate(feeEntity, feeCalculationRequest);
+    return FeeCalculationUtil.calculate(feeEntity, feeCalculationRequest);
   }
 }

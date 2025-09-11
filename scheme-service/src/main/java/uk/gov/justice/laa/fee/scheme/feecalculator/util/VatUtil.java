@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
+package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -9,9 +9,9 @@ import java.util.TreeMap;
 /**
  * Calculate and add VAT onto provided value.
  */
-public final class VatUtility {
+public final class VatUtil {
 
-  private VatUtility() {
+  private VatUtil() {
   }
 
   private static final NavigableMap<LocalDate, BigDecimal> VAT_RATES = new TreeMap<>();

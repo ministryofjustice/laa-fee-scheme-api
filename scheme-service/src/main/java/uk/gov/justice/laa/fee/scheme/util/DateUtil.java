@@ -9,11 +9,11 @@ import java.time.format.DateTimeParseException;
  * Utility class for Date string conversions.
  */
 
-public final class DateUtility {
+public final class DateUtil {
 
   public static final String DD_MM_MYY = "ddMMyy";
 
-  private DateUtility() {
+  private DateUtil() {
   }
 
   /**

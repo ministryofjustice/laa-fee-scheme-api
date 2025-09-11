@@ -1,16 +1,16 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
+package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatRateForDate;
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.defaultToZeroIfNull;
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toBigDecimal;
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toDouble;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.feecalculator.utility.boltons.BoltOnUtility;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -19,9 +19,9 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 /**
  * Utility class for fee calculation operations.
  */
-public final class FeeCalculationUtility {
+public final class FeeCalculationUtil {
 
-  private FeeCalculationUtility() {
+  private FeeCalculationUtil() {
   }
 
 
@@ -37,8 +37,8 @@ public final class FeeCalculationUtility {
    */
   public static FeeCalculationResponse calculate(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
     BigDecimal fixedFee = defaultToZeroIfNull(feeEntity.getFixedFee());
-    // get the bolt fee details from utility class
-    BoltOnFeeDetails boltOnFeeDetails = BoltOnUtility.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
+    // get the bolt fee details from util class
+    BoltOnFeeDetails boltOnFeeDetails = BoltOnUtil.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
     return calculateAndBuildResponse(fixedFee, boltOnFeeDetails, feeCalculationRequest, feeEntity);
   }
 

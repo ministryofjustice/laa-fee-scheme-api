@@ -1,6 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility.isFixedFee;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isFixedFee;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -10,12 +10,11 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.PoliceStationFixedFeeCalculator;
-import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.PoliceStationHourlyFeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.PoliceStationHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.DataService;
-import uk.gov.justice.laa.fee.scheme.service.FeeCalculator;
-import uk.gov.justice.laa.fee.scheme.util.DateUtility;
+import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
+import uk.gov.justice.laa.fee.scheme.util.DateUtil;
 
 /**
  * Implementation class for police station fixed fee category.
@@ -24,13 +23,11 @@ import uk.gov.justice.laa.fee.scheme.util.DateUtility;
 @Component
 public class PoliceStationFeeCalculator implements FeeCalculator {
 
-  private static final String INVC = "INVC";
-
-  private final DataService dataService;
+  private final FeeDataService feeDataService;
 
   private final PoliceStationFixedFeeCalculator policeStationFixedFeeCalculator;
 
-  private final PoliceStationHourlyFeeCalculator policeStationHourlyFeeCalculator;
+  private final PoliceStationHourlyRateCalculator policeStationHourlyRateCalculator;
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -44,16 +41,16 @@ public class PoliceStationFeeCalculator implements FeeCalculator {
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest) {
 
     if (StringUtils.isNotBlank(feeCalculationRequest.getUniqueFileNumber())) {
-      LocalDate caseStartDate = DateUtility.toLocalDate(feeCalculationRequest.getUniqueFileNumber());
+      LocalDate caseStartDate = DateUtil.toLocalDate(feeCalculationRequest.getUniqueFileNumber());
       feeCalculationRequest.setStartDate(caseStartDate);
     }
 
-    FeeEntity feeEntity = dataService.getFeeEntity(feeCalculationRequest);
+    FeeEntity feeEntity = feeDataService.getFeeEntity(feeCalculationRequest);
 
     if (isFixedFee(feeEntity.getFeeType().name())) {
       return policeStationFixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
     } else {
-      return policeStationHourlyFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+      return policeStationHourlyRateCalculator.getFee(feeEntity, feeCalculationRequest);
     }
   }
 

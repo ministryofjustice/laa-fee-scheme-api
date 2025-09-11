@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.laa.fee.scheme.api.FeeCalculationApi;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.FeeService;
+import uk.gov.justice.laa.fee.scheme.service.FeeCalculationService;
 
 /**
  * Controller for post fee data, to be used in fee calculation.
@@ -15,12 +15,12 @@ import uk.gov.justice.laa.fee.scheme.service.FeeService;
 @RequiredArgsConstructor
 public class FeeCalculationController implements FeeCalculationApi {
 
-  private final FeeService feeService;
+  private final FeeCalculationService feeCalculationService;
 
   @Override
   public ResponseEntity<FeeCalculationResponse> getFeeCalculation(FeeCalculationRequest feeCalculationRequest) {
 
-    FeeCalculationResponse feeCalculationResponse = feeService.calculateFee(feeCalculationRequest);
+    FeeCalculationResponse feeCalculationResponse = feeCalculationService.calculateFee(feeCalculationRequest);
 
     return ResponseEntity.ok(feeCalculationResponse);
   }

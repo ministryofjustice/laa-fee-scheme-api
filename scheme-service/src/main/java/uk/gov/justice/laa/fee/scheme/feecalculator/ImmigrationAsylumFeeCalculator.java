@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility.isFixedFee;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isFixedFee;
 
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +12,7 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.ImmigrationAsylumFixedF
 import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.ImmigrationAsylumHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.DataService;
-import uk.gov.justice.laa.fee.scheme.service.FeeCalculator;
+import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 /**
  * Implementation class for police station fixed fee category.
@@ -24,7 +23,7 @@ public class ImmigrationAsylumFeeCalculator implements FeeCalculator {
 
   private static final String INVC = "INVC";
 
-  private final DataService dataService;
+  private final FeeDataService feeDataService;
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -37,7 +36,7 @@ public class ImmigrationAsylumFeeCalculator implements FeeCalculator {
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest) {
 
-    FeeEntity feeEntity = dataService.getFeeEntity(feeCalculationRequest);
+    FeeEntity feeEntity = feeDataService.getFeeEntity(feeCalculationRequest);
 
     if (isFixedFee(feeEntity.getFeeType().name())) {
       return ImmigrationAsylumFixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);

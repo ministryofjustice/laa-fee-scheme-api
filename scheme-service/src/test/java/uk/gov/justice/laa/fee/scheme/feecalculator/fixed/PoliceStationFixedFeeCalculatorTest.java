@@ -26,7 +26,6 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.repository.PoliceStationFeesRepository;
-import uk.gov.justice.laa.fee.scheme.service.DataService;
 
 @ExtendWith(MockitoExtension.class)
 class PoliceStationFixedFeeCalculatorTest {

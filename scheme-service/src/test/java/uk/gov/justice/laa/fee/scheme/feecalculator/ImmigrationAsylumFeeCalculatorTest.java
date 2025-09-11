@@ -19,7 +19,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.DataService;
+import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 @ExtendWith(MockitoExtension.class)
 class ImmigrationAsylumFeeCalculatorTest {
@@ -28,7 +28,7 @@ class ImmigrationAsylumFeeCalculatorTest {
   ImmigrationAsylumFeeCalculator immigrationAsylumFeeCalculator;
 
   @Mock
-  DataService dataService;
+  FeeDataService feeDataService;
 
   @Test
   void getFee_whenImmigrationAsylumClaimFeeCodeFixed_shouldReturnFeeCalculationResponse() {
@@ -59,7 +59,7 @@ class ImmigrationAsylumFeeCalculatorTest {
         .telephoneCmrhBoltOn(BigDecimal.valueOf(90))
         .build();
 
-    when(dataService.getFeeEntity(any())).thenReturn(feeEntity);
+    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
 
     FeeCalculationResponse result = immigrationAsylumFeeCalculator.calculate(feeCalculationRequest);
 
@@ -91,7 +91,7 @@ class ImmigrationAsylumFeeCalculatorTest {
         .disbursementLimit(new BigDecimal("400.00"))
         .build();
 
-    when(dataService.getFeeEntity(any())).thenReturn(feeEntity);
+    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
 
     FeeCalculationResponse result = immigrationAsylumFeeCalculator.calculate(feeCalculationRequest);
 
