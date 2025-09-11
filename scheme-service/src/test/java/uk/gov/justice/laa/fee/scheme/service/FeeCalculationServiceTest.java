@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -9,6 +10,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLAIMS_PUBLIC_AUT
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLINICAL_NEGLIGENCE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DEBT;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING_HLPAS;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
@@ -25,6 +27,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
+import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculatorFactory;
@@ -38,6 +42,8 @@ class FeeCalculationServiceTest {
   @Mock
   FeeCalculatorFactory feeCalculatorFactory;
 
+  @Mock
+  FeeDataService feeDataService;
 
   @InjectMocks
   private FeeCalculationService feeCalculationService;
@@ -97,7 +103,17 @@ class FeeCalculationServiceTest {
         .numberOfMediationSessions(2)
         .build();
 
+    FeeEntity feeEntity =  FeeEntity.builder()
+          .feeCode("INVC")
+          .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2023").build())
+          .categoryType(IMMIGRATION_ASYLUM)
+          .escapeThresholdLimit(new BigDecimal("700.00"))
+          .build();
+
     when(feeCalculatorFactory.getCalculator(category)).thenReturn(immigrationCalculator);
+
+    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
+
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(1587.50)

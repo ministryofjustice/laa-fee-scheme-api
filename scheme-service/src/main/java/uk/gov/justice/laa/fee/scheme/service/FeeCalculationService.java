@@ -17,6 +17,8 @@ public class FeeCalculationService {
 
   private final FeeCalculatorFactory calculatorFactory;
 
+  private final FeeDataService feeDataService;
+
   /**
    * Calculate Fees.
    *
@@ -24,7 +26,9 @@ public class FeeCalculationService {
    * @return FeeCalculationResponse
    */
   public FeeCalculationResponse calculateFee(FeeCalculationRequest request) {
-    CategoryType categoryType = CategoryType.valueOf(request.getAreaOfLaw());
+
+    CategoryType categoryType = feeDataService.getFeeEntity(request).getCategoryType();
+
     FeeCalculator calculator = calculatorFactory.getCalculator(categoryType);
     return calculator.calculate(request);
   }
