@@ -21,7 +21,6 @@ public class DataService {
 
   private final FeeSchemesRepository feeSchemesRepository;
 
-
   /**
    * Returns FeeEntity after making calls to database.
    *

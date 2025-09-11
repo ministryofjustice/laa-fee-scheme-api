@@ -37,66 +37,6 @@ class PoliceStationFixedFeeCalculatorTest {
   @Mock
   PoliceStationFeesRepository policeStationFeesRepository;
 
-  public static Stream<Arguments> testPoliceStationAttendanceClaims() {
-    return Stream.of(
-        arguments("INVC Police Fee Code, VAT applied", "INVC", "NE001",
-            "1001", "121221/7899", true, 87.93,
-            new BigDecimal("14.4"), null, "POL_2016", 2.88,
-            50.5, 20.15, 14.4, 0.0, 0.0),
-
-        arguments("INVC Police Fee Code, VAT not applied", "INVC", "NE013",
-            "1004", "121223/6655", false, 85.05,
-            new BigDecimal("14.4"), null, "POL_2023", 0,
-            50.5, 20.15, 14.4,0.0,0.0)
-        );
-  }
-
-
-  public static Stream<Arguments> testPoliceStationTelephonicAdviceClaims() {
-    return Stream.of(
-        arguments("INVB1 Police Fee Code, VAT applied", "INVB1", "NE001",
-            "1001", "121221/7899", true, 17.28,
-            new BigDecimal("14.4"), null, "POL_2016", 2.88,
-            50.5, 20.15, 14.4, 0.0, 0.0),
-
-        arguments("INVB1 Police Fee Code, VAT not applied", "INVB1", "NE013",
-            "1004", "121223/6655", false, 14.4,
-            new BigDecimal("14.4"), null, "POL_2023", 0,
-            50.5, 20.15, 14.4,0.0,0.0),
-
-        arguments("INVB2 Police Fee Code, VAT applied", "INVB2", "NE001",
-            "1001", "121221/7899", true, 17.28,
-            new BigDecimal("14.4"), null, "POL_2016", 2.88,
-            50.5, 20.15, 14.4, 0.0, 0.0),
-
-        arguments("INVB2 Police Fee Code, VAT not applied", "INVB2", "NE013",
-            "1004", "121223/6655", false, 14.4,
-            new BigDecimal("14.4"), null, "POL_2023", 0,
-            50.5, 20.15, 14.4,0.0,0.0)
-    );
-  }
-
-  private static Arguments arguments(String testDescription,
-                                     String feeCode,
-                                     String policeStationId,
-                                     String policeStationSchemeId,
-                                     String uniqueFileNumber,
-                                     boolean vatIndicator,
-                                     double expectedTotal,
-                                     BigDecimal fixedFee,
-                                     BigDecimal profitCostLimit,
-                                     String feeSchemeCode,
-                                     double expectedCalculatedVat,
-                                     double disbursementAmount,
-                                     double disbursementVatAmount,
-                                     double fixedFeeAmount,
-                                     double travelAndWaitingCostAmount,
-                                     double netProfitCostsAmount) {
-    return Arguments.of(testDescription, feeCode, policeStationId, policeStationSchemeId, uniqueFileNumber, vatIndicator,
-        expectedTotal, fixedFee, profitCostLimit, feeSchemeCode, expectedCalculatedVat, disbursementAmount,
-        disbursementVatAmount, fixedFeeAmount, travelAndWaitingCostAmount, netProfitCostsAmount);
-  }
-
   @Test
   void test_whenPoliceStationClaimForInvoiceSubmitted_shouldReturnValidResponse() {
 
@@ -161,6 +101,74 @@ class PoliceStationFixedFeeCalculatorTest {
         .isEqualTo(expectedResponse);
 
   }
+
+
+  @Test
+  void test_whenPoliceStationClaimForInvoiceSubmitted_PoliceStationId_NotSupplied_shouldReturnValidResponse() {
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("INVC")
+        .feeSchemeCode(feeSchemesEntity)
+        .profitCostLimit(new BigDecimal("123.56"))
+        .fixedFee(new BigDecimal("200.56"))
+        .categoryType(POLICE_STATION)
+        .feeType(FeeType.FIXED)
+        .build();
+
+    PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder()
+        .psSchemeId("1004")
+        .feeSchemeCode("POL_FS2022")
+        .fixedFee(new BigDecimal("200.56"))
+        .build();
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode("INVC")
+        .startDate(LocalDate.of(2017, 7, 29))
+        .vatIndicator(true)
+        .policeStationSchemeId("1001")
+        .policeStationId(null)
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .uniqueFileNumber("121222/4523")
+        .travelAndWaitingCosts(45.0)
+        .netProfitCosts(676.0)
+        .build();
+
+    when(policeStationFeesRepository.findPoliceStationFeeByPsSchemeIdAndFeeSchemeCode(any(),
+        any())).thenReturn(List.of(policeStationFeesEntity));
+
+
+    FeeCalculationResponse response = policeStationFixedFeeCalculator.getFee(feeEntity, feeData);
+
+
+    FeeCalculation expectedCalculation = FeeCalculation.builder()
+        .totalAmount(311.32)
+        .vatIndicator(Boolean.TRUE)
+        .vatRateApplied(20.0)
+        .calculatedVatAmount(40.11)
+        .disbursementAmount(50.5)
+        .disbursementVatAmount(20.15)
+        .fixedFeeAmount(200.56)
+        .calculatedVatAmount(40.11)
+        .build();
+
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
+        .feeCode("INVC")
+        .schemeId("POL_FS2022")
+        .warnings(new ArrayList<>())
+        .escapeCaseFlag(false)
+        .feeCalculation(expectedCalculation)
+        .build();
+
+    assertThat(response)
+        .usingRecursiveComparison()
+        .isEqualTo(expectedResponse);
+
+  }
+
+
 
 
   @ParameterizedTest
@@ -307,6 +315,77 @@ class PoliceStationFixedFeeCalculatorTest {
     assertThat(response)
         .usingRecursiveComparison()
         .isEqualTo(expectedResponse);
+  }
+
+  public static Stream<Arguments> testPoliceStationAttendanceClaims() {
+    return Stream.of(
+        arguments("INVC Police Fee Code, VAT applied", "INVC", "NE001",
+            "1001", "121221/7899", true, 87.93,
+            new BigDecimal("14.4"), null, "POL_2016", 2.88,
+            50.5, 20.15, 14.4, 0.0, 0.0),
+
+        arguments("INVC Police Fee Code, VAT not applied", "INVC", "NE013",
+            "1004", "121223/6655", false, 85.05,
+            new BigDecimal("14.4"), null, "POL_2023", 0,
+            50.5, 20.15, 14.4,0.0,0.0)
+    );
+  }
+
+
+  public static Stream<Arguments> testPoliceStationTelephonicAdviceClaims() {
+    return Stream.of(
+        arguments("INVB1 Police Fee Code, VAT applied", "INVB1", "NE001",
+            "1001", "121221/7899", true, 17.28,
+            new BigDecimal("14.4"), null, "POL_2016", 2.88,
+            50.5, 20.15, 14.4, 0.0, 0.0),
+
+        arguments("INVB1 Police Fee Code, VAT not applied", "INVB1", "NE013",
+            "1004", "121223/6655", false, 14.4,
+            new BigDecimal("14.4"), null, "POL_2023", 0,
+            50.5, 20.15, 14.4,0.0,0.0),
+
+        arguments("INVB2 Police Fee Code, VAT applied", "INVB2", "NE001",
+            "1001", "121221/7899", true, 17.28,
+            new BigDecimal("14.4"), null, "POL_2016", 2.88,
+            50.5, 20.15, 14.4, 0.0, 0.0),
+
+        arguments("INVB2 Police Fee Code, VAT not applied", "INVB2", "NE013",
+            "1004", "121223/6655", false, 14.4,
+            new BigDecimal("14.4"), null, "POL_2023", 0,
+            50.5, 20.15, 14.4,0.0,0.0),
+
+        arguments("INVB1 Police Fee Code, Police Station Id Not Provided ", "INVB1", null,
+            "1004", "121223/6655", true, 20.74,
+            new BigDecimal("17.28"), null, "POL_2023", 3.46,
+            50.5, 20.15, 17.28,0.0,0.0),
+
+        arguments("INVB2 Police Fee Code, Police Station Scheme Id Not Provided", "INVB2", "NE001",
+            null, "121221/7899", true, 17.28,
+            new BigDecimal("14.4"), null, "POL_2016", 2.88,
+            50.5, 20.15, 14.4, 0.0, 0.0)
+    );
+  }
+
+
+  private static Arguments arguments(String testDescription,
+                                     String feeCode,
+                                     String policeStationId,
+                                     String policeStationSchemeId,
+                                     String uniqueFileNumber,
+                                     boolean vatIndicator,
+                                     double expectedTotal,
+                                     BigDecimal fixedFee,
+                                     BigDecimal profitCostLimit,
+                                     String feeSchemeCode,
+                                     double expectedCalculatedVat,
+                                     double disbursementAmount,
+                                     double disbursementVatAmount,
+                                     double fixedFeeAmount,
+                                     double travelAndWaitingCostAmount,
+                                     double netProfitCostsAmount) {
+    return Arguments.of(testDescription, feeCode, policeStationId, policeStationSchemeId, uniqueFileNumber, vatIndicator,
+        expectedTotal, fixedFee, profitCostLimit, feeSchemeCode, expectedCalculatedVat, disbursementAmount,
+        disbursementVatAmount, fixedFeeAmount, travelAndWaitingCostAmount, netProfitCostsAmount);
   }
 
 }

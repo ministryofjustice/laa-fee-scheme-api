@@ -1,12 +1,18 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Set;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -15,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.PoliceStationFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -58,6 +65,30 @@ class StandardFeeCalculatorTest {
     assertThat(result.getFeeCode()).isEqualTo("COM");
     assertThat(result.getFeeCalculation()).isNotNull();
     assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
+  }
+
+  @Test
+  void getSupportedCategories_ShouldReturnAllExpectedCategories() {
+    // Arrange
+    StandardFeeCalculator calculator = new StandardFeeCalculator(dataService); // repos not needed for this test
+
+    // Act
+    Set<CategoryType> categories = calculator.getSupportedCategories();
+
+    // Assert
+    Assertions.assertNotNull(categories);
+    Assertions.assertEquals(10, categories.size()); // make sure the total count matches
+
+    Assertions.assertTrue(categories.contains(CategoryType.CLAIMS_PUBLIC_AUTHORITIES));
+    Assertions.assertTrue(categories.contains(CategoryType.CLINICAL_NEGLIGENCE));
+    Assertions.assertTrue(categories.contains(COMMUNITY_CARE));
+    Assertions.assertTrue(categories.contains(CategoryType.DEBT));
+    Assertions.assertTrue(categories.contains(CategoryType.HOUSING));
+    Assertions.assertTrue(categories.contains(CategoryType.HOUSING_HLPAS));
+    Assertions.assertTrue(categories.contains(CategoryType.MENTAL_HEALTH));
+    Assertions.assertTrue(categories.contains(CategoryType.MISCELLANEOUS));
+    Assertions.assertTrue(categories.contains(CategoryType.PUBLIC_LAW));
+    Assertions.assertTrue(categories.contains(CategoryType.WELFARE_BENEFITS));
   }
 
 }

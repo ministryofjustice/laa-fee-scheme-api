@@ -81,6 +81,7 @@ class FeeServiceTest {
   @Test
   void calculateFee_DelegatesToCalculator() {
 
+    // Picked Immigration Asylum Fee Calculator for stubbing
     FeeCalculator immigrationCalculator = mock(ImmigrationAsylumFeeCalculator.class);
     // Arrange
     CategoryType category = CategoryType.valueOf(IMMIGRATION_ASYLUM.name());

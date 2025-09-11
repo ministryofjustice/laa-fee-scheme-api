@@ -33,6 +33,11 @@ class PoliceStationHourlyFeeCalculatorTest {
             null, new BigDecimal("25.0"), "POL_2023", 19.5,
             50.5, 20.15, 0,12.45,
             34.56, 97.51),
+        arguments("INVM Police Fee Code, VAT applied, Profit Cost Limit exceeded", "INVM", "NE024",
+            "1007", "041223/6655", true, 1372.06,
+            null, new BigDecimal("5.0"), "POL_2023",  216.9,
+            50.5, 20.15, 0,999.45,
+            34.56, 1084.51),
         arguments("INVM Police Fee Code, VAT applied", "INVM", "NE024",
             "1007", "041223/6655", false, 168.16,
             null, new BigDecimal("25.0"), "POL_2023", 0,
@@ -128,6 +133,79 @@ class PoliceStationHourlyFeeCalculatorTest {
         .feeCode(feeCode)
         .schemeId(feeSchemeCode)
         .warnings(List.of("warning net profit costs"))
+        .feeCalculation(expectedCalculation)
+        .build();
+
+    assertThat(response)
+        .usingRecursiveComparison()
+        .isEqualTo(expectedResponse);
+  }
+
+
+  @ParameterizedTest
+  @MethodSource("testPoliceOtherData")
+  void test_whenPoliceStation_shouldReturnFeeWithoutWarning(
+      String description,
+      String feeCode,
+      String policeStationId,
+      String policeStationSchemeId,
+      String uniqueFileNumber,
+      boolean vatIndicator,
+      double expectedTotal,
+      BigDecimal fixedFee,
+      BigDecimal profitCostLimit,
+      String feeSchemeCode,
+      double expectedCalculatedVat,
+      double expectedDisbursementAmount,
+      double disbursementVatAmount,
+      double expectedFixedFee,
+      double travelAndWaitingCostAmount,
+      double netProfitCostsAmount,
+      double hourlyTotalAmount
+  ) {
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode(feeCode)
+        .startDate(LocalDate.of(2017, 7, 29))
+        .vatIndicator(vatIndicator)
+        .policeStationSchemeId(policeStationSchemeId)
+        .policeStationId(policeStationId)
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .uniqueFileNumber(uniqueFileNumber)
+        .travelAndWaitingCosts(travelAndWaitingCostAmount)
+        .netProfitCosts(netProfitCostsAmount)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode(feeCode)
+        .feeSchemeCode(feeSchemesEntity)
+        .profitCostLimit(BigDecimal.valueOf(100000.00))
+        .fixedFee(fixedFee)
+        .categoryType(POLICE_STATION)
+        .feeType(FeeType.HOURLY)
+        .build();
+
+    FeeCalculationResponse response = policeStationHourlyFeeCalculator.getFee(feeEntity, feeData);
+
+    FeeCalculation expectedCalculation = FeeCalculation.builder()
+        .totalAmount(expectedTotal)
+        .vatIndicator(vatIndicator)
+        .vatRateApplied(20.0)
+        .disbursementAmount(expectedDisbursementAmount)
+        .disbursementVatAmount(disbursementVatAmount)
+        .calculatedVatAmount(expectedCalculatedVat)
+        .netProfitCostsAmount(netProfitCostsAmount)
+        .hourlyTotalAmount(hourlyTotalAmount)
+        .travelAndWaitingCostAmount(travelAndWaitingCostAmount)
+        .build();
+
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
+        .feeCode(feeCode)
+        .schemeId(feeSchemeCode)
+        .warnings(List.of())
         .feeCalculation(expectedCalculation)
         .build();
 
