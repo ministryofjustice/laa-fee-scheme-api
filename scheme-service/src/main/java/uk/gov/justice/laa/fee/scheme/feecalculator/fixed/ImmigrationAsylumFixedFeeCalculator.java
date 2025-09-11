@@ -1,16 +1,17 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatRateForDate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
-import uk.gov.justice.laa.fee.scheme.feecalculator.utility.boltons.BoltOnUtility;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -19,12 +20,14 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 /**
  * Calculate the Immigration and asylum fee for a given fee entity and fee calculation request.
  */
+
+@Component
 public final class ImmigrationAsylumFixedFeeCalculator {
 
-  private ImmigrationAsylumFixedFeeCalculator() {
-  }
+  private ImmigrationAsylumFixedFeeCalculator() {}
 
   private static final List<String> FEE_CODES_WITH_NO_DISBURSEMENT = List.of("IDAS1", "IDAS2");
+
   private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
 
   /**
@@ -46,8 +49,8 @@ public final class ImmigrationAsylumFixedFeeCalculator {
     // get the requested jrFormFilling amount from feeCalculationRequest
     BigDecimal jrFormFillingCosts = toBigDecimal(feeCalculationRequest.getJrFormFilling());
 
-    // get the bolt fee details from utility class
-    BoltOnFeeDetails boltOnFeeDetails = BoltOnUtility.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
+    // get the bolt fee details from util class
+    BoltOnFeeDetails boltOnFeeDetails = BoltOnUtil.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
 
     BigDecimal netDisbursementAmount;
     BigDecimal netDisbursementLimit = feeEntity.getDisbursementLimit();
@@ -70,12 +73,26 @@ public final class ImmigrationAsylumFixedFeeCalculator {
     // Apply VAT where applicable
     LocalDate startDate = feeCalculationRequest.getStartDate();
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal calculatedVatAmount = VatUtility.getVatAmount(fixedFeeAndAdditionalCosts, startDate, vatApplicable);
+    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(fixedFeeAndAdditionalCosts, startDate, vatApplicable);
 
     BigDecimal finalTotal = fixedFeeAndAdditionalCosts
         .add(calculatedVatAmount)
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
+
+    FeeCalculation feeCalculation = FeeCalculation.builder()
+        .totalAmount(toDouble(finalTotal))
+        .vatIndicator(vatApplicable)
+        .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+        .calculatedVatAmount(toDouble(calculatedVatAmount))
+        .disbursementAmount(toDouble(netDisbursementAmount))
+        .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
+        .disbursementVatAmount(toDouble(disbursementVatAmount))
+        .fixedFeeAmount(toDouble(fixedFeeAmount))
+        .detentionAndWaitingCostsAmount(toDouble(detentionAndTravelCosts))
+        .jrFormFillingAmount(toDouble(jrFormFillingCosts))
+        .boltOnFeeDetails(boltOnFeeDetails)
+        .build();
 
     return new FeeCalculationResponse().toBuilder()
         .feeCode(feeCalculationRequest.getFeeCode())
@@ -83,19 +100,7 @@ public final class ImmigrationAsylumFixedFeeCalculator {
         .claimId(claimId)
         .warnings(warningList)
         .escapeCaseFlag(false) // temp hard coded
-        .feeCalculation(FeeCalculation.builder()
-            .totalAmount(toDouble(finalTotal))
-            .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(startDate)))
-            .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(toDouble(netDisbursementAmount))
-            .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
-            .disbursementVatAmount(toDouble(disbursementVatAmount))
-            .fixedFeeAmount(toDouble(fixedFeeAmount))
-            .detentionAndWaitingCostsAmount(toDouble(detentionAndTravelCosts))
-            .jrFormFillingAmount(toDouble(jrFormFillingCosts))
-            .boltOnFeeDetails(boltOnFeeDetails)
-            .build())
+        .feeCalculation(feeCalculation)
         .build();
   }
 

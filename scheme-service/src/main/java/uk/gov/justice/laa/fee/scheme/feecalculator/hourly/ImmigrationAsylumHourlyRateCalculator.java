@@ -1,15 +1,16 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -17,15 +18,18 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 /**
  * Calculate the Immigration and Asylum hourly rate fee for a given fee entity and fee calculation request.
  */
+
+@Component
 public final class ImmigrationAsylumHourlyRateCalculator {
 
-  private ImmigrationAsylumHourlyRateCalculator() {
-  }
+  private ImmigrationAsylumHourlyRateCalculator() {}
 
   private static final String IAXL = "IAXL";
+
   private static final String IMXL = "IMXL";
 
   private static final String WARNING_NET_PROFIT_COSTS = "warning net profit costs"; // @TODO: TBC
+
   private static final String WARNING_NET_DISBURSEMENTS = "warning net disbursements"; // @TODO: TBC
 
   /**
@@ -42,7 +46,9 @@ public final class ImmigrationAsylumHourlyRateCalculator {
       List<String> warnings = new ArrayList<>();
 
       BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
+
       BigDecimal requestedNetProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
+
       BigDecimal profitCostLimit = feeEntity.getProfitCostLimit();
       if (netProfitCosts.compareTo(profitCostLimit) > 0
           && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorAuthorityNumber())) {
@@ -51,7 +57,9 @@ public final class ImmigrationAsylumHourlyRateCalculator {
       }
 
       BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+
       BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+
       BigDecimal disbursementLimit = feeEntity.getDisbursementLimit();
       if (netDisbursementAmount.compareTo(disbursementLimit) > 0
           && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorAuthorityNumber())) {
@@ -65,7 +73,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
       // Apply VAT where applicable
       LocalDate startDate = feeCalculationRequest.getStartDate();
       Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-      BigDecimal calculatedVatAmount = VatUtility.getVatAmount(feeTotal, startDate, vatApplicable);
+      BigDecimal calculatedVatAmount = VatUtil.getVatAmount(feeTotal, startDate, vatApplicable);
 
       BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
@@ -79,23 +87,33 @@ public final class ImmigrationAsylumHourlyRateCalculator {
           .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
           .claimId(claimId)
           .warnings(warnings)
-          .feeCalculation(FeeCalculation.builder()
-              .totalAmount(toDouble(finalTotal))
-              .vatIndicator(feeCalculationRequest.getVatIndicator())
-              .vatRateApplied(toDouble(VatUtility.getVatRateForDate(feeCalculationRequest.getStartDate())))
-              .calculatedVatAmount(toDouble(calculatedVatAmount))
-              .disbursementAmount(toDouble(netDisbursementAmount))
-              .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
-              .disbursementVatAmount(toDouble(disbursementVatAmount))
-              .hourlyTotalAmount(toDouble(feeTotal))
-              .netProfitCostsAmount(toDouble(netProfitCosts))
-              .requestedNetProfitCostsAmount(toDouble(requestedNetProfitCosts))
-              .jrFormFillingAmount(toDouble(jrFormFilling))
-              .build())
+          .feeCalculation(getFeeCalculation(feeCalculationRequest, finalTotal, calculatedVatAmount,
+                netDisbursementAmount, disbursementVatAmount, requestedNetDisbursementAmount, feeTotal,
+                  netProfitCosts, requestedNetProfitCosts, jrFormFilling))
           .build();
     } else {
       //@TODO: to be removed once bus rules for all fee codes are implemented
       throw new IllegalArgumentException("Fee code not supported: " + feeCode);
     }
+  }
+
+  private static FeeCalculation getFeeCalculation(FeeCalculationRequest feeCalculationRequest, BigDecimal finalTotal,
+                                                    BigDecimal calculatedVatAmount, BigDecimal netDisbursementAmount,
+                                                      BigDecimal disbursementVatAmount, BigDecimal requestedNetDisbursementAmount,
+                                                        BigDecimal feeTotal, BigDecimal netProfitCosts,
+                                                          BigDecimal requestedNetProfitCosts, BigDecimal jrFormFilling) {
+    return FeeCalculation.builder()
+        .totalAmount(toDouble(finalTotal))
+        .vatIndicator(feeCalculationRequest.getVatIndicator())
+        .vatRateApplied(toDouble(VatUtil.getVatRateForDate(feeCalculationRequest.getStartDate())))
+        .calculatedVatAmount(toDouble(calculatedVatAmount))
+        .disbursementAmount(toDouble(netDisbursementAmount))
+        .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
+        .disbursementVatAmount(toDouble(disbursementVatAmount))
+        .hourlyTotalAmount(toDouble(feeTotal))
+        .netProfitCostsAmount(toDouble(netProfitCosts))
+        .requestedNetProfitCostsAmount(toDouble(requestedNetProfitCosts))
+        .jrFormFillingAmount(toDouble(jrFormFilling))
+        .build();
   }
 }

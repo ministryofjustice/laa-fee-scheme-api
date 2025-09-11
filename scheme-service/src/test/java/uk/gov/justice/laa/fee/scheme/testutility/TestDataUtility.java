@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 
 /**
  * Utility for building test data.

@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.utility.boltons;
+package uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons;
 
 /**
  * Enum for bolt on types.

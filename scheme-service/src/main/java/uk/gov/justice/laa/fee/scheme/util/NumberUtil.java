@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
+package uk.gov.justice.laa.fee.scheme.util;
 
 import java.math.BigDecimal;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -6,9 +6,9 @@ import org.apache.commons.lang3.math.NumberUtils;
 /**
  * Utility class for number conversions.
  */
-public final class NumberUtility {
+public final class NumberUtil {
 
-  private NumberUtility() {
+  private NumberUtil() {
   }
 
   /**

@@ -1,19 +1,34 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.DISCRIMINATION;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.DiscriminationHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
-class DiscriminationFeeCalculatorTest {
+@ExtendWith(MockitoExtension.class)
+class DiscriminationHourlyRateCalculatorTest {
+
+  @InjectMocks
+  DiscriminationHourlyRateCalculator discriminationHourlyRateCalculator;
+
+  @Mock
+  FeeDataService feeDataService;
 
   @ParameterizedTest
   @CsvSource({
@@ -27,8 +42,9 @@ class DiscriminationFeeCalculatorTest {
                                                         double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
     FeeEntity feeEntity = buildFeeEntity();
+    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
 
-    FeeCalculationResponse result = DiscriminationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+    FeeCalculationResponse result = discriminationHourlyRateCalculator.calculate(feeCalculationRequest);
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
 
@@ -46,7 +62,9 @@ class DiscriminationFeeCalculatorTest {
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
     FeeEntity feeEntity = buildFeeEntity();
 
-    FeeCalculationResponse result = DiscriminationFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
+
+    FeeCalculationResponse result = discriminationHourlyRateCalculator.calculate(feeCalculationRequest);
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel, travelAndWaitingCosts);
 

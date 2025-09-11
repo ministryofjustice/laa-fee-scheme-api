@@ -1,0 +1,35 @@
+package uk.gov.justice.laa.fee.scheme.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculatorFactory;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+
+/**
+ * Calculate fee for a given fee calculation request.
+ */
+@RequiredArgsConstructor
+@Service
+public class FeeCalculationService {
+
+  private final FeeCalculatorFactory calculatorFactory;
+
+  private final FeeDataService feeDataService;
+
+  /**
+   * Calculate Fees.
+   *
+   * @param request FeeCalculationRequest
+   * @return FeeCalculationResponse
+   */
+  public FeeCalculationResponse calculateFee(FeeCalculationRequest request) {
+
+    CategoryType categoryType = feeDataService.getFeeEntity(request).getCategoryType();
+
+    FeeCalculator calculator = calculatorFactory.getCalculator(categoryType);
+    return calculator.calculate(request);
+  }
+}

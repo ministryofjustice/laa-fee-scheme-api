@@ -1,14 +1,16 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -16,12 +18,11 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 /**
  * Calculate the police station fee for a given fee entity and fee data.
  */
-public final class PoliceStationHourlyFeeCalculator {
+@Component
+@RequiredArgsConstructor
+public class PoliceStationHourlyRateCalculator {
 
   private static final String WARNING_NET_PROFIT_COSTS = "warning net profit costs";
-
-  private PoliceStationHourlyFeeCalculator() {
-  }
 
   /**
    * Calculated fee based on the provided fee entity and fee calculation request.
@@ -30,7 +31,7 @@ public final class PoliceStationHourlyFeeCalculator {
    * @param feeCalculationRequest the request containing fee calculation data
    * @return FeeCalculationResponse with calculated fee
    */
-  public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
+  public FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
     List<String> warnings = new ArrayList<>();
 
     BigDecimal profitCostLimit = feeEntity.getProfitCostLimit();
@@ -51,7 +52,7 @@ public final class PoliceStationHourlyFeeCalculator {
 
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
 
-    BigDecimal calculatedVatAmount = VatUtility.getVatAmount(feeTotal, startDate, vatApplicable);
+    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(feeTotal, startDate, vatApplicable);
 
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
@@ -67,7 +68,7 @@ public final class PoliceStationHourlyFeeCalculator {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(feeCalculationRequest.getVatIndicator())
-            .vatRateApplied(toDouble(VatUtility.getVatRateForDate(feeCalculationRequest.getStartDate())))
+            .vatRateApplied(toDouble(VatUtil.getVatRateForDate(feeCalculationRequest.getStartDate())))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
             // disbursement not capped, so requested and calculated will be same

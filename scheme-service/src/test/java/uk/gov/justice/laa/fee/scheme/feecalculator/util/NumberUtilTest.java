@@ -1,43 +1,44 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
+package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
+import uk.gov.justice.laa.fee.scheme.util.NumberUtil;
 
-class NumberUtilityTest {
+class NumberUtilTest {
 
   @Test
   void toDecimal_givenDouble_returnsBigDecimal() {
-    BigDecimal result = NumberUtility.toBigDecimal(99.99);
+    BigDecimal result = NumberUtil.toBigDecimal(99.99);
 
     assertThat(result).isEqualTo(new BigDecimal("99.99"));
   }
 
   @Test
   void toDecimal_givenNull_returnsZero() {
-    BigDecimal result = NumberUtility.toBigDecimal(null);
+    BigDecimal result = NumberUtil.toBigDecimal(null);
 
     assertThat(result).isEqualTo(BigDecimal.ZERO);
   }
 
   @Test
   void toDouble_givenBigDecimal_returnsDouble() {
-    Double result = NumberUtility.toDouble(new BigDecimal("129.13"));
+    Double result = NumberUtil.toDouble(new BigDecimal("129.13"));
 
     assertThat(result).isEqualTo(129.13);
   }
 
   @Test
   void toDouble_givenNull_returnsZero() {
-    Double result = NumberUtility.toDouble(null);
+    Double result = NumberUtil.toDouble(null);
 
     assertThat(result).isEqualTo(0);
   }
 
   @Test
   void defaultToZeroIfNull_givenNull_returnsZero() {
-    BigDecimal result = NumberUtility.defaultToZeroIfNull(null);
+    BigDecimal result = NumberUtil.defaultToZeroIfNull(null);
 
     assertThat(result).isEqualTo(BigDecimal.ZERO);
   }
@@ -46,7 +47,7 @@ class NumberUtilityTest {
   void defaultToZeroIfNull_givenValue_returnsValue() {
     BigDecimal value = new BigDecimal("129.13");
 
-    BigDecimal result = NumberUtility.defaultToZeroIfNull(value);
+    BigDecimal result = NumberUtil.defaultToZeroIfNull(value);
 
     assertThat(result).isEqualTo(value);
   }

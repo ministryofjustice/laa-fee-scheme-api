@@ -1,12 +1,16 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
+package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.COMMUNITY_CARE;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.MENTAL_HEALTH;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MENTAL_HEALTH;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -18,7 +22,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
-class FeeCalculationUtilityTest {
+class FeeCalculationUtilTest {
 
   @CsvSource(value = {
       "false, null, null, 94.96", // false VAT indicator
@@ -46,7 +50,7 @@ class FeeCalculationUtilityTest {
         .adjornHearingBoltOn(boltOnFee)
         .build();
 
-    FeeCalculationResponse response = FeeCalculationUtility.calculate(feeEntity, feeCalculationRequest);
+    FeeCalculationResponse response = FeeCalculationUtil.calculate(feeEntity, feeCalculationRequest);
 
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("FEE1");
@@ -72,7 +76,7 @@ class FeeCalculationUtilityTest {
         .categoryType(COMMUNITY_CARE)
         .build();
 
-    FeeCalculationResponse response = FeeCalculationUtility.calculate(fixedFee, feeCalculationRequest, feeEntity);
+    FeeCalculationResponse response = FeeCalculationUtil.calculate(fixedFee, feeCalculationRequest, feeEntity);
 
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("FEE1");
@@ -105,7 +109,7 @@ class FeeCalculationUtilityTest {
         .categoryType(MENTAL_HEALTH)
         .build();
 
-    FeeCalculationResponse response = FeeCalculationUtility.calculate(feeEntity, feeCalculationRequest);
+    FeeCalculationResponse response = FeeCalculationUtil.calculate(feeEntity, feeCalculationRequest);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(470.94)
@@ -136,5 +140,22 @@ class FeeCalculationUtilityTest {
         .usingRecursiveComparison()
         .isEqualTo(expectedResponse);
 
+  }
+
+  @Test
+  void testIsFixedFeeWhenFixed() {
+    Assertions.assertTrue(FeeCalculationUtil.isFixedFee("FIXED"));
+  }
+
+  @Test
+  void testIsFixedFeeWhenNotFixed() {
+    Assertions.assertFalse(FeeCalculationUtil.isFixedFee("HOURLY"));
+  }
+
+  @Test
+  void testIsFixedFeeWhenNull() {
+    assertThrows(NullPointerException.class, () -> {
+      FeeCalculationUtil.isFixedFee(null);
+    });
   }
 }

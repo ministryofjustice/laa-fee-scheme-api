@@ -1,36 +1,53 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 /**
  * Calculate the discrimination fee for a given fee entity and fee calculation request.
  */
-public final class DiscriminationFeeCalculator {
+@RequiredArgsConstructor
+@Component
+public class DiscriminationHourlyRateCalculator implements FeeCalculator {
 
-  private DiscriminationFeeCalculator() {
+  private final FeeDataService feeDataService;
+
+  @Override
+  public Set<CategoryType> getSupportedCategories() {
+    return Set.of(DISCRIMINATION);
   }
 
   private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
 
   /**
    * Calculated fee based on the provided fee entity and fee calculation request.
+   *          the fee entity containing fee details
    *
-   * @param feeEntity             the fee entity containing fee details
    * @param feeCalculationRequest the request containing fee calculation data
    * @return FeeCalculationResponse with calculated fee
    */
-  public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
+  @Override
+  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest) {
+
+    FeeEntity feeEntity = feeDataService.getFeeEntity(feeCalculationRequest);
+
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal netCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());
     BigDecimal travelAndWaitingCosts = toBigDecimal(feeCalculationRequest.getTravelAndWaitingCosts());
@@ -52,7 +69,7 @@ public final class DiscriminationFeeCalculator {
     // Apply VAT where applicable
     LocalDate startDate = feeCalculationRequest.getStartDate();
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal calculatedVatAmount = VatUtility.getVatAmount(feeTotal, startDate, vatApplicable);
+    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(feeTotal, startDate, vatApplicable);
 
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
@@ -71,7 +88,7 @@ public final class DiscriminationFeeCalculator {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(VatUtility.getVatRateForDate(startDate)))
+            .vatRateApplied(toDouble(VatUtil.getVatRateForDate(startDate)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
             // disbursement not capped, so requested and calculated will be same

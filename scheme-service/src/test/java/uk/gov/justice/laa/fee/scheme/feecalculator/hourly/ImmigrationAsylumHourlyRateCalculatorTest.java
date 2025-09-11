@@ -1,8 +1,8 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType.IMMIGRATION_ASYLUM;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.type.FeeType.HOURLY;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
+import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

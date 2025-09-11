@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.type;
+package uk.gov.justice.laa.fee.scheme.enums;
 
 /**
  * Enum for the types of category of law.
@@ -10,6 +10,7 @@ public enum CategoryType {
   COMMUNITY_CARE,
   DEBT,
   DISCRIMINATION,
+  EDUCATION,
   HOUSING,
   HOUSING_HLPAS,
   IMMIGRATION_ASYLUM,

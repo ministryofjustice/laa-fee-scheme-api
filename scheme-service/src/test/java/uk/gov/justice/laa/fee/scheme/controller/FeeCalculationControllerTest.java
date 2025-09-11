@@ -20,7 +20,7 @@ import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.FeeService;
+import uk.gov.justice.laa.fee.scheme.service.FeeCalculationService;
 
 @WebMvcTest(value = FeeCalculationController.class)
 @AutoConfigureMockMvc(addFilters = false) // disable security filter for testing
@@ -33,7 +33,7 @@ class FeeCalculationControllerTest {
   private ObjectMapper objectMapper;
 
   @MockitoBean
-  private FeeService feeService;
+  private FeeCalculationService feeCalculationService;
 
   private static FeeCalculationRequest getFeeCalculationRequestDto() {
     FeeCalculationRequest requestDto = new FeeCalculationRequest();
@@ -64,7 +64,7 @@ class FeeCalculationControllerTest {
             .build())
         .build();
 
-    when(feeService.getFeeCalculation(ArgumentMatchers.any(FeeCalculationRequest.class)))
+    when(feeCalculationService.calculateFee(ArgumentMatchers.any(FeeCalculationRequest.class)))
         .thenReturn(responseDto);
 
     mockMvc.perform(post("/api/v1/fee-calculation")

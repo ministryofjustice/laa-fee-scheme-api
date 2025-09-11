@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
+package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-class VatUtilityTest {
+class VatUtilTest {
 
   @ParameterizedTest
   @CsvSource({
@@ -18,7 +18,7 @@ class VatUtilityTest {
   })
   void should_getVatRateForDate(String date, String expectedVatRate) {
     LocalDate localDate = LocalDate.parse(date);
-    assertThat(VatUtility.getVatRateForDate(localDate)).isEqualTo(expectedVatRate);
+    assertThat(VatUtil.getVatRateForDate(localDate)).isEqualTo(expectedVatRate);
   }
 
   @Test
@@ -26,14 +26,14 @@ class VatUtilityTest {
     BigDecimal value = BigDecimal.valueOf(170.50);
     BigDecimal vatRate = BigDecimal.valueOf(20);
 
-    BigDecimal result = VatUtility.calculateVatAmount(value, vatRate);
+    BigDecimal result = VatUtil.calculateVatAmount(value, vatRate);
 
     assertThat(result).isEqualByComparingTo("34.10");
   }
 
   @Test
   void should_getVatAmount() {
-    BigDecimal result = VatUtility.getVatAmount(BigDecimal.valueOf(170.50), LocalDate.of(2011, 2, 1), true);
+    BigDecimal result = VatUtil.getVatAmount(BigDecimal.valueOf(170.50), LocalDate.of(2011, 2, 1), true);
     assertThat(result).isEqualByComparingTo("34.10");
   }
 }
