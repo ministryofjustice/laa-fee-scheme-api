@@ -1,11 +1,10 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.utility.boltons;
 
-
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.boltons.BoltOnType.ADJOURNED_HEARING;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.boltons.BoltOnType.CMRH_ORAL;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.boltons.BoltOnType.CMRH_TELEPHONE;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.boltons.BoltOnType.HOME_OFFICE_INTERVIEW;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toDouble;
 
 import java.math.BigDecimal;
 import java.util.Arrays;

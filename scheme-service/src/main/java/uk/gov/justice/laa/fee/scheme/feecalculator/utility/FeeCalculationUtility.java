@@ -1,8 +1,5 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.utility;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.defaultToZeroIfNull;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.defaultToZeroIfNull;
@@ -12,7 +9,7 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtility.toDouble;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.type.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.utility.boltons.BoltOnUtility;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;

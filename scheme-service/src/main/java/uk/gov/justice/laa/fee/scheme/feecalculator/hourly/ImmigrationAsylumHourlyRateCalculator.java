@@ -46,6 +46,9 @@ public final class ImmigrationAsylumHourlyRateCalculator {
       List<String> warnings = new ArrayList<>();
 
       BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
+
+      BigDecimal requestedNetProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
+
       BigDecimal profitCostLimit = feeEntity.getProfitCostLimit();
       if (netProfitCosts.compareTo(profitCostLimit) > 0
           && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorAuthorityNumber())) {
@@ -54,6 +57,9 @@ public final class ImmigrationAsylumHourlyRateCalculator {
       }
 
       BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+
+      BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+
       BigDecimal disbursementLimit = feeEntity.getDisbursementLimit();
       if (netDisbursementAmount.compareTo(disbursementLimit) > 0
           && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorAuthorityNumber())) {
@@ -81,8 +87,9 @@ public final class ImmigrationAsylumHourlyRateCalculator {
           .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
           .claimId(claimId)
           .warnings(warnings)
-          .feeCalculation(getFeeCalculation(feeCalculationRequest, finalTotal, calculatedVatAmount, netDisbursementAmount,
-                disbursementVatAmount, feeTotal, netProfitCosts, jrFormFilling))
+          .feeCalculation(getFeeCalculation(feeCalculationRequest, finalTotal, calculatedVatAmount,
+                netDisbursementAmount, disbursementVatAmount, requestedNetDisbursementAmount, feeTotal,
+                  netProfitCosts, requestedNetProfitCosts, jrFormFilling))
           .build();
     } else {
       //@TODO: to be removed once bus rules for all fee codes are implemented
@@ -92,17 +99,20 @@ public final class ImmigrationAsylumHourlyRateCalculator {
 
   private static FeeCalculation getFeeCalculation(FeeCalculationRequest feeCalculationRequest, BigDecimal finalTotal,
                                                     BigDecimal calculatedVatAmount, BigDecimal netDisbursementAmount,
-                                                      BigDecimal disbursementVatAmount, BigDecimal feeTotal,
-                                                        BigDecimal netProfitCosts, BigDecimal jrFormFilling) {
+                                                      BigDecimal disbursementVatAmount, BigDecimal requestedNetDisbursementAmount,
+                                                        BigDecimal feeTotal, BigDecimal netProfitCosts,
+                                                          BigDecimal requestedNetProfitCosts, BigDecimal jrFormFilling) {
     return FeeCalculation.builder()
         .totalAmount(toDouble(finalTotal))
         .vatIndicator(feeCalculationRequest.getVatIndicator())
         .vatRateApplied(toDouble(VatUtility.getVatRateForDate(feeCalculationRequest.getStartDate())))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(toDouble(netDisbursementAmount))
+        .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
         .disbursementVatAmount(toDouble(disbursementVatAmount))
         .hourlyTotalAmount(toDouble(feeTotal))
         .netProfitCostsAmount(toDouble(netProfitCosts))
+        .requestedNetProfitCostsAmount(toDouble(requestedNetProfitCosts))
         .jrFormFillingAmount(toDouble(jrFormFilling))
         .build();
   }
