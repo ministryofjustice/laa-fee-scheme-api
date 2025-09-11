@@ -58,29 +58,29 @@ jobs:
           image_repo: ${{ vars.ECR_REPOSITORY }}
           image_tag: ${{ github.sha }}
 
-#  deploy-dev:
-#    needs: ecr
-#    uses: ./.github/workflows/_deploy-to-env.yml
-#    with:
-#      environment: dev
-#    secrets: inherit
-#
-#  deploy-uat:
-#    needs: deploy-dev
-#    uses: ./.github/workflows/_deploy-to-env.yml
-#    with:
-#      environment: uat
-#    secrets: inherit
-#
-#  deploy-staging:
-#    needs: deploy-uat
-#    uses: ./.github/workflows/_deploy-to-env.yml
-#    with:
-#      environment: staging
-#    secrets: inherit
+  deploy-dev:
+    needs: ecr
+    uses: ./.github/workflows/_deploy-to-env.yml
+    with:
+      environment: dev
+    secrets: inherit
+
+  deploy-uat:
+    needs: deploy-dev
+    uses: ./.github/workflows/_deploy-to-env.yml
+    with:
+      environment: uat
+    secrets: inherit
+
+  deploy-staging:
+    needs: deploy-uat
+    uses: ./.github/workflows/_deploy-to-env.yml
+    with:
+      environment: staging
+    secrets: inherit
 
   deploy-prod:
-    needs: ecr # deploy-staging
+    needs: deploy-staging
     uses: ./.github/workflows/_deploy-to-env.yml
     with:
       environment: prod
