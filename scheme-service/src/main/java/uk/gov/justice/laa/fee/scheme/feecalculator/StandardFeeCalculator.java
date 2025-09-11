@@ -4,6 +4,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLAIMS_PUBLIC_AUT
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLINICAL_NEGLIGENCE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DEBT;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.EDUCATION;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING_HLPAS;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MENTAL_HEALTH;
@@ -34,8 +35,8 @@ public class StandardFeeCalculator implements FeeCalculator {
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
-    return Set.of(CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT, HOUSING, HOUSING_HLPAS,
-        MENTAL_HEALTH, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS
+    return Set.of(CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT,
+        EDUCATION, HOUSING, HOUSING_HLPAS, MENTAL_HEALTH, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS
     );
   }
 

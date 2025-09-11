@@ -69,26 +69,26 @@ class StandardFeeCalculatorTest {
 
   @Test
   void getSupportedCategories_ShouldReturnAllExpectedCategories() {
-    // Arrange
-    StandardFeeCalculator calculator = new StandardFeeCalculator(dataService); // repos not needed for this test
 
-    // Act
-    Set<CategoryType> categories = calculator.getSupportedCategories();
 
-    // Assert
+    Set<CategoryType> categories = standardFeeCalculator.getSupportedCategories();
+
+
     Assertions.assertNotNull(categories);
-    Assertions.assertEquals(10, categories.size()); // make sure the total count matches
+    Assertions.assertEquals(11, categories.size()); // make sure the total count matches
 
     Assertions.assertTrue(categories.contains(CategoryType.CLAIMS_PUBLIC_AUTHORITIES));
     Assertions.assertTrue(categories.contains(CategoryType.CLINICAL_NEGLIGENCE));
     Assertions.assertTrue(categories.contains(COMMUNITY_CARE));
     Assertions.assertTrue(categories.contains(CategoryType.DEBT));
+    Assertions.assertTrue(categories.contains(CategoryType.EDUCATION));
     Assertions.assertTrue(categories.contains(CategoryType.HOUSING));
     Assertions.assertTrue(categories.contains(CategoryType.HOUSING_HLPAS));
     Assertions.assertTrue(categories.contains(CategoryType.MENTAL_HEALTH));
     Assertions.assertTrue(categories.contains(CategoryType.MISCELLANEOUS));
     Assertions.assertTrue(categories.contains(CategoryType.PUBLIC_LAW));
     Assertions.assertTrue(categories.contains(CategoryType.WELFARE_BENEFITS));
+
   }
 
 }
