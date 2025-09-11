@@ -1,12 +1,16 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MENTAL_HEALTH;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -136,5 +140,22 @@ class FeeCalculationUtilTest {
         .usingRecursiveComparison()
         .isEqualTo(expectedResponse);
 
+  }
+
+  @Test
+  void testIsFixedFeeWhenFixed() {
+    Assertions.assertTrue(FeeCalculationUtil.isFixedFee("FIXED"));
+  }
+
+  @Test
+  void testIsFixedFeeWhenNotFixed() {
+    Assertions.assertFalse(FeeCalculationUtil.isFixedFee("HOURLY"));
+  }
+
+  @Test
+  void testIsFixedFeeWhenNull() {
+    assertThrows(NullPointerException.class, () -> {
+      FeeCalculationUtil.isFixedFee(null);
+    });
   }
 }

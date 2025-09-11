@@ -27,12 +27,6 @@ public class PoliceStationFixedFeeCalculator {
 
   private static final String INVC = "INVC";
 
-  private static final String INVB1 = "INVB1";
-
-  private static final String INVB2 = "INVB2";
-
-  private static final String WARNING_NET_PROFIT_COSTS = "warning net profit costs";
-
   private final PoliceStationFeesRepository policeStationFeesRepository;
 
   /**

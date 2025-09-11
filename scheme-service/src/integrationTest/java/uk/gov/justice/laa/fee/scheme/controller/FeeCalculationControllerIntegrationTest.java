@@ -35,8 +35,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "MDAS2B",
-                  "feeCode": "MDAS2B",                
-                  "areaOfLaw": "MEDIATION",
+                  "feeCode": "MDAS2B",
                   "claimId": "claim_123",
                   "startDate": "2019-09-30",
                   "netDisbursementAmount": 100.21,
@@ -64,7 +63,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "claimId": "claim_123",
-                  "areaOfLaw": "MEDIATION",
                   "startDate": "2019-09-30",
                   "netDisbursementAmount": 100.21,
                   "disbursementVatAmount": 20.12,
@@ -94,7 +92,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "DISC",
-                  "areaOfLaw": "DISCRIMINATION",
                   "claimId": "claim_123",
                   "startDate": "2019-09-30",
                   "netProfitCosts": 150.25,
@@ -141,7 +138,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "IMCF",
-                  "areaOfLaw": "IMMIGRATION_ASYLUM",
                   "claimId": "claim_123",
                   "startDate": "2024-09-30",
                   "netDisbursementAmount": 100.21,
@@ -199,7 +195,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "IMXL",
-                  "areaOfLaw": "IMMIGRATION_ASYLUM",
                   "claimId": "claim_123",
                   "startDate": "2025-02-11",
                   "netProfitCosts": 116.89,
@@ -243,7 +238,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "MDAS2B",
-                  "areaOfLaw": "MEDIATION",
                   "claimId": "claim_123",
                   "startDate": "2019-09-30",
                   "netDisbursementAmount": 100.21,
@@ -284,7 +278,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "MHL03",
-                  "areaOfLaw": "MENTAL_HEALTH",
                   "claimId": "claim_123",
                   "startDate": "2021-11-05",
                   "netDisbursementAmount": 100.21,
@@ -326,20 +319,19 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
 
   @ParameterizedTest
   @CsvSource({
-      "CAPA, CAPA_FS2013, CLAIMS_PUBLIC_AUTHORITIES, 434.85, 47.8, 239.0",
-      "CLIN, CLIN_FS2013, CLINICAL_NEGLIGENCE, 382.05, 39.0, 195.0",
-      "COM, COM_FS2013, COMMUNITY_CARE, 467.25, 53.2, 266.0",
-      "DEBT, DEBT_FS2013, DEBT, 364.05, 36.0, 180.0",
-      "EDUFIN, EDU_FS2013, EDUCATION, 474.45, 54.4, 272.0",
-      "ELA, ELA_FS2024, HOUSING_HLPAS, 336.45, 31.4, 157.0",
-      "HOUS, HOUS_FS2013, HOUSING, 336.45, 31.4, 157.0",
-      "MISCCON, MISCCON_FS2013, MISCELLANEOUS, 338.85, 31.8, 159.0",
-      "PUB, PUB_FS2013, PUBLIC_LAW, 458.85, 51.8, 259.0",
-      "WFB1, WB_FS2023, WELFARE_BENEFITS, 397.65, 41.6, 208.0"
+      "CAPA, CAPA_FS2013, 434.85, 47.8, 239.0",
+      "CLIN, CLIN_FS2013, 382.05, 39.0, 195.0",
+      "COM, COM_FS2013, 467.25, 53.2, 266.0",
+      "DEBT, DEBT_FS2013, 364.05, 36.0, 180.0",
+      "EDUFIN, EDU_FS2013, 474.45, 54.4, 272.0",
+      "ELA, ELA_FS2024, 336.45, 31.4, 157.0",
+      "HOUS, HOUS_FS2013, 336.45, 31.4, 157.0",
+      "MISCCON, MISCCON_FS2013, 338.85, 31.8, 159.0",
+      "PUB, PUB_FS2013, 458.85, 51.8, 259.0",
+      "WFB1, WB_FS2023, 397.65, 41.6, 208.0"
   })
   void shouldGetFeeCalculation_otherCivilCategories(String feeCode,
                                                     String schemeId,
-                                                    String areaOfLaw,
                                                     String expectedTotal,
                                                     String expectedVatAmount,
                                                     String fixedFeeAmount) throws Exception {
@@ -368,14 +360,13 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
               {
                 "feeCode": "%s",
-                "areaOfLaw": "%s",
                 "claimId": "claim_123",
                 "startDate": "2025-02-01",
                 "netDisbursementAmount": 123.38,
                 "disbursementVatAmount": 24.67,
                 "vatIndicator": true
               }
-              """.formatted(feeCode, areaOfLaw))
+              """.formatted(feeCode))
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -391,7 +382,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "INVC",
-                  "areaOfLaw": "POLICE_STATION",
                   "claimId": "claim_123",
                   "startDate": "2019-12-12",
                   "uniqueFileNumber": "12122019/2423",

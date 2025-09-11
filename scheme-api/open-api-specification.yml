@@ -115,9 +115,6 @@ components:
         claimId:
           type: string
           description: "Unique identifier for a Claim record."
-        areaOfLaw:
-          type: string
-          description: "Category of law look-up field"
         startDate:
           type: string
           format: date

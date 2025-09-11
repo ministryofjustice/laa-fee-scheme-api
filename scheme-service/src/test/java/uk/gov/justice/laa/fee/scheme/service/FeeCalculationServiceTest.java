@@ -95,7 +95,6 @@ class FeeCalculationServiceTest {
     CategoryType category = CategoryType.valueOf(IMMIGRATION_ASYLUM.name());
     FeeCalculationRequest requestDto = FeeCalculationRequest.builder()
         .feeCode("FEE123")
-        .areaOfLaw(IMMIGRATION_ASYLUM.name())
         .startDate(LocalDate.of(2025, 7, 29))
         .netDisbursementAmount(70.75)
         .disbursementVatAmount(20.15)

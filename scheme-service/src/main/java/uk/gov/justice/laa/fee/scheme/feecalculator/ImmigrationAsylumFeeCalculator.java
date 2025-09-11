@@ -15,13 +15,11 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 /**
- * Implementation class for police station fixed fee category.
+ * Implementation class for Immigration Asylum fee category.
  */
 @RequiredArgsConstructor
 @Component
 public class ImmigrationAsylumFeeCalculator implements FeeCalculator {
-
-  private static final String INVC = "INVC";
 
   private final FeeDataService feeDataService;
 
@@ -31,7 +29,7 @@ public class ImmigrationAsylumFeeCalculator implements FeeCalculator {
   }
 
   /**
-   * Determines the calculation based on police fee code.
+   * Determines the calculation based on immigration asylum fee code.
    */
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest) {

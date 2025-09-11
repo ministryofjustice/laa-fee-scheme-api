@@ -81,7 +81,6 @@ class MediationFeeCalculatorTest {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
-        .areaOfLaw(MEDIATION.name())
         .claimId("claim_123")
         .startDate(LocalDate.of(2025, 7, 29))
         .netDisbursementAmount(50.50)
@@ -133,7 +132,6 @@ class MediationFeeCalculatorTest {
   void getFee_whenMediationSessionIsNull_thenThrowsException() {
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode("MDAS2B")
-        .areaOfLaw(MEDIATION.name())
         .claimId("claim_123")
         .startDate(LocalDate.of(2025, 7, 29))
         .netDisbursementAmount(50.50)

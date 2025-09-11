@@ -17,7 +17,7 @@ import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 import uk.gov.justice.laa.fee.scheme.util.DateUtil;
 
 /**
- * Implementation class for police station fixed fee category.
+ * Implementation class for police station fee category (Fixed and Hourly both).
  */
 @RequiredArgsConstructor
 @Component
