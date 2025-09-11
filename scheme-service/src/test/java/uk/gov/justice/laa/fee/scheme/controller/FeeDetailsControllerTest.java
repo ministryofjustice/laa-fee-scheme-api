@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -18,6 +19,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponse;
 import uk.gov.justice.laa.fee.scheme.service.FeeDetailsService;
 
 @WebMvcTest(FeeDetailsController.class)
+@AutoConfigureMockMvc(addFilters = false) // disable security filter for testing
 class FeeDetailsControllerTest {
 
   @Autowired
@@ -47,7 +49,8 @@ class FeeDetailsControllerTest {
   void throwExceptionWhenCategoryOfLawNotFound() throws Exception {
     when(feeDetailsService.getFeeDetails(anyString())).thenThrow(new CategoryCodeNotFoundException("FEE123"));
 
-    mockMvc.perform(get("/api/v1/fee-details/FEE123"))
+    mockMvc.perform(get("/api/v1/fee-details/FEE123")
+            .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.status").value(404))
         .andExpect(jsonPath("$.message").value("Category of law code not found for fee: FEE123"));

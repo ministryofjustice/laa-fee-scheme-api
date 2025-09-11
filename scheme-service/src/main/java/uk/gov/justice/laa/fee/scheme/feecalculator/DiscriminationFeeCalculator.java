@@ -91,10 +91,14 @@ public class DiscriminationFeeCalculator implements FeeCalculator {
             .vatRateApplied(toDouble(VatUtility.getVatRateForDate(startDate)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
+            // disbursement not capped, so requested and calculated will be same
+            .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .hourlyTotalAmount(toDouble(feeTotal))
             .netCostOfCounselAmount(toDouble(netCostOfCounsel))
             .netProfitCostsAmount(toDouble(netProfitCosts))
+            // net profit cost not capped, so requested and calculated will be same
+            .requestedNetProfitCostsAmount(toDouble(netProfitCosts))
             .travelAndWaitingCostAmount(toDouble(travelAndWaitingCosts))
             .build())
         .build();

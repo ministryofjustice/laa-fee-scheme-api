@@ -5,6 +5,7 @@
 replicaCount: 1
 
 ingress:
+  enabled: true
   hosts:
     - laa-fee-scheme-api-dev.apps.live.cloud-platform.service.justice.gov.uk
   annotations:

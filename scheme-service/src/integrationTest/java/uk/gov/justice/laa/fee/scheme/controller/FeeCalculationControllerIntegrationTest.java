@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.controller;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.json.JsonCompareMode.LENIENT;
 import static org.springframework.test.json.JsonCompareMode.STRICT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -11,6 +13,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -25,14 +28,70 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   private MockMvc mockMvc;
 
   @Test
+  void shouldGetBadResponse_whenDuplicateField() throws Exception {
+    mockMvc.perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "MDAS2B",
+                  "feeCode": "MDAS2B",
+                  "claimId": "claim_123",
+                  "startDate": "2019-09-30",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true,
+                  "numberOfMediationSessions": 1
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().json("""
+          {
+            "status": 400,
+            "error": "Bad Request",
+            "message": "JSON parse error: Duplicate field 'feeCode'"
+          }
+          """, LENIENT));
+  }
+
+  @Test
+  void shouldGetBadResponse_whenMissingField() throws Exception {
+    mockMvc.perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "claimId": "claim_123",
+                  "startDate": "2019-09-30",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true,
+                  "numberOfMediationSessions": 1
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().json("""
+          {
+            "status": 400,
+            "error": "Bad Request"
+          }
+          """, LENIENT))
+        .andExpect(result ->
+            assertTrue(result.getResponse().getContentAsString().contains("default message [feeCode]]; default message [must not be null]]"))
+        );;
+  }
+
+  @Test
   void shouldGetFeeCalculation_discrimination() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
                   "feeCode": "DISC",
-                  "areaOfLaw": "DISCRIMINATION",
                   "claimId": "claim_123",
                   "startDate": "2019-09-30",
                   "netProfitCosts": 150.25,
@@ -58,10 +117,12 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 63.65,
               "disbursementAmount": 100.21,
+              "requestedNetDisbursementAmount": 100.21,
               "disbursementVatAmount": 20.12,
               "hourlyTotalAmount": 318.25,
               "netCostOfCounselAmount": 79.19,
               "netProfitCostsAmount": 150.25,
+              "requestedNetProfitCostsAmount": 150.25,
               "travelAndWaitingCostAmount": 88.81
             }
           }
@@ -72,11 +133,11 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   void shouldGetFeeCalculation_immigrationAndAsylumFixedFee() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
                   "feeCode": "IMCF",
-                  "areaOfLaw": "IMMIGRATION_ASYLUM",
                   "claimId": "claim_123",
                   "startDate": "2024-09-30",
                   "netDisbursementAmount": 100.21,
@@ -106,11 +167,20 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 402.20,
               "disbursementAmount": 100.21,
+              "requestedNetDisbursementAmount": 100.21,
               "disbursementVatAmount": 20.12,
               "fixedFeeAmount": 1092.00,
               "detentionAndWaitingCostsAmount": 111.00,
               "jrFormFillingAmount": 50,
-              "boltOnFeeAmount": 758.00
+              "boltOnFeeDetails": {
+                "boltOnTotalFeeAmount": 758.00,
+                "boltOnAdjournedHearingCount": 2,
+                "boltOnAdjournedHearingFee": 322.00,
+                "boltOnCmrhOralCount": 1,
+                "boltOnCmrhOralFee": 166.00,
+                "boltOnCmrhTelephoneCount": 3,
+                "boltOnCmrhTelephoneFee": 270.00
+              }
             }
           }
           """, STRICT));
@@ -120,11 +190,11 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate_legalHelp() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
                   "feeCode": "IMXL",
-                  "areaOfLaw": "IMMIGRATION_ASYLUM",
                   "claimId": "claim_123",
                   "startDate": "2025-02-11",
                   "netProfitCosts": 116.89,
@@ -148,9 +218,11 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 28.38,
               "disbursementAmount": 125.70,
+              "requestedNetDisbursementAmount": 125.70,
               "disbursementVatAmount": 25.14,
               "hourlyTotalAmount": 141.89,
               "netProfitCostsAmount": 116.89,
+              "requestedNetProfitCostsAmount": 116.89,
               "jrFormFillingAmount": 25.00
             }
           }
@@ -161,11 +233,11 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   void shouldGetFeeCalculation_mediation() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
                   "feeCode": "MDAS2B",
-                  "areaOfLaw": "MEDIATION",
                   "claimId": "claim_123",
                   "startDate": "2019-09-30",
                   "netDisbursementAmount": 100.21,
@@ -189,6 +261,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 33.60,
               "disbursementAmount": 100.21,
+              "requestedNetDisbursementAmount": 100.21,
               "disbursementVatAmount": 20.12,
               "fixedFeeAmount": 168.00
             }
@@ -200,11 +273,11 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   void shouldGetFeeCalculation_mentalHealth() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
                   "feeCode": "MHL03",
-                  "areaOfLaw": "MENTAL_HEALTH",
                   "claimId": "claim_123",
                   "startDate": "2021-11-05",
                   "netDisbursementAmount": 100.21,
@@ -230,9 +303,14 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 160.20,
               "disbursementAmount": 100.21,
+              "requestedNetDisbursementAmount": 100.21,
               "disbursementVatAmount": 20.12,
               "fixedFeeAmount": 450.00,
-              "boltOnFeeAmount": 351.00
+              "boltOnFeeDetails": {
+                "boltOnTotalFeeAmount": 351.00,
+                "boltOnAdjournedHearingCount": 3,
+                "boltOnAdjournedHearingFee": 351.00
+              }
             }
           }
           """, STRICT));
@@ -268,6 +346,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
           "vatRateApplied": 20.00,
           "calculatedVatAmount": %s,
           "disbursementAmount": 123.38,
+          "requestedNetDisbursementAmount": 123.38,
           "disbursementVatAmount": 24.67,
           "fixedFeeAmount": %s
         }
@@ -275,11 +354,11 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
       """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount);
 
     mockMvc.perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
               {
                 "feeCode": "%s",
-                "areaOfLaw": "COMMUNITY_CARE",
                 "claimId": "claim_123",
                 "startDate": "2025-02-01",
                 "netDisbursementAmount": 123.38,
@@ -297,11 +376,11 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   void shouldGetFeeCalculation_policeStation() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
                   "feeCode": "INVC",
-                  "areaOfLaw": "POLICE_STATION",
                   "claimId": "claim_123",
                   "startDate": "2019-12-12",
                   "uniqueFileNumber": "12122019/2423",
@@ -324,6 +403,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "vatRateApplied": 20.00,
               "calculatedVatAmount": 0,
               "disbursementAmount": 0,
+              "requestedNetDisbursementAmount": 0,
               "disbursementVatAmount": 0,
               "fixedFeeAmount": 131.40
             }

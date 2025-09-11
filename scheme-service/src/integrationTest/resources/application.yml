@@ -1,1 +1,25 @@
 #override main application.yml during tests.
+
+# use test token for tests
+laa.springboot.starter:
+  auth:
+    authentication-header: "Authorization"
+    authorized-clients: '[
+        {
+            "name": "data-claims-event-service",
+            "roles": [
+                "ALL"
+            ],
+            "token": "int-test-token"
+        }
+    ]'
+    authorized-roles: '[
+        {
+            "name": "ALL",
+            "URIs": [
+                "/**"
+            ]
+        }
+    ]'
+    unprotected-uris: [ "/actuator/**", "/swagger-ui.html",
+                        "/swagger-ui/**", "/v3/api-docs/**", "/favicon.ico", "/metrics/**" ]

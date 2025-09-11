@@ -94,9 +94,11 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     assertThat(result.getFeeCalculation().getVatRateApplied()).isEqualTo(20.0);
     assertThat(result.getFeeCalculation().getCalculatedVatAmount()).isEqualTo(expectedCalculatedVat);
     assertThat(result.getFeeCalculation().getDisbursementAmount()).isEqualTo(expectedNetDisbursement);
+    assertThat(result.getFeeCalculation().getRequestedNetDisbursementAmount()).isEqualTo(netDisbursement);
     assertThat(result.getFeeCalculation().getDisbursementVatAmount()).isEqualTo(disbursementVat);
     assertThat(result.getFeeCalculation().getHourlyTotalAmount()).isEqualTo(expectedHourlyTotal);
     assertThat(result.getFeeCalculation().getNetProfitCostsAmount()).isEqualTo(expectedNetProfitCosts);
+    assertThat(result.getFeeCalculation().getRequestedNetProfitCostsAmount()).isEqualTo(netProfitCosts);
     assertThat(result.getFeeCalculation().getJrFormFillingAmount()).isEqualTo(67.89);
     assertThat(result.getWarnings()).isEqualTo(expectedWarnings);
   }

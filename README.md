@@ -53,6 +53,11 @@ The following actuator endpoints have been configured:
 
 ## Additional Information
 
+### Authentication
+The [LAA SpringBoot Authentication Starter](https://github.com/ministryofjustice/laa-spring-boot-common/blob/main/laa-spring-boot-starters/laa-spring-boot-starter-auth/README.md)
+has been used to secure the application using token-based authentication.
+To access the API endpoints, you need to include a valid token in the `Authorization` header of your HTTP requests.
+
 ### Libraries Used
 - [Spring Boot Actuator](https://docs.spring.io/spring-boot/reference/actuator/index.html) - used to provide various endpoints to help monitor the application, such as view application health and information.
 - [Spring Boot Web](https://docs.spring.io/spring-boot/reference/web/index.html) - used to provide features for building the REST API implementation.

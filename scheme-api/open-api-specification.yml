@@ -232,6 +232,10 @@ components:
           type: number
           format: double
           description: "The disbursement amount calculated to be added."
+        requestedNetDisbursementAmount:
+          type: number
+          format: double
+          description: "The disbursement amount that was requested."
         disbursementVatAmount:
           type: number
           format: double
@@ -245,6 +249,10 @@ components:
           format: double
           description: "Fixed Fee amount calculated."
         netProfitCostsAmount:
+          type: number
+          format: double
+          description: "The net profit cost amount calculated to be added."
+        requestedNetProfitCostsAmount:
           type: number
           format: double
           description: "The profit cost amount requested."
@@ -272,15 +280,40 @@ components:
           type: number
           format: double
           description: "The Travel and waiting costs requested."
-        boltOnFeeAmount:
-          type: number
-          format: double
-          description: "The total value of bolt ons that was calculated."
+        boltOnFeeDetails:
+          $ref: "#/components/schemas/BoltOnFeeDetails"
 
     Warning:
       type: array
       items:
         type: string
+
+    BoltOnFeeDetails:
+      type: object
+      properties:
+        boltOnTotalFeeAmount:
+          type: number
+          format: double
+        boltOnAdjournedHearingCount:
+          type: integer
+        boltOnAdjournedHearingFee:
+          type: number
+          format: double
+        boltOnCmrhTelephoneCount:
+          type: integer
+        boltOnCmrhTelephoneFee:
+          type: number
+          format: double
+        boltOnCmrhOralCount:
+          type: integer
+        boltOnCmrhOralFee:
+          type: number
+          format: double
+        boltOnHomeOfficeInterviewCount:
+          type: integer
+        boltOnHomeOfficeInterviewFee:
+          type: number
+          format: double
 
     BoltOnType:
       type: object

@@ -39,6 +39,7 @@ class FeeCalculationUtilityTest {
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("FEE1")
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
+        .categoryType(MENTAL_HEALTH)
         .fixedFee(new BigDecimal("59.62"))
         .adjornHearingBoltOn(boltOnFee)
         .build();
@@ -66,6 +67,7 @@ class FeeCalculationUtilityTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
+        .categoryType(COMMUNITY_CARE)
         .build();
 
     FeeCalculationResponse response = FeeCalculationUtility.calculate(fixedFee, feeCalculationRequest, feeEntity);
@@ -108,10 +110,15 @@ class FeeCalculationUtilityTest {
         .vatIndicator(true)
         .vatRateApplied(20.0)
         .disbursementAmount(29.45)
+        .requestedNetDisbursementAmount(29.45)
         .disbursementVatAmount(5.89)
         .fixedFeeAmount(263.00)
         .calculatedVatAmount(72.60)
-        .boltOnFeeAmount(100.00)
+        .boltOnFeeDetails(BoltOnFeeDetails.builder()
+            .boltOnTotalFeeAmount(100.00)
+            .boltOnAdjournedHearingCount(1)
+            .boltOnAdjournedHearingFee(100.00)
+            .build())
         .build();
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
