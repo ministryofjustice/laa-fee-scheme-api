@@ -122,9 +122,11 @@ class PoliceStationHourlyRateCalculatorTest {
         .vatIndicator(vatIndicator)
         .vatRateApplied(20.0)
         .disbursementAmount(expectedDisbursementAmount)
+        .requestedNetDisbursementAmount(expectedDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)
         .calculatedVatAmount(expectedCalculatedVat)
         .netProfitCostsAmount(netProfitCostsAmount)
+        .requestedNetProfitCostsAmount(netProfitCostsAmount)
         .hourlyTotalAmount(hourlyTotalAmount)
         .travelAndWaitingCostAmount(travelAndWaitingCostAmount)
         .build();
@@ -195,9 +197,11 @@ class PoliceStationHourlyRateCalculatorTest {
         .vatIndicator(vatIndicator)
         .vatRateApplied(20.0)
         .disbursementAmount(expectedDisbursementAmount)
+        .requestedNetDisbursementAmount(expectedDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)
         .calculatedVatAmount(expectedCalculatedVat)
         .netProfitCostsAmount(netProfitCostsAmount)
+        .requestedNetProfitCostsAmount(netProfitCostsAmount)
         .hourlyTotalAmount(hourlyTotalAmount)
         .travelAndWaitingCostAmount(travelAndWaitingCostAmount)
         .build();

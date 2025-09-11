@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator;
+package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -106,6 +106,7 @@ class DiscriminationHourlyRateCalculatorTest {
     assertThat(calculation.getVatIndicator()).isEqualTo(vatIndicator);
     assertThat(calculation.getVatRateApplied()).isEqualTo(20);
     assertThat(calculation.getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
+    assertThat(calculation.getRequestedNetProfitCostsAmount()).isEqualTo(netProfitCosts);
     assertThat(calculation.getNetCostOfCounselAmount()).isEqualTo(costOfCounsel);
     assertThat(calculation.getTravelAndWaitingCostAmount()).isEqualTo(travelAndWaitingCosts);
   }
