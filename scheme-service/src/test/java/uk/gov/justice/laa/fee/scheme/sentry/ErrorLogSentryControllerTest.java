@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.controller;
+package uk.gov.justice.laa.fee.scheme.sentry;
 
 
 import static org.junit.Assert.assertThrows;
@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.justice.laa.fee.scheme.sentry.ErrorLogSentryController;
-import uk.gov.justice.laa.fee.scheme.sentry.TestSentryException;
 
 @WebMvcTest(ErrorLogSentryController.class)
 class ErrorLogSentryControllerTest {
