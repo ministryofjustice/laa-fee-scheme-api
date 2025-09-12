@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.justice.laa.fee.scheme.sentry.ErrorLogSentryController;
+import uk.gov.justice.laa.fee.scheme.sentry.TestSentryException;
 
 @WebMvcTest(ErrorLogSentryController.class)
 class ErrorLogSentryControllerTest {
@@ -18,7 +20,7 @@ class ErrorLogSentryControllerTest {
   void captureErrorLogSentry_ShouldThrowRuntimeException() {
     ErrorLogSentryController controller = new ErrorLogSentryController();
 
-    RuntimeException ex = assertThrows(RuntimeException.class,
+    RuntimeException ex = assertThrows(TestSentryException.class,
         controller::captureErrorLogSentry);
 
     // Optionally verify exception message
