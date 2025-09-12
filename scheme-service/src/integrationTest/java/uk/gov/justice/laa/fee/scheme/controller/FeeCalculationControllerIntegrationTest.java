@@ -47,12 +47,12 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(content().json("""
-          {
-            "status": 400,
-            "error": "Bad Request",
-            "message": "JSON parse error: Duplicate field 'feeCode'"
-          }
-          """, LENIENT));
+            {
+              "status": 400,
+              "error": "Bad Request",
+              "message": "JSON parse error: Duplicate field 'feeCode'"
+            }
+            """, LENIENT));
   }
 
   @Test
@@ -73,14 +73,15 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(content().json("""
-          {
-            "status": 400,
-            "error": "Bad Request"
-          }
-          """, LENIENT))
+            {
+              "status": 400,
+              "error": "Bad Request"
+            }
+            """, LENIENT))
         .andExpect(result ->
             assertTrue(result.getResponse().getContentAsString().contains("default message [feeCode]]; default message [must not be null]]"))
-        );;
+        );
+    ;
   }
 
   @Test
@@ -105,25 +106,26 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json("""
-          {
-            "feeCode": "DISC",
-            "schemeId": "DISC_FS2013",
-            "claimId": "claim_123",
-            "escapeCaseFlag": false,
-            "feeCalculation": {
-              "totalAmount": 502.23,
-              "vatIndicator": true,
-              "vatRateApplied": 20.00,
-              "calculatedVatAmount": 63.65,
-              "disbursementAmount": 100.21,
-              "requestedNetDisbursementAmount": 100.21,
-              "disbursementVatAmount": 20.12,
-              "hourlyTotalAmount": 318.25,
-              "netCostOfCounselAmount": 79.19,
-              "netProfitCostsAmount": 239.06,
-              "requestedNetProfitCostsAmount": 239.06           }
-          }
-          """, STRICT));
+            {
+              "feeCode": "DISC",
+              "schemeId": "DISC_FS2013",
+              "claimId": "claim_123",
+              "escapeCaseFlag": false,
+              "feeCalculation": {
+                "totalAmount": 502.23,
+                "vatIndicator": true,
+                "vatRateApplied": 20.00,
+                "calculatedVatAmount": 63.65,
+                "disbursementAmount": 100.21,
+                "requestedNetDisbursementAmount": 100.21,
+                "disbursementVatAmount": 20.12,
+                "hourlyTotalAmount": 318.25,
+                "netCostOfCounselAmount": 79.19,
+                "netProfitCostsAmount": 239.06,
+                "requestedNetProfitCostsAmount": 239.06
+                }
+              }
+            """, STRICT));
   }
 
   @Test
@@ -153,34 +155,34 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json("""
-          {
-            "feeCode": "IMCF",
-            "schemeId": "I&A_FS2023",
-            "claimId": "claim_123",
-            "escapeCaseFlag": false,
-            "feeCalculation": {
-              "totalAmount": 2533.53,
-              "vatIndicator": true,
-              "vatRateApplied": 20.00,
-              "calculatedVatAmount": 402.20,
-              "disbursementAmount": 100.21,
-              "requestedNetDisbursementAmount": 100.21,
-              "disbursementVatAmount": 20.12,
-              "fixedFeeAmount": 1092.00,
-              "detentionAndWaitingCostsAmount": 111.00,
-              "jrFormFillingAmount": 50,
-              "boltOnFeeDetails": {
-                "boltOnTotalFeeAmount": 758.00,
-                "boltOnAdjournedHearingCount": 2,
-                "boltOnAdjournedHearingFee": 322.00,
-                "boltOnCmrhOralCount": 1,
-                "boltOnCmrhOralFee": 166.00,
-                "boltOnCmrhTelephoneCount": 3,
-                "boltOnCmrhTelephoneFee": 270.00
+            {
+              "feeCode": "IMCF",
+              "schemeId": "I&A_FS2023",
+              "claimId": "claim_123",
+              "escapeCaseFlag": false,
+              "feeCalculation": {
+                "totalAmount": 2533.53,
+                "vatIndicator": true,
+                "vatRateApplied": 20.00,
+                "calculatedVatAmount": 402.20,
+                "disbursementAmount": 100.21,
+                "requestedNetDisbursementAmount": 100.21,
+                "disbursementVatAmount": 20.12,
+                "fixedFeeAmount": 1092.00,
+                "detentionAndWaitingCostsAmount": 111.00,
+                "jrFormFillingAmount": 50,
+                "boltOnFeeDetails": {
+                  "boltOnTotalFeeAmount": 758.00,
+                  "boltOnAdjournedHearingCount": 2,
+                  "boltOnAdjournedHearingFee": 322.00,
+                  "boltOnCmrhOralCount": 1,
+                  "boltOnCmrhOralFee": 166.00,
+                  "boltOnCmrhTelephoneCount": 3,
+                  "boltOnCmrhTelephoneFee": 270.00
+                }
               }
             }
-          }
-          """, STRICT));
+            """, STRICT));
   }
 
   @Test
@@ -205,25 +207,25 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json("""
-          {
-            "feeCode": "IMXL",
-            "schemeId": "I&A_FS2013",
-            "claimId": "claim_123",
-            "feeCalculation": {
-              "totalAmount": 321.11,
-              "vatIndicator": true,
-              "vatRateApplied": 20.00,
-              "calculatedVatAmount": 28.38,
-              "disbursementAmount": 125.70,
-              "requestedNetDisbursementAmount": 125.70,
-              "disbursementVatAmount": 25.14,
-              "hourlyTotalAmount": 141.89,
-              "netProfitCostsAmount": 116.89,
-              "requestedNetProfitCostsAmount": 116.89,
-              "jrFormFillingAmount": 25.00
+            {
+              "feeCode": "IMXL",
+              "schemeId": "I&A_FS2013",
+              "claimId": "claim_123",
+              "feeCalculation": {
+                "totalAmount": 321.11,
+                "vatIndicator": true,
+                "vatRateApplied": 20.00,
+                "calculatedVatAmount": 28.38,
+                "disbursementAmount": 125.70,
+                "requestedNetDisbursementAmount": 125.70,
+                "disbursementVatAmount": 25.14,
+                "hourlyTotalAmount": 141.89,
+                "netProfitCostsAmount": 116.89,
+                "requestedNetProfitCostsAmount": 116.89,
+                "jrFormFillingAmount": 25.00
+              }
             }
-          }
-          """, STRICT));
+            """, STRICT));
   }
 
   @Test
@@ -247,23 +249,23 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json("""
-          {
-            "feeCode": "MDAS2B",
-            "schemeId": "MED_FS2013",
-            "claimId": "claim_123",
-            "escapeCaseFlag": false,
-            "feeCalculation": {
-              "totalAmount": 321.93,
-              "vatIndicator": true,
-              "vatRateApplied": 20.00,
-              "calculatedVatAmount": 33.60,
-              "disbursementAmount": 100.21,
-              "requestedNetDisbursementAmount": 100.21,
-              "disbursementVatAmount": 20.12,
-              "fixedFeeAmount": 168.00
+            {
+              "feeCode": "MDAS2B",
+              "schemeId": "MED_FS2013",
+              "claimId": "claim_123",
+              "escapeCaseFlag": false,
+              "feeCalculation": {
+                "totalAmount": 321.93,
+                "vatIndicator": true,
+                "vatRateApplied": 20.00,
+                "calculatedVatAmount": 33.60,
+                "disbursementAmount": 100.21,
+                "requestedNetDisbursementAmount": 100.21,
+                "disbursementVatAmount": 20.12,
+                "fixedFeeAmount": 168.00
+              }
             }
-          }
-          """, STRICT));
+            """, STRICT));
   }
 
   @Test
@@ -289,28 +291,28 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json("""
-          {
-            "feeCode": "MHL03",
-            "schemeId": "MHL_FS2013",
-            "claimId": "claim_123",
-            "escapeCaseFlag": false,
-            "feeCalculation": {
-              "totalAmount": 1081.53,
-              "vatIndicator": true,
-              "vatRateApplied": 20.00,
-              "calculatedVatAmount": 160.20,
-              "disbursementAmount": 100.21,
-              "requestedNetDisbursementAmount": 100.21,
-              "disbursementVatAmount": 20.12,
-              "fixedFeeAmount": 450.00,
-              "boltOnFeeDetails": {
-                "boltOnTotalFeeAmount": 351.00,
-                "boltOnAdjournedHearingCount": 3,
-                "boltOnAdjournedHearingFee": 351.00
+            {
+              "feeCode": "MHL03",
+              "schemeId": "MHL_FS2013",
+              "claimId": "claim_123",
+              "escapeCaseFlag": false,
+              "feeCalculation": {
+                "totalAmount": 1081.53,
+                "vatIndicator": true,
+                "vatRateApplied": 20.00,
+                "calculatedVatAmount": 160.20,
+                "disbursementAmount": 100.21,
+                "requestedNetDisbursementAmount": 100.21,
+                "disbursementVatAmount": 20.12,
+                "fixedFeeAmount": 450.00,
+                "boltOnFeeDetails": {
+                  "boltOnTotalFeeAmount": 351.00,
+                  "boltOnAdjournedHearingCount": 3,
+                  "boltOnAdjournedHearingFee": 351.00
+                }
               }
             }
-          }
-          """, STRICT));
+            """, STRICT));
 
   }
 
@@ -333,37 +335,37 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                                                     String expectedVatAmount,
                                                     String fixedFeeAmount) throws Exception {
     String expectedJson = """
-      {
-        "feeCode": "%s",
-        "schemeId": "%s",
-        "claimId": "claim_123",
-        "escapeCaseFlag": false,
-        "feeCalculation": {
-          "totalAmount": %s,
-          "vatIndicator": true,
-          "vatRateApplied": 20.00,
-          "calculatedVatAmount": %s,
-          "disbursementAmount": 123.38,
-          "requestedNetDisbursementAmount": 123.38,
-          "disbursementVatAmount": 24.67,
-          "fixedFeeAmount": %s
+        {
+          "feeCode": "%s",
+          "schemeId": "%s",
+          "claimId": "claim_123",
+          "escapeCaseFlag": false,
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": %s,
+            "disbursementAmount": 123.38,
+            "requestedNetDisbursementAmount": 123.38,
+            "disbursementVatAmount": 24.67,
+            "fixedFeeAmount": %s
+          }
         }
-      }
-      """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount);
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount);
 
     mockMvc.perform(post("/api/v1/fee-calculation")
             .header(HttpHeaders.AUTHORIZATION, "int-test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
-              {
-                "feeCode": "%s",
-                "claimId": "claim_123",
-                "startDate": "2025-02-01",
-                "netDisbursementAmount": 123.38,
-                "disbursementVatAmount": 24.67,
-                "vatIndicator": true
-              }
-              """.formatted(feeCode))
+                {
+                  "feeCode": "%s",
+                  "claimId": "claim_123",
+                  "startDate": "2025-02-01",
+                  "netDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "vatIndicator": true
+                }
+                """.formatted(feeCode))
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -391,21 +393,21 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json("""
-          {
-            "feeCode": "INVC",
-            "schemeId": "POL_FS2016",
-            "escapeCaseFlag": false,
-            "feeCalculation": {
-              "totalAmount": 131.40,
-              "vatIndicator": false,
-              "vatRateApplied": 20.00,
-              "calculatedVatAmount": 0,
-              "disbursementAmount": 0,
-              "disbursementVatAmount": 0,
-              "fixedFeeAmount": 131.40
+            {
+              "feeCode": "INVC",
+              "schemeId": "POL_FS2016",
+              "escapeCaseFlag": false,
+              "feeCalculation": {
+                "totalAmount": 131.40,
+                "vatIndicator": false,
+                "vatRateApplied": 20.00,
+                "calculatedVatAmount": 0,
+                "disbursementAmount": 0,
+                "disbursementVatAmount": 0,
+                "fixedFeeAmount": 131.40
+              }
             }
-          }
-          """, STRICT));
+            """, STRICT));
   }
 
 }
