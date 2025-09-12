@@ -1,0 +1,13 @@
+name: Synk weekly security scan
+on:
+  schedule:
+#    - cron: '0 3 * * MON'
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  weekly-snyk-security-scan:
+    uses: ./.github/workflows/snyk-vulnerability-scans.yml
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
