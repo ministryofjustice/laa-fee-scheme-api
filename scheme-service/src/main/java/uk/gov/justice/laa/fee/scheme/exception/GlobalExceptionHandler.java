@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
+import uk.gov.justice.laa.fee.scheme.sentry.TestSentryException;
 
 /**
  * Global exception handler for our controllers.
@@ -63,6 +64,15 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handlePoliceStationFeeNotfound(PoliceStationFeeNotFoundException ex) {
     return handleException(ex, HttpStatus.NOT_FOUND);
   }
+
+  /**
+   * Global exception handler for TestSentryException exception. (To test Sentry integration only, will be removed later)
+   */
+  @ExceptionHandler(TestSentryException.class)
+  public ResponseEntity<ErrorResponse> testSentry(TestSentryException ex) {
+    return handleException(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
 
   private ResponseEntity<ErrorResponse> handleException(Throwable ex, HttpStatus status) {
     ErrorResponse errorResponse = new ErrorResponse()
