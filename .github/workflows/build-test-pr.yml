@@ -1,9 +1,6 @@
 name: PR build and test
 on:
   workflow_dispatch:
-  push: # temp
-    branches:
-      - '*'
   pull_request:
     types: [opened, reopened, synchronize]
 

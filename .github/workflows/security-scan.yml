@@ -1,9 +1,7 @@
 name: Synk weekly security scan
 on:
   schedule:
-#    - cron: '0 3 * * MON'
-    - cron: '*/10 * * * *'
-  workflow_dispatch:
+   - cron: '0 8 * * MON'
 
 jobs:
   weekly-snyk-security-scan:
