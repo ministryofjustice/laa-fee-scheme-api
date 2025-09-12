@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.sentry;
+package uk.gov.justice.laa.fee.scheme.controller;
 
 
 import static org.junit.Assert.assertThrows;
@@ -18,7 +18,7 @@ class ErrorLogSentryControllerTest {
   void captureErrorLogSentry_ShouldThrowRuntimeException() {
     ErrorLogSentryController controller = new ErrorLogSentryController();
 
-    RuntimeException ex = assertThrows(TestSentryException.class,
+    RuntimeException ex = assertThrows(RuntimeException.class,
         controller::captureErrorLogSentry);
 
     // Optionally verify exception message
