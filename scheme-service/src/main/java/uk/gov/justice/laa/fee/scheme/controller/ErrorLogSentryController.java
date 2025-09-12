@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.sentry;
+package uk.gov.justice.laa.fee.scheme.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import uk.gov.justice.laa.fee.scheme.api.ErrorLogSentryApi;
 public class ErrorLogSentryController implements ErrorLogSentryApi {
 
   public ResponseEntity<Void> captureErrorLogSentry() {
-    throw new TestSentryException("Testing Sentry integration in Fee Scheme Application");
+    throw new RuntimeException("Testing Sentry integration in Fee Scheme Application");
   }
 
 }
