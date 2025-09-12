@@ -50,11 +50,10 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
 
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal netCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());
-    BigDecimal travelAndWaitingCosts = toBigDecimal(feeCalculationRequest.getTravelAndWaitingCosts());
     String claimId = feeCalculationRequest.getClaimId();
     List<String> warningList = new ArrayList<>();
 
-    BigDecimal feeTotal = netProfitCosts.add(netCostOfCounsel).add(travelAndWaitingCosts);
+    BigDecimal feeTotal = netProfitCosts.add(netCostOfCounsel);
 
     BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
 
@@ -99,7 +98,6 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
             .netProfitCostsAmount(toDouble(netProfitCosts))
             // net profit cost not capped, so requested and calculated will be same
             .requestedNetProfitCostsAmount(toDouble(netProfitCosts))
-            .travelAndWaitingCostAmount(toDouble(travelAndWaitingCosts))
             .build())
         .build();
   }
