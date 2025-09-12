@@ -22,6 +22,5 @@ jobs:
   snyk-vulnerability-scan:
     uses: ./.github/workflows/snyk-vulnerability-scans.yml
     secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
