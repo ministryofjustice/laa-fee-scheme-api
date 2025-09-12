@@ -94,9 +94,8 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "feeCode": "DISC",
                   "claimId": "claim_123",
                   "startDate": "2019-09-30",
-                  "netProfitCosts": 150.25,
+                  "netProfitCosts": 239.06,
                   "netCostOfCounsel": 79.19,
-                  "travelAndWaitingCosts": 88.81,
                   "netDisbursementAmount": 100.21,
                   "disbursementVatAmount": 20.12,
                   "vatIndicator": true
@@ -121,10 +120,8 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "disbursementVatAmount": 20.12,
               "hourlyTotalAmount": 318.25,
               "netCostOfCounselAmount": 79.19,
-              "netProfitCostsAmount": 150.25,
-              "requestedNetProfitCostsAmount": 150.25,
-              "travelAndWaitingCostAmount": 88.81
-            }
+              "netProfitCostsAmount": 239.06,
+              "requestedNetProfitCostsAmount": 239.06           }
           }
           """, STRICT));
   }
