@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,7 +48,7 @@ class DiscriminationHourlyRateCalculatorTest {
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel);
 
-    assertThat(result.getWarnings()).isEmpty();
+    assertThat(result.getValidationMessages()).isEmpty();
   }
 
   @ParameterizedTest
@@ -65,8 +67,13 @@ class DiscriminationHourlyRateCalculatorTest {
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel);
 
-    assertThat(result.getWarnings()).isNotNull();
-    assertThat(result.getWarnings().getFirst()).isEqualTo("123");
+    ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
+        .message("123")
+        .type(WARNING)
+        .build();
+
+    assertThat(result.getValidationMessages()).isNotNull();
+    assertThat(result.getValidationMessages().getFirst()).isEqualTo(validationMessage);
   }
 
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netProfitCosts,

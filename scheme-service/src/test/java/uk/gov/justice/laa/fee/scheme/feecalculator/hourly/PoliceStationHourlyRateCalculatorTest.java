@@ -2,9 +2,11 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +21,7 @@ import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
 class PoliceStationHourlyRateCalculatorTest {
@@ -131,10 +134,15 @@ class PoliceStationHourlyRateCalculatorTest {
         .travelAndWaitingCostAmount(travelAndWaitingCostAmount)
         .build();
 
+    ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
+        .message("warning net profit costs")
+        .type(WARNING)
+        .build();
+
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode(feeCode)
         .schemeId(feeSchemeCode)
-        .warnings(List.of("warning net profit costs"))
+        .validationMessages(List.of(validationMessage))
         .feeCalculation(expectedCalculation)
         .build();
 
@@ -209,7 +217,7 @@ class PoliceStationHourlyRateCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode(feeCode)
         .schemeId(feeSchemeCode)
-        .warnings(List.of())
+        .validationMessages(new ArrayList<>())
         .feeCalculation(expectedCalculation)
         .build();
 

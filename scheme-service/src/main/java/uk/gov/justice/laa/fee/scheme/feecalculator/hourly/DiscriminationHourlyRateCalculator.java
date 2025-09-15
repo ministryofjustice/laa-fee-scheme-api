@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
@@ -18,6 +19,7 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 /**
@@ -51,7 +53,7 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal netCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());
     String claimId = feeCalculationRequest.getClaimId();
-    List<String> warningList = new ArrayList<>();
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
     BigDecimal feeTotal = netProfitCosts.add(netCostOfCounsel);
 
@@ -60,7 +62,10 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
     // @TODO: escape case logic TBC
     boolean escaped = false;
     if (feeTotal.compareTo(escapeThresholdLimit) > 0) {
-      warningList.add(WARNING_CODE_DESCRIPTION);
+      validationMessages.add(ValidationMessagesInner.builder()
+          .message(WARNING_CODE_DESCRIPTION)
+          .type(WARNING)
+          .build());
       feeTotal = escapeThresholdLimit;
       escaped = true;
     }
@@ -82,7 +87,7 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
         .claimId(claimId)
-        .warnings(warningList)
+        .validationMessages(validationMessages)
         .escapeCaseFlag(escaped)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))

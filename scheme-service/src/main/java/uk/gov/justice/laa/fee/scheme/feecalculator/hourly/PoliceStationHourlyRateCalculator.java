@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
@@ -14,6 +15,7 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 /**
  * Calculate the police station fee for a given fee entity and fee data.
@@ -32,7 +34,7 @@ public class PoliceStationHourlyRateCalculator {
    * @return FeeCalculationResponse with calculated fee
    */
   public FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
-    List<String> warnings = new ArrayList<>();
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
     BigDecimal profitCostLimit = feeEntity.getProfitCostLimit();
 
@@ -45,7 +47,10 @@ public class PoliceStationHourlyRateCalculator {
     BigDecimal feeTotal = netProfitCosts.add(netDisbursementAmount).add(travelAndWaitingExpenses);
 
     if (feeTotal.compareTo(profitCostLimit) > 0) {
-      warnings.add(WARNING_NET_PROFIT_COSTS);
+      validationMessages.add(ValidationMessagesInner.builder()
+          .message(WARNING_NET_PROFIT_COSTS)
+          .type(WARNING)
+          .build());
     }
     // Apply VAT where applicable
     LocalDate startDate = feeCalculationRequest.getStartDate();
@@ -64,7 +69,7 @@ public class PoliceStationHourlyRateCalculator {
     return new FeeCalculationResponse().toBuilder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
-        .warnings(warnings)
+        .validationMessages(validationMessages)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(feeCalculationRequest.getVatIndicator())

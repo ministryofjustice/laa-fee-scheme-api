@@ -118,7 +118,7 @@ class MediationFeeCalculatorTest {
         .feeCode(feeCode)
         .schemeId("MED_FS2013")
         .claimId("claim_123")
-        .warnings(new ArrayList<>())
+        .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();

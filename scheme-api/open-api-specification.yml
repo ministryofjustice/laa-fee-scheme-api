@@ -199,8 +199,8 @@ components:
         claimId:
           type: string
           description: "Unique identifier for a Claim record."
-        warnings:
-          $ref: "#/components/schemas/Warning"
+        validationMessages:
+          $ref: "#/components/schemas/ValidationMessages"
         escapeCaseFlag:
           type: boolean
           description: "For hourly fee code, If escape threshold has been passed, will be true, false otherwise."
@@ -280,10 +280,16 @@ components:
         boltOnFeeDetails:
           $ref: "#/components/schemas/BoltOnFeeDetails"
 
-    Warning:
+    ValidationMessages:
       type: array
       items:
-        type: string
+        type: object
+        properties:
+          type:
+            type: string
+            enum: [ERROR, WARNING]
+          message:
+            type: string
 
     BoltOnFeeDetails:
       type: object

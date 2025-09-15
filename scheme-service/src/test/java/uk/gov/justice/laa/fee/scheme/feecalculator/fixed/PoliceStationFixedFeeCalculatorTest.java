@@ -90,7 +90,7 @@ class PoliceStationFixedFeeCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode("INVC")
         .schemeId("POL_FS2022")
-        .warnings(new ArrayList<>())
+        .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();
@@ -156,7 +156,7 @@ class PoliceStationFixedFeeCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode("INVC")
         .schemeId("POL_FS2022")
-        .warnings(new ArrayList<>())
+        .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();
@@ -239,7 +239,7 @@ class PoliceStationFixedFeeCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode(feeCode)
         .schemeId(feeSchemeCode)
-        .warnings(new ArrayList<>())
+        .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();
@@ -306,7 +306,7 @@ class PoliceStationFixedFeeCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode(feeCode)
         .schemeId(feeSchemeCode)
-        .warnings(new ArrayList<>())
+        .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();

@@ -3,6 +3,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 class ImmigrationAsylumHourlyRateCalculatorTest {
 
@@ -98,6 +100,13 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
     FeeCalculationResponse result = ImmigrationAsylumHourlyRateCalculator.getFee(feeEntity, feeCalculationRequest);
 
+    List<ValidationMessagesInner> validationMessages = expectedWarnings.stream()
+        .map(i -> ValidationMessagesInner.builder()
+            .message(i)
+            .type(WARNING)
+            .build())
+        .toList();
+
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo(feeCode);
     assertThat(result.getSchemeId()).isEqualTo("I&A_FS2023");
@@ -113,6 +122,8 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     assertThat(result.getFeeCalculation().getNetProfitCostsAmount()).isEqualTo(expectedNetProfitCosts);
     assertThat(result.getFeeCalculation().getRequestedNetProfitCostsAmount()).isEqualTo(netProfitCosts);
     assertThat(result.getFeeCalculation().getJrFormFillingAmount()).isEqualTo(67.89);
-    assertThat(result.getWarnings()).isEqualTo(expectedWarnings);
+    assertThat(result.getValidationMessages())
+        .usingRecursiveComparison()
+        .isEqualTo(validationMessages);
   }
 }
