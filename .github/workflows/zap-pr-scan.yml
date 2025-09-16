@@ -29,9 +29,12 @@ jobs:
         run: |
           docker network create zap-net || true
           docker run -d --name laa-fee-scheme-api --network zap-net -p 8085:8085 laa-fee-scheme-api:pr-image
-          echo "Waiting for application."
-          sleep 30
-          docker ps -a
+          echo "Waiting for application"
+          until docker run --rm --network zap-net curlimages/curl:7.88.1 -s http://laa-fee-scheme-api:8085/v3/api-docs > /dev/null; do
+            echo "Waiting application"
+            sleep 5
+          done
+          echo "application ready"
 
       - name: Run ZAP OpenAPI Scan
         run: |
