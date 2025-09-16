@@ -28,13 +28,15 @@ jobs:
       - name: Start API Container
         run: |
           docker network create zap-net || true
-          docker run -d --name laa-fee-scheme-api --network zap-net -p 8085:8085 laa-fee-scheme-api:pr-image
+          docker run -d --name laa-fee-scheme-api --network zap-net -p 8085:8085 -p 8185:8185 laa-fee-scheme-api:pr-image
           echo "Waiting for application"
-          until docker run --rm --network zap-net curlimages/curl:7.88.1 -s http://laa-fee-scheme-api:8085/v3/api-docs > /dev/null; do
-            echo "Waiting application"
+          # Wait for Spring Boot app health endpoint
+          until docker exec laa-fee-scheme-api curl -s http://localhost:8185/actuator/health > /dev/null; do
+            echo "Waiting for application"
             sleep 5
           done
-          echo "application ready"
+          echo "Application ready"
+          docker ps -a
 
       - name: Run ZAP OpenAPI Scan
         run: |
