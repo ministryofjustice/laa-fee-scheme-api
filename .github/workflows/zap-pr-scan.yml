@@ -7,15 +7,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build API JAR
+        run: ./gradlew clean build
 
       - name: Build API Docker Image
-        run: docker build -t myapp:pr-image .
+        run: docker build -t laa-fee-scheme-api:pr-image .
 
       - name: Start API Container
         run: |
           docker network create zap-net
-          docker run -d --name myapp --network zap-net myapp:pr-image
+          docker run -d --name laa-fee-scheme-api --network zap-net laa-fee-scheme-api:pr-image 
+          echo "Waiting for application."
           sleep 30
           docker ps -a
 
@@ -26,7 +33,7 @@ jobs:
             -v "${{ github.workspace }}:/zap/wrk" \
             ghcr.io/zaproxy/zaproxy:stable \
             zap-api-scan.py \
-              -t http://myapp:8080/v3/api-docs \
+              -t http://laa-fee-scheme-api:8080/v3/api-docs \
               -f openapi \
               -r /zap/wrk/zap-pr-report.html \
               -z >
