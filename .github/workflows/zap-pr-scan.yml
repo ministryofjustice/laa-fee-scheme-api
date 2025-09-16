@@ -37,7 +37,7 @@ jobs:
 
       - name: Wait for DB
         run: |
-          echo "Wait for Postgres"
+          echo "Waiting for Postgres..."
           until docker exec fee-scheme-db pg_isready -U test > /dev/null; do
             sleep 5
           done
@@ -57,9 +57,9 @@ jobs:
         run: |
           echo "Waiting for API..."
           until docker run --rm --network zap-net curlimages/curl:7.88.1 \
-          -s http://laa-fee-scheme-api:8185/actuator/health | grep UP > /dev/null; do
-          echo "API not ready yet..."
-          sleep 5
+            -s http://laa-fee-scheme-api:8185/actuator/health | grep UP > /dev/null; do
+              echo "API not ready yet..."
+              sleep 5
           done
           echo "API ready."
 
