@@ -57,7 +57,7 @@ class PoliceStationFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVC")
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2023").build())
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
         .fixedFee(new BigDecimal("75.50"))
         .categoryType(POLICE_STATION)
         .feeType(FIXED)
