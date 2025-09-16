@@ -61,3 +61,7 @@ laa.springboot.starter:
     ]'
     unprotected-uris: [ "/actuator/**", "/swagger-ui.html",
                         "/swagger-ui/**", "/v3/api-docs/**", "/favicon.ico", "/metrics/**" ]
+
+sentry:
+  dsn: ${SENTRY_DSN}
+  environment: ${SENTRY_ENVIRONMENT}
