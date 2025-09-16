@@ -31,7 +31,7 @@ jobs:
           docker run -d --name laa-fee-scheme-api --network zap-net -p 8085:8085 laa-fee-scheme-api:pr-image
 
           echo "Waiting for API to start..."
-          until curl -s http://laa-fee-scheme-api:8080/v3/api-docs > /dev/null; do
+          until curl -s http://laa-fee-scheme-api:8085/v3/api-docs > /dev/null; do
             echo "Waiting for application"
             sleep 5
           done
