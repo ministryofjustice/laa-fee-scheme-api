@@ -21,3 +21,6 @@ jobs:
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
+  zap-pr-scan:
+    uses: ./.github/workflows/zap-pr-scan.yml
+
