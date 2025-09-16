@@ -1,11 +1,11 @@
 plugins {
     id 'io.freefair.lombok' version '8.14.2'
     id 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
-    id "io.sentry.jvm.gradle" version "5.9.0"
+    id "io.sentry.jvm.gradle" version "5.10.0"
 }
 
 def versions = [
-        sentry 						: '8.20.0'
+        sentry 						: '8.21.1'
 ]
 
 test {
