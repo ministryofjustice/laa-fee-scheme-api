@@ -26,8 +26,8 @@ jobs:
 
       - name: Start API Container
         run: |
-          docker network create zap-net
-          docker run -d --name laa-fee-scheme-api --network zap-net laa-fee-scheme-api:pr-image 
+          docker network create zap-net || true
+          docker run -d --name laa-fee-scheme-api --network zap-net laa-fee-scheme-api:pr-image
           echo "Waiting for application."
           sleep 30
           docker ps -a
@@ -42,7 +42,7 @@ jobs:
               -t http://laa-fee-scheme-api:8080/v3/api-docs \
               -f openapi \
               -r /zap/wrk/zap-pr-report.html \
-              -z >
+              -z |
                 -config replacer.full_list(0).description=authheader
                 -config replacer.full_list(0).enabled=true
                 -config replacer.full_list(0).matchtype=REQ_HEADER
