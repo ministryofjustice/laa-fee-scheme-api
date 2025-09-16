@@ -25,9 +25,16 @@ jobs:
       - name: Build API Docker Image
         run: docker build -t laa-fee-scheme-api:pr-image .
 
+      - name: Create Docker network
+        run: docker network create zap-net || true
+
+      - name: Cleanup old containers
+        run: |
+          docker rm -f laa-fee-scheme-api || true
+          docker rm -f fee-scheme-db || true
+
       - name: Start Postgres DB
         run: |
-          docker network create zap-net || true
           docker run -d --name fee-scheme-db --network zap-net \
             -e POSTGRES_USER=test \
             -e POSTGRES_PASSWORD=test \
@@ -35,7 +42,7 @@ jobs:
             -p 5432:5432 \
             postgres:15
 
-      - name: Wait for DB
+      - name: Wait for Postgres DB
         run: |
           echo "Waiting for Postgres..."
           until docker exec fee-scheme-db pg_isready -U test > /dev/null; do
@@ -56,10 +63,18 @@ jobs:
       - name: Wait for API to be ready
         run: |
           echo "Waiting for API..."
-          until docker run --rm --network zap-net curlimages/curl:7.88.1 \
+          MAX_RETRIES=60
+          COUNT=0
+          until docker run --rm --network zap-net byrnedo/alpine-curl \
             -s http://laa-fee-scheme-api:8185/actuator/health | grep UP > /dev/null; do
               echo "API not ready yet..."
               sleep 5
+              COUNT=$((COUNT+1))
+              if [ $COUNT -ge $MAX_RETRIES ]; then
+                echo "API did not start in time."
+                docker logs laa-fee-scheme-api
+                exit 1
+              fi
           done
           echo "API ready."
 
