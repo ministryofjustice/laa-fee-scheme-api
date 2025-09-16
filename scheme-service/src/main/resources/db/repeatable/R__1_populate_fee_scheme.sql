@@ -1,3 +1,8 @@
+DELETE FROM fee WHERE fee_scheme_code LIKE 'I&A_FS%';
+
+DELETE FROM fee_schemes WHERE scheme_code LIKE 'I&A_FS%';
+
+-- Above SQL statements will be removed once scheme code with '&' character is removed. It will be done as part of refactoring exercise
 -- Fee Scheme for 'Claims Against Public Authorities' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
@@ -43,9 +48,9 @@ ON CONFLICT (scheme_code) DO NOTHING;
 -- Fee Scheme for 'Immigration and Asylum' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
-    ('I&A_FS2013', 'Immigration and Asylum Scheme 2013', '2013-04-01', NULL),
-    ('I&A_FS2020', 'Immigration and Asylum Scheme 2020', '2020-06-08', NULL),
-    ('I&A_FS2023', 'Immigration and Asylum Scheme 2023', '2023-04-01', NULL)
+    ('IMM_ASYLM_FS2013', 'Immigration and Asylum Scheme 2013', '2013-04-01', NULL),
+    ('IMM_ASYLM_FS2020', 'Immigration and Asylum Scheme 2020', '2020-06-08', NULL),
+    ('IMM_ASYLM_FS2023', 'Immigration and Asylum Scheme 2023', '2023-04-01', NULL)
     ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Criminal proceedings - Magistrates court' category
