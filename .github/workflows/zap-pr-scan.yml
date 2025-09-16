@@ -55,12 +55,13 @@ jobs:
 
       - name: Wait for API to be ready
         run: |
-          echo "Waiting for API."
-          until docker exec laa-fee-scheme-api curl -s http://localhost:8185/actuator/health | grep UP > /dev/null; do
-            echo "API not ready yet..."
-            sleep 5
+          echo "Waiting for API..."
+          until docker run --rm --network zap-net curlimages/curl:7.88.1 \
+          -s http://laa-fee-scheme-api:8185/actuator/health | grep UP > /dev/null; do
+          echo "API not ready yet..."
+          sleep 5
           done
-          echo "API ready"
+          echo "API ready."
 
       - name: Run ZAP OpenAPI Scan
         run: |
