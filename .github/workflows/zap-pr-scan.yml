@@ -37,10 +37,11 @@ jobs:
 
       - name: Wait for DB
         run: |
-          until docker exec fee-scheme-db pg_isready -U test; do
-            echo "Waiting for Postgres..."
+          echo "Wait for Postgres"
+          until docker exec fee-scheme-db pg_isready -U test > /dev/null; do
             sleep 5
           done
+          echo "Postgres ready."
 
       - name: Start API Container
         run: |
@@ -52,9 +53,14 @@ jobs:
             -p 8085:8085 -p 8185:8185 \
             laa-fee-scheme-api:pr-image
 
-            echo "Waiting for application."
-            sleep 60
-            docker ps -a
+      - name: Wait for API to be ready
+        run: |
+          echo "Waiting for API."
+          until docker exec laa-fee-scheme-api curl -s http://localhost:8185/actuator/health | grep UP > /dev/null; do
+            echo "API not ready yet..."
+            sleep 5
+          done
+          echo "API ready"
 
       - name: Run ZAP OpenAPI Scan
         run: |
