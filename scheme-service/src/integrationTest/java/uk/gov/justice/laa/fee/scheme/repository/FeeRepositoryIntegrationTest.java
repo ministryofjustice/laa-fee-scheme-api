@@ -75,12 +75,12 @@ class FeeRepositoryIntegrationTest extends PostgresContainerTestBase {
     return Stream.of(
         Arguments.of("IACA", "Asylum CLR Fixed Fee 2a",
             new BigDecimal("227.00"), null, new BigDecimal("166.00"), new BigDecimal("90.00"), null,
-            new BigDecimal("600.00"), "I&A_FS2013"),
+            new BigDecimal("600.00"), "IMM_ASYLM_FS2013"),
         Arguments.of("IMCC", "Standard Fee - Immigration CLR (2c + advocacy substantive hearing fee)",
             new BigDecimal("764.00"), null, new BigDecimal("166.00"), new BigDecimal("90.00"),
-            new BigDecimal("161.00"), new BigDecimal("600.00"), "I&A_FS2020"),
+            new BigDecimal("161.00"), new BigDecimal("600.00"), "IMM_ASYLM_FS2020"),
         Arguments.of("IDAS2", "Detained Duty Advice Scheme (5+ clients seen)",
-            new BigDecimal("360.00"), null, null, null, null, null, "I&A_FS2023")
+            new BigDecimal("360.00"), null, null, null, null, null, "IMM_ASYLM_FS2023")
     );
   }
 
