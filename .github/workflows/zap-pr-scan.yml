@@ -25,13 +25,36 @@ jobs:
       - name: Build API Docker Image
         run: docker build -t laa-fee-scheme-api:pr-image .
 
-      - name: Start API Container
+      - name: Start Postgres DB
         run: |
           docker network create zap-net || true
-          docker run -d --name laa-fee-scheme-api --network zap-net -p 8085:8085 laa-fee-scheme-api:pr-image
-          echo "Waiting for application."
-          sleep 120
-          docker ps -a
+          docker run -d --name fee-scheme-db --network zap-net \
+            -e POSTGRES_USER=test \
+            -e POSTGRES_PASSWORD=test \
+            -e POSTGRES_DB=fee_scheme \
+            -p 5432:5432 \
+            postgres:15
+
+      - name: Wait for DB
+        run: |
+          until docker exec fee-scheme-db pg_isready -U test; do
+            echo "Waiting for Postgres..."
+            sleep 5
+          done
+
+      - name: Start API Container
+        run: |
+          docker run -d --name laa-fee-scheme-api --network zap-net \
+            -e SPRING_DATASOURCE_URL=jdbc:postgresql://fee-scheme-db:5432/fee_scheme \
+            -e SPRING_DATASOURCE_USERNAME=test \
+            -e SPRING_DATASOURCE_PASSWORD=test \
+            -e SPRING_PROFILES_ACTIVE=test \
+            -p 8085:8085 -p 8185:8185 \
+            laa-fee-scheme-api:pr-image
+
+            echo "Waiting for application."
+            sleep 60
+            docker ps -a
 
       - name: Run ZAP OpenAPI Scan
         run: |
