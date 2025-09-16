@@ -57,13 +57,14 @@ jobs:
             -e SPRING_DATASOURCE_USERNAME=test \
             -e SPRING_DATASOURCE_PASSWORD=test \
             -e SPRING_PROFILES_ACTIVE=test \
+            -e SENTRY_DSN="" \
             -p 8085:8085 -p 8185:8185 \
             laa-fee-scheme-api:pr-image
 
       - name: Wait for API to be ready
         run: |
           echo "Waiting for API..."
-          MAX_RETRIES=60
+          MAX_RETRIES=30
           COUNT=0
           until docker run --rm --network zap-net byrnedo/alpine-curl \
             -s http://laa-fee-scheme-api:8185/actuator/health | grep UP > /dev/null; do
