@@ -28,7 +28,7 @@ jobs:
       - name: Start API Container
         run: |
           docker network create zap-net || true
-          docker run -d --name laa-fee-scheme-api --network zap-net laa-fee-scheme-api:pr-image
+          docker run -d --name laa-fee-scheme-api --network zap-net -p 8085:8085 laa-fee-scheme-api:pr-image
 
           echo "Waiting for API to start..."
           until curl -s http://laa-fee-scheme-api:8080/v3/api-docs > /dev/null; do
@@ -46,7 +46,7 @@ jobs:
             -v "${{ github.workspace }}:/zap/wrk" \
             ghcr.io/zaproxy/zaproxy:stable \
             zap-api-scan.py \
-              -t http://laa-fee-scheme-api:8080/v3/api-docs \
+              -t http://laa-fee-scheme-api:8085/v3/api-docs \
               -f openapi \
               -r /zap/wrk/zap-pr-report.html \
               -z "-config replacer.full_list(0).description=authheader \
