@@ -5,7 +5,6 @@ on:
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v5
@@ -64,34 +63,17 @@ jobs:
           done
           echo "Application ready"
 
-      - name: Run ZAP Baseline Scan
-        run: |
-          mkdir -p "$RUNNER_TEMP/zap"
-          chmod 777 "$RUNNER_TEMP/zap"
-          docker run --rm \
-            --network zap-net \
-            -v "$RUNNER_TEMP/zap:/zap/wrk:rw" \
-            -v "$GITHUB_WORKSPACE/zap-ignore.config:/zap/wrk/zap-ignore.config:ro" \
-            ghcr.io/zaproxy/zaproxy:stable \
-            zap-baseline.py \
-              -t http://laa-fee-scheme-api:8085/v3/api-docs \
-              -r /zap/wrk/report.html \
-              -J /zap/wrk/report.json \
-              -z "-config replacer.full_list(0).description=authheader \
-                  -config replacer.full_list(0).enabled=true \
-                  -config replacer.full_list(0).matchtype=REQ_HEADER \
-                  -config replacer.full_list(0).matchstr=Authorization \
-                  -config replacer.full_list(0).replacement='Bearer 1234' \
-                  -config api.activeScan.maximumDuration=10 \
-                  -config api.activeScan.attackStrength=HIGH" \
-              -P /zap/wrk/zap-ignore.config \
-              -f openapi \
-              --fail-on-high
+      - name: Run ZAP Full Scan
+        uses: zaproxy/action-full-scan@v0.12.0
+        with:
+          target: 'http://laa-fee-scheme-api:8085'
+          fail_action: true
+          allow_issue_writing: false
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: zap-pr-report
-          path: /home/runner/work/_temp/zap/report.*
+          path: report_html.html
           if-no-files-found: warn
