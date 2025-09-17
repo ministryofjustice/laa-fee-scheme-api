@@ -87,6 +87,7 @@ jobs:
             zap-api-scan.py \
               -t http://laa-fee-scheme-api:8085/v3/api-docs \
               -f openapi \
+              -l High \
               -z "-config replacer.full_list(0).description=authheader \
                   -config replacer.full_list(0).enabled=true \
                   -config replacer.full_list(0).matchtype=REQ_HEADER \
