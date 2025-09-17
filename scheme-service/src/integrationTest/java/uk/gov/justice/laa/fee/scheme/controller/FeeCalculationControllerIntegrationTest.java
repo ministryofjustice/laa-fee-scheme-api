@@ -252,7 +252,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(content().json("""
             {
               "feeCode": "IMXL",
-              "schemeId": "I&A_FS2013",
+              "schemeId": "IMM_ASYLM_FS2013",
               "claimId": "claim_123",
               "validationMessages": [
                   {
