@@ -83,7 +83,7 @@ jobs:
         run: |
           docker run --rm \
             --network zap-net \
-            -v "${{ github.workspace }}:/zap/wrk" \
+            -v "${{ github.workspace }}:/zap/wrk:rw" \
             ghcr.io/zaproxy/zaproxy:stable \
             zap-api-scan.py \
               -t http://laa-fee-scheme-api:8085/v3/api-docs \
