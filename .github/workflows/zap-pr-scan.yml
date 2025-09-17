@@ -58,7 +58,8 @@ jobs:
         run: |
           echo "Wait for application"
           # Wait for Spring Boot app health endpoint
-          until docker exec laa-fee-scheme-api curl -s http://localhost:8185/actuator/health > /dev/null; do
+          until docker run --rm --network zap-net byrnedo/alpine-curl \
+            -s http://laa-fee-scheme-api:8185/actuator/health | grep UP > /dev/null; do
             echo "Waiting for application"
             sleep 5
           done
