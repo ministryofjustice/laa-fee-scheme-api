@@ -25,7 +25,7 @@ jobs:
         run: docker build -t laa-fee-scheme-api:pr-image .
 
       - name: Create Docker network
-        run: docker network create zap-net || true
+        run: docker network create docker-network || true
 
       - name: Cleanup old containers
         run: |
@@ -34,7 +34,7 @@ jobs:
 
       - name: Start Postgres DB
         run: |
-          docker run -d --name fee-scheme-db --network zap-net \
+          docker run -d --name fee-scheme-db --network docker-network \
             -e POSTGRES_USER=test \
             -e POSTGRES_PASSWORD=test \
             -e POSTGRES_DB=fee_scheme \
@@ -44,7 +44,7 @@ jobs:
 
       - name: Start API Container
         run: |
-          docker run -d --name laa-fee-scheme-api --network zap-net \
+          docker run -d --name laa-fee-scheme-api --network docker-network \
             -e SPRING_DATASOURCE_URL=jdbc:postgresql://fee-scheme-db:5432/fee_scheme \
             -e SPRING_DATASOURCE_USERNAME=test \
             -e SPRING_DATASOURCE_PASSWORD=test \
@@ -56,7 +56,7 @@ jobs:
       - name: Wait for API to be ready
         run: |
           echo "Wait for application"
-          until docker run --rm --network zap-net byrnedo/alpine-curl \
+          until docker run --rm --network docker-network byrnedo/alpine-curl \
             -s http://laa-fee-scheme-api:8185/actuator/health | grep UP > /dev/null; do
             echo "Waiting for application"
             sleep 5
