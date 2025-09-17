@@ -62,3 +62,6 @@ jobs:
         with:
           image: laa-fee-scheme-api:scan
           args: --file=Dockerfile --severity-threshold=high
+
+  zap-pr-scan:
+    uses: ./.github/workflows/zap-pr-scan.yml
