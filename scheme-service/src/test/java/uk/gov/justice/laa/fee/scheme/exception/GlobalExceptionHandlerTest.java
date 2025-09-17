@@ -31,7 +31,7 @@ class GlobalExceptionHandlerTest {
   void handleHttpMessageNotReadable() {
     HttpMessageNotReadableException exception = new HttpMessageNotReadableException("Duplicate field 'feeCode'", null, null);
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadable(exception);
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleBadRequest(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertThat(response.getBody()).isNotNull();
@@ -50,7 +50,7 @@ class GlobalExceptionHandlerTest {
 
     MethodArgumentNotValidException exception = new MethodArgumentNotValidException(methodParameter, bindingResult);
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleMethodArgumentException(exception);
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleBadRequest(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertThat(response.getBody()).isNotNull();
@@ -62,7 +62,7 @@ class GlobalExceptionHandlerTest {
   void handleCategoryCodeNotFound() {
     CategoryCodeNotFoundException exception = new CategoryCodeNotFoundException("FEE123");
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleCategoryOfLawNotFound(exception);
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleNotFound(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
@@ -75,7 +75,7 @@ class GlobalExceptionHandlerTest {
     LocalDate date = LocalDate.of(2025, 2, 20);
     FeeNotFoundException exception = new FeeNotFoundException("FEE123", date);
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeeCodeNotfound(exception);
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleNotFound(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
@@ -88,7 +88,7 @@ class GlobalExceptionHandlerTest {
   void handleInvalidMediationSession() {
     InvalidMediationSessionException exception = new InvalidMediationSessionException("FEE123");
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleInvalidMediationSession(exception);
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleBadRequest(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertThat(response.getBody()).isNotNull();
@@ -102,7 +102,7 @@ class GlobalExceptionHandlerTest {
     LocalDate date = LocalDate.of(2025, 2, 20);
     PoliceStationFeeNotFoundException exception = new PoliceStationFeeNotFoundException("NE021", date);
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handlePoliceStationFeeNotfound(exception);
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleNotFound(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
@@ -117,7 +117,7 @@ class GlobalExceptionHandlerTest {
     LocalDate date = LocalDate.of(2025, 2, 20);
     PoliceStationFeeNotFoundException exception = new PoliceStationFeeNotFoundException("1004");
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handlePoliceStationFeeNotfound(exception);
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleNotFound(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
@@ -130,7 +130,7 @@ class GlobalExceptionHandlerTest {
   void handlePoliceStationFeeCalculationNotImplementedForPoliceStationOtherFeeCode() {
     PoliceStationFeeNotFoundException exception = new PoliceStationFeeNotFoundException("INVM", "1004");
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handlePoliceStationFeeNotfound(exception);
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleNotFound(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
