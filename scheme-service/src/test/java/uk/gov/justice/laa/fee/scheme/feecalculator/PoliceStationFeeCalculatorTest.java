@@ -81,7 +81,7 @@ class PoliceStationFeeCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode("INVC")
         .schemeId("POL_FS2022")
-        .warnings(new ArrayList<>())
+        .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();
@@ -133,7 +133,7 @@ class PoliceStationFeeCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode("INVK")
         .schemeId("POL_FS2022")
-        .warnings(new ArrayList<>())
+        .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();

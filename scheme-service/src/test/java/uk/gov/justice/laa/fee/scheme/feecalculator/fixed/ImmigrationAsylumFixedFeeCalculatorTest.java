@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 class ImmigrationAsylumFixedFeeCalculatorTest {
 
@@ -135,7 +137,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         .feeCode(feeCode)
         .schemeId("IMM_ASYLM_FS2023")
         .claimId("claim_123")
-        .warnings(new ArrayList<>())
+        .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false) // hardcoded till escape logic implemented
         .feeCalculation(expectedCalculation)
         .build();
@@ -177,9 +179,14 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
 
     FeeCalculationResponse response = ImmigrationAsylumFixedFeeCalculator.getFee(feeEntity, feeData);
 
+    ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
+        .message(WARNING_CODE_DESCRIPTION)
+        .type(WARNING)
+        .build();
+
     assertNotNull(response.getFeeCalculation());
     assertThat(response.getFeeCode()).isEqualTo(feeCode);
     assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
-    assertThat(response.getWarnings().getFirst()).isEqualTo(WARNING_CODE_DESCRIPTION);
+    assertThat(response.getValidationMessages().getFirst()).isEqualTo(validationMessage);
   }
 }

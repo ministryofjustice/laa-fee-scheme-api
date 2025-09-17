@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
@@ -16,6 +17,7 @@ import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 /**
  * Calculate the Immigration and asylum fee for a given fee entity and fee calculation request.
@@ -34,7 +36,7 @@ public final class ImmigrationAsylumFixedFeeCalculator {
    * Calculated fee for Immigration and asylum fee based on the provided fee entity and fee calculation request.
    */
   public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
-    List<String> warningList = new ArrayList<>();
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     String claimId = feeCalculationRequest.getClaimId();
 
     // get the requested disbursement amount from feeCalculationRequest
@@ -57,7 +59,10 @@ public final class ImmigrationAsylumFixedFeeCalculator {
     // If fee code is "IDAS1", "IDAS2", and a requestedNetDisbursementAmount exists, return a warning, as these codes
     // are exempt from claiming disbursement
     if (isDisbursementNotAllowed(feeEntity, requestedNetDisbursementAmount)) {
-      warningList.add(WARNING_CODE_DESCRIPTION);
+      validationMessages.add(ValidationMessagesInner.builder()
+          .message(WARNING_CODE_DESCRIPTION)
+          .type(WARNING)
+          .build());
       disbursementVatAmount = BigDecimal.ZERO;
       netDisbursementAmount = BigDecimal.ZERO;
     } else {
@@ -98,7 +103,7 @@ public final class ImmigrationAsylumFixedFeeCalculator {
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
         .claimId(claimId)
-        .warnings(warningList)
+        .validationMessages(validationMessages)
         .escapeCaseFlag(false) // temp hard coded
         .feeCalculation(feeCalculation)
         .build();

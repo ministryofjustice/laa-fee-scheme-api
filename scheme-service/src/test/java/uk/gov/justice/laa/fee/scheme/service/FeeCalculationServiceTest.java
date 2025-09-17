@@ -128,7 +128,7 @@ class FeeCalculationServiceTest {
         .feeCode("INVC")
         .schemeId("IMM_ASYLM_FS2023")
         .claimId("claim_123")
-        .warnings(new ArrayList<>())
+        .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false) // hardcoded till escape logic implemented
         .feeCalculation(expectedCalculation)
         .build();

@@ -229,6 +229,59 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   }
 
   @Test
+  void shouldGetFeeCalculationWithWarnings_immigrationAndAsylumHourlyRate_legalHelp() throws Exception {
+    mockMvc
+        .perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "IMXL",
+                  "claimId": "claim_123",
+                  "startDate": "2025-02-11",
+                  "netProfitCosts": 766.89,
+                  "jrFormFilling": 25.00,
+                  "netDisbursementAmount": 410.70,
+                  "disbursementVatAmount": 25.14,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "IMXL",
+              "schemeId": "IMM_ASYLM_FS2013",
+              "claimId": "claim_123",
+              "validationMessages": [
+                  {
+                    type: "WARNING",
+                    message: "warning net profit costs"
+                  },
+                  {
+                    type: "WARNING",
+                    message: "warning net disbursements"
+                  }
+              ],
+              "feeCalculation": {
+                "totalAmount": 1055.14,
+                "vatIndicator": true,
+                "vatRateApplied": 20.00,
+                "calculatedVatAmount": 105.00,
+                "disbursementAmount": 400.,
+                "requestedNetDisbursementAmount": 410.70,
+                "disbursementVatAmount": 25.14,
+                "hourlyTotalAmount": 525.00,
+                "netProfitCostsAmount": 500.00,
+                "requestedNetProfitCostsAmount": 766.89,
+                "jrFormFillingAmount": 25.00
+              }
+            }
+            """, STRICT));
+  }
+
+  @Test
   void shouldGetFeeCalculation_mediation() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")

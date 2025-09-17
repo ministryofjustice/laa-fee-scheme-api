@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
@@ -14,6 +15,7 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 /**
  * Calculate the Immigration and Asylum hourly rate fee for a given fee entity and fee calculation request.
@@ -43,7 +45,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
     String claimId = feeCalculationRequest.getClaimId();
     String feeCode = feeEntity.getFeeCode();
     if (IAXL.equals(feeCode) || IMXL.equals(feeCode)) {
-      List<String> warnings = new ArrayList<>();
+      List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
       BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
 
@@ -53,7 +55,10 @@ public final class ImmigrationAsylumHourlyRateCalculator {
       if (netProfitCosts.compareTo(profitCostLimit) > 0
           && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorAuthorityNumber())) {
         netProfitCosts = profitCostLimit;
-        warnings.add(WARNING_NET_PROFIT_COSTS);
+        validationMessages.add(ValidationMessagesInner.builder()
+            .message(WARNING_NET_PROFIT_COSTS)
+            .type(WARNING)
+            .build());
       }
 
       BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
@@ -64,7 +69,10 @@ public final class ImmigrationAsylumHourlyRateCalculator {
       if (netDisbursementAmount.compareTo(disbursementLimit) > 0
           && StringUtils.isBlank(feeCalculationRequest.getImmigrationPriorAuthorityNumber())) {
         netDisbursementAmount = disbursementLimit;
-        warnings.add(WARNING_NET_DISBURSEMENTS);
+        validationMessages.add(ValidationMessagesInner.builder()
+            .message(WARNING_NET_DISBURSEMENTS)
+            .type(WARNING)
+            .build());
       }
 
       BigDecimal jrFormFilling = toBigDecimal(feeCalculationRequest.getJrFormFilling());
@@ -86,7 +94,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
           .feeCode(feeCalculationRequest.getFeeCode())
           .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
           .claimId(claimId)
-          .warnings(warnings)
+          .validationMessages(validationMessages)
           .feeCalculation(getFeeCalculation(feeCalculationRequest, finalTotal, calculatedVatAmount,
                 netDisbursementAmount, disbursementVatAmount, requestedNetDisbursementAmount, feeTotal,
                   netProfitCosts, requestedNetProfitCosts, jrFormFilling))
