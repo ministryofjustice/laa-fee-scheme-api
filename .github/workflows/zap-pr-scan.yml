@@ -91,6 +91,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: zap-pr-report
-          path: |
-            $RUNNER_TEMP/zap/report.html
-            $RUNNER_TEMP/zap/report.json
+          path: ${{ runner.temp }}/zap/report.html,${{ runner.temp }}/zap/report.json
+          if-no-files-found: warn
