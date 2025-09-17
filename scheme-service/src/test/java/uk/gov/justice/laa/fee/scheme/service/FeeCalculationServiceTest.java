@@ -104,7 +104,7 @@ class FeeCalculationServiceTest {
 
     FeeEntity feeEntity =  FeeEntity.builder()
           .feeCode("INVC")
-          .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2023").build())
+          .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
           .categoryType(IMMIGRATION_ASYLUM)
           .escapeThresholdLimit(new BigDecimal("700.00"))
           .build();
@@ -126,7 +126,7 @@ class FeeCalculationServiceTest {
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode("INVC")
-        .schemeId("I&A_FS2023")
+        .schemeId("IMM_ASYLM_FS2023")
         .claimId("claim_123")
         .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false) // hardcoded till escape logic implemented

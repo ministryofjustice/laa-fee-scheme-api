@@ -102,7 +102,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2023").build())
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
         .fixedFee(new BigDecimal("75.50"))
         .categoryType(IMMIGRATION_ASYLUM)
         .feeType(FIXED)
@@ -135,7 +135,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode(feeCode)
-        .schemeId("I&A_FS2023")
+        .schemeId("IMM_ASYLM_FS2023")
         .claimId("claim_123")
         .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false) // hardcoded till escape logic implemented
@@ -170,7 +170,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2023").build())
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
         .fixedFee(new BigDecimal("75.50"))
         .categoryType(IMMIGRATION_ASYLUM)
         .feeType(FIXED)

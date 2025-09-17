@@ -31,5 +31,7 @@ env:
   {{- if .Values.sentry.enabled }}
   - name: SENTRY_DSN
     value: {{ .Values.sentry.dsn }}
+  - name: SENTRY_ENVIRONMENT
+    value: {{ .Values.sentry.environment }}
   {{ end -}}
 {{- end -}}

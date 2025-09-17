@@ -91,7 +91,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("I&A_FS2023").build())
+        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
         .categoryType(IMMIGRATION_ASYLUM)
         .feeType(HOURLY)
         .profitCostLimit(new BigDecimal("800.00"))
@@ -109,7 +109,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo(feeCode);
-    assertThat(result.getSchemeId()).isEqualTo("I&A_FS2023");
+    assertThat(result.getSchemeId()).isEqualTo("IMM_ASYLM_FS2023");
     assertThat(result.getFeeCalculation()).isNotNull();
     assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
     assertThat(result.getFeeCalculation().getVatIndicator()).isEqualTo(vatIndicator);
