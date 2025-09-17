@@ -41,14 +41,7 @@ jobs:
             -e POSTGRES_DB=fee_scheme \
             -p 5432:5432 \
             postgres:15
-
-      - name: Wait for Postgres DB
-        run: |
-          echo "Waiting for Postgres..."
-          until docker exec fee-scheme-db pg_isready -U test > /dev/null; do
-            sleep 5
-          done
-          echo "Postgres ready."
+          sleep 10
 
       - name: Start API Container
         run: |
@@ -63,21 +56,13 @@ jobs:
 
       - name: Wait for API to be ready
         run: |
-          echo "Waiting for API..."
-          MAX_RETRIES=30
-          COUNT=0
-          until docker run --rm --network zap-net byrnedo/alpine-curl \
-            -s http://laa-fee-scheme-api:8185/actuator/health | grep UP > /dev/null; do
-              echo "API not ready yet..."
-              sleep 5
-              COUNT=$((COUNT+1))
-              if [ $COUNT -ge $MAX_RETRIES ]; then
-                echo "API did not start in time."
-                docker logs laa-fee-scheme-api
-                exit 1
-              fi
+          echo "Wait for application"
+          # Wait for Spring Boot app health endpoint
+          until docker exec laa-fee-scheme-api curl -s http://localhost:8185/actuator/health > /dev/null; do
+            echo "Waiting for application"
+            sleep 5
           done
-          echo "API ready."
+          echo "Application ready"
 
       - name: Run ZAP OpenAPI Scan
         run: |
@@ -92,4 +77,6 @@ jobs:
                   -config replacer.full_list(0).enabled=true \
                   -config replacer.full_list(0).matchtype=REQ_HEADER \
                   -config replacer.full_list(0).matchstr=Authorization \
-                  -config replacer.full_list(0).replacement='Bearer 1234'"
+                  -config replacer.full_list(0).replacement='Bearer 1234'
+                  -config api.activeScan.maximumDuration=10 \
+                  -config api.activeScan.attackStrength=HIGH"
