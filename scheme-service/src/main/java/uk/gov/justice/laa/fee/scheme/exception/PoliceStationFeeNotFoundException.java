@@ -7,7 +7,7 @@ import java.time.LocalDate;
  */
 public class PoliceStationFeeNotFoundException extends RuntimeException  {
   public PoliceStationFeeNotFoundException(String policeStationId, LocalDate startDate) {
-    super(String.format("Police Station Fee not found for Police Station Id - %s, with case start date %s",
+    super(String.format("Police Station Fee not found for Police Station Id - %s, with case start date - %s",
         policeStationId, startDate));
   }
 

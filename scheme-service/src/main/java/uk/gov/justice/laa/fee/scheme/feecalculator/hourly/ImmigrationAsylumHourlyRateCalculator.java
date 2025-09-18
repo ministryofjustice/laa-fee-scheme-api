@@ -8,9 +8,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -22,7 +25,12 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
  */
 
 @Component
-public final class ImmigrationAsylumHourlyRateCalculator {
+public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
+
+  @Override
+  public Set<CategoryType> getSupportedCategories() {
+    return Set.of(); // Only used by ImmigrationAsylumFeeCalculator and not available via FeeCalculatorFactory
+  }
 
   private ImmigrationAsylumHourlyRateCalculator() {}
 
@@ -41,7 +49,7 @@ public final class ImmigrationAsylumHourlyRateCalculator {
    * @param feeCalculationRequest the request containing fee calculation data
    * @return FeeCalculationResponse with calculated fee
    */
-  public static FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
+  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     String claimId = feeCalculationRequest.getClaimId();
     String feeCode = feeEntity.getFeeCode();
     if (IAXL.equals(feeCode) || IMXL.equals(feeCode)) {

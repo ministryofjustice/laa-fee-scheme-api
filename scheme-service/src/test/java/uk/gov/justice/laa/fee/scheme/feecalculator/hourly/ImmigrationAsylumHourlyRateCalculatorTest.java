@@ -9,16 +9,23 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
+@ExtendWith(MockitoExtension.class)
 class ImmigrationAsylumHourlyRateCalculatorTest {
+
+  @InjectMocks
+  ImmigrationAsylumHourlyRateCalculator immigrationAsylumHourlyRateCalculator;
 
   static Stream<Arguments> feeTestData() {
     return Stream.of(
@@ -98,7 +105,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
         .disbursementLimit(new BigDecimal("400.00"))
         .build();
 
-    FeeCalculationResponse result = ImmigrationAsylumHourlyRateCalculator.getFee(feeEntity, feeCalculationRequest);
+    FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
 
     List<ValidationMessagesInner> validationMessages = expectedWarnings.stream()
         .map(i -> ValidationMessagesInner.builder()

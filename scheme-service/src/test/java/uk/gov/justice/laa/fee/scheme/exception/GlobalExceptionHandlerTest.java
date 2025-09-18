@@ -31,7 +31,7 @@ class GlobalExceptionHandlerTest {
   void handleHttpMessageNotReadable() {
     HttpMessageNotReadableException exception = new HttpMessageNotReadableException("Duplicate field 'feeCode'", null, null);
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleBadRequest(exception);
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadable(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertThat(response.getBody()).isNotNull();
@@ -50,7 +50,7 @@ class GlobalExceptionHandlerTest {
 
     MethodArgumentNotValidException exception = new MethodArgumentNotValidException(methodParameter, bindingResult);
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleBadRequest(exception);
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleMethodArgumentException(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertThat(response.getBody()).isNotNull();
@@ -62,12 +62,12 @@ class GlobalExceptionHandlerTest {
   void handleCategoryCodeNotFound() {
     CategoryCodeNotFoundException exception = new CategoryCodeNotFoundException("FEE123");
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleNotFound(exception);
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleCategoryOfLawNotFound(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getStatus()).isEqualTo(404);
-    assertThat(response.getBody().getMessage()).isEqualTo("Category of law code not found for fee: FEE123");
+    assertThat(response.getBody().getMessage()).isEqualTo("Category of law code not found for fee code: FEE123");
   }
 
   @Test
@@ -75,26 +75,26 @@ class GlobalExceptionHandlerTest {
     LocalDate date = LocalDate.of(2025, 2, 20);
     FeeNotFoundException exception = new FeeNotFoundException("FEE123", date);
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleNotFound(exception);
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeeCodeNotfound(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getStatus()).isEqualTo(404);
     assertThat(response.getBody().getMessage())
-        .isEqualTo("Fee not found for fee code FEE123, with start date %s", date);
+        .isEqualTo("Fee not found for fee code - FEE123, with start date - 2025-02-20");
   }
 
   @Test
   void handleInvalidMediationSession() {
     InvalidMediationSessionException exception = new InvalidMediationSessionException("FEE123");
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleBadRequest(exception);
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleInvalidMediationSession(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getStatus()).isEqualTo(400);
     assertThat(response.getBody().getMessage())
-        .isEqualTo("Invalid mediation session for Fee code FEE123: numberOfMediationSessions required");
+        .isEqualTo("Invalid mediation session for fee code - FEE123: numberOfMediationSessions required");
   }
 
   @Test
@@ -102,13 +102,13 @@ class GlobalExceptionHandlerTest {
     LocalDate date = LocalDate.of(2025, 2, 20);
     PoliceStationFeeNotFoundException exception = new PoliceStationFeeNotFoundException("NE021", date);
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleNotFound(exception);
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handlePoliceStationFeeNotfound(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getStatus()).isEqualTo(404);
     assertThat(response.getBody().getMessage())
-        .isEqualTo("Police Station Fee not found for Police Station Id NE021, with case start date %s", date);
+        .isEqualTo("Police Station Fee not found for Police Station Id - NE021, with case start date - 2025-02-20");
   }
 
 
@@ -117,25 +117,25 @@ class GlobalExceptionHandlerTest {
     LocalDate date = LocalDate.of(2025, 2, 20);
     PoliceStationFeeNotFoundException exception = new PoliceStationFeeNotFoundException("1004");
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleNotFound(exception);
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handlePoliceStationFeeNotfound(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getStatus()).isEqualTo(404);
     assertThat(response.getBody().getMessage())
-        .isEqualTo("Police Station Fee not found for Police Station Scheme Id 1004");
+        .isEqualTo("Police Station Fee not found for Police Station Scheme Id - 1004");
   }
 
   @Test
   void handlePoliceStationFeeCalculationNotImplementedForPoliceStationOtherFeeCode() {
     PoliceStationFeeNotFoundException exception = new PoliceStationFeeNotFoundException("INVM", "1004");
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleNotFound(exception);
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handlePoliceStationFeeNotfound(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getStatus()).isEqualTo(404);
     assertThat(response.getBody().getMessage())
-        .isEqualTo("Calculation Logic for Police Station Other Fee not implemented, Fee Code INVM, Police Station Scheme Id 1004");
+        .isEqualTo("Calculation Logic for Police Station Other Fee not implemented, Fee Code - INVM, Police Station Scheme Id - 1004");
   }
 }

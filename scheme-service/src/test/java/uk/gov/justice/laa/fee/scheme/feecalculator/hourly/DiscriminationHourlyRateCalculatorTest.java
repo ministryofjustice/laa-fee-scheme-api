@@ -28,9 +28,6 @@ class DiscriminationHourlyRateCalculatorTest {
   @InjectMocks
   DiscriminationHourlyRateCalculator discriminationHourlyRateCalculator;
 
-  @Mock
-  FeeDataService feeDataService;
-
   @ParameterizedTest
   @CsvSource({
       "false, 149.50, 300.50, 528.24",  // Under escape threshold (No VAT)
@@ -42,9 +39,8 @@ class DiscriminationHourlyRateCalculatorTest {
                                                         double costOfCounsel, double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel);
     FeeEntity feeEntity = buildFeeEntity();
-    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
 
-    FeeCalculationResponse result = discriminationHourlyRateCalculator.calculate(feeCalculationRequest);
+    FeeCalculationResponse result = discriminationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel);
 
@@ -61,9 +57,7 @@ class DiscriminationHourlyRateCalculatorTest {
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel);
     FeeEntity feeEntity = buildFeeEntity();
 
-    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
-
-    FeeCalculationResponse result = discriminationHourlyRateCalculator.calculate(feeCalculationRequest);
+    FeeCalculationResponse result = discriminationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel);
 

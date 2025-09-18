@@ -73,7 +73,7 @@ class PoliceStationFixedFeeCalculatorTest {
         any())).thenReturn(List.of(policeStationFeesEntity));
 
 
-    FeeCalculationResponse response = policeStationFixedFeeCalculator.getFee(feeEntity, feeData);
+    FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);
 
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
@@ -139,7 +139,7 @@ class PoliceStationFixedFeeCalculatorTest {
         any())).thenReturn(List.of(policeStationFeesEntity));
 
 
-    FeeCalculationResponse response = policeStationFixedFeeCalculator.getFee(feeEntity, feeData);
+    FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);
 
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
@@ -224,7 +224,7 @@ class PoliceStationFixedFeeCalculatorTest {
     when(policeStationFeesRepository.findPoliceStationFeeByPoliceStationIdAndFeeSchemeCode(policeStationId,
         feeSchemeCode)).thenReturn(List.of(policeStationFeesEntity));
 
-    FeeCalculationResponse response = policeStationFixedFeeCalculator.getFee(feeEntity, feeData);
+    FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(expectedTotal)
@@ -293,7 +293,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .build();
 
 
-    FeeCalculationResponse response = policeStationFixedFeeCalculator.getFee(feeEntity, feeData);
+    FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(expectedTotal)

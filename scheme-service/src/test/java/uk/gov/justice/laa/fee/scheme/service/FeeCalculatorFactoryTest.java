@@ -58,6 +58,6 @@ class FeeCalculatorFactoryTest {
     // Assert
     assertSame(standardCalculator, calc1);
     assertSame(standardCalculator, calc2);
-    verify(standardCalculator, never()).calculate(any());
+    verify(standardCalculator, never()).calculate(any(), any());
   }
 }

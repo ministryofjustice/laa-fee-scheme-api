@@ -13,7 +13,6 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PUBLIC_LAW;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.WELFARE_BENEFITS;
 
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
@@ -21,17 +20,12 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 /**
  * Calculate the fixed fee for a given fee entity and fee calculation request.
  */
-
-@RequiredArgsConstructor
 @Component
 public class StandardFixedFeeCalculator implements FeeCalculator {
-
-  private final FeeDataService feeDataService;
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -47,9 +41,7 @@ public class StandardFixedFeeCalculator implements FeeCalculator {
    * @return FeeCalculationResponse with calculated fee
    */
   @Override
-  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest) {
-
-    FeeEntity feeEntity = feeDataService.getFeeEntity(feeCalculationRequest);
+  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
     return FeeCalculationUtil.calculate(feeEntity, feeCalculationRequest);
   }

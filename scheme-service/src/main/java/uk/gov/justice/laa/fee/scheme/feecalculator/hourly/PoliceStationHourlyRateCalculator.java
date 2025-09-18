@@ -8,9 +8,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import java.util.Set;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -21,19 +23,23 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
  * Calculate the police station fee for a given fee entity and fee data.
  */
 @Component
-@RequiredArgsConstructor
-public class PoliceStationHourlyRateCalculator {
+public class PoliceStationHourlyRateCalculator implements FeeCalculator {
+
+  @Override
+  public Set<CategoryType> getSupportedCategories() {
+    return Set.of(); // Only used by PoliceStationFeeCalculator and not available via FeeCalculatorFactory
+  }
 
   private static final String WARNING_NET_PROFIT_COSTS = "warning net profit costs";
 
   /**
    * Calculated fee based on the provided fee entity and fee calculation request.
    *
-   * @param feeEntity             the fee entity containing fee details
    * @param feeCalculationRequest the request containing fee calculation data
+   * @param feeEntity             the fee entity containing fee details
    * @return FeeCalculationResponse with calculated fee
    */
-  public FeeCalculationResponse getFee(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
+  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
     BigDecimal profitCostLimit = feeEntity.getProfitCostLimit();

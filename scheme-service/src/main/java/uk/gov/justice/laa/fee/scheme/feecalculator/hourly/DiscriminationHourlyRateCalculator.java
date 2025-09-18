@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
@@ -20,16 +19,12 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
-import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 /**
  * Calculate the discrimination fee for a given fee entity and fee calculation request.
  */
-@RequiredArgsConstructor
 @Component
 public class DiscriminationHourlyRateCalculator implements FeeCalculator {
-
-  private final FeeDataService feeDataService;
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -40,15 +35,14 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
 
   /**
    * Calculated fee based on the provided fee entity and fee calculation request.
-   *          the fee entity containing fee details
+   * the fee entity containing fee details
    *
    * @param feeCalculationRequest the request containing fee calculation data
+   * @param feeEntity             the fee entity containing fee details
    * @return FeeCalculationResponse with calculated fee
    */
   @Override
-  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest) {
-
-    FeeEntity feeEntity = feeDataService.getFeeEntity(feeCalculationRequest);
+  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal netCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());

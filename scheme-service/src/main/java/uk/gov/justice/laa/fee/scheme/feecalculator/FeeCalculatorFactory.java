@@ -3,12 +3,14 @@ package uk.gov.justice.laa.fee.scheme.feecalculator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 
 /**
  * Factory class to return category specific calculators.
  */
+@Slf4j
 @Component
 public class FeeCalculatorFactory {
 
@@ -28,6 +30,7 @@ public class FeeCalculatorFactory {
   }
 
   public FeeCalculator getCalculator(CategoryType category) {
+    log.info("Get fee calculator - {category={}}", category);
     return calculators.get(category);
   }
 }

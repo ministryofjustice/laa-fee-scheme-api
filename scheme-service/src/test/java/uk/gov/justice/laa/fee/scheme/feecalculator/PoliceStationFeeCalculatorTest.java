@@ -31,9 +31,6 @@ class PoliceStationFeeCalculatorTest {
   PoliceStationFeeCalculator policeStationFeeCalculator;
 
   @Mock
-  FeeDataService feeDataService;
-
-  @Mock
   PoliceStationFixedFeeCalculator policeStationFixedFeeCalculator;
 
   @Mock
@@ -86,12 +83,9 @@ class PoliceStationFeeCalculatorTest {
         .feeCalculation(expectedCalculation)
         .build();
 
+    when(policeStationFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity)).thenReturn(expectedResponse);
 
-
-    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
-    when(policeStationFixedFeeCalculator.getFee(feeEntity,feeCalculationRequest)).thenReturn(expectedResponse);
-
-    FeeCalculationResponse result = policeStationFeeCalculator.calculate(feeCalculationRequest);
+    FeeCalculationResponse result = policeStationFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("INVC");
@@ -101,7 +95,6 @@ class PoliceStationFeeCalculatorTest {
 
   @Test
   void getFee_whenPoliceStationFeeHourly_shouldReturnFeeCalculationResponse() {
-
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("INVK")
@@ -138,12 +131,10 @@ class PoliceStationFeeCalculatorTest {
         .feeCalculation(expectedCalculation)
         .build();
 
-
-    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
-    when(policeStationHourlyRateCalculator.getFee(feeEntity,feeCalculationRequest)).thenReturn(expectedResponse);
+    when(policeStationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity)).thenReturn(expectedResponse);
 
 
-    FeeCalculationResponse result = policeStationFeeCalculator.calculate(feeCalculationRequest);
+    FeeCalculationResponse result = policeStationFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("INVK");

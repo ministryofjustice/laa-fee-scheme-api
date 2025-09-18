@@ -12,7 +12,6 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.ImmigrationAsylumFixedF
 import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.ImmigrationAsylumHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 /**
  * Implementation class for Immigration Asylum fee category.
@@ -21,7 +20,9 @@ import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 @Component
 public class ImmigrationAsylumFeeCalculator implements FeeCalculator {
 
-  private final FeeDataService feeDataService;
+  private final ImmigrationAsylumFixedFeeCalculator immigrationAsylumFixedFeeCalculator;
+
+  private final ImmigrationAsylumHourlyRateCalculator immigrationAsylumHourlyRateCalculator;
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -32,14 +33,12 @@ public class ImmigrationAsylumFeeCalculator implements FeeCalculator {
    * Determines the calculation based on immigration asylum fee code.
    */
   @Override
-  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest) {
-
-    FeeEntity feeEntity = feeDataService.getFeeEntity(feeCalculationRequest);
+  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
     if (isFixedFee(feeEntity.getFeeType().name())) {
-      return ImmigrationAsylumFixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+      return immigrationAsylumFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
     } else {
-      return ImmigrationAsylumHourlyRateCalculator.getFee(feeEntity, feeCalculationRequest);
+      return immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
     }
   }
 

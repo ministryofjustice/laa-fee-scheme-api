@@ -10,10 +10,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
@@ -23,7 +26,11 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
+@ExtendWith(MockitoExtension.class)
 class ImmigrationAsylumFixedFeeCalculatorTest {
+
+  @InjectMocks
+  ImmigrationAsylumFixedFeeCalculator immigrationAsylumFixedFeeCalculator;
 
   private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
 
@@ -68,7 +75,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
 
   @ParameterizedTest
   @MethodSource("testDataWithDisbursement")
-  void getFee_whenImmigrationAndAsylum_withDisbursement(
+  void calculate_whenImmigrationAndAsylum_withDisbursement(
       String description,
       String feeCode,
       boolean vatIndicator,
@@ -111,7 +118,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         .telephoneCmrhBoltOn(BigDecimal.valueOf(90))
         .build();
 
-    FeeCalculationResponse response = ImmigrationAsylumFixedFeeCalculator.getFee(feeEntity, feeData);
+    FeeCalculationResponse response = immigrationAsylumFixedFeeCalculator.calculate(feeData, feeEntity);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(expectedTotal)
@@ -154,8 +161,8 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
       "IDAS2, true, 90.60",
       "IDAS2, false, 75.5"
   })
-  void getFee_whenImmigrationAndAsylum_withoutDisbursement(String feeCode, boolean vatIndicator,
-                                                           double expectedTotal) {
+  void calculate_whenImmigrationAndAsylum_withoutDisbursement(String feeCode, boolean vatIndicator,
+                                                              double expectedTotal) {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -177,7 +184,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         .disbursementLimit(null)
         .build();
 
-    FeeCalculationResponse response = ImmigrationAsylumFixedFeeCalculator.getFee(feeEntity, feeData);
+    FeeCalculationResponse response = immigrationAsylumFixedFeeCalculator.calculate(feeData, feeEntity);
 
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
         .message(WARNING_CODE_DESCRIPTION)

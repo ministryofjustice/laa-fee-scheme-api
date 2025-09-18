@@ -4,7 +4,6 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MEDIATION;
 
 import java.math.BigDecimal;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
@@ -13,16 +12,12 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 /**
  * Calculate the mediation fee for a given fee entity and fee data.
  */
-@RequiredArgsConstructor
 @Component
 public class MediationFixedFeeCalculator implements FeeCalculator {
-
-  private final FeeDataService feeDataService;
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -33,9 +28,7 @@ public class MediationFixedFeeCalculator implements FeeCalculator {
    * Determines whether the calculation should include mediation sessions based presence of numberOfMediationSessions.
    */
   @Override
-  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest) {
-
-    FeeEntity feeEntity = feeDataService.getFeeEntity(feeCalculationRequest);
+  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
     if (feeEntity.getFixedFee() == null) {
       // Where fee code type is MED numberOfMediationSessions is required, numberOfMediationSessions will determine fixed fee amount.
