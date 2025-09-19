@@ -51,5 +51,9 @@ public class FeeCalculationController implements FeeCalculationApi {
     if (feeCalculationRequest.getPoliceStationSchemeId() != null) {
       MDC.put("policeStationSchemeId", feeCalculationRequest.getPoliceStationSchemeId());
     }
+
+    if (feeCalculationRequest.getUniqueFileNumber() != null) {
+      MDC.put("uniqueFileNumber", feeCalculationRequest.getUniqueFileNumber());
+    }
   }
 }

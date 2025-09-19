@@ -39,8 +39,13 @@ public class FeeDataService {
         .findFirst()
         .orElseThrow(() -> new FeeNotFoundException(feeCalculationRequest.getFeeCode(), feeCalculationRequest.getStartDate()));
 
-    return feeRepository.findByFeeCodeAndFeeSchemeCode(feeCalculationRequest.getFeeCode(), feeSchemesEntity)
+    log.info("Retrieved fee scheme entity with schemeCode: {}", feeSchemesEntity.getSchemeCode());
+
+    FeeEntity feeEntity = feeRepository.findByFeeCodeAndFeeSchemeCode(feeCalculationRequest.getFeeCode(), feeSchemesEntity)
         .orElseThrow(() -> new FeeNotFoundException(feeCalculationRequest.getFeeCode(), feeCalculationRequest.getStartDate()));
 
+    log.info("Retrieved fee entity with feeId: {}", feeEntity.getFeeId());
+
+    return feeEntity;
   }
 }

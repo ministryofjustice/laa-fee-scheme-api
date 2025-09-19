@@ -83,6 +83,7 @@ class FeeCalculationControllerTest {
 
     feeCalculationRequest.setPoliceStationId("PS1");
     feeCalculationRequest.setPoliceStationSchemeId("PSS1");
+    feeCalculationRequest.setUniqueFileNumber("UFN1");
 
     FeeCalculationResponse responseDto = FeeCalculationResponse.builder()
         .feeCode("FEE123")
