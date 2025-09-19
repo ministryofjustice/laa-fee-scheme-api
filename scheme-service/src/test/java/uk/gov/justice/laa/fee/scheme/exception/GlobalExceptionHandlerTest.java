@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import uk.gov.justice.laa.fee.scheme.controller.FeeCalculationController;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
@@ -137,5 +138,29 @@ class GlobalExceptionHandlerTest {
     assertThat(response.getBody().getStatus()).isEqualTo(404);
     assertThat(response.getBody().getMessage())
         .isEqualTo("Calculation Logic for Police Station Other Fee not implemented for feeCode: INVM and policeStationSchemeId: 1004");
+  }
+
+  @Test
+  void handleHttpRequestMethodNotSupported() {
+    HttpRequestMethodNotSupportedException exception = new HttpRequestMethodNotSupportedException("GET");
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpRequestMethodNotSupported(exception);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().getStatus()).isEqualTo(405);
+    assertThat(response.getBody().getMessage()).isEqualTo("Request method 'GET' is not supported");
+  }
+
+  @Test
+  void handleGenericExceptionFound() {
+    RuntimeException exception = new RuntimeException("some error");
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleGenericException(exception);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().getStatus()).isEqualTo(500);
+    assertThat(response.getBody().getMessage()).isEqualTo("some error");
   }
 }

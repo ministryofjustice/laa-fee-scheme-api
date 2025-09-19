@@ -7,6 +7,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MEDIATION;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.exception.InvalidMediationSessionException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -140,5 +142,12 @@ class MediationFeeCalculatorTest {
         .build();
 
     assertThrows(InvalidMediationSessionException.class, () -> mediationFeeCalculator.calculate(feeData, feeEntity));
+  }
+
+  @Test
+  void getSupportedCategories_shouldReturnMediationCategory() {
+    Set<CategoryType> result = mediationFeeCalculator.getSupportedCategories();
+
+    assertThat(result).isEqualTo(Set.of(MEDIATION));
   }
 }

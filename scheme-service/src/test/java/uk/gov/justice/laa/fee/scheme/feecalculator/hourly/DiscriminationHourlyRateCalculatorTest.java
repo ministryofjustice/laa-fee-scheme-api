@@ -1,26 +1,25 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Set;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
-import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 @ExtendWith(MockitoExtension.class)
 class DiscriminationHourlyRateCalculatorTest {
@@ -69,6 +68,14 @@ class DiscriminationHourlyRateCalculatorTest {
     assertThat(result.getValidationMessages()).isNotNull();
     assertThat(result.getValidationMessages().getFirst()).isEqualTo(validationMessage);
   }
+
+  @Test
+  void getSupportedCategories_shouldReturnDiscriminationCategory() {
+    Set<CategoryType> result = discriminationHourlyRateCalculator.getSupportedCategories();
+
+    assertThat(result).isEqualTo(Set.of(DISCRIMINATION));
+  }
+
 
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netProfitCosts,
                                              double costOfCounsel) {

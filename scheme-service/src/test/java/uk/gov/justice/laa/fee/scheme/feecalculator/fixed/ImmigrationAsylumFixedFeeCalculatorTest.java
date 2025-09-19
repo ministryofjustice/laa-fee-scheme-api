@@ -9,7 +9,9 @@ import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEn
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -19,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -195,5 +198,12 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
     assertThat(response.getFeeCode()).isEqualTo(feeCode);
     assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
     assertThat(response.getValidationMessages().getFirst()).isEqualTo(validationMessage);
+  }
+
+  @Test
+  void getSupportedCategories_shouldReturnEmptySet() {
+    Set<CategoryType> result = immigrationAsylumFixedFeeCalculator.getSupportedCategories();
+
+    assertThat(result).isEmpty();
   }
 }

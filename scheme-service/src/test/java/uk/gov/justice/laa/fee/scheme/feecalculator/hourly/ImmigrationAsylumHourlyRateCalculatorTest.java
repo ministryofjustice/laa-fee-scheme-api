@@ -8,7 +8,9 @@ import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEn
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -17,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
@@ -132,5 +135,12 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     assertThat(result.getValidationMessages())
         .usingRecursiveComparison()
         .isEqualTo(validationMessages);
+  }
+
+  @Test
+  void getSupportedCategories_shouldReturnEmptySet() {
+    Set<CategoryType> result = immigrationAsylumHourlyRateCalculator.getSupportedCategories();
+
+    assertThat(result).isEmpty();
   }
 }
