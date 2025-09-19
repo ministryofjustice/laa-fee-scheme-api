@@ -1,8 +1,3 @@
-DELETE FROM fee WHERE fee_scheme_code LIKE 'I&A_FS%';
-
-DELETE FROM fee_schemes WHERE scheme_code LIKE 'I&A_FS%';
-
--- Above SQL statements will be removed once scheme code with '&' character is removed. It will be done as part of refactoring exercise
 -- Fee Scheme for 'Claims Against Public Authorities' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES

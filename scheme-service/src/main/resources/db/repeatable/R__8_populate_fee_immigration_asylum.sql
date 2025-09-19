@@ -1,3 +1,5 @@
+-- Fixed Fee codes
+
 -- 2013 SCHEME (IMM_ASYLM_FS2013)
 INSERT INTO fee
 (fee_code, description, fixed_fee, escape_threshold_limit, disbursement_limit,fee_scheme_code, category_type, ho_interview_bolt_on, adjorn_hearing_bolt_on, oral_cmrh_bolt_on, telephone_cmrh_bolt_on, fee_type)
@@ -43,6 +45,34 @@ VALUES ('IACE', 'Asylum CLR Fixed Fee 2d', 669, 1338, 600, 'IMM_ASYLM_FS2023', '
        ('IDAS1', 'Detained Duty Advice Scheme (1-4 clients seen)', 180, NULL, NULL, 'IMM_ASYLM_FS2023', 'IMMIGRATION_ASYLUM', NULL, NULL, NULL, NULL, 'FIXED'),
        ('IDAS2', 'Detained Duty Advice Scheme (5+ clients seen)', 360, NULL, NULL, 'IMM_ASYLM_FS2023', 'IMMIGRATION_ASYLUM', NULL, NULL, NULL, NULL, 'FIXED')
     ON CONFLICT (fee_code, fee_scheme_code) DO UPDATE
+    SET
+        category_type = EXCLUDED.category_type,
+        fee_type = EXCLUDED.fee_type;
+
+
+-- Hourly Rate Fee codes
+INSERT INTO fee
+(fee_code, description, profit_cost_limit, disbursement_limit, total_limit, fee_scheme_code, category_type, fee_type)
+VALUES ('IAXL', 'LH Hourly Rates - Asylum', 800.00, 400.00, NULL, 'IMM_ASYLM_FS2013', 'IMMIGRATION_ASYLUM', 'HOURLY'),
+       ('IMXL', 'LH Hourly Rates - Imm', 500.00, 400.00, NULL, 'IMM_ASYLM_FS2013', 'IMMIGRATION_ASYLUM', 'HOURLY'),
+       ('IA100', 'LH Hourly Rates - £100 total limit', NULL, NULL, 100.00, 'IMM_ASYLM_FS2013', 'IMMIGRATION_ASYLUM', 'HOURLY'),
+       ('IAXC', 'CLR Hourly Rates Asylum', NULL, NULL, 1600.00, 'IMM_ASYLM_FS2013', 'IMMIGRATION_ASYLUM', 'HOURLY'),
+       ('IMXC', 'CLR Hourly Rates Imm', NULL, NULL, 1200.00, 'IMM_ASYLM_FS2013', 'IMMIGRATION_ASYLUM', 'HOURLY'),
+       ('IRAR', 'CLR Upper Tribunal Transitional cases', NULL, NULL, NULL, 'IMM_ASYLM_FS2013', 'IMMIGRATION_ASYLUM', 'HOURLY')
+ON CONFLICT (fee_code, fee_scheme_code) DO UPDATE
+    SET
+        category_type = EXCLUDED.category_type,
+        fee_type = EXCLUDED.fee_type;
+
+INSERT INTO fee
+(fee_code, description, profit_cost_limit, disbursement_limit, total_limit, adjorn_hearing_bolt_on, oral_cmrh_bolt_on, telephone_cmrh_bolt_on, fee_scheme_code, category_type, fee_type)
+VALUES ('IACD', 'Interim hourly rates - Asylum CLR', NULL, NULL, 1600.00, NULL, NULL, NULL,'IMM_ASYLM_FS2013', 'IMMIGRATION_ASYLUM', 'HOURLY'),
+       ('IACD', 'Interim hourly rates - Asylum CLR', NULL, NULL, 1600.00, 161.00, 166.00, 90.00, 'IMM_ASYLM_FS2020', 'IMMIGRATION_ASYLUM', 'HOURLY'),
+       ('IACD', 'Interim hourly rates - Asylum CLR', NULL, NULL, 1600.00, NULL, NULL, NULL, 'IMM_ASYLM_FS2023', 'IMMIGRATION_ASYLUM', 'HOURLY'),
+       ('IMCD', 'Interim hourly rates - Immigration Interim CLR', NULL, NULL, 1200.00, NULL, NULL, NULL, 'IMM_ASYLM_FS2013', 'IMMIGRATION_ASYLUM', 'HOURLY'),
+       ('IMCD', 'Interim hourly rates - Immigration Interim CLR', NULL, NULL, 1200.00, 161.00, 166.00, 90.00, 'IMM_ASYLM_FS2020', 'IMMIGRATION_ASYLUM', 'HOURLY'),
+       ('IMCD', 'Interim hourly rates - Immigration Interim CLR', NULL, NULL, 1200.00, NULL, NULL, NULL, 'IMM_ASYLM_FS2023', 'IMMIGRATION_ASYLUM', 'HOURLY')
+ON CONFLICT (fee_code, fee_scheme_code) DO UPDATE
     SET
         category_type = EXCLUDED.category_type,
         fee_type = EXCLUDED.fee_type;
