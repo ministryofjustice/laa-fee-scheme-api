@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -73,7 +75,7 @@ class PoliceStationFixedFeeCalculatorTest {
         any())).thenReturn(List.of(policeStationFeesEntity));
 
 
-    FeeCalculationResponse response = policeStationFixedFeeCalculator.getFee(feeEntity, feeData);
+    FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);
 
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
@@ -139,7 +141,7 @@ class PoliceStationFixedFeeCalculatorTest {
         any())).thenReturn(List.of(policeStationFeesEntity));
 
 
-    FeeCalculationResponse response = policeStationFixedFeeCalculator.getFee(feeEntity, feeData);
+    FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);
 
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
@@ -224,7 +226,7 @@ class PoliceStationFixedFeeCalculatorTest {
     when(policeStationFeesRepository.findPoliceStationFeeByPoliceStationIdAndFeeSchemeCode(policeStationId,
         feeSchemeCode)).thenReturn(List.of(policeStationFeesEntity));
 
-    FeeCalculationResponse response = policeStationFixedFeeCalculator.getFee(feeEntity, feeData);
+    FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(expectedTotal)
@@ -293,7 +295,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .build();
 
 
-    FeeCalculationResponse response = policeStationFixedFeeCalculator.getFee(feeEntity, feeData);
+    FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(expectedTotal)
@@ -314,6 +316,13 @@ class PoliceStationFixedFeeCalculatorTest {
     assertThat(response)
         .usingRecursiveComparison()
         .isEqualTo(expectedResponse);
+  }
+
+  @Test
+  void getSupportedCategories_shouldReturnEmptySet() {
+    Set<CategoryType> result = policeStationFixedFeeCalculator.getSupportedCategories();
+
+    assertThat(result).isEmpty();
   }
 
   public static Stream<Arguments> testPoliceStationAttendanceClaims() {

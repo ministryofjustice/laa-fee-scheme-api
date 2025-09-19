@@ -7,12 +7,16 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.exception.PoliceStationFeeNotFoundException;
+import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -21,9 +25,15 @@ import uk.gov.justice.laa.fee.scheme.repository.PoliceStationFeesRepository;
 /**
  * Calculate the police station fee for a given fee entity and fee data.
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
-public class PoliceStationFixedFeeCalculator {
+public class PoliceStationFixedFeeCalculator implements FeeCalculator {
+
+  @Override
+  public Set<CategoryType> getSupportedCategories() {
+    return Set.of(); // Only used by PoliceStationFeeCalculator and not available via FeeCalculatorFactory
+  }
 
   private static final String INVC = "INVC";
 
@@ -32,8 +42,9 @@ public class PoliceStationFixedFeeCalculator {
   /**
    * Determines the calculation based on police fee code.
    */
-  public FeeCalculationResponse getFee(FeeEntity feeEntity,
-                                              FeeCalculationRequest feeCalculationRequest) {
+  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+
+    log.info("Calculate Police Station fixed fee");
 
     if (feeCalculationRequest.getFeeCode().equals(INVC)) {
       PoliceStationFeesEntity policeStationFeesEntity = getPoliceStationFeesEntity(feeCalculationRequest, feeEntity);

@@ -93,7 +93,7 @@ class FeeCalculationServiceTest {
     FeeCalculator immigrationCalculator = mock(ImmigrationAsylumFeeCalculator.class);
     // Arrange
     CategoryType category = CategoryType.valueOf(IMMIGRATION_ASYLUM.name());
-    FeeCalculationRequest requestDto = FeeCalculationRequest.builder()
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("FEE123")
         .startDate(LocalDate.of(2025, 7, 29))
         .netDisbursementAmount(70.75)
@@ -132,15 +132,15 @@ class FeeCalculationServiceTest {
         .escapeCaseFlag(false) // hardcoded till escape logic implemented
         .feeCalculation(expectedCalculation)
         .build();
-    when(immigrationCalculator.calculate(requestDto)).thenReturn(expectedResponse);
+    when(immigrationCalculator.calculate(feeCalculationRequest, feeEntity)).thenReturn(expectedResponse);
 
-    FeeCalculationResponse response = feeCalculationService.calculateFee(requestDto);
+    FeeCalculationResponse response = feeCalculationService.calculateFee(feeCalculationRequest);
 
     assertFeeCalculation(response, "INVC", 1587.5);
 
     verify(feeCalculatorFactory, times(1)).getCalculator(category);
 
-    verify(immigrationCalculator).calculate(requestDto);
+    verify(immigrationCalculator).calculate(feeCalculationRequest, feeEntity);
   }
 
 

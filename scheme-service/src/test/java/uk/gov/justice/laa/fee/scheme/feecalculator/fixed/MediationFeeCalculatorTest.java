@@ -2,13 +2,12 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MEDIATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,25 +15,20 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.exception.InvalidMediationSessionException;
-import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.MediationFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 @ExtendWith(MockitoExtension.class)
 class MediationFeeCalculatorTest {
 
   @InjectMocks
-  private MediationFixedFeeCalculator mediationFeeCalculator;
-
-  @Mock
-  private FeeDataService feeDataService;
+  MediationFixedFeeCalculator mediationFeeCalculator;
 
   public static Stream<Arguments> testData() {
     return Stream.of(
@@ -99,9 +93,7 @@ class MediationFeeCalculatorTest {
         .categoryType(MEDIATION)
         .build();
 
-    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
-
-    FeeCalculationResponse response = mediationFeeCalculator.calculate(feeData);
+    FeeCalculationResponse response = mediationFeeCalculator.calculate(feeData, feeEntity);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(expectedTotal)
@@ -149,8 +141,13 @@ class MediationFeeCalculatorTest {
         .categoryType(MEDIATION)
         .build();
 
-    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
+    assertThrows(InvalidMediationSessionException.class, () -> mediationFeeCalculator.calculate(feeData, feeEntity));
+  }
 
-    assertThrows(InvalidMediationSessionException.class, () -> mediationFeeCalculator.calculate(feeData));
+  @Test
+  void getSupportedCategories_shouldReturnMediationCategory() {
+    Set<CategoryType> result = mediationFeeCalculator.getSupportedCategories();
+
+    assertThat(result).isEqualTo(Set.of(MEDIATION));
   }
 }
