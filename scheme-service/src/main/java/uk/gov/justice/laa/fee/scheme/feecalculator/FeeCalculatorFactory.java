@@ -21,7 +21,6 @@ public class FeeCalculatorFactory {
    *
    * @param calculators List
    */
-
   public FeeCalculatorFactory(List<FeeCalculator> calculators) {
     this.calculators = calculators.stream()
         .flatMap(feeCalculator -> feeCalculator.getSupportedCategories().stream()
@@ -29,8 +28,15 @@ public class FeeCalculatorFactory {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
+  /**
+   * Get fee calculator for given category.
+   *
+   * @param category the category
+   * @return the fee calculator
+   */
   public FeeCalculator getCalculator(CategoryType category) {
-    log.info("Get fee calculator - {category={}}", category);
+    log.info("Get fee calculator for category: {}", category);
+
     return calculators.get(category);
   }
 }

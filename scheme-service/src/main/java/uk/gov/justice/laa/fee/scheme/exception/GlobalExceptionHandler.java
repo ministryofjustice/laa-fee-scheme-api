@@ -90,7 +90,7 @@ public class GlobalExceptionHandler {
 
 
   private ResponseEntity<ErrorResponse> handleException(Throwable ex, HttpStatus status) {
-    log.error("Error occurred - {error={}, status={}, message={}}", status.getReasonPhrase(), status.value(), ex.getMessage(), ex);
+    log.error("Error occurred :: {error={}, status={}, message={}}", status.getReasonPhrase(), status.value(), ex.getMessage(), ex);
 
     ErrorResponse errorResponse = new ErrorResponse()
         .timestamp(OffsetDateTime.now())

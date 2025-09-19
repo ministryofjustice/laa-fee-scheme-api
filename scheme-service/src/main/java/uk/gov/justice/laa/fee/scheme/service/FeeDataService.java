@@ -30,6 +30,7 @@ public class FeeDataService {
    * @return FeeEntity
    */
   public FeeEntity getFeeEntity(FeeCalculationRequest feeCalculationRequest) {
+
     log.info("Get fee entity");
 
     FeeSchemesEntity feeSchemesEntity = feeSchemesRepository
