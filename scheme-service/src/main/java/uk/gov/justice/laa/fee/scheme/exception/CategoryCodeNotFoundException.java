@@ -5,6 +5,6 @@ package uk.gov.justice.laa.fee.scheme.exception;
  */
 public class CategoryCodeNotFoundException extends RuntimeException {
   public CategoryCodeNotFoundException(String feeCode) {
-    super(String.format("Category of law code not found for fee code: %s", feeCode));
+    super(String.format("Category of law code not found for feeCode: %s", feeCode));
   }
 }

@@ -7,6 +7,6 @@ import java.time.LocalDate;
  */
 public class FeeNotFoundException extends RuntimeException  {
   public FeeNotFoundException(String feeCode, LocalDate startDate) {
-    super(String.format("Fee not found for fee code - %s, with start date - %s", feeCode, startDate));
+    super(String.format("Fee not found for feeCode: %s and startDate: %s", feeCode, startDate));
   }
 }

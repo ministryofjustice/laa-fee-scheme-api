@@ -1,9 +1,8 @@
 package uk.gov.justice.laa.fee.scheme.controller;
 
-import static uk.gov.justice.laa.fee.scheme.util.LoggingUtil.getLogMessage;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.laa.fee.scheme.api.FeeCalculationApi;
@@ -23,12 +22,34 @@ public class FeeCalculationController implements FeeCalculationApi {
 
   @Override
   public ResponseEntity<FeeCalculationResponse> getFeeCalculation(FeeCalculationRequest feeCalculationRequest) {
-    log.info(getLogMessage("Getting fee calculation", feeCalculationRequest));
+    try {
+      setUpMdc(feeCalculationRequest);
 
-    FeeCalculationResponse feeCalculationResponse = feeCalculationService.calculateFee(feeCalculationRequest);
+      log.info("Getting fee calculation");
 
-    log.info(getLogMessage("Retrieved fee calculation", feeCalculationRequest));
+      FeeCalculationResponse feeCalculationResponse = feeCalculationService.calculateFee(feeCalculationRequest);
 
-    return ResponseEntity.ok(feeCalculationResponse);
+      log.info("Successfully retrieved fee calculation");
+
+      return ResponseEntity.ok(feeCalculationResponse);
+    } finally {
+      MDC.clear();
+    }
+  }
+
+  private void setUpMdc(FeeCalculationRequest feeCalculationRequest) {
+    MDC.put("feeCode", feeCalculationRequest.getFeeCode());
+
+    if (feeCalculationRequest.getStartDate() != null) {
+      MDC.put("startDate", feeCalculationRequest.getStartDate().toString());
+    }
+
+    if (feeCalculationRequest.getPoliceStationId() != null) {
+      MDC.put("policeStationId", feeCalculationRequest.getPoliceStationId());
+    }
+
+    if (feeCalculationRequest.getPoliceStationSchemeId() != null) {
+      MDC.put("policeStationSchemeId", feeCalculationRequest.getPoliceStationSchemeId());
+    }
   }
 }

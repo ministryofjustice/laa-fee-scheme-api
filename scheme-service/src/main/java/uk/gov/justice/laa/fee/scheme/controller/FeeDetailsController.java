@@ -1,9 +1,8 @@
 package uk.gov.justice.laa.fee.scheme.controller;
 
-import static uk.gov.justice.laa.fee.scheme.util.LoggingUtil.getLogMessage;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,13 +22,22 @@ public class FeeDetailsController implements FeeDetailsApi {
 
   @Override
   public ResponseEntity<FeeDetailsResponse> getFeeDetails(@PathVariable String feeCode) {
-    log.info(getLogMessage("Getting fee details for fee code", feeCode));
+    try {
+      setUpMdc(feeCode);
 
-    FeeDetailsResponse feeDetails = feeDetailsService.getFeeDetails(feeCode);
+      log.info("Getting fee details");
 
-    log.info(getLogMessage("Retrieved fee details for fee code", feeCode));
+      FeeDetailsResponse feeDetails = feeDetailsService.getFeeDetails(feeCode);
 
-    return ResponseEntity.ok(feeDetails);
+      log.info("Successfully retrieved fee details");
+
+      return ResponseEntity.ok(feeDetails);
+    } finally {
+      MDC.clear();
+    }
   }
 
+  private void setUpMdc(String feeCode) {
+    MDC.put("feeCode", feeCode);
+  }
 }

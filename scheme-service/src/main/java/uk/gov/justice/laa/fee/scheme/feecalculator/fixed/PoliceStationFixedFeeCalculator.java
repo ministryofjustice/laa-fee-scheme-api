@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
@@ -24,6 +25,7 @@ import uk.gov.justice.laa.fee.scheme.repository.PoliceStationFeesRepository;
 /**
  * Calculate the police station fee for a given fee entity and fee data.
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class PoliceStationFixedFeeCalculator implements FeeCalculator {
@@ -41,6 +43,8 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
    * Determines the calculation based on police fee code.
    */
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+
+    log.info("Calculate Police Station fixed fee");
 
     if (feeCalculationRequest.getFeeCode().equals(INVC)) {
       PoliceStationFeesEntity policeStationFeesEntity = getPoliceStationFeesEntity(feeCalculationRequest, feeEntity);

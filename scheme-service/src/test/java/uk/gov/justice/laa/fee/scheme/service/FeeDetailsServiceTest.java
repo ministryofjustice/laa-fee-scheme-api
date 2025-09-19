@@ -49,7 +49,7 @@ class FeeDetailsServiceTest {
     when(feeDetailsLookUpRepository.findFeeCategoryInfoByFeeCode(any())).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> feeDetailsService.getFeeDetails(feeCode))
-        .hasMessageContaining(String.format("Category of law code not found for fee code: %s", feeCode));
+        .hasMessageContaining(String.format("Category of law code not found for feeCode: %s", feeCode));
 
   }
 }

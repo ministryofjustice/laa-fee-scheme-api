@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
@@ -23,7 +24,7 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 /**
  * Calculate the Immigration and Asylum hourly rate fee for a given fee entity and fee calculation request.
  */
-
+@Slf4j
 @Component
 public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
 
@@ -50,6 +51,9 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
    * @return FeeCalculationResponse with calculated fee
    */
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+
+    log.info("Calculate Immigration and Asylum hourly rate fee");
+
     String claimId = feeCalculationRequest.getClaimId();
     String feeCode = feeEntity.getFeeCode();
     if (IAXL.equals(feeCode) || IMXL.equals(feeCode)) {

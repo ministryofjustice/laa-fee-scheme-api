@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
@@ -22,6 +23,7 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 /**
  * Calculate the police station fee for a given fee entity and fee data.
  */
+@Slf4j
 @Component
 public class PoliceStationHourlyRateCalculator implements FeeCalculator {
 
@@ -40,6 +42,9 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
    * @return FeeCalculationResponse with calculated fee
    */
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+
+    log.info("Calculate Police Station hourly rate fee");
+
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
     BigDecimal profitCostLimit = feeEntity.getProfitCostLimit();

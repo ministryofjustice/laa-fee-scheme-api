@@ -1,7 +1,5 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
-import static uk.gov.justice.laa.fee.scheme.util.LoggingUtil.getLogMessage;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,7 +28,8 @@ public class FeeCalculationService {
    * @return FeeCalculationResponse
    */
   public FeeCalculationResponse calculateFee(FeeCalculationRequest request) {
-    log.info(getLogMessage("Start calculating fee", request));
+
+    log.info("Start calculating fee");
 
     FeeEntity feeEntity = feeDataService.getFeeEntity(request);
 
@@ -38,7 +37,7 @@ public class FeeCalculationService {
 
     FeeCalculationResponse response = calculator.calculate(request, feeEntity);
 
-    log.info(getLogMessage("Finished calculating fee", request));
+    log.info("Finished calculating fee");
 
     return response;
   }

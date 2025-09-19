@@ -53,6 +53,6 @@ class FeeDetailsControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.status").value(404))
-        .andExpect(jsonPath("$.message").value("Category of law code not found for fee code: FEE123"));
+        .andExpect(jsonPath("$.message").value("Category of law code not found for feeCode: FEE123"));
   }
 }

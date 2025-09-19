@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
@@ -25,7 +26,7 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 /**
  * Calculate the Immigration and asylum fee for a given fee entity and fee calculation request.
  */
-
+@Slf4j
 @Component
 public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator {
 
@@ -44,6 +45,9 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
    * Calculated fee for Immigration and asylum fee based on the provided fee entity and fee calculation request.
    */
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+
+    log.info("Calculate Immigration and Asylum fixed fee");
+
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     String claimId = feeCalculationRequest.getClaimId();
 

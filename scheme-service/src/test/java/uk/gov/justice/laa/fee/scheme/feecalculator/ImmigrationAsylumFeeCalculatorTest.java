@@ -153,7 +153,6 @@ class ImmigrationAsylumFeeCalculatorTest {
   void getSupportedCategories_shouldReturnImmigrationAsylum() {
     Set<CategoryType> result = immigrationAsylumFeeCalculator.getSupportedCategories();
 
-    assertThat(result).isNotNull();
     assertThat(result).isEqualTo(Set.of(IMMIGRATION_ASYLUM));
   }
 }

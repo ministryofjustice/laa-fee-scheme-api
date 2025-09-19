@@ -426,7 +426,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   }
 
   @Test
-  void shouldGetFeeCalculation_policeStation() throws Exception {
+  void shouldGetFeeCalculation_policeStationFixedFee() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-calculation")
             .header(HttpHeaders.AUTHORIZATION, "int-test-token")
@@ -458,6 +458,51 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                 "disbursementAmount": 0,
                 "disbursementVatAmount": 0,
                 "fixedFeeAmount": 131.40
+              }
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldGetFeeCalculation_policeStationHourlyRate() throws Exception {
+    mockMvc
+        .perform(post("/api/v1/fee-calculation")
+            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "INVH",
+                  "claimId": "claim_123",
+                  "startDate": "2019-12-12",
+                  "uniqueFileNumber": "041223/6655",
+                  "policeStationId": "NE024",
+                  "policeStationSchemeId": "1007",
+                  "netProfitCosts": 34.56,
+                  "netDisbursementAmount": 50.5,
+                  "disbursementVatAmount": 20.15,
+                  "travelAndWaitingCosts": 12.45,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "INVH",
+              "schemeId": "POL_FS2016",
+              "feeCalculation": {
+                "totalAmount": 187.66,
+                "vatIndicator": true,
+                "vatRateApplied": 20.0,
+                "calculatedVatAmount": 19.5,
+                "disbursementAmount": 50.5,
+                "requestedNetDisbursementAmount": 50.5,
+                "disbursementVatAmount": 20.15,
+                "hourlyTotalAmount": 97.51,
+                "netProfitCostsAmount": 34.56,
+                "requestedNetProfitCostsAmount": 34.56,
+                "travelAndWaitingCostAmount": 12.45
               }
             }
             """, STRICT));

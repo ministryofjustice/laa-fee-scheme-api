@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,27 +36,29 @@ class FeeCalculationControllerTest {
   @MockitoBean
   private FeeCalculationService feeCalculationService;
 
-  private static FeeCalculationRequest getFeeCalculationRequestDto() {
-    FeeCalculationRequest requestDto = new FeeCalculationRequest();
-    requestDto.setFeeCode("FEE123");
-    requestDto.setStartDate(LocalDate.of(2025, 7, 29));
-    requestDto.setNetProfitCosts(1000.50);
-    requestDto.setNetDisbursementAmount(200.75);
-    requestDto.setDisbursementVatAmount(40.15);
-    requestDto.setVatIndicator(true);
-    requestDto.setImmigrationPriorAuthorityNumber("AUTH123");
-    requestDto.boltOns(BoltOnType.builder()
-        .boltOnHomeOfficeInterview(2)
-        .boltOnAdjournedHearing(1)
-        .boltOnCmrhOral(1)
-        .boltOnCmrhTelephone(3)
-        .build());
-    return requestDto;
+  private FeeCalculationRequest feeCalculationRequest;
+
+  @BeforeEach
+  void setUp() {
+    feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("FEE123")
+        .startDate(LocalDate.of(2025, 7, 29))
+        .netProfitCosts(1000.50)
+        .netDisbursementAmount(200.75)
+        .disbursementVatAmount(40.15)
+        .vatIndicator(true)
+        .immigrationPriorAuthorityNumber("AUTH123")
+        .boltOns(BoltOnType.builder()
+            .boltOnHomeOfficeInterview(2)
+            .boltOnAdjournedHearing(1)
+            .boltOnCmrhOral(1)
+            .boltOnCmrhTelephone(3)
+            .build())
+        .build();
   }
 
   @Test
   void getFeeCalculation() throws Exception {
-    FeeCalculationRequest requestDto = getFeeCalculationRequestDto();
 
     FeeCalculationResponse responseDto = FeeCalculationResponse.builder()
         .feeCode("FEE123")
@@ -64,12 +67,36 @@ class FeeCalculationControllerTest {
             .build())
         .build();
 
-    when(feeCalculationService.calculateFee(ArgumentMatchers.any(FeeCalculationRequest.class)))
+    when(feeCalculationService.calculateFee(feeCalculationRequest))
         .thenReturn(responseDto);
 
     mockMvc.perform(post("/api/v1/fee-calculation")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(requestDto)))
+            .content(objectMapper.writeValueAsString(feeCalculationRequest)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.feeCode").value("FEE123"))
+        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(1500));
+  }
+
+  @Test
+  void getFeeCalculation_whenGivenPoliceStationIds() throws Exception {
+
+    feeCalculationRequest.setPoliceStationId("PS1");
+    feeCalculationRequest.setPoliceStationSchemeId("PSS1");
+
+    FeeCalculationResponse responseDto = FeeCalculationResponse.builder()
+        .feeCode("FEE123")
+        .feeCalculation(FeeCalculation.builder()
+            .totalAmount(1500.12)
+            .build())
+        .build();
+
+    when(feeCalculationService.calculateFee(feeCalculationRequest))
+        .thenReturn(responseDto);
+
+    mockMvc.perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(feeCalculationRequest)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.feeCode").value("FEE123"))
         .andExpect(jsonPath("$.feeCalculation.totalAmount").value(1500));

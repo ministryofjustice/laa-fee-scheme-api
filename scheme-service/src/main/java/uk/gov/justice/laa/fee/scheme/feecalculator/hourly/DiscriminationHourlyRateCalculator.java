@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
@@ -23,6 +24,7 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 /**
  * Calculate the discrimination fee for a given fee entity and fee calculation request.
  */
+@Slf4j
 @Component
 public class DiscriminationHourlyRateCalculator implements FeeCalculator {
 
@@ -43,6 +45,8 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
    */
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+
+    log.info("Calculate Discrimination hourly rate fee");
 
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal netCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());

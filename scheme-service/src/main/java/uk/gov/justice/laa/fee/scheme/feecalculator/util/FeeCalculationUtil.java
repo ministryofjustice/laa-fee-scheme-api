@@ -24,8 +24,6 @@ public final class FeeCalculationUtil {
   private FeeCalculationUtil() {
   }
 
-
-
   public static boolean isFixedFee(String feeType) {
     return feeType.equals("FIXED");
   }
@@ -53,6 +51,7 @@ public final class FeeCalculationUtil {
 
   private static FeeCalculationResponse calculateAndBuildResponse(BigDecimal fixedFee, BoltOnFeeDetails boltOnFeeDetails,
                                                                   FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
     String claimId = feeCalculationRequest.getClaimId();

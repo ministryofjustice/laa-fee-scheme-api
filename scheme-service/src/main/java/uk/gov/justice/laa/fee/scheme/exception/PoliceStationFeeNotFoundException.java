@@ -7,16 +7,16 @@ import java.time.LocalDate;
  */
 public class PoliceStationFeeNotFoundException extends RuntimeException  {
   public PoliceStationFeeNotFoundException(String policeStationId, LocalDate startDate) {
-    super(String.format("Police Station Fee not found for Police Station Id - %s, with case start date - %s",
+    super(String.format("Police Station Fee not found for policeStationId: %s and startDate: %s",
         policeStationId, startDate));
   }
 
-  public PoliceStationFeeNotFoundException(String psSchemeId) {
-    super(String.format("Police Station Fee not found for Police Station Scheme Id - %s", psSchemeId));
+  public PoliceStationFeeNotFoundException(String policeStationSchemeId) {
+    super(String.format("Police Station Fee not found for policeStationSchemeId: %s", policeStationSchemeId));
   }
 
   public PoliceStationFeeNotFoundException(String feeCode, String policeStationSchemeId) {
-    super(String.format("Calculation Logic for Police Station Other Fee not implemented, Fee Code - %s, "
-        + "Police Station Scheme Id - %s", feeCode, policeStationSchemeId));
+    super(String.format("Calculation Logic for Police Station Other Fee not implemented for feeCode: %s and "
+        + "policeStationSchemeId: %s", feeCode, policeStationSchemeId));
   }
 }
