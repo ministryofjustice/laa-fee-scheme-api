@@ -53,7 +53,7 @@ public final class VatUtil {
   /**
    * Get VAT amount to a given value using the tax rate.
    */
-  static BigDecimal calculateVatAmount(BigDecimal value, BigDecimal taxRate) {
+  public static BigDecimal calculateVatAmount(BigDecimal value, BigDecimal taxRate) {
     return value.multiply(taxRate)
         .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)
         .setScale(2, RoundingMode.HALF_UP);

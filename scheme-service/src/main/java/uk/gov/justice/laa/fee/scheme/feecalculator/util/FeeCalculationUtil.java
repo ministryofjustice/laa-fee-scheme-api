@@ -79,7 +79,6 @@ public final class FeeCalculationUtil {
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
 
-    log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
