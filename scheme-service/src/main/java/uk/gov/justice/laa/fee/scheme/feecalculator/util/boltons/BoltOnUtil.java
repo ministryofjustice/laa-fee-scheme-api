@@ -9,6 +9,7 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -16,6 +17,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 /**
  * Class for calculating bolt ons amount details.
  */
+@Slf4j
 public class BoltOnUtil {
 
   private BoltOnUtil() {
@@ -31,6 +33,8 @@ public class BoltOnUtil {
     BoltOnFeeDetails boltOnTotal = BoltOnFeeDetails.builder().boltOnTotalFeeAmount(toDouble(BigDecimal.ZERO)).build();
 
     if (feeCalculationRequest.getBoltOns() != null) {
+
+      log.info("Calculate bolt on amounts for fee calculation");
 
       List<BoltOnCalculation> calculations = Arrays.asList(
           new BoltOnCalculation(ADJOURNED_HEARING, feeCalculationRequest.getBoltOns().getBoltOnAdjournedHearing(),

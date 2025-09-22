@@ -30,8 +30,11 @@ public final class VatUtil {
    */
   public static BigDecimal getVatAmount(BigDecimal value, LocalDate startDate, boolean vatIndicator) {
     if (!vatIndicator) {
+      log.info("VAT is not applicable for fee calculation");
       return BigDecimal.ZERO;
     }
+
+    log.info("Calculate VAT for fee calculation");
     BigDecimal rate = getVatRateForDate(startDate);
     return calculateVatAmount(value, rate);
   }

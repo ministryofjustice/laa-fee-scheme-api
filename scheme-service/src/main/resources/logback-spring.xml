@@ -1,9 +1,10 @@
 <configuration>
-    <conversionRule conversionWord="sortedMDC" converterClass="uk.gov.justice.laa.fee.scheme.logback.SortedMdcConverter"/>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <conversionRule conversionWord="sortedMDC" class="uk.gov.justice.laa.fee.scheme.logback.SortedMdcConverter"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %5p ${PID:-} --- [${APPLICATION_NAME}] [%15.15t] %-40.40logger{39} : %m %sortedMDC %n</pattern>
+            <pattern>%clr(%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(--- [${APPLICATION_NAME}] [%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m %sortedMDC %n%wEx</pattern>
         </encoder>
     </appender>
     <root level="INFO">
