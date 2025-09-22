@@ -1,5 +1,5 @@
 <configuration>
-    <conversionRule conversionWord="sortedMDC" converterClass="uk.gov.justice.laa.fee.scheme.logback.SortedMdcConverter"/>
+    <conversionRule conversionWord="sortedMDC" class="uk.gov.justice.laa.fee.scheme.logback.SortedMdcConverter"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>

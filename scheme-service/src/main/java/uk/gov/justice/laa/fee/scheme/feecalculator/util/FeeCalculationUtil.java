@@ -8,6 +8,7 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
@@ -19,6 +20,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 /**
  * Utility class for fee calculation operations.
  */
+@Slf4j
 public final class FeeCalculationUtil {
 
   private FeeCalculationUtil() {
@@ -77,6 +79,7 @@ public final class FeeCalculationUtil {
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
 
+    log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())

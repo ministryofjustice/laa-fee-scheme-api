@@ -49,6 +49,9 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     log.info("Calculate Immigration and Asylum fixed fee");
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+
+    log.info("Get fields from fee calculation request");
+
     String claimId = feeCalculationRequest.getClaimId();
 
     // get the requested disbursement amount from feeCalculationRequest
@@ -67,10 +70,10 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     BoltOnFeeDetails boltOnFeeDetails = BoltOnUtil.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
 
     BigDecimal netDisbursementAmount;
-    BigDecimal netDisbursementLimit = feeEntity.getDisbursementLimit();
     // If fee code is "IDAS1", "IDAS2", and a requestedNetDisbursementAmount exists, return a warning, as these codes
     // are exempt from claiming disbursement
     if (isDisbursementNotAllowed(feeEntity, requestedNetDisbursementAmount)) {
+      log.warn("Disbursement not allowed for fee calculation");
       validationMessages.add(ValidationMessagesInner.builder()
           .message(WARNING_CODE_DESCRIPTION)
           .type(WARNING)
@@ -78,9 +81,12 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
       disbursementVatAmount = BigDecimal.ZERO;
       netDisbursementAmount = BigDecimal.ZERO;
     } else {
+      log.info("Check disbursement for fee calculation");
+      BigDecimal netDisbursementLimit = feeEntity.getDisbursementLimit();
       netDisbursementAmount = getNetDisbursement(requestedNetDisbursementAmount, netDisbursementLimit, feeCalculationRequest);
     }
 
+    log.info("Calculate fixed fee and costs");
     BigDecimal fixedFeeAmount = feeEntity.getFixedFee();
     BigDecimal fixedFeeAndAdditionalCosts = fixedFeeAmount
         .add(jrFormFillingCosts)
@@ -92,11 +98,13 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
     BigDecimal calculatedVatAmount = VatUtil.getVatAmount(fixedFeeAndAdditionalCosts, startDate, vatApplicable);
 
+    log.info("Calculate total amount for fee calculation");
     BigDecimal finalTotal = fixedFeeAndAdditionalCosts
         .add(calculatedVatAmount)
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
 
+    log.info("Build fee calculation response");
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(finalTotal))
         .vatIndicator(vatApplicable)
@@ -129,13 +137,19 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
 
     if (requestedNetDisbursementAmount.compareTo(netDisbursementLimit) <= 0) {
       // Where requestedNetDisbursementAmount is below limit, we allow request as is.
+      log.info("Disbursement is below limit for fee calculation");
       return requestedNetDisbursementAmount;
     }
+
     // Where requestedNetDisbursementAmount is above limit, we allow request as is, if they have authorisation,
     // if no authorisation default to limit.
-    return feeData.getImmigrationPriorAuthorityNumber() != null
-        ? requestedNetDisbursementAmount
-        : netDisbursementLimit;
+    if (feeData.getImmigrationPriorAuthorityNumber() != null) {
+      log.info("Disbursement above limit with authorisation");
+      return requestedNetDisbursementAmount;
+    }
+
+    log.info("Disbursement above limit without authorisation capped to limit: {}", netDisbursementLimit);
+    return netDisbursementLimit;
   }
 
   /**
