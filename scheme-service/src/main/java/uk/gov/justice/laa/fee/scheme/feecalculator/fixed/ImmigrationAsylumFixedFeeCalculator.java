@@ -35,8 +35,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     return Set.of(); // Only used by ImmigrationAsylumFeeCalculator and not available via FeeCalculatorFactory
   }
 
-  private ImmigrationAsylumFixedFeeCalculator() {
-  }
+  private ImmigrationAsylumFixedFeeCalculator() {}
 
   private static final List<String> FEE_CODES_WITH_NO_DISBURSEMENT = List.of("IDAS1", "IDAS2");
 
