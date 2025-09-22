@@ -152,4 +152,15 @@ class GlobalExceptionHandlerTest {
     assertThat(response.getBody().getMessage()).isEqualTo("Request method 'GET' is not supported");
   }
 
+  @Test
+  void handleGenericExceptionFound() {
+    RuntimeException exception = new RuntimeException("some error");
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleGenericException(exception);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().getStatus()).isEqualTo(500);
+    assertThat(response.getBody().getMessage()).isEqualTo("some error");
+  }
 }
