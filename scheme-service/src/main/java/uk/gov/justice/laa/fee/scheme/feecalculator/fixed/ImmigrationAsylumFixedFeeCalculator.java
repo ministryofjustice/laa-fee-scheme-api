@@ -35,7 +35,8 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     return Set.of(); // Only used by ImmigrationAsylumFeeCalculator and not available via FeeCalculatorFactory
   }
 
-  private ImmigrationAsylumFixedFeeCalculator() {}
+  private ImmigrationAsylumFixedFeeCalculator() {
+  }
 
   private static final List<String> FEE_CODES_WITH_NO_DISBURSEMENT = List.of("IDAS1", "IDAS2");
 
@@ -51,8 +52,6 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
     log.info("Get fields from fee calculation request");
-
-    String claimId = feeCalculationRequest.getClaimId();
 
     // get the requested disbursement amount from feeCalculationRequest
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
@@ -118,6 +117,8 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
         .jrFormFillingAmount(toDouble(jrFormFillingCosts))
         .boltOnFeeDetails(boltOnFeeDetails)
         .build();
+
+    String claimId = feeCalculationRequest.getClaimId();
 
     return new FeeCalculationResponse().toBuilder()
         .feeCode(feeCalculationRequest.getFeeCode())
