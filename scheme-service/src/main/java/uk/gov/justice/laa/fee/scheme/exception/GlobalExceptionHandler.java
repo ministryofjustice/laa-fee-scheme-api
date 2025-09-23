@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.exception;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+
 import java.time.OffsetDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -8,6 +10,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
 
@@ -74,6 +77,15 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(PoliceStationFeeNotFoundException.class)
   public ResponseEntity<ErrorResponse> handlePoliceStationFeeNotfound(PoliceStationFeeNotFoundException ex) {
     return handleException(ex, HttpStatus.NOT_FOUND);
+  }
+
+  /**
+   * Global exception handler for all other exceptions.
+   */
+  @ExceptionHandler(Exception.class)
+  @ResponseStatus(INTERNAL_SERVER_ERROR)
+  public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+    return handleException(ex, INTERNAL_SERVER_ERROR);
   }
 
 
