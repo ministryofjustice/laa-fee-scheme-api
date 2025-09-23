@@ -20,3 +20,6 @@ jobs:
     uses: ./.github/workflows/snyk-vulnerability-scans.yml
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  zap-pr-scan:
+    uses: ./.github/workflows/zap-security-scan.yml
