@@ -13,7 +13,6 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.PoliceStationFixedFeeCa
 import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.PoliceStationHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 import uk.gov.justice.laa.fee.scheme.util.DateUtil;
 
 /**
@@ -22,8 +21,6 @@ import uk.gov.justice.laa.fee.scheme.util.DateUtil;
 @RequiredArgsConstructor
 @Component
 public class PoliceStationFeeCalculator implements FeeCalculator {
-
-  private final FeeDataService feeDataService;
 
   private final PoliceStationFixedFeeCalculator policeStationFixedFeeCalculator;
 
@@ -38,19 +35,17 @@ public class PoliceStationFeeCalculator implements FeeCalculator {
    * Determines the calculation based on police fee code.
    */
   @Override
-  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest) {
+  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
     if (StringUtils.isNotBlank(feeCalculationRequest.getUniqueFileNumber())) {
       LocalDate caseStartDate = DateUtil.toLocalDate(feeCalculationRequest.getUniqueFileNumber());
       feeCalculationRequest.setStartDate(caseStartDate);
     }
 
-    FeeEntity feeEntity = feeDataService.getFeeEntity(feeCalculationRequest);
-
     if (isFixedFee(feeEntity.getFeeType().name())) {
-      return policeStationFixedFeeCalculator.getFee(feeEntity, feeCalculationRequest);
+      return policeStationFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
     } else {
-      return policeStationHourlyRateCalculator.getFee(feeEntity, feeCalculationRequest);
+      return policeStationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
     }
   }
 

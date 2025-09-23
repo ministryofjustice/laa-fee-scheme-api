@@ -5,10 +5,12 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.NavigableMap;
 import java.util.TreeMap;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Calculate and add VAT onto provided value.
  */
+@Slf4j
 public final class VatUtil {
 
   private VatUtil() {
@@ -28,8 +30,11 @@ public final class VatUtil {
    */
   public static BigDecimal getVatAmount(BigDecimal value, LocalDate startDate, boolean vatIndicator) {
     if (!vatIndicator) {
+      log.info("VAT is not applicable for fee calculation");
       return BigDecimal.ZERO;
     }
+
+    log.info("Calculate VAT for fee calculation");
     BigDecimal rate = getVatRateForDate(startDate);
     return calculateVatAmount(value, rate);
   }
@@ -38,7 +43,11 @@ public final class VatUtil {
    * Retrieves the VAT rate for the date.
    */
   public static BigDecimal getVatRateForDate(LocalDate startDate) {
-    return VAT_RATES.floorEntry(startDate).getValue();
+    BigDecimal vatRate = VAT_RATES.floorEntry(startDate).getValue();
+
+    log.info("Retrieved VAT Rate: {}", vatRate);
+
+    return vatRate;
   }
 
   /**

@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
@@ -10,6 +9,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,21 +17,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.PoliceStationFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.PoliceStationHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 @ExtendWith(MockitoExtension.class)
 class PoliceStationFeeCalculatorTest {
 
   @InjectMocks
   PoliceStationFeeCalculator policeStationFeeCalculator;
-
-  @Mock
-  FeeDataService feeDataService;
 
   @Mock
   PoliceStationFixedFeeCalculator policeStationFixedFeeCalculator;
@@ -86,12 +83,9 @@ class PoliceStationFeeCalculatorTest {
         .feeCalculation(expectedCalculation)
         .build();
 
+    when(policeStationFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity)).thenReturn(expectedResponse);
 
-
-    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
-    when(policeStationFixedFeeCalculator.getFee(feeEntity,feeCalculationRequest)).thenReturn(expectedResponse);
-
-    FeeCalculationResponse result = policeStationFeeCalculator.calculate(feeCalculationRequest);
+    FeeCalculationResponse result = policeStationFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("INVC");
@@ -101,7 +95,6 @@ class PoliceStationFeeCalculatorTest {
 
   @Test
   void getFee_whenPoliceStationFeeHourly_shouldReturnFeeCalculationResponse() {
-
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("INVK")
@@ -138,17 +131,22 @@ class PoliceStationFeeCalculatorTest {
         .feeCalculation(expectedCalculation)
         .build();
 
-
-    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
-    when(policeStationHourlyRateCalculator.getFee(feeEntity,feeCalculationRequest)).thenReturn(expectedResponse);
+    when(policeStationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity)).thenReturn(expectedResponse);
 
 
-    FeeCalculationResponse result = policeStationFeeCalculator.calculate(feeCalculationRequest);
+    FeeCalculationResponse result = policeStationFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("INVK");
     assertThat(result.getFeeCalculation()).isNotNull();
     assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(311.32);
+  }
+
+  @Test
+  void getSupportedCategories_shouldReturnPoliceStationCategory() {
+    Set<CategoryType> result = policeStationFeeCalculator.getSupportedCategories();
+
+    assertThat(result).isEqualTo(Set.of(POLICE_STATION));
   }
 
 }

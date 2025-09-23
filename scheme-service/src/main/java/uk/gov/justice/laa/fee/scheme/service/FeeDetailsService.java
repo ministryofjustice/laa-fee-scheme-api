@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.exception.CategoryCodeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponse;
@@ -9,11 +10,12 @@ import uk.gov.justice.laa.fee.scheme.repository.FeeDetailsLookUpRepository;
 /**
  * Service for retrieving category of law and Fee details based on fee code.
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class FeeDetailsService {
 
-  private final FeeDetailsLookUpRepository categoryOfLawRepository;
+  private final FeeDetailsLookUpRepository feeDetailsLookUpRepository;
 
   /**
    * Get a category of law code based on given fee code.
@@ -25,7 +27,9 @@ public class FeeDetailsService {
    */
   public FeeDetailsResponse getFeeDetails(String feeCode) {
 
-    return categoryOfLawRepository.findFeeCategoryInfoByFeeCode(feeCode)
+    log.info("Get category of law and fee details");
+
+    return feeDetailsLookUpRepository.findFeeCategoryInfoByFeeCode(feeCode)
         .map(projection -> FeeDetailsResponse.builder()
             .categoryOfLawCode(projection.getCategoryCode())
             .feeCodeDescription(projection.getDescription())

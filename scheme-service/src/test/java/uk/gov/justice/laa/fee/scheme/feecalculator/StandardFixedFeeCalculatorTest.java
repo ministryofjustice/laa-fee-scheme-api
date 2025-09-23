@@ -30,9 +30,6 @@ class StandardFixedFeeCalculatorTest {
   @InjectMocks
   StandardFixedFeeCalculator standardFixedFeeCalculator;
 
-  @Mock
-  FeeDataService feeDataService;
-
   @ParameterizedTest
   @CsvSource({
       "false, 170.33", // No VAT
@@ -54,9 +51,7 @@ class StandardFixedFeeCalculatorTest {
         .categoryType(COMMUNITY_CARE)
         .build();
 
-    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
-
-    FeeCalculationResponse result = standardFixedFeeCalculator.calculate(feeCalculationRequest);
+    FeeCalculationResponse result = standardFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("COM");
