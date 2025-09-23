@@ -70,8 +70,32 @@ jobs:
         uses: zaproxy/action-full-scan@75ee1686750ab1511a73b26b77a2aedd295053ed
         with:
           target: 'http://laa-fee-scheme-api:8085'
-          fail_action: true
+          fail_action: false
           allow_issue_writing: false
+          cmd_options: '-J report_json.json'
+
+      - name: Check for High Severity Issues
+        run: |
+          high_count=$(jq '[.site[].alerts[]? | select(.riskdesc | startswith("High"))] | length' report_json.json)
+          critical_count=$(jq '[.site[].alerts[]? | select(.riskdesc | startswith("Critical"))] | length' report_json.json)
+
+          echo "Critical issues found: $critical_count"
+          echo "High issues found: $high_count"
+
+          if [ "$high_count" -gt 0 ] || [ "$critical_count" -gt 0 ]; then
+            echo "High or Critical severity issues, build failed"
+            exit 1
+          else
+            echo "No high or critical issues found"
+          fi
+
+      - name: Upload ZAP Json Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ github.event_name == 'pull_request' && format('zap-pr-{0}-json-report', github.event.pull_request.number) || format('zap-{0}-json-report', github.event_name) }}
+          path: report_json.json
+          if-no-files-found: warn
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
