@@ -1,16 +1,19 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Set;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculatorFactory;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class FeeCalculatorFactoryTest {
 
@@ -35,16 +38,13 @@ class FeeCalculatorFactoryTest {
 
   @Test
   void getCalculator_ShouldReturnCorrectCalculator_ForKnownCategory() {
-    // Act
     FeeCalculator calc1 = factory.getCalculator(CategoryType.IMMIGRATION_ASYLUM);
-    FeeCalculator calc2 = factory.getCalculator(CategoryType.COMMUNITY_CARE);
-    FeeCalculator calc3 = factory.getCalculator(CategoryType.HOUSING);
-    FeeCalculator calc4 = factory.getCalculator(CategoryType.EDUCATION);
-
-    // Assert
     assertSame(immigrationCalculator, calc1);
+    FeeCalculator calc2 = factory.getCalculator(CategoryType.COMMUNITY_CARE);
     assertSame(standardCalculator, calc2);
+    FeeCalculator calc3 = factory.getCalculator(CategoryType.HOUSING);
     assertSame(standardCalculator, calc3);
+    FeeCalculator calc4 = factory.getCalculator(CategoryType.EDUCATION);
     assertSame(standardCalculator, calc4);
   }
 

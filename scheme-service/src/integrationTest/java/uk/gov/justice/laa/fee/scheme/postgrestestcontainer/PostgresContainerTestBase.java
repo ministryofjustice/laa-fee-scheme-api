@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.postgresTestContainer;
+package uk.gov.justice.laa.fee.scheme.postgrestestcontainer;
 
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.test.context.DynamicPropertyRegistry;

@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
@@ -72,7 +71,7 @@ class PoliceStationHourlyRateCalculatorTest {
                                      double hourlyTotalAmount) {
     return Arguments.of(testDescription, feeCode, policeStationId, policeStationSchemeId, uniqueFileNumber, vatIndicator,
         expectedTotal, fixedFee, profitCostLimit, feeSchemeCode, expectedCalculatedVat, disbursementAmount,
-        disbursementVatAmount, travelAndWaitingCostAmount, netProfitCostsAmount,hourlyTotalAmount);
+        disbursementVatAmount, travelAndWaitingCostAmount, netProfitCostsAmount, hourlyTotalAmount);
   }
 
   @ParameterizedTest

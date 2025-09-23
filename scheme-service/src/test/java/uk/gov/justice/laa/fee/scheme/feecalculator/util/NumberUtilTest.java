@@ -33,7 +33,7 @@ class NumberUtilTest {
   void toDouble_givenNull_returnsZero() {
     Double result = NumberUtil.toDouble(null);
 
-    assertThat(result).isEqualTo(0);
+    assertThat(result).isZero();
   }
 
   @Test

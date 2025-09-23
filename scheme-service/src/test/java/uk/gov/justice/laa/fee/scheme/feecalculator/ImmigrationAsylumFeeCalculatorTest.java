@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
@@ -20,14 +19,11 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.ImmigrationAsylumFixedFeeCalculator;
-import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.PoliceStationFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.ImmigrationAsylumHourlyRateCalculator;
-import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.PoliceStationHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.service.FeeDataService;
 
 @ExtendWith(MockitoExtension.class)
 class ImmigrationAsylumFeeCalculatorTest {

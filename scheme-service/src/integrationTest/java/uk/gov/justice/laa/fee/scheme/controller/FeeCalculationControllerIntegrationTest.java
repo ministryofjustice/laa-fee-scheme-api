@@ -17,7 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import uk.gov.justice.laa.fee.scheme.postgresTestContainer.PostgresContainerTestBase;
+import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTestBase;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -27,10 +27,13 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   @Autowired
   private MockMvc mockMvc;
 
+  private static final String AUTH_TOKEN = "int-test-token";
+  private static final String URI = "/api/v1/fee-calculation";
+
   @Test
   void shouldGetBadResponse_whenDuplicateField() throws Exception {
-    mockMvc.perform(post("/api/v1/fee-calculation")
-            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -57,8 +60,8 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
 
   @Test
   void shouldGetBadResponse_whenMissingField() throws Exception {
-    mockMvc.perform(post("/api/v1/fee-calculation")
-            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -81,14 +84,13 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(result ->
             assertTrue(result.getResponse().getContentAsString().contains("default message [feeCode]]; default message [must not be null]]"))
         );
-    ;
   }
 
   @Test
   void shouldGetFeeCalculation_discrimination() throws Exception {
     mockMvc
-        .perform(post("/api/v1/fee-calculation")
-            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -131,8 +133,8 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   @Test
   void shouldGetFeeCalculation_immigrationAndAsylumFixedFee() throws Exception {
     mockMvc
-        .perform(post("/api/v1/fee-calculation")
-            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -188,8 +190,8 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   @Test
   void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate_legalHelp() throws Exception {
     mockMvc
-        .perform(post("/api/v1/fee-calculation")
-            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -231,8 +233,8 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   @Test
   void shouldGetFeeCalculationWithWarnings_immigrationAndAsylumHourlyRate_legalHelp() throws Exception {
     mockMvc
-        .perform(post("/api/v1/fee-calculation")
-            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -284,8 +286,8 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   @Test
   void shouldGetFeeCalculation_mediation() throws Exception {
     mockMvc
-        .perform(post("/api/v1/fee-calculation")
-            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -324,8 +326,8 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   @Test
   void shouldGetFeeCalculation_mentalHealth() throws Exception {
     mockMvc
-        .perform(post("/api/v1/fee-calculation")
-            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -406,8 +408,8 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         }
         """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount);
 
-    mockMvc.perform(post("/api/v1/fee-calculation")
-            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -428,8 +430,8 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   @Test
   void shouldGetFeeCalculation_policeStationFixedFee() throws Exception {
     mockMvc
-        .perform(post("/api/v1/fee-calculation")
-            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -466,8 +468,8 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   @Test
   void shouldGetFeeCalculation_policeStationHourlyRate() throws Exception {
     mockMvc
-        .perform(post("/api/v1/fee-calculation")
-            .header(HttpHeaders.AUTHORIZATION, "int-test-token")
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
