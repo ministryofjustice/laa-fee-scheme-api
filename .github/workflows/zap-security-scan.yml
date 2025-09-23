@@ -25,7 +25,7 @@ jobs:
         run: ./gradlew clean build
 
       - name: Build API Docker Image
-        run: docker build -t laa-fee-scheme-api:pr-image .
+        run: docker build -t laa-fee-scheme-api:build-image .
 
       - name: Create Docker network
         run: docker network create docker-network || true
@@ -54,7 +54,7 @@ jobs:
             -e SPRING_PROFILES_ACTIVE=test \
             -e SENTRY_DSN="" \
             -p 8085:8085 -p 8185:8185 \
-            laa-fee-scheme-api:pr-image
+            laa-fee-scheme-api:build-image
 
       - name: Wait for API to be ready
         run: |
