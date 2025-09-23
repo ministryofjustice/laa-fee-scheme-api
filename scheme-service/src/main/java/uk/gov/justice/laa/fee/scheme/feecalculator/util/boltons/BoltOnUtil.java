@@ -69,7 +69,7 @@ public class BoltOnUtil {
                 boltOnTotal.setBoltOnCmrhTelephoneCount(i.requested());
                 boltOnTotal.setBoltOnCmrhTelephoneFee(toDouble(total));
               }
-              default -> { }
+              default -> throw new IllegalStateException("Unexpected bolt on type: " + i.type());
             }
             return total;
           })
