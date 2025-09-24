@@ -2,20 +2,32 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
+replicaCount: 2
 
 ingress:
     enabled: false
 
 resources:
-  requests:
-    memory: "512Mi"
-    cpu: "500m"
   limits:
-    memory: "1Gi"
-    cpu: "1000m"
+    cpu: 2000m
+    memory: 2Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
 
 sentry:
   enabled: true
   environment: staging
   dsn: https://3dba04b677b4b24e1cd3380e474f7b26@o345774.ingest.us.sentry.io/4509803102666752
+
+root:
+  logging:
+    level: WARN
+
+spring:
+  logging:
+    level: WARN
+
+application:
+  logging:
+    level: WARN

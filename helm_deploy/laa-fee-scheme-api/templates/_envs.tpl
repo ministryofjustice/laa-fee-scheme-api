@@ -33,5 +33,11 @@ env:
     value: {{ .Values.sentry.dsn }}
   - name: SENTRY_ENVIRONMENT
     value: {{ .Values.sentry.environment }}
+  - name: ROOT_LOGGING_LEVEL
+    value: {{.Values.root.logging.level}}
+  - name: SPRING_LOGGING_LEVEL
+    value: {{.Values.spring.logging.level}}
+  - name: APP_LOGGING_LEVEL
+    value: {{.Values.application.logging.level}}
   {{ end -}}
 {{- end -}}

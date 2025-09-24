@@ -10,12 +10,24 @@ ingress:
 resources:
   limits:
     cpu: 500m
-    memory: 512Mi
+    memory: 1Gi
   requests:
     cpu: 200m
-    memory: 256Mi
+    memory: 512Mi
 
 sentry:
   enabled: true
   environment: uat
   dsn: https://3dba04b677b4b24e1cd3380e474f7b26@o345774.ingest.us.sentry.io/4509803102666752
+
+root:
+  logging:
+    level: INFO
+
+spring:
+  logging:
+    level: INFO
+
+application:
+  logging:
+    level: DEBUG

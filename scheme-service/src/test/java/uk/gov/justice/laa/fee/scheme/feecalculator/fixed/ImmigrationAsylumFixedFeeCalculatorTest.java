@@ -193,11 +193,10 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         .message(WARNING_CODE_DESCRIPTION)
         .type(WARNING)
         .build();
-
     assertNotNull(response.getFeeCalculation());
+    assertThat(response.getValidationMessages().getFirst()).isEqualTo(validationMessage);
     assertThat(response.getFeeCode()).isEqualTo(feeCode);
     assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
-    assertThat(response.getValidationMessages().getFirst()).isEqualTo(validationMessage);
   }
 
   @Test

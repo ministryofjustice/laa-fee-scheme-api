@@ -115,7 +115,6 @@ class GlobalExceptionHandlerTest {
 
   @Test
   void handlePoliceStationFeeEntityNotfoundForPoliceStationSchemeId() {
-    LocalDate date = LocalDate.of(2025, 2, 20);
     PoliceStationFeeNotFoundException exception = new PoliceStationFeeNotFoundException("1004");
 
     ResponseEntity<ErrorResponse> response = globalExceptionHandler.handlePoliceStationFeeNotfound(exception);

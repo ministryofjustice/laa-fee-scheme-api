@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import uk.gov.justice.laa.fee.scheme.postgresTestContainer.PostgresContainerTestBase;
+import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTestBase;
 import uk.gov.justice.laa.fee.scheme.repository.projection.FeeDetailsProjection;
 
 @DataJpaTest
