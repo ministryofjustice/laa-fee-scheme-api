@@ -1,0 +1,106 @@
+name: ZAP Security Scan
+on:
+  schedule:
+    - cron: '0 8 * * MON'
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build API JAR
+        run: ./gradlew clean build
+
+      - name: Build API Docker Image
+        run: docker build -t laa-fee-scheme-api:build-image .
+
+      - name: Create Docker network
+        run: docker network create docker-network || true
+
+      - name: Cleanup old containers
+        run: |
+          docker rm -f laa-fee-scheme-api || true
+          docker rm -f fee-scheme-db || true
+
+      - name: Start Postgres DB
+        run: |
+          docker run -d --name fee-scheme-db --network docker-network \
+            -e POSTGRES_USER=test \
+            -e POSTGRES_PASSWORD=test \
+            -e POSTGRES_DB=fee_scheme \
+            -p 5432:5432 \
+            postgres:15
+          sleep 10
+
+      - name: Start API Container
+        run: |
+          docker run -d --name laa-fee-scheme-api --network docker-network \
+            -e SPRING_DATASOURCE_URL=jdbc:postgresql://fee-scheme-db:5432/fee_scheme \
+            -e SPRING_DATASOURCE_USERNAME=test \
+            -e SPRING_DATASOURCE_PASSWORD=test \
+            -e SPRING_PROFILES_ACTIVE=test \
+            -e SENTRY_DSN="" \
+            -p 8085:8085 -p 8185:8185 \
+            laa-fee-scheme-api:build-image
+
+      - name: Wait for API to be ready
+        run: |
+          echo "Wait for application"
+          until docker run --rm --network docker-network byrnedo/alpine-curl \
+            -s http://laa-fee-scheme-api:8185/actuator/health | grep UP > /dev/null; do
+            echo "Waiting for application"
+            sleep 5
+          done
+          echo "Application ready"
+
+      - name: Run ZAP Full Scan
+        uses: zaproxy/action-full-scan@75ee1686750ab1511a73b26b77a2aedd295053ed
+        with:
+          target: 'http://laa-fee-scheme-api:8085'
+          fail_action: false
+          allow_issue_writing: false
+          cmd_options: '-J report_json.json'
+
+      - name: Check for High Severity Issues
+        run: |
+          high_count=$(jq '[.site[].alerts[]? | select(.riskdesc | startswith("High"))] | length' report_json.json)
+          critical_count=$(jq '[.site[].alerts[]? | select(.riskdesc | startswith("Critical"))] | length' report_json.json)
+
+          echo "Critical issues found: $critical_count"
+          echo "High issues found: $high_count"
+
+          if [ "$high_count" -gt 0 ] || [ "$critical_count" -gt 0 ]; then
+            echo "High or Critical severity issues, build failed"
+            exit 1
+          else
+            echo "No high or critical issues found"
+          fi
+
+      - name: Upload ZAP Json Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ github.event_name == 'pull_request' && format('zap-pr-{0}-json-report', github.event.pull_request.number) || format('zap-{0}-json-report', github.event_name) }}
+          path: report_json.json
+          if-no-files-found: warn
+
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ github.event_name == 'pull_request' && format('zap-pr-{0}-report', github.event.pull_request.number) || format('zap-{0}-report', github.event_name) }}
+          path: report_html.html
+          if-no-files-found: warn
