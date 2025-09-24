@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
-import uk.gov.justice.laa.fee.scheme.postgresTestContainer.PostgresContainerTestBase;
+import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTestBase;
 
 @AutoConfigureObservability
 @DirtiesContext
@@ -29,9 +29,11 @@ class ActuatorTest extends PostgresContainerTestBase {
   @Autowired
   private TestRestTemplate restTemplate;
 
+  private static final String URL = "http://localhost:";
+
   @Test
   void actuatorHealthEndpointShouldReturnUp() {
-    ResponseEntity<String> result = restTemplate.getForEntity("http://localhost:" + port + "/actuator/health", String.class);
+    ResponseEntity<String> result = restTemplate.getForEntity(URL + port + "/actuator/health", String.class);
 
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(result.getBody()).contains("\"status\":\"UP\"");
@@ -39,7 +41,7 @@ class ActuatorTest extends PostgresContainerTestBase {
 
   @Test
   void actuatorMetricsEndpointShouldReturnMetrics() {
-    ResponseEntity<String> result = restTemplate.getForEntity("http://localhost:" + port + "/actuator/metrics", String.class);
+    ResponseEntity<String> result = restTemplate.getForEntity(URL + port + "/actuator/metrics", String.class);
 
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(result.getBody()).contains("application.ready.time");
@@ -47,7 +49,7 @@ class ActuatorTest extends PostgresContainerTestBase {
 
   @Test
   void actuatorPrometheusEndPointShouldReturnMetrics() {
-    ResponseEntity<String> result = restTemplate.getForEntity("http://localhost:" + port + "/actuator/prometheus", String.class);
+    ResponseEntity<String> result = restTemplate.getForEntity(URL + port + "/actuator/prometheus", String.class);
 
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(result.getBody()).contains("application_ready_time_seconds");

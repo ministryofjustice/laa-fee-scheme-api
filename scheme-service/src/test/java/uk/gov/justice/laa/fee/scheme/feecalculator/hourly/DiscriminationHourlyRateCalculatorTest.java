@@ -34,7 +34,7 @@ class DiscriminationHourlyRateCalculatorTest {
       "false, 199.50, 500.50, 778.24", // Equal to escape threshold limit (No VAT)
       "true, 199.50, 500.50, 918.24",  // Equal to escape threshold limit (VAT applied)
   })
-  public void getFee_shouldReturnFeeCalculationResponse(boolean vatIndicator, double netProfitCosts,
+  void getFee_shouldReturnFeeCalculationResponse(boolean vatIndicator, double netProfitCosts,
                                                         double costOfCounsel, double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel);
     FeeEntity feeEntity = buildFeeEntity();
@@ -51,7 +51,7 @@ class DiscriminationHourlyRateCalculatorTest {
       "false, 300.50, 500.50, 778.24", // Over escape threshold limit (No VAT)
       "true, 300.50, 500.50, 918.24",  // Over escape threshold limit (VAT applied)
   })
-  public void getFee_shouldReturnFeeCalculationResponseWithWarning(boolean vatIndicator, double netProfitCosts,
+  void getFee_shouldReturnFeeCalculationResponseWithWarning(boolean vatIndicator, double netProfitCosts,
                                                                    double costOfCounsel, double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel);
     FeeEntity feeEntity = buildFeeEntity();

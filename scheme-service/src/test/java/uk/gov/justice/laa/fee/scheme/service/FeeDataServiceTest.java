@@ -59,7 +59,7 @@ class FeeDataServiceTest {
         .build();
 
     when(feeSchemesRepository.findValidSchemeForDate(any(),
-        any(),any())).thenReturn(List.of(feeSchemesEntity));
+        any(), any())).thenReturn(List.of(feeSchemesEntity));
     when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(),
         any())).thenReturn(Optional.of(feeEntity));
 

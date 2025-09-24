@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.laa.fee.scheme.api.FeeDetailsApi;
 import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponse;
@@ -21,7 +20,7 @@ public class FeeDetailsController implements FeeDetailsApi {
   private final FeeDetailsService feeDetailsService;
 
   @Override
-  public ResponseEntity<FeeDetailsResponse> getFeeDetails(@PathVariable String feeCode) {
+  public ResponseEntity<FeeDetailsResponse> getFeeDetails(String feeCode) {
     try {
       setUpMdc(feeCode);
 
