@@ -39,6 +39,12 @@ management:
     health:
       show-details: always
 
+logging:
+  level:
+    root: ${ROOT_LOGGING_LEVEL:info}
+    org.springframework: ${SPRING_LOGGING_LEVEL:info}
+    uk.gov.justice.laa.fee.scheme: ${APP_LOGGING_LEVEL:info}
+
 laa.springboot.starter:
   auth:
     authentication-header: "Authorization"

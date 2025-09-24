@@ -26,3 +26,15 @@ sentry:
   enabled: true
   environment: production
   dsn: https://ed5d739f44d1d0379f8a63a9ccfd9b69@o345774.ingest.us.sentry.io/4509831217938432
+
+root:
+  logging:
+    level: WARN
+
+spring:
+  logging:
+    level: WARN
+
+application:
+  logging:
+    level: WARN
