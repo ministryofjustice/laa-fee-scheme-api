@@ -9,6 +9,10 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
+/**
+ * To capture logs when logging level is DEBUG.
+ */
+
 @Aspect
 @Component
 @Slf4j
@@ -32,7 +36,8 @@ public class LoggingAspect {
         joinPoint.getSignature().getName(), joinPoint.getArgs());
   }
 
-  @AfterReturning(value = "controllerLayer() || serviceLayer() || fixedFeeCalculationLayer() || hourlyFeeCalculationLayer()", returning = "result")
+  @AfterReturning(value = "controllerLayer() || serviceLayer() || fixedFeeCalculationLayer() "
+      + "|| hourlyFeeCalculationLayer()", returning = "result")
   public void logMethodExit(JoinPoint joinPoint, Object result) {
     log.debug("EXIT -> {}.{}() | result: {}", joinPoint.getTarget().getClass().getSimpleName(),
         joinPoint.getSignature().getName(), result);

@@ -20,5 +20,14 @@ sentry:
   environment: staging
   dsn: https://3dba04b677b4b24e1cd3380e474f7b26@o345774.ingest.us.sentry.io/4509803102666752
 
-logging:
-  level: WARN
+root:
+  logging:
+    level: WARN
+
+spring:
+  logging:
+    level: WARN
+
+application:
+  logging:
+    level: WARN

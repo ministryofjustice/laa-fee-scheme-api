@@ -74,5 +74,14 @@ autoscaling:
 sentry:
   enabled: false
 
-logging:
-  level: INFO
+root:
+  logging:
+    level: INFO
+
+spring:
+  logging:
+    level: INFO
+
+application:
+  logging:
+    level: INFO
