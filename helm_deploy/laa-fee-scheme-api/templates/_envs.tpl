@@ -33,5 +33,7 @@ env:
     value: {{ .Values.sentry.dsn }}
   - name: SENTRY_ENVIRONMENT
     value: {{ .Values.sentry.environment }}
+  - name: LOGGING_LEVEL
+    value: {{.Values.logging.level}}
   {{ end -}}
 {{- end -}}
