@@ -13,7 +13,7 @@ spring:
       pool-name: fee-scheme-DB-CP
       connection-timeout: 1000
       validation-timeout: 500
-      maximum-pool-size: 25
+      maximum-pool-size: 20
   jpa:
     properties:
       hibernate:
