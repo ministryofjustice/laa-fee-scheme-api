@@ -8,8 +8,10 @@ services:
     environment:
         - DB_SERVER=postgres
         - DB_NAME=fee_scheme_test_db
-        - DB_USER= # enter chosen DB user here
-        - DB_PASSWORD= # enter chosen DB password here
+        - DB_USER=# enter chosen DB user here
+        - DB_PASSWORD= # enter chosen DB user here
+        - DATA_CLAIMS_EVENT_SERVICE_TOKEN= # enter chosen API token here
+        - SENTRY_DSN=
     depends_on:
       postgres:
         condition: service_started
