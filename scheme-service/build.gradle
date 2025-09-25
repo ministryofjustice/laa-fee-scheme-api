@@ -1,7 +1,7 @@
 plugins {
     id 'io.freefair.lombok' version '8.14.2'
     id 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
-    id "io.sentry.jvm.gradle" version "5.10.0"
+    id "io.sentry.jvm.gradle" version "5.11.0"
 }
 
 def versions = [
@@ -81,13 +81,13 @@ dependencies {
 
     implementation 'uk.gov.laa.springboot:laa-spring-boot-starter-auth'
 
-    implementation 'org.postgresql:postgresql:42.7.7'
+    implementation 'org.postgresql:postgresql:42.7.8'
 
 // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
-    implementation 'org.flywaydb:flyway-core:11.12.0'
-    implementation 'org.flywaydb:flyway-database-postgresql:11.12.0'
+    implementation 'org.flywaydb:flyway-core:11.13.1'
+    implementation 'org.flywaydb:flyway-database-postgresql:11.13.1'
 
-    implementation 'io.micrometer:micrometer-registry-prometheus:1.15.3'
+    implementation 'io.micrometer:micrometer-registry-prometheus:1.15.4'
 
     runtimeOnly 'com.h2database:h2'
 
