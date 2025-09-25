@@ -197,7 +197,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                 {
                   "feeCode": "IMXL",
                   "claimId": "claim_123",
-                  "startDate": "2025-02-11",
+                  "startDate": "2015-02-11",
                   "netProfitCosts": 116.89,
                   "jrFormFilling": 25.00,
                   "netDisbursementAmount": 125.70,
@@ -240,7 +240,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                 {
                   "feeCode": "IMXL",
                   "claimId": "claim_123",
-                  "startDate": "2025-02-11",
+                  "startDate": "2015-02-11",
                   "netProfitCosts": 766.89,
                   "jrFormFilling": 25.00,
                   "netDisbursementAmount": 410.70,

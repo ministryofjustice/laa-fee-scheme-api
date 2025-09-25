@@ -21,6 +21,7 @@ public interface FeeSchemesRepository extends JpaRepository<FeeSchemesEntity, St
            JOIN fee.feeSchemeCode scheme
       WHERE fee.feeCode = :feeCode
         AND scheme.validFrom <= :inputDate
+        AND (scheme.validTo IS NULL OR scheme.validTo >= :inputDate)
       ORDER BY scheme.validFrom DESC
       """)
   List<FeeSchemesEntity> findValidSchemeForDate(@Param("feeCode") String feeCode,
