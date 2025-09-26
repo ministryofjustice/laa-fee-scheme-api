@@ -1,8 +1,8 @@
-DELETE FROM fee WHERE fee_scheme_code LIKE 'I&A_FS%';
+-- Temp delete statements to remove old 'Miscellaneous' fee scheme codes
+DELETE FROM fee WHERE fee_scheme_code in ('MISCCON_FS2013', 'MISCEMP_FS2013', 'MISCGEN_FS2013', 'MISCPI_FS2013', 'MISCASBI_FS2015');
+DELETE FROM fee_schemes WHERE scheme_code in ('MISCCON_FS2013', 'MISCEMP_FS2013', 'MISCGEN_FS2013', 'MISCPI_FS2013', 'MISCASBI_FS2015');
 
-DELETE FROM fee_schemes WHERE scheme_code LIKE 'I&A_FS%';
 
--- Above SQL statements will be removed once scheme code with '&' character is removed. It will be done as part of refactoring exercise
 -- Fee Scheme for 'Claims Against Public Authorities' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
@@ -83,11 +83,8 @@ VALUES
 -- Fee Scheme for 'Miscellaneous' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
-    ('MISCASBI_FS2015', 'Miscellaneous Fee Scheme 2015', '2015-03-23', NULL),
-    ('MISCCON_FS2013', 'Miscellaneous Fee Scheme 2013', '2013-04-01', NULL),
-    ('MISCEMP_FS2013', 'Miscellaneous Fee Scheme 2013', '2013-04-01', NULL),
-    ('MISCGEN_FS2013', 'Miscellaneous Fee Scheme 2013', '2013-04-01', NULL),
-    ('MISCPI_FS2013', 'Miscellaneous Fee Scheme 2013', '2013-04-01', NULL)
+    ('MISC_FS2013', 'Miscellaneous Fee Scheme 2013', '2013-04-01', NULL),
+    ('MISC_FS2015', 'Miscellaneous Fee Scheme 2015', '2015-03-23', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Police Station' category
