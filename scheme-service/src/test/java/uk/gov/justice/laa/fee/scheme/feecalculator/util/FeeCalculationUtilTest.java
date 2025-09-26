@@ -14,6 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -85,7 +86,7 @@ class FeeCalculationUtilTest {
   }
 
   @Test
-  void calculate_FixedFee_givenFixedFeeWithBoltOns_returnsFeeCalculationResponse() {
+  void calculateFixedFee_givenFixedFeeWithBoltOns_returnsFeeCalculationResponse() {
     BigDecimal fixedFee = new BigDecimal("263.00");
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("MHL02")
@@ -142,18 +143,17 @@ class FeeCalculationUtilTest {
 
   @Test
   void testIsFixedFeeWhenFixed() {
-    Assertions.assertTrue(FeeCalculationUtil.isFixedFee("FIXED"));
+    Assertions.assertTrue(FeeCalculationUtil.isFixedFee(FeeType.FIXED));
   }
 
   @Test
   void testIsFixedFeeWhenNotFixed() {
-    Assertions.assertFalse(FeeCalculationUtil.isFixedFee("HOURLY"));
+    Assertions.assertFalse(FeeCalculationUtil.isFixedFee(FeeType.HOURLY));
   }
 
   @Test
   void testIsFixedFeeWhenNull() {
-    assertThrows(NullPointerException.class, () -> {
-      FeeCalculationUtil.isFixedFee(null);
-    });
+    Assertions.assertFalse(FeeCalculationUtil.isFixedFee(null));
   }
+
 }

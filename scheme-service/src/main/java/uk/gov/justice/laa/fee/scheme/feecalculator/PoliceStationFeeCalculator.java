@@ -42,7 +42,7 @@ public class PoliceStationFeeCalculator implements FeeCalculator {
       feeCalculationRequest.setStartDate(caseStartDate);
     }
 
-    if (isFixedFee(feeEntity.getFeeType().name())) {
+    if (isFixedFee(feeEntity.getFeeType())) {
       return policeStationFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
     } else {
       return policeStationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);

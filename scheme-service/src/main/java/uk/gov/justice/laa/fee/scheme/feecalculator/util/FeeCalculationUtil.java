@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -24,8 +25,8 @@ public final class FeeCalculationUtil {
   private FeeCalculationUtil() {
   }
 
-  public static boolean isFixedFee(String feeType) {
-    return feeType.equals("FIXED");
+  public static boolean isFixedFee(FeeType feeType) {
+    return feeType == FeeType.FIXED;
   }
 
   /**
