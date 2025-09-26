@@ -107,11 +107,3 @@ dependencies {
     implementation "io.sentry:sentry-logback:$versions.sentry"
     implementation "io.sentry:sentry-spring-boot-starter-jakarta:$versions.sentry"
 }
-
-sourceSets {
-    main {
-        resources {
-            exclude 'db/csv/**' // Exclude db CSV files from build jar
-        }
-    }
-}
