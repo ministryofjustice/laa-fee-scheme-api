@@ -29,8 +29,8 @@ class FeeCalculationUtilTest {
       "true, 2, 22.15, 160.04", // true VAT indicator with bolt ons
   }, nullValues = {"null"})
   @ParameterizedTest
-  void calculate_givenFeeEntity_returnsFeeCalculationResponse(Boolean vatIndicator, Integer noBoltOns, BigDecimal boltOnFee,
-                                                              double expectedTotal) {
+  void calculateFixedFee_whenFixedFeeFromFeeEntity_returnsFeeCalculationResponse(Boolean vatIndicator, Integer noBoltOns, BigDecimal boltOnFee,
+                                                                       double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("FEE1")
         .startDate(LocalDate.of(2025, 1, 1))
@@ -48,7 +48,7 @@ class FeeCalculationUtilTest {
         .adjornHearingBoltOn(boltOnFee)
         .build();
 
-    FeeCalculationResponse response = FeeCalculationUtil.calculate(feeEntity, feeCalculationRequest);
+    FeeCalculationResponse response = FeeCalculationUtil.calculateFixedFee(feeCalculationRequest, feeEntity);
 
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("FEE1");
@@ -59,7 +59,7 @@ class FeeCalculationUtilTest {
   }
 
   @Test
-  void calculate_givenFixedFee_returnsFeeCalculationResponse() {
+  void calculateFixedFee_givenFixedFee_returnsFeeCalculationResponse() {
     BigDecimal fixedFee = new BigDecimal("59.62");
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("FEE1")
@@ -74,7 +74,7 @@ class FeeCalculationUtilTest {
         .categoryType(COMMUNITY_CARE)
         .build();
 
-    FeeCalculationResponse response = FeeCalculationUtil.calculate(fixedFee, feeCalculationRequest, feeEntity);
+    FeeCalculationResponse response = FeeCalculationUtil.calculateFixedFee(fixedFee, feeCalculationRequest, feeEntity);
 
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("FEE1");
@@ -85,7 +85,7 @@ class FeeCalculationUtilTest {
   }
 
   @Test
-  void calculate_givenFixedFeeWithBoltOns_returnsFeeCalculationResponse() {
+  void calculate_FixedFee_givenFixedFeeWithBoltOns_returnsFeeCalculationResponse() {
     BigDecimal fixedFee = new BigDecimal("263.00");
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("MHL02")
@@ -107,7 +107,7 @@ class FeeCalculationUtilTest {
         .categoryType(MENTAL_HEALTH)
         .build();
 
-    FeeCalculationResponse response = FeeCalculationUtil.calculate(feeEntity, feeCalculationRequest);
+    FeeCalculationResponse response = FeeCalculationUtil.calculateFixedFee(feeCalculationRequest, feeEntity);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(470.94)

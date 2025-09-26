@@ -29,28 +29,29 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Fixed fee + bolt ons (if exists) + netDisbursementAmount = subtotal.
+   * Fixed fee (from DB) + bolt ons (if exists) + netDisbursementAmount = subtotal.
    * If Applicable add VAT to subtotal.
    * subtotalWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
    */
-  public static FeeCalculationResponse calculate(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
+  public static FeeCalculationResponse calculateFixedFee(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     BigDecimal fixedFee = defaultToZeroIfNull(feeEntity.getFixedFee());
-    // get the bolt fee details from util class
-    BoltOnFeeDetails boltOnFeeDetails = BoltOnUtil.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
-    return calculateAndBuildResponse(fixedFee, boltOnFeeDetails, feeCalculationRequest, feeEntity);
+    return calculateAndBuildResponse(fixedFee, feeCalculationRequest, feeEntity);
   }
 
   /**
-   * Given fixed fee + netDisbursementAmount = subtotal.
+   * Given fixed fee + bolt ons (if exists) + netDisbursementAmount = subtotal.
    * If Applicable add VAT to subtotal.
    * subtotalWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
    */
-  public static FeeCalculationResponse calculate(BigDecimal fixedFee, FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
-    return calculateAndBuildResponse(fixedFee, null, feeCalculationRequest, feeEntity);
+  public static FeeCalculationResponse calculateFixedFee(BigDecimal fixedFee, FeeCalculationRequest feeCalculationRequest,
+                                                         FeeEntity feeEntity) {
+    return calculateAndBuildResponse(fixedFee, feeCalculationRequest, feeEntity);
   }
 
-  private static FeeCalculationResponse calculateAndBuildResponse(BigDecimal fixedFee, BoltOnFeeDetails boltOnFeeDetails,
+  private static FeeCalculationResponse calculateAndBuildResponse(BigDecimal fixedFee,
                                                                   FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+    // Calculate bolt on amounts if bolt ons exist
+    BoltOnFeeDetails boltOnFeeDetails = BoltOnUtil.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
 
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
