@@ -5,7 +5,7 @@ DELETE FROM fee_schemes WHERE scheme_code in ('MISCCON_FS2013', 'MISCEMP_FS2013'
 -- Fee Scheme for 'Associated Civil' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
-    ('ASSOC_FS2016', 'Associated Civil Fee Scheme 2013', '2016-04-01', NULL)
+    ('ASSOC_FS2016', 'Associated Civil Fee Scheme 2016', '2016-04-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Claims Against Public Authorities' category
