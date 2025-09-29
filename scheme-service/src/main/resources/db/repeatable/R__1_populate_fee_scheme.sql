@@ -116,4 +116,10 @@ VALUES
     ('WB_FS2025', 'Welfare Benefits Fee Scheme 2025', '2025-05-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
+-- Fee Scheme for 'Prison Law' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('PRISON_FS2016', 'Prison Law 2016', '2016-04-01', NULL)
+ON CONFLICT (scheme_code) DO NOTHING;
+
 
