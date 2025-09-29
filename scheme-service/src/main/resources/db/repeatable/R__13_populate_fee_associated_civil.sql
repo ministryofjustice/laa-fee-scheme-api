@@ -5,4 +5,4 @@ VALUES
     ('ASMS', 'Legal Help and Associated Civil Work – Miscellaneous', 79, 237,'ASSOCIATED_CIVIL', 'FIXED', 'ASSOC_FS2016'),
     ('ASPL', 'Legal Help and Associated Civil Work – Public Law', 259, 777,'ASSOCIATED_CIVIL', 'FIXED', 'ASSOC_FS2016'),
     ('ASAS', 'Part 1 injunction Anti-Social Behaviour Crime and Policing Act 2014', 157, 471,'ASSOCIATED_CIVIL', 'FIXED', 'ASSOC_FS2016')
-    ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
+ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;

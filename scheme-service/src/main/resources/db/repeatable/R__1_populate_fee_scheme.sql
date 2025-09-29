@@ -2,7 +2,7 @@
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('ASSOC_FS2016', 'Associated Civil Fee Scheme 2016', '2016-04-01', NULL)
-    ON CONFLICT (scheme_code) DO NOTHING;
+ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Claims Against Public Authorities' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
