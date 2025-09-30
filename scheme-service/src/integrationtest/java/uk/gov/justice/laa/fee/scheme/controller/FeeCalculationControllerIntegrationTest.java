@@ -510,4 +510,110 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             """, STRICT));
   }
 
+  @ParameterizedTest
+  @CsvSource({
+      "PROJ5, MAGS_COURT_FS2022, 491.27, 57.2, 286.02",
+      "YOUK2, YOUTH_COURT_FS2024, 427.09, 46.51, 232.53",
+  })
+  void shouldGetFeeCalculation_designatedMagsOrYouthCourt(String feeCode,
+                                                    String schemeId,
+                                                    String expectedTotal,
+                                                    String expectedVatAmount,
+                                                    String fixedFeeAmount) throws Exception {
+    String expectedJson = """
+        {
+          "feeCode": "%s",
+          "schemeId": "%s",
+          "claimId": "claim_123",
+          "escapeCaseFlag": false,
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": %s,
+            "disbursementAmount": 123.38,
+            "requestedNetDisbursementAmount": 123.38,
+            "disbursementVatAmount": 24.67,
+            "fixedFeeAmount": %s
+          }
+        }
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount);
+
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "%s",
+                  "claimId": "claim_123",
+                  "startDate": "2025-02-01",
+                  "netDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "vatIndicator": true
+                }
+                """.formatted(feeCode))
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json(expectedJson, STRICT));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "PROE1, MAGS_COURT_FS2022, 669.91, 86.98, 100, 111, 223.88",
+      "YOUE1, YOUTH_COURT_FS2024, 1388.21, 206.69, 100, 111, 822.47",
+  })
+  void shouldGetFeeCalculation_undesignatedMagsOrYouthCourt(
+      String feeCode,
+      String schemeId,
+      String expectedTotal,
+      String expectedVatAmount,
+      String netWaitingCosts,
+      String netTravelCosts,
+      String fixedFeeAmount
+  ) throws Exception {
+
+    String expectedJson = """
+      {
+        "feeCode": "%s",
+        "schemeId": "%s",
+        "claimId": "claim_123",
+        "escapeCaseFlag": false,
+        "feeCalculation": {
+          "totalAmount": %s,
+          "vatIndicator": true,
+          "vatRateApplied": 20.00,
+          "calculatedVatAmount": %s,
+          "disbursementAmount": 123.38,
+          "requestedNetDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "netWaitingCosts": %s,
+          "netTravelCostsAmount": %s,
+          "fixedFeeAmount": %s
+        }
+      }
+      """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, netWaitingCosts, netTravelCosts, fixedFeeAmount);
+
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+              {
+                "feeCode": "%s",
+                "claimId": "claim_123",
+                "startDate": "2025-02-01",
+                "netDisbursementAmount": 123.38,
+                "disbursementVatAmount": 24.67,
+                "vatIndicator": true,
+                "netWaitingCosts": %s,
+                "netTravelCosts": %s
+              }
+              """.formatted(feeCode, netWaitingCosts, netTravelCosts))
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json(expectedJson, STRICT));
+  }
+
+
 }
