@@ -615,5 +615,4 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(content().json(expectedJson, STRICT));
   }
 
-
 }

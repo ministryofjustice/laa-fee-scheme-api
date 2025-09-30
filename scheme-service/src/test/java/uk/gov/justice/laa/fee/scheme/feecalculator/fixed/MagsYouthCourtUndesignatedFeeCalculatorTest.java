@@ -49,7 +49,8 @@ class MagsYouthCourtUndesignatedFeeCalculatorTest {
   }
 
   private static Arguments arguments(String scenario, String feeCode, boolean vat, double expectedTotal, double expectedVat,
-                                     Double requestedNetTravel, Double requestedNetWaiting, double expectedNetTravel, double expectedNetWaiting) {
+                                     Double requestedNetTravel, Double requestedNetWaiting, double expectedNetTravel,
+                                     double expectedNetWaiting) {
     return Arguments.of(scenario, feeCode, vat, expectedTotal, expectedVat, requestedNetTravel,
         requestedNetWaiting, expectedNetTravel, expectedNetWaiting);
   }
