@@ -54,28 +54,25 @@ public final class FeeCalculationUtil {
   private static FeeCalculationResponse calculateAndBuildResponse(BigDecimal fixedFee, BoltOnFeeDetails boltOnFeeDetails,
                                                                   FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
+
     log.info("Get fields from fee calculation request");
-
-    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
-    String claimId = feeCalculationRequest.getClaimId();
-
-    LocalDate startDate = feeCalculationRequest.getStartDate();
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+    LocalDate startDate = feeCalculationRequest.getStartDate();
 
-    log.info("Calculate fixed fee and costs");
     BigDecimal boltOnVatAmount = BigDecimal.ZERO;
-    // Mental health has bolt on, rest do not
     BigDecimal boltOnValue = null;
+    // Mental health has bolt on, rest do not
     boolean isMentalHealth = feeEntity.getCategoryType().equals(CategoryType.MENTAL_HEALTH);
     if (isMentalHealth) {
+      log.info("Calculate bolt on amounts for fee calculation");
       boltOnValue = toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount());
-      boltOnVatAmount = getVatAmount(boltOnValue, feeCalculationRequest.getStartDate(), vatApplicable);
+      boltOnVatAmount = getVatAmount(boltOnValue, startDate, vatApplicable);
     }
 
     BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, startDate, vatApplicable);
-
     BigDecimal calculatedVatAmount = boltOnVatAmount.add(fixedFeeVatAmount);
+    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
     log.info("Calculate total amount for fee calculation");
     BigDecimal finalTotal = fixedFee
@@ -89,7 +86,7 @@ public final class FeeCalculationUtil {
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
-        .claimId(claimId)
+        .claimId(feeCalculationRequest.getClaimId())
         .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
