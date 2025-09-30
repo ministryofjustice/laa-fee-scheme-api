@@ -7,12 +7,10 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DEBT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.EDUCATION;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING_HLPAS;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGS_COURT_DESIGNATED;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MENTAL_HEALTH;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MISCELLANEOUS;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PUBLIC_LAW;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.WELFARE_BENEFITS;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.YOUTH_COURT_DESIGNATED;
 
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +32,7 @@ public class StandardFixedFeeCalculator implements FeeCalculator {
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of(CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT,
-        EDUCATION, HOUSING, HOUSING_HLPAS, MENTAL_HEALTH, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS,
-        MAGS_COURT_DESIGNATED, YOUTH_COURT_DESIGNATED
+        EDUCATION, HOUSING, HOUSING_HLPAS, MENTAL_HEALTH, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS
     );
   }
 

@@ -63,7 +63,7 @@ class StandardFixedFeeCalculatorTest {
 
 
     Assertions.assertNotNull(categories);
-    Assertions.assertEquals(13, categories.size()); // make sure the total count matches
+    Assertions.assertEquals(11, categories.size()); // make sure the total count matches
 
     Assertions.assertTrue(categories.contains(CategoryType.CLAIMS_PUBLIC_AUTHORITIES));
     Assertions.assertTrue(categories.contains(CategoryType.CLINICAL_NEGLIGENCE));
@@ -76,8 +76,6 @@ class StandardFixedFeeCalculatorTest {
     Assertions.assertTrue(categories.contains(CategoryType.MISCELLANEOUS));
     Assertions.assertTrue(categories.contains(CategoryType.PUBLIC_LAW));
     Assertions.assertTrue(categories.contains(CategoryType.WELFARE_BENEFITS));
-    Assertions.assertTrue(categories.contains(CategoryType.MAGS_COURT_DESIGNATED));
-    Assertions.assertTrue(categories.contains(CategoryType.YOUTH_COURT_DESIGNATED));
 
   }
 

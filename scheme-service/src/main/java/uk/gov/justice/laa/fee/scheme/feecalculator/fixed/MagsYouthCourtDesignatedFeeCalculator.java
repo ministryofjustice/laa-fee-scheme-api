@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -9,23 +10,22 @@ import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 /**
- * Calculate the undesignated magistrates or youth court fee for a given fee entity and fee calculation request.
+ * Calculate the designated magistrates or youth court fee for a given fee entity and fee calculation request.
  */
 @Slf4j
 @Component
-public class MagsYouthCourtUndesignatedFeeCalculator {
+public class MagsYouthCourtDesignatedFeeCalculator {
 
   /**
-   * Calculated fee for undesignated magistrates or youth court fee based on the provided fee entity and fee calculation request.
+   * Calculated fee for designated magistrates or youth court fee based on the provided fee entity and fee calculation request.
    */
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
-    log.info("Calculate magistrates and youth court undesignated fixed fee");
+    log.info("Calculate magistrates and youth court designated fixed fee");
     log.info("Get fields from fee calculation request");
     // get the requested disbursement amount from feeCalculationRequest
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
@@ -33,25 +33,15 @@ public class MagsYouthCourtUndesignatedFeeCalculator {
     // get the requested disbursement VAT amount from feeCalculationRequest
     BigDecimal requestedDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    // get the requested NetTravelCosts amount from feeCalculationRequest
-    BigDecimal requestedTravelCosts = toBigDecimal(feeCalculationRequest.getNetTravelCosts());
-
-    // get the requested NetWaitingCosts amount from feeCalculationRequest
-    BigDecimal requestedWaitingCosts = toBigDecimal(feeCalculationRequest.getNetWaitingCosts());
-
+    // @TODO: change to representation order date
     log.info("Calculate fixed fee and costs");
     BigDecimal fixedFeeAmount = feeEntity.getFixedFee();
-    BigDecimal fixedFeeAndAdditionalCosts = fixedFeeAmount
-        .add(requestedTravelCosts)
-        .add(requestedWaitingCosts);
-
-    // @TODO: change to representation order date
     LocalDate startDate = feeCalculationRequest.getStartDate();
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(fixedFeeAndAdditionalCosts, startDate, vatApplicable);
+    BigDecimal calculatedVatAmount = getVatAmount(fixedFeeAmount, startDate, vatApplicable);
 
     log.info("Calculate total amount for fee calculation");
-    BigDecimal finalTotal = fixedFeeAndAdditionalCosts
+    BigDecimal finalTotal = fixedFeeAmount
         .add(calculatedVatAmount)
         .add(requestedNetDisbursementAmount)
         .add(requestedDisbursementVatAmount);
@@ -66,8 +56,6 @@ public class MagsYouthCourtUndesignatedFeeCalculator {
         .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
         .disbursementVatAmount(toDouble(requestedDisbursementVatAmount))
         .fixedFeeAmount(toDouble(fixedFeeAmount))
-        .netTravelCostsAmount(toDouble(requestedTravelCosts))
-        .netWaitingCosts(toDouble(requestedWaitingCosts))
         .build();
     String claimId = feeCalculationRequest.getClaimId();
 

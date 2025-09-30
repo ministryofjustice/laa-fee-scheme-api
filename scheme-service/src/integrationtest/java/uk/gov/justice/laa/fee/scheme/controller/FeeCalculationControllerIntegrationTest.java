@@ -525,7 +525,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
           "feeCode": "%s",
           "schemeId": "%s",
           "claimId": "claim_123",
-          "escapeCaseFlag": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -578,7 +577,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         "feeCode": "%s",
         "schemeId": "%s",
         "claimId": "claim_123",
-        "escapeCaseFlag": false,
         "feeCalculation": {
           "totalAmount": %s,
           "vatIndicator": true,
