@@ -8,6 +8,7 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
@@ -19,6 +20,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 /**
  * Utility class for fee calculation operations.
  */
+@Slf4j
 public final class FeeCalculationUtil {
 
   private FeeCalculationUtil() {
@@ -52,12 +54,16 @@ public final class FeeCalculationUtil {
   private static FeeCalculationResponse calculateAndBuildResponse(BigDecimal fixedFee, BoltOnFeeDetails boltOnFeeDetails,
                                                                   FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
+    log.info("Get fields from fee calculation request");
+
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
     String claimId = feeCalculationRequest.getClaimId();
 
     LocalDate startDate = feeCalculationRequest.getStartDate();
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+
+    log.info("Calculate fixed fee and costs");
     BigDecimal boltOnVatAmount = BigDecimal.ZERO;
     // Mental health has bolt on, rest do not
     BigDecimal boltOnValue = null;
@@ -66,10 +72,12 @@ public final class FeeCalculationUtil {
       boltOnValue = toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount());
       boltOnVatAmount = getVatAmount(boltOnValue, feeCalculationRequest.getStartDate(), vatApplicable);
     }
+
     BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, startDate, vatApplicable);
 
     BigDecimal calculatedVatAmount = boltOnVatAmount.add(fixedFeeVatAmount);
 
+    log.info("Calculate total amount for fee calculation");
     BigDecimal finalTotal = fixedFee
         .add(fixedFeeVatAmount)
         .add(defaultToZeroIfNull(boltOnValue))
@@ -77,6 +85,7 @@ public final class FeeCalculationUtil {
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
 
+    log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
