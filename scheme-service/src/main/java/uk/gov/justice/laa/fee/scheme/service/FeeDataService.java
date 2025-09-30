@@ -1,15 +1,17 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
-import uk.gov.justice.laa.fee.scheme.exception.FeeNotFoundException;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
-import uk.gov.justice.laa.fee.scheme.repository.FeeSchemesRepository;
 
 /**
  * Service for retrieving Database Table entities.
@@ -21,8 +23,6 @@ public class FeeDataService {
 
   private final FeeRepository feeRepository;
 
-  private final FeeSchemesRepository feeSchemesRepository;
-
   /**
    * Returns FeeEntity after making calls to database.
    *
@@ -31,21 +31,29 @@ public class FeeDataService {
    */
   public FeeEntity getFeeEntity(FeeCalculationRequest feeCalculationRequest) {
 
-    log.info("Get fee entity");
+    log.info("Get filtered fee entity");
 
-    FeeSchemesEntity feeSchemesEntity = feeSchemesRepository
-        .findValidSchemeForDate(feeCalculationRequest.getFeeCode(), feeCalculationRequest.getStartDate(), PageRequest.of(0, 1))
-        .stream()
-        .findFirst()
-        .orElseThrow(() -> new FeeNotFoundException(feeCalculationRequest.getFeeCode(), feeCalculationRequest.getStartDate()));
+    List<FeeEntity> feeEntityList = feeRepository.findByFeeCode(feeCalculationRequest.getFeeCode());
 
-    log.info("Retrieved fee scheme entity with schemeCode: {}", feeSchemesEntity.getSchemeCode());
+    if (!feeEntityList.isEmpty()) {
 
-    FeeEntity feeEntity = feeRepository.findByFeeCodeAndFeeSchemeCode(feeCalculationRequest.getFeeCode(), feeSchemesEntity)
-        .orElseThrow(() -> new FeeNotFoundException(feeCalculationRequest.getFeeCode(), feeCalculationRequest.getStartDate()));
+      CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
 
-    log.info("Retrieved fee entity with feeId: {}", feeEntity.getFeeId());
+      LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeCalculationRequest);
 
-    return feeEntity;
+      // filter out valid fee entity for a given input parameters
+      Optional<FeeEntity> feeEntityOptional =  feeEntityList.stream()
+          .filter(fee -> isValidFee(fee, claimStartDate)) // startDate <= inputDate
+          .max(Comparator.comparing(fee -> fee.getFeeSchemeCode().getValidFrom()));
+      return feeEntityOptional.orElse(null);
+    }
+    return null;
   }
+
+  private static boolean isValidFee(FeeEntity fee, LocalDate claimStartDate) {
+    return fee.getFeeSchemeCode().getValidFrom().isBefore(claimStartDate)
+        && (fee.getFeeSchemeCode().getValidTo() == null || claimStartDate.isBefore(fee.getFeeSchemeCode().getValidTo()));
+  }
+
+
 }

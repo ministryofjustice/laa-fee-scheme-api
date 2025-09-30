@@ -99,7 +99,7 @@ components:
         startDate:
           type: string
           format: date
-          description: "Civil: case start date. Crime: Representation order date."
+          description: "Civil: case start date."
         policeStationId:
           type: string
           description: "Police Station ID."
@@ -167,6 +167,10 @@ components:
         immigrationPriorAuthorityNumber:
           type: string
           description: "Authorisation specific to immigration, used for net profit costs over limit or disbursements over limit."
+        representationOrderDate:
+          type: string
+          format: date
+          description: "Crime Lower : Representation order date for Magistrate/Youth Court"
 
     FeeCalculationResponse:
       type: object

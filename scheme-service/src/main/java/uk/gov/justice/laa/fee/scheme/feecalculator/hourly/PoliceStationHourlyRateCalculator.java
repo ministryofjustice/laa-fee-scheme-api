@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -64,11 +65,12 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
           .build());
     }
     // Apply VAT where applicable
-    LocalDate startDate = feeCalculationRequest.getStartDate();
+    LocalDate claimStartDate = FeeCalculationUtil
+        .getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
 
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
 
-    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(feeTotal, startDate, vatApplicable);
+    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(feeTotal, claimStartDate, vatApplicable);
 
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 

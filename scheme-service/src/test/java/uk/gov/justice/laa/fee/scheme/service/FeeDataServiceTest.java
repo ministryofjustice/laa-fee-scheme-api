@@ -45,9 +45,11 @@ class FeeDataServiceTest {
         .policeStationId("NA2093")
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
+        .uniqueFileNumber("120423/456")
         .build();
 
-    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022")
+        .validFrom(LocalDate.of(2022,1,1)).build();
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVC")
@@ -58,15 +60,162 @@ class FeeDataServiceTest {
         .feeType(FeeType.FIXED)
         .build();
 
-    when(feeSchemesRepository.findValidSchemeForDate(any(),
-        any(), any())).thenReturn(List.of(feeSchemesEntity));
-    when(feeRepository.findByFeeCodeAndFeeSchemeCode(any(),
-        any())).thenReturn(Optional.of(feeEntity));
+    when(feeRepository.findByFeeCode(any())).thenReturn(List.of(feeEntity));
 
     FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeData);
 
     assertThat(feeEntityResponse).isNotNull();
     assertThat(feeEntityResponse.getFeeCode()).isEqualTo("INVC");
 
+  }
+
+  @Test
+  void test_whenMultipleRecordsPresentInFeeTable_shouldReturnValidResponse() {
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode("INVC")
+        .startDate(LocalDate.of(2017, 7, 29))
+        .vatIndicator(Boolean.TRUE)
+        .policeStationSchemeId("1003")
+        .policeStationId("NA2093")
+        .uniqueFileNumber("011222/456")
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity1 = FeeSchemesEntity.builder().schemeCode("POL_FS2022")
+        .validFrom(LocalDate.of(2022,1,1)).build();
+
+    FeeEntity feeEntity1 = FeeEntity.builder()
+        .feeCode("INVC")
+        .feeSchemeCode(feeSchemesEntity1)
+        .profitCostLimit(new BigDecimal("123.56"))
+        .fixedFee(new BigDecimal("200.56"))
+        .categoryType(POLICE_STATION)
+        .feeType(FeeType.FIXED)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity2 = FeeSchemesEntity.builder().schemeCode("POL_FS2016")
+        .validFrom(LocalDate.of(2016,1,1)).build();
+
+    FeeEntity feeEntity2 = FeeEntity.builder()
+        .feeCode("INVC")
+        .feeSchemeCode(feeSchemesEntity2)
+        .profitCostLimit(new BigDecimal("123.56"))
+        .fixedFee(new BigDecimal("200.56"))
+        .categoryType(POLICE_STATION)
+        .feeType(FeeType.FIXED)
+        .build();
+
+    when(feeRepository.findByFeeCode(any())).thenReturn(List.of(feeEntity1, feeEntity2));
+
+    FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeData);
+
+    assertThat(feeEntityResponse).isNotNull();
+    assertThat(feeEntityResponse.getFeeCode()).isEqualTo("INVC");
+  }
+
+
+
+  @Test
+  void test_whenMultipleRecordsPresentInFeeTableAndFeeSchemeEnded_shouldReturnValidResponse() {
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode("INVC")
+        .startDate(LocalDate.of(2017, 7, 29))
+        .vatIndicator(Boolean.TRUE)
+        .policeStationSchemeId("1003")
+        .policeStationId("NA2093")
+        .uniqueFileNumber("011222/456")
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity1 = FeeSchemesEntity.builder().schemeCode("POL_FS2022")
+        .validFrom(LocalDate.of(2022,1,1)).validTo(LocalDate.of(2023,1,1)).build();
+
+    FeeEntity feeEntity1 = FeeEntity.builder()
+        .feeCode("INVC")
+        .feeSchemeCode(feeSchemesEntity1)
+        .profitCostLimit(new BigDecimal("123.56"))
+        .fixedFee(new BigDecimal("200.56"))
+        .categoryType(POLICE_STATION)
+        .feeType(FeeType.FIXED)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity2 = FeeSchemesEntity.builder().schemeCode("POL_FS2016")
+        .validFrom(LocalDate.of(2016,1,1)).build();
+
+    FeeEntity feeEntity2 = FeeEntity.builder()
+        .feeCode("INVC")
+        .feeSchemeCode(feeSchemesEntity2)
+        .profitCostLimit(new BigDecimal("123.56"))
+        .fixedFee(new BigDecimal("200.56"))
+        .categoryType(POLICE_STATION)
+        .feeType(FeeType.FIXED)
+        .build();
+
+    when(feeRepository.findByFeeCode(any())).thenReturn(List.of(feeEntity1, feeEntity2));
+
+    FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeData);
+
+    assertThat(feeEntityResponse).isNotNull();
+    assertThat(feeEntityResponse.getFeeCode()).isEqualTo("INVC");
+  }
+
+  @Test
+  void test_whenSingleRecordOfFeePresentInFeeTable_shouldReturnValidResponse() {
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode("INVC")
+        .startDate(LocalDate.of(2017, 7, 29))
+        .vatIndicator(Boolean.TRUE)
+        .policeStationSchemeId("1003")
+        .policeStationId("NA2093")
+        .uniqueFileNumber("120423/456")
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022")
+          .validFrom(LocalDate.of(2022,1,1)).build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("INVC")
+        .feeSchemeCode(feeSchemesEntity)
+        .profitCostLimit(new BigDecimal("123.56"))
+        .fixedFee(new BigDecimal("200.56"))
+        .categoryType(POLICE_STATION)
+        .feeType(FeeType.FIXED)
+        .build();
+
+    when(feeRepository.findByFeeCode(any())).thenReturn(List.of(feeEntity));
+
+    FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeData);
+
+    assertThat(feeEntityResponse).isNotNull();
+    assertThat(feeEntityResponse.getFeeCode()).isEqualTo("INVC");
+  }
+
+
+  @Test
+  void test_whenNoRecordPresentInFeeTable_shouldReturnValidResponse() {
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode("INVC")
+        .startDate(LocalDate.of(2017, 7, 29))
+        .vatIndicator(Boolean.TRUE)
+        .policeStationSchemeId("1003")
+        .policeStationId("NA2093")
+        .uniqueFileNumber("120423/456")
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .build();
+
+    when(feeRepository.findByFeeCode(any())).thenReturn(List.of());
+
+    FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeData);
+
+    assertThat(feeEntityResponse).isNull();
   }
 }

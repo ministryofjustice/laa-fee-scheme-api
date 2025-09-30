@@ -476,7 +476,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "feeCode": "INVH",
                   "claimId": "claim_123",
                   "startDate": "2019-12-12",
-                  "uniqueFileNumber": "041223/6655",
+                  "uniqueFileNumber": "041122/6655",
                   "policeStationId": "NE024",
                   "policeStationSchemeId": "1007",
                   "netProfitCosts": 34.56,
@@ -492,7 +492,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(content().json("""
             {
               "feeCode": "INVH",
-              "schemeId": "POL_FS2016",
+              "schemeId": "POL_FS2022",
               "feeCalculation": {
                 "totalAmount": 187.66,
                 "vatIndicator": true,
