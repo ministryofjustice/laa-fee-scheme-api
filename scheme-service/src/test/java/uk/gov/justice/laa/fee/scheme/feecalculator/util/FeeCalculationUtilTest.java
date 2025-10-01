@@ -224,4 +224,22 @@ class FeeCalculationUtilTest {
         .representationOrderDate(LocalDate.of(2023, 12, 12))
         .build();
   }
+
+  @Test
+  void calculateTotalAmount_givenFeeAndDisbursements_returnsTotal() {
+    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(new BigDecimal("120.50"),
+        new BigDecimal("24.10"),
+        new BigDecimal("67.52"),
+        new BigDecimal("13.50"));
+
+    assertThat(totalAmount).isEqualTo(new BigDecimal("225.62"));
+  }
+
+  @Test
+  void calculateTotalAmount_givenFee_returnsTotal() {
+    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(new BigDecimal("120.50"),
+        new BigDecimal("24.10"));
+
+    assertThat(totalAmount).isEqualTo(new BigDecimal("144.60"));
+  }
 }
