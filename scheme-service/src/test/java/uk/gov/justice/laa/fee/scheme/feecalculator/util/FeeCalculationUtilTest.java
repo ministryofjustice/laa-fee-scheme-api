@@ -158,7 +158,7 @@ class FeeCalculationUtilTest {
   @EnumSource(value = CategoryType.class, names = {
       "ASSOCIATED_CIVIL", "POLICE_STATION", "PRISON_LAW"
   })
-  void calculate_ReturnDateFromUniqueFileNumber_forPoliceAndPrisonLaw(CategoryType categoryType) {
+  void calculate_ReturnDateFromUniqueFileNumber_forAssocCivilAndPoliceAndPrisonLaw(CategoryType categoryType) {
     FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
     LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeDataRequest);
 
