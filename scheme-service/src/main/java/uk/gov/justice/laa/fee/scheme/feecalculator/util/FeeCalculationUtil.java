@@ -54,7 +54,6 @@ public final class FeeCalculationUtil {
   private static FeeCalculationResponse calculateAndBuildResponse(BigDecimal fixedFee, BoltOnFeeDetails boltOnFeeDetails,
                                                                   FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-
     log.info("Get fields from fee calculation request");
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
     LocalDate startDate = feeCalculationRequest.getStartDate();
@@ -74,7 +73,7 @@ public final class FeeCalculationUtil {
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    log.info("Calculate total amount for fee calculation");
+    log.info("Calculate total fee amount with any disbursements, bolt ons and VAT");
     BigDecimal finalTotal = fixedFee
         .add(fixedFeeVatAmount)
         .add(defaultToZeroIfNull(boltOnValue))
@@ -104,4 +103,26 @@ public final class FeeCalculationUtil {
         .build();
   }
 
+  /**
+   * Calculate total amount when only fees and VAT are applicable.
+   */
+  public static BigDecimal calculateTotalAmount(BigDecimal feeTotal, BigDecimal calculatedVatAmount) {
+    log.info("Calculate total fee amount with any VAT");
+
+    return feeTotal
+        .add(calculatedVatAmount);
+  }
+
+  /**
+   * Calculate total amount when fees, disbursements and VAT are applicable.
+   */
+  public static BigDecimal calculateTotalAmount(BigDecimal feeTotal, BigDecimal calculatedVatAmount,
+                                                BigDecimal netDisbursementAmount, BigDecimal disbursementVatAmount) {
+    log.info("Calculate total fee amount with any disbursements and VAT");
+
+    return feeTotal
+        .add(calculatedVatAmount)
+        .add(netDisbursementAmount)
+        .add(disbursementVatAmount);
+  }
 }
