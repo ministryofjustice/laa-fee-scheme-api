@@ -48,8 +48,9 @@ public class FeeDataService {
           .max(Comparator.comparing(fee -> fee.getFeeSchemeCode().getValidFrom()));
       return feeEntityOptional
           .orElseThrow(() -> new FeeNotFoundException(feeCalculationRequest.getFeeCode(), claimStartDate));
+    } else {
+      throw new FeeNotFoundException(feeCalculationRequest.getFeeCode(), feeCalculationRequest.getStartDate());
     }
-    return null;
   }
 
   private static boolean isValidFee(FeeEntity fee, LocalDate claimStartDate) {

@@ -188,15 +188,14 @@ class FeeDataServiceTest {
   }
 
   @Test
-  void test_whenNoRecordPresentInFeeTable_shouldReturnValidResponse() {
+  void test_whenNoRecordPresentInFeeTable_shouldThrowException() {
 
     FeeCalculationRequest feeData = getFeeCalculationRequest();
 
     when(feeRepository.findByFeeCode(any())).thenReturn(List.of());
 
-    FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeData);
-
-    assertThat(feeEntityResponse).isNull();
+    assertThatThrownBy(() -> feeDataService.getFeeEntity(feeData))
+        .hasMessageContaining(String.format("Fee not found for feeCode: %s and startDate: %s", "INVC", feeData.getStartDate()));
   }
 
   private static FeeCalculationRequest getFeeCalculationRequest() {
