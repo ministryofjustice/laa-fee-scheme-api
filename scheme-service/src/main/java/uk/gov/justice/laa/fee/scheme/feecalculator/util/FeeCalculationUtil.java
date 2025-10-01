@@ -38,7 +38,7 @@ public final class FeeCalculationUtil {
    * If Applicable add VAT to subtotal.
    * subtotalWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
    */
-  public static FeeCalculationResponse calculateFixedFee(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+  public static FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     BigDecimal fixedFee = defaultToZeroIfNull(feeEntity.getFixedFee());
     return calculateAndBuildResponse(fixedFee, feeCalculationRequest, feeEntity);
   }
@@ -48,8 +48,8 @@ public final class FeeCalculationUtil {
    * If Applicable add VAT to subtotal.
    * subtotalWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
    */
-  public static FeeCalculationResponse calculateFixedFee(BigDecimal fixedFee, FeeCalculationRequest feeCalculationRequest,
-                                                         FeeEntity feeEntity) {
+  public static FeeCalculationResponse calculate(BigDecimal fixedFee, FeeCalculationRequest feeCalculationRequest,
+                                                 FeeEntity feeEntity) {
     return calculateAndBuildResponse(fixedFee, feeCalculationRequest, feeEntity);
   }
 

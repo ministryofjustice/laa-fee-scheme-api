@@ -27,10 +27,10 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 @ExtendWith(MockitoExtension.class)
-class MagsAndYouthCourtFeeCalculatorTest {
+class MagsYouthCourtFixedFeeCalculatorTest {
 
   @InjectMocks
-  MagsAndYouthCourtFeeCalculator calculator;
+  MagsYouthCourtFixedFeeCalculator calculator;
 
   @Test
   void shouldThrowException_whenCategoryTypeIsUnsupported() {

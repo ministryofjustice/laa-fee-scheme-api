@@ -48,6 +48,6 @@ public class StandardFixedFeeCalculator implements FeeCalculator {
 
     log.info("Calculate Standard fixed fee");
 
-    return FeeCalculationUtil.calculateFixedFee(feeCalculationRequest, feeEntity);
+    return FeeCalculationUtil.calculate(feeCalculationRequest, feeEntity);
   }
 }
