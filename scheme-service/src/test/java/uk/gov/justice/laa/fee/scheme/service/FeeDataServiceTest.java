@@ -134,7 +134,31 @@ class FeeDataServiceTest {
     assertThat(feeEntityResponse.getFixedFee()).isEqualTo("1256.66");
   }
 
+  @Test
+  void test_whenSingleRecordOfFeePresentInFeeTable_And_StartDateIsGreaterThanFeeSchemeStartDate_shouldReturnValidResponse() {
 
+    FeeCalculationRequest feeData = getFeeCalculationRequest();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022")
+        .validFrom(LocalDate.of(2021,12,31)).build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("INVC")
+        .feeSchemeCode(feeSchemesEntity)
+        .profitCostLimit(new BigDecimal("123.56"))
+        .fixedFee(new BigDecimal("200.56"))
+        .categoryType(POLICE_STATION)
+        .feeType(FeeType.FIXED)
+        .build();
+
+    when(feeRepository.findByFeeCode(any())).thenReturn(List.of(feeEntity));
+
+    FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeData);
+
+    assertThat(feeEntityResponse).isNotNull();
+    assertThat(feeEntityResponse.getFeeCode()).isEqualTo("INVC");
+    assertThat(feeEntityResponse.getFixedFee()).isEqualTo("200.56");
+  }
 
   @Test
   void test_whenSingleRecordOfFeePresentInFeeTable_shouldReturnValidResponse() {
@@ -205,7 +229,7 @@ class FeeDataServiceTest {
         .vatIndicator(Boolean.TRUE)
         .policeStationSchemeId("1003")
         .policeStationId("NA2093")
-        .uniqueFileNumber("011222/456")
+        .uniqueFileNumber("010122/456")
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
         .build();

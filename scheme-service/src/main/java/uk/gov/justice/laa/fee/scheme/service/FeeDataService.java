@@ -54,7 +54,7 @@ public class FeeDataService {
   }
 
   private static boolean isValidFee(FeeEntity fee, LocalDate claimStartDate) {
-    return fee.getFeeSchemeCode().getValidFrom().isBefore(claimStartDate)
+    return !fee.getFeeSchemeCode().getValidFrom().isAfter(claimStartDate)
         && (fee.getFeeSchemeCode().getValidTo() == null || claimStartDate.isBefore(fee.getFeeSchemeCode().getValidTo()));
   }
 
