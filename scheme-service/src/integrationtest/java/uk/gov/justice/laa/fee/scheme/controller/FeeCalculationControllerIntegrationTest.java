@@ -545,7 +545,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                 {
                   "feeCode": "%s",
                   "claimId": "claim_123",
-                  "startDate": "2025-02-01",
+                  "representationOrderDate": "2025-02-01",
                   "netDisbursementAmount": 123.38,
                   "disbursementVatAmount": 24.67,
                   "vatIndicator": true
@@ -599,7 +599,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               {
                 "feeCode": "%s",
                 "claimId": "claim_123",
-                "startDate": "2025-02-01",
+                "representationOrderDate": "2025-02-01",
                 "netDisbursementAmount": 123.38,
                 "disbursementVatAmount": 24.67,
                 "vatIndicator": true,

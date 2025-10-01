@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
-import static java.util.Objects.nonNull;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGS_COURT_DESIGNATED;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGS_COURT_UNDESIGNATED;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.YOUTH_COURT_DESIGNATED;
@@ -42,7 +41,7 @@ public class MagsAndYouthCourtFeeCalculator implements FeeCalculator {
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest request, FeeEntity feeEntity) {
     CategoryType categoryType = feeEntity.getCategoryType();
-
+    log.info("Determine calculation type using category: {}", categoryType);
     return switch (categoryType) {
       case MAGS_COURT_DESIGNATED, YOUTH_COURT_DESIGNATED -> calculateDesignated(request, feeEntity);
       case MAGS_COURT_UNDESIGNATED, YOUTH_COURT_UNDESIGNATED -> calculateUndesignated(request, feeEntity);
@@ -50,81 +49,20 @@ public class MagsAndYouthCourtFeeCalculator implements FeeCalculator {
     };
   }
 
-  private FeeCalculationResponse calculateDesignated(FeeCalculationRequest request, FeeEntity feeEntity) {
+  private FeeCalculationResponse calculateDesignated(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     log.info("Calculate magistrates and youth court designated fixed fee");
-    BigDecimal requestedNetDisbursementAmount = toBigDecimal(request.getNetDisbursementAmount());
-    BigDecimal requestedDisbursementVatAmount = toBigDecimal(request.getDisbursementVatAmount());
+    BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+    BigDecimal requestedDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
     BigDecimal fixedFeeAmount = feeEntity.getFixedFee();
-    LocalDate startDate = request.getStartDate();
-    Boolean vatApplicable = request.getVatIndicator();
+    LocalDate startDate = feeCalculationRequest.getRepresentationOrderDate();
+    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
     BigDecimal calculatedVatAmount = getVatAmount(fixedFeeAmount, startDate, vatApplicable);
 
     BigDecimal finalTotal = fixedFeeAmount
         .add(calculatedVatAmount)
         .add(requestedNetDisbursementAmount)
         .add(requestedDisbursementVatAmount);
-
-    return buildResponse(
-        request,
-        feeEntity,
-        finalTotal,
-        calculatedVatAmount,
-        requestedNetDisbursementAmount,
-        requestedDisbursementVatAmount,
-        fixedFeeAmount,
-        null,
-        null
-    );
-  }
-
-  private FeeCalculationResponse calculateUndesignated(FeeCalculationRequest request, FeeEntity feeEntity) {
-    log.info("Calculate magistrates and youth court undesignated fixed fee");
-    BigDecimal requestedNetDisbursementAmount = toBigDecimal(request.getNetDisbursementAmount());
-    BigDecimal requestedDisbursementVatAmount = toBigDecimal(request.getDisbursementVatAmount());
-    BigDecimal requestedTravelCosts = toBigDecimal(request.getNetTravelCosts());
-    BigDecimal requestedWaitingCosts = toBigDecimal(request.getNetWaitingCosts());
-
-    BigDecimal fixedFeeAmount = feeEntity.getFixedFee();
-    BigDecimal fixedFeeAndAdditionalCosts = fixedFeeAmount
-        .add(requestedTravelCosts)
-        .add(requestedWaitingCosts);
-
-    LocalDate startDate = request.getStartDate();
-    Boolean vatApplicable = request.getVatIndicator();
-    BigDecimal calculatedVatAmount = getVatAmount(fixedFeeAndAdditionalCosts, startDate, vatApplicable);
-
-    BigDecimal finalTotal = fixedFeeAndAdditionalCosts
-        .add(calculatedVatAmount)
-        .add(requestedNetDisbursementAmount)
-        .add(requestedDisbursementVatAmount);
-
-    return buildResponse(
-        request,
-        feeEntity,
-        finalTotal,
-        calculatedVatAmount,
-        requestedNetDisbursementAmount,
-        requestedDisbursementVatAmount,
-        fixedFeeAmount,
-        requestedTravelCosts,
-        requestedWaitingCosts
-    );
-  }
-
-  private FeeCalculationResponse buildResponse(
-      FeeCalculationRequest request,
-      FeeEntity feeEntity,
-      BigDecimal finalTotal,
-      BigDecimal calculatedVatAmount,
-      BigDecimal requestedNetDisbursementAmount,
-      BigDecimal requestedDisbursementVatAmount,
-      BigDecimal fixedFeeAmount,
-      BigDecimal requestedTravelCosts,
-      BigDecimal requestedWaitingCosts
-  ) {
-    LocalDate startDate = request.getStartDate();
-    Boolean vatApplicable = request.getVatIndicator();
 
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(finalTotal))
@@ -135,14 +73,54 @@ public class MagsAndYouthCourtFeeCalculator implements FeeCalculator {
         .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
         .disbursementVatAmount(toDouble(requestedDisbursementVatAmount))
         .fixedFeeAmount(toDouble(fixedFeeAmount))
-        .netWaitingCosts(nonNull(requestedTravelCosts) ? toDouble(requestedWaitingCosts) : null)
-        .netTravelCostsAmount(nonNull(requestedTravelCosts) ? toDouble(requestedTravelCosts) : null)
         .build();
 
+    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation);
+  }
+
+  private FeeCalculationResponse calculateUndesignated(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+    log.info("Calculate magistrates and youth court undesignated fixed fee");
+    BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+    BigDecimal requestedDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+    BigDecimal requestedTravelCosts = toBigDecimal(feeCalculationRequest.getNetTravelCosts());
+    BigDecimal requestedWaitingCosts = toBigDecimal(feeCalculationRequest.getNetWaitingCosts());
+
+    BigDecimal fixedFeeAmount = feeEntity.getFixedFee();
+    BigDecimal fixedFeeAndAdditionalCosts = fixedFeeAmount
+        .add(requestedTravelCosts)
+        .add(requestedWaitingCosts);
+
+    LocalDate startDate = feeCalculationRequest.getRepresentationOrderDate();
+    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+    BigDecimal calculatedVatAmount = getVatAmount(fixedFeeAndAdditionalCosts, startDate, vatApplicable);
+
+    BigDecimal finalTotal = fixedFeeAndAdditionalCosts
+        .add(calculatedVatAmount)
+        .add(requestedNetDisbursementAmount)
+        .add(requestedDisbursementVatAmount);
+
+    FeeCalculation feeCalculation = FeeCalculation.builder()
+        .totalAmount(toDouble(finalTotal))
+        .vatIndicator(vatApplicable)
+        .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+        .calculatedVatAmount(toDouble(calculatedVatAmount))
+        .disbursementAmount(toDouble(requestedNetDisbursementAmount))
+        .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
+        .disbursementVatAmount(toDouble(requestedDisbursementVatAmount))
+        .fixedFeeAmount(toDouble(fixedFeeAmount))
+        .netWaitingCosts(toDouble(requestedWaitingCosts))
+        .netTravelCostsAmount(toDouble(requestedTravelCosts))
+        .build();
+
+    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation);
+  }
+
+  private FeeCalculationResponse buildFeeCalculationResponse(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
+                                                             FeeCalculation feeCalculation) {
     return FeeCalculationResponse.builder()
-        .feeCode(request.getFeeCode())
+        .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
-        .claimId(request.getClaimId())
+        .claimId(feeCalculationRequest.getClaimId())
         .feeCalculation(feeCalculation)
         .build();
   }
