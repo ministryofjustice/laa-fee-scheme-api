@@ -34,7 +34,6 @@ public final class VatUtil {
       return BigDecimal.ZERO;
     }
 
-    log.info("Calculate VAT for fee calculation");
     BigDecimal rate = getVatRateForDate(startDate);
     return calculateVatAmount(value, rate);
   }
@@ -54,6 +53,8 @@ public final class VatUtil {
    * Get VAT amount to a given value using the tax rate.
    */
   public static BigDecimal calculateVatAmount(BigDecimal value, BigDecimal taxRate) {
+    log.info("Calculate VAT amount");
+
     return value.multiply(taxRate)
         .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)
         .setScale(2, RoundingMode.HALF_UP);

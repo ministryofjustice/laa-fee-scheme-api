@@ -9,6 +9,7 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
@@ -21,6 +22,7 @@ import uk.gov.justice.laa.fee.scheme.util.DateUtil;
 /**
  * Utility class for fee calculation operations.
  */
+@Slf4j
 public final class FeeCalculationUtil {
 
   private FeeCalculationUtil() {
@@ -54,24 +56,26 @@ public final class FeeCalculationUtil {
   private static FeeCalculationResponse calculateAndBuildResponse(BigDecimal fixedFee, BoltOnFeeDetails boltOnFeeDetails,
                                                                   FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
-    String claimId = feeCalculationRequest.getClaimId();
-
-    LocalDate startDate = feeCalculationRequest.getStartDate();
+    log.info("Get fields from fee calculation request");
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+    LocalDate startDate = feeCalculationRequest.getStartDate();
+
     BigDecimal boltOnVatAmount = BigDecimal.ZERO;
-    // Mental health has bolt on, rest do not
     BigDecimal boltOnValue = null;
+    // Mental health has bolt on, rest do not
     boolean isMentalHealth = feeEntity.getCategoryType().equals(CategoryType.MENTAL_HEALTH);
     if (isMentalHealth) {
+      log.info("Calculate bolt on amounts for fee calculation");
       boltOnValue = toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount());
-      boltOnVatAmount = getVatAmount(boltOnValue, feeCalculationRequest.getStartDate(), vatApplicable);
+      boltOnVatAmount = getVatAmount(boltOnValue, startDate, vatApplicable);
     }
+
     BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, startDate, vatApplicable);
-
     BigDecimal calculatedVatAmount = boltOnVatAmount.add(fixedFeeVatAmount);
+    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
+    log.info("Calculate total fee amount with any disbursements, bolt ons and VAT");
     BigDecimal finalTotal = fixedFee
         .add(fixedFeeVatAmount)
         .add(defaultToZeroIfNull(boltOnValue))
@@ -79,10 +83,11 @@ public final class FeeCalculationUtil {
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
 
+    log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
-        .claimId(claimId)
+        .claimId(feeCalculationRequest.getClaimId())
         .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
@@ -116,4 +121,26 @@ public final class FeeCalculationUtil {
     };
   }
 
+  /**
+   * Calculate total amount when only fees and VAT are applicable.
+   */
+  public static BigDecimal calculateTotalAmount(BigDecimal feeTotal, BigDecimal calculatedVatAmount) {
+    log.info("Calculate total fee amount with any VAT");
+
+    return feeTotal
+        .add(calculatedVatAmount);
+  }
+
+  /**
+   * Calculate total amount when fees, disbursements and VAT are applicable.
+   */
+  public static BigDecimal calculateTotalAmount(BigDecimal feeTotal, BigDecimal calculatedVatAmount,
+                                                BigDecimal netDisbursementAmount, BigDecimal disbursementVatAmount) {
+    log.info("Calculate total fee amount with any disbursements and VAT");
+
+    return feeTotal
+        .add(calculatedVatAmount)
+        .add(netDisbursementAmount)
+        .add(disbursementVatAmount);
+  }
 }

@@ -56,14 +56,17 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
 
     BigDecimal travelAndWaitingExpenses = toBigDecimal(feeCalculationRequest.getTravelAndWaitingCosts());
 
+    log.info("Calculate hourly rate and costs");
     BigDecimal feeTotal = netProfitCosts.add(netDisbursementAmount).add(travelAndWaitingExpenses);
 
     if (feeTotal.compareTo(profitCostLimit) > 0) {
+      log.warn("Fee total exceeds profit cost limit");
       validationMessages.add(ValidationMessagesInner.builder()
           .message(WARNING_NET_PROFIT_COSTS)
           .type(WARNING)
           .build());
     }
+
     // Apply VAT where applicable
     LocalDate claimStartDate = FeeCalculationUtil
         .getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
@@ -74,17 +77,16 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
 
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    BigDecimal finalTotal = feeTotal
-        .add(calculatedVatAmount)
-        .add(netDisbursementAmount)
-        .add(disbursementVatAmount);
+    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(feeTotal, calculatedVatAmount,
+            netDisbursementAmount, disbursementVatAmount);
 
+    log.info("Build fee calculation response");
     return new FeeCalculationResponse().toBuilder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
         .validationMessages(validationMessages)
         .feeCalculation(FeeCalculation.builder()
-            .totalAmount(toDouble(finalTotal))
+            .totalAmount(toDouble(totalAmount))
             .vatIndicator(feeCalculationRequest.getVatIndicator())
             .vatRateApplied(toDouble(VatUtil.getVatRateForDate(feeCalculationRequest.getStartDate())))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
