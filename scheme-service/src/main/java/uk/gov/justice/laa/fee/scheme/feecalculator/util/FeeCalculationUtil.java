@@ -34,9 +34,7 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Fixed fee (from DB) + bolt ons (if exists) + netDisbursementAmount = subtotal.
-   * If Applicable add VAT to subtotal.
-   * subtotalWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
+   * Calculate fee using Fixed Fee from FeeEntity.
    */
   public static FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     BigDecimal fixedFee = defaultToZeroIfNull(feeEntity.getFixedFee());
@@ -44,15 +42,18 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Given fixed fee + bolt ons (if exists) + netDisbursementAmount = subtotal.
-   * If Applicable add VAT to subtotal.
-   * subtotalWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
+   * Calculate fee using given Fixed Fee value.
    */
   public static FeeCalculationResponse calculate(BigDecimal fixedFee, FeeCalculationRequest feeCalculationRequest,
                                                  FeeEntity feeEntity) {
     return calculateAndBuildResponse(fixedFee, feeCalculationRequest, feeEntity);
   }
 
+  /**
+   * Fixed fee + bolt ons (if exists) + netDisbursementAmount = subtotal.
+   * If Applicable add VAT to subtotal.
+   * subtotalWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
+   */
   private static FeeCalculationResponse calculateAndBuildResponse(BigDecimal fixedFee,
                                                                   FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     // Calculate bolt on amounts if bolt ons exist
@@ -60,7 +61,7 @@ public final class FeeCalculationUtil {
 
     log.info("Get fields from fee calculation request");
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    LocalDate startDate = getFeeClaimStartDate(feeEntity.getCategoryType(), feeCalculationRequest);
+    LocalDate claimStartDate = getFeeClaimStartDate(feeEntity.getCategoryType(), feeCalculationRequest);
 
     BigDecimal boltOnVatAmount = BigDecimal.ZERO;
     BigDecimal boltOnValue = null;
@@ -69,10 +70,10 @@ public final class FeeCalculationUtil {
     if (isMentalHealth) {
       log.info("Calculate bolt on amounts for fee calculation");
       boltOnValue = toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount());
-      boltOnVatAmount = getVatAmount(boltOnValue, startDate, vatApplicable);
+      boltOnVatAmount = getVatAmount(boltOnValue, claimStartDate, vatApplicable);
     }
 
-    BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, startDate, vatApplicable);
+    BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
     BigDecimal calculatedVatAmount = boltOnVatAmount.add(fixedFeeVatAmount);
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
@@ -94,7 +95,7 @@ public final class FeeCalculationUtil {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+            .vatRateApplied(toDouble(getVatRateForDate(claimStartDate)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
             // disbursement not capped, so requested and calculated will be same
@@ -139,7 +140,7 @@ public final class FeeCalculationUtil {
    */
   public static BigDecimal calculateTotalAmount(BigDecimal feeTotal, BigDecimal calculatedVatAmount,
                                                 BigDecimal netDisbursementAmount, BigDecimal disbursementVatAmount) {
-    log.info("Calculate total fee amount with disbursements and VAT where applicable");
+    log.info("Calculate total fee amount with any disbursements and VAT where applicable");
 
     return feeTotal
         .add(calculatedVatAmount)
