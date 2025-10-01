@@ -108,7 +108,7 @@ components:
           description: "Police Station Scheme ID."
         uniqueFileNumber:
           type: string
-          description: "Unique File Number (UFN) for Police Station Fees category. Format DDMMYY/NNNN"
+          description: "Unique File Number (UFN) for Police Station/Prison Law category. Format DDMMYY/NNNN"
         netProfitCosts:
           type: number
           format: double
@@ -170,7 +170,7 @@ components:
         representationOrderDate:
           type: string
           format: date
-          description: "Crime Lower : Representation order date for Magistrate/Youth Court"
+          description: "The official start date for claimable work carried out for Crime Lower categories"
 
     FeeCalculationResponse:
       type: object

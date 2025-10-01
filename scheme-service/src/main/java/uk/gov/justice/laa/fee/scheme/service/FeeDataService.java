@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.exception.FeeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
@@ -45,7 +46,8 @@ public class FeeDataService {
       Optional<FeeEntity> feeEntityOptional =  feeEntityList.stream()
           .filter(fee -> isValidFee(fee, claimStartDate)) // startDate <= inputDate
           .max(Comparator.comparing(fee -> fee.getFeeSchemeCode().getValidFrom()));
-      return feeEntityOptional.orElse(null);
+      return feeEntityOptional
+          .orElseThrow(() -> new FeeNotFoundException(feeCalculationRequest.getFeeCode(), claimStartDate));
     }
     return null;
   }
