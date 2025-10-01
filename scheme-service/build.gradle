@@ -1,11 +1,11 @@
 plugins {
-    id 'io.freefair.lombok' version '8.14.2'
+    id 'io.freefair.lombok' version '9.0.0'
     id 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
-    id "io.sentry.jvm.gradle" version "5.11.0"
+    id "io.sentry.jvm.gradle" version "5.12.0"
 }
 
 def versions = [
-        sentry 						: '8.21.1'
+        sentry 						: '8.22.0'
 ]
 
 test {
@@ -77,15 +77,15 @@ dependencies {
 
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.11'
 
-    implementation 'org.apache.commons:commons-lang3:3.18.0'
+    implementation 'org.apache.commons:commons-lang3:3.19.0'
 
     implementation 'uk.gov.laa.springboot:laa-spring-boot-starter-auth'
 
     implementation 'org.postgresql:postgresql:42.7.8'
 
 // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
-    implementation 'org.flywaydb:flyway-core:11.13.1'
-    implementation 'org.flywaydb:flyway-database-postgresql:11.13.1'
+    implementation 'org.flywaydb:flyway-core:11.13.2'
+    implementation 'org.flywaydb:flyway-database-postgresql:11.13.2'
 
     implementation 'io.micrometer:micrometer-registry-prometheus:1.15.4'
 

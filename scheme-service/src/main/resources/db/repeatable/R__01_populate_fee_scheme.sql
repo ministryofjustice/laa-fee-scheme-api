@@ -1,7 +1,3 @@
--- Temp delete statements to remove old 'Miscellaneous' fee scheme codes
-DELETE FROM fee WHERE fee_scheme_code in ('MISCCON_FS2013', 'MISCEMP_FS2013', 'MISCGEN_FS2013', 'MISCPI_FS2013', 'MISCASBI_FS2015');
-DELETE FROM fee_schemes WHERE scheme_code in ('MISCCON_FS2013', 'MISCEMP_FS2013', 'MISCGEN_FS2013', 'MISCPI_FS2013', 'MISCASBI_FS2015');
-
 -- Fee Scheme for 'Associated Civil' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
@@ -101,6 +97,12 @@ VALUES ('POL_FS2016', 'Police Station Work 2016', '2016-04-01', '2022-09-29'),
        ('POL_FS2021', 'Police Station Work 2021', '2021-06-07', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
+-- Fee Scheme for 'Prison Law' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('PRISON_FS2016', 'Prison Law 2016', '2016-04-01', NULL)
+    ON CONFLICT (scheme_code) DO NOTHING;
+
 -- Fee Scheme for 'Public Law' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
@@ -119,6 +121,3 @@ INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('YOUTH_COURT_FS2024', 'Criminal proceedings - Youth court 2022', '2024-12-06', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
-
-
-

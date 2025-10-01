@@ -37,7 +37,11 @@ public class FeeCalculatorFactory {
   public FeeCalculator getCalculator(CategoryType category) {
     log.info("Get fee calculator for category: {}", category);
 
-    return calculators.get(category);
+    FeeCalculator calculator = calculators.get(category);
+
+    log.info("Retrieved fee calculator: {}", calculator.getClass().getSimpleName());
+
+    return calculator;
   }
 }
 

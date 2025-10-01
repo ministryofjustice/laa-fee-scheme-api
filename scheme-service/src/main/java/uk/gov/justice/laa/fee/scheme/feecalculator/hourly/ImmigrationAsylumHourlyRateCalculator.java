@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -97,19 +98,27 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
 
       BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-      BigDecimal finalTotal = feeTotal
-          .add(calculatedVatAmount)
-          .add(netDisbursementAmount)
-          .add(disbursementVatAmount);
+      BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(feeTotal, calculatedVatAmount,
+              netDisbursementAmount, disbursementVatAmount);
 
       return new FeeCalculationResponse().toBuilder()
           .feeCode(feeCalculationRequest.getFeeCode())
           .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
           .claimId(claimId)
           .validationMessages(validationMessages)
-          .feeCalculation(getFeeCalculation(feeCalculationRequest, finalTotal, calculatedVatAmount,
-                netDisbursementAmount, disbursementVatAmount, requestedNetDisbursementAmount, feeTotal,
-                  netProfitCosts, requestedNetProfitCosts, jrFormFilling))
+          .feeCalculation(FeeCalculation.builder()
+              .totalAmount(toDouble(totalAmount))
+              .vatIndicator(feeCalculationRequest.getVatIndicator())
+              .vatRateApplied(toDouble(VatUtil.getVatRateForDate(feeCalculationRequest.getStartDate())))
+              .calculatedVatAmount(toDouble(calculatedVatAmount))
+              .disbursementAmount(toDouble(netDisbursementAmount))
+              .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
+              .disbursementVatAmount(toDouble(disbursementVatAmount))
+              .hourlyTotalAmount(toDouble(feeTotal))
+              .netProfitCostsAmount(toDouble(netProfitCosts))
+              .requestedNetProfitCostsAmount(toDouble(requestedNetProfitCosts))
+              .jrFormFillingAmount(toDouble(jrFormFilling))
+              .build())
           .build();
     } else {
       //@TODO: to be removed once bus rules for all fee codes are implemented
@@ -117,23 +126,4 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     }
   }
 
-  private static FeeCalculation getFeeCalculation(FeeCalculationRequest feeCalculationRequest, BigDecimal finalTotal,
-                                                    BigDecimal calculatedVatAmount, BigDecimal netDisbursementAmount,
-                                                      BigDecimal disbursementVatAmount, BigDecimal requestedNetDisbursementAmount,
-                                                        BigDecimal feeTotal, BigDecimal netProfitCosts,
-                                                          BigDecimal requestedNetProfitCosts, BigDecimal jrFormFilling) {
-    return FeeCalculation.builder()
-        .totalAmount(toDouble(finalTotal))
-        .vatIndicator(feeCalculationRequest.getVatIndicator())
-        .vatRateApplied(toDouble(VatUtil.getVatRateForDate(feeCalculationRequest.getStartDate())))
-        .calculatedVatAmount(toDouble(calculatedVatAmount))
-        .disbursementAmount(toDouble(netDisbursementAmount))
-        .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
-        .disbursementVatAmount(toDouble(disbursementVatAmount))
-        .hourlyTotalAmount(toDouble(feeTotal))
-        .netProfitCostsAmount(toDouble(netProfitCosts))
-        .requestedNetProfitCostsAmount(toDouble(requestedNetProfitCosts))
-        .jrFormFillingAmount(toDouble(jrFormFilling))
-        .build();
-  }
 }

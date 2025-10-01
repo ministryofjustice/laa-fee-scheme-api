@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MENTAL_HEALTH;
@@ -12,8 +13,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
@@ -154,6 +157,89 @@ class FeeCalculationUtilTest {
   @Test
   void testIsFixedFeeWhenNull() {
     Assertions.assertFalse(FeeCalculationUtil.isFixedFee(null));
+  }
+
+  @ParameterizedTest
+  @EnumSource(value = CategoryType.class, names = {
+      "POLICE_STATION", "PRISON_LAW"
+  })
+  void calculate_ReturnDateFromUniqueFileNumber_forPoliceAndPrisonLaw(CategoryType categoryType) {
+    FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
+    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeDataRequest);
+
+    assertEquals(LocalDate.of(2022, 12, 1), result);
+  }
+
+  @ParameterizedTest
+  @EnumSource(value = CategoryType.class, names = {
+      "MAGS_COURT_DESIGNATED", "MAGS_COURT_UNDESIGNATED",
+      "YOUTH_COURT_DESIGNATED", "YOUTH_COURT_UNDESIGNATED"
+  })
+  void calculate_ReturnRepresentationOrderDate_forMagistratesAndYouthCourts(CategoryType categoryType) {
+    FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
+    LocalDate repOrderDate = LocalDate.of(2023, 12, 12);
+    feeDataRequest.setRepresentationOrderDate(repOrderDate);
+    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeDataRequest);
+
+    assertEquals(repOrderDate, result);
+  }
+
+  @ParameterizedTest
+  @EnumSource(value = CategoryType.class, names = {
+      "IMMIGRATION_ASYLUM", "COMMUNITY_CARE", "EDUCATION",
+      "MENTAL_HEALTH", "WELFARE_BENEFITS", "MEDIATION"
+  })
+  void shouldReturnStartDate_forOtherCategories(CategoryType categoryType) {
+    FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
+    LocalDate startDate = LocalDate.of(2024, 7, 20);
+    feeDataRequest.setStartDate(startDate);
+    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeDataRequest);
+
+    assertEquals(startDate, result);
+  }
+
+
+
+  @Test
+  void shouldThrowException_ifUniqueFileNumberIsNullForPoliceStation() {
+    FeeCalculationRequest request = getFeeCalculationRequest();
+    request.setUniqueFileNumber(null);
+
+    assertThrows(NullPointerException.class, () ->
+        FeeCalculationUtil.getFeeClaimStartDate(CategoryType.POLICE_STATION, request)
+    );
+  }
+
+  private static FeeCalculationRequest getFeeCalculationRequest() {
+    return FeeCalculationRequest.builder()
+        .feeCode("ABC")
+        .startDate(LocalDate.of(2017, 7, 29))
+        .vatIndicator(Boolean.TRUE)
+        .policeStationSchemeId("1003")
+        .policeStationId("NA2093")
+        .uniqueFileNumber("011222/456")
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .representationOrderDate(LocalDate.of(2023, 12, 12))
+        .build();
+  }
+
+  @Test
+  void calculateTotalAmount_givenFeeAndDisbursements_returnsTotal() {
+    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(new BigDecimal("120.50"),
+        new BigDecimal("24.10"),
+        new BigDecimal("67.52"),
+        new BigDecimal("13.50"));
+
+    assertThat(totalAmount).isEqualTo(new BigDecimal("225.62"));
+  }
+
+  @Test
+  void calculateTotalAmount_givenFee_returnsTotal() {
+    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(new BigDecimal("120.50"),
+        new BigDecimal("24.10"));
+
+    assertThat(totalAmount).isEqualTo(new BigDecimal("144.60"));
   }
 
 }
