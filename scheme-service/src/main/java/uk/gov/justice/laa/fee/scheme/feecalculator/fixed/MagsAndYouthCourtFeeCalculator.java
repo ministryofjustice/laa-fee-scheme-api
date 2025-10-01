@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -59,13 +60,11 @@ public class MagsAndYouthCourtFeeCalculator implements FeeCalculator {
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
     BigDecimal calculatedVatAmount = getVatAmount(fixedFeeAmount, startDate, vatApplicable);
 
-    BigDecimal finalTotal = fixedFeeAmount
-        .add(calculatedVatAmount)
-        .add(requestedNetDisbursementAmount)
-        .add(requestedDisbursementVatAmount);
+    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFeeAmount, calculatedVatAmount,
+        requestedNetDisbursementAmount, requestedDisbursementVatAmount);
 
     FeeCalculation feeCalculation = FeeCalculation.builder()
-        .totalAmount(toDouble(finalTotal))
+        .totalAmount(toDouble(totalAmount))
         .vatIndicator(vatApplicable)
         .vatRateApplied(toDouble(getVatRateForDate(startDate)))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
@@ -94,13 +93,11 @@ public class MagsAndYouthCourtFeeCalculator implements FeeCalculator {
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
     BigDecimal calculatedVatAmount = getVatAmount(fixedFeeAndAdditionalCosts, startDate, vatApplicable);
 
-    BigDecimal finalTotal = fixedFeeAndAdditionalCosts
-        .add(calculatedVatAmount)
-        .add(requestedNetDisbursementAmount)
-        .add(requestedDisbursementVatAmount);
+    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFeeAndAdditionalCosts, calculatedVatAmount,
+        requestedNetDisbursementAmount, requestedDisbursementVatAmount);
 
     FeeCalculation feeCalculation = FeeCalculation.builder()
-        .totalAmount(toDouble(finalTotal))
+        .totalAmount(toDouble(totalAmount))
         .vatIndicator(vatApplicable)
         .vatRateApplied(toDouble(getVatRateForDate(startDate)))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
