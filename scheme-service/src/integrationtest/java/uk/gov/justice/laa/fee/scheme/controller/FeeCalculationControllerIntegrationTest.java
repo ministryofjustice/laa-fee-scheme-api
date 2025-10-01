@@ -96,7 +96,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                 {
                   "feeCode": "ASMS",
                   "claimId": "claim_123",
-                  "startDate": "2018-05-14",
+                  "uniqueFileNumber": "020416/001",
                   "netDisbursementAmount": 55.35,
                   "disbursementVatAmount": 11.07,
                   "vatIndicator": true

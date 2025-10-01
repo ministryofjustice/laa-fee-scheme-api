@@ -34,7 +34,7 @@ class FeeCalculationUtilTest {
   }, nullValues = {"null"})
   @ParameterizedTest
   void calculateFixedFee_whenFixedFeeFromFeeEntity_returnsFeeCalculationResponse(Boolean vatIndicator, Integer noBoltOns, BigDecimal boltOnFee,
-                                                                       double expectedTotal) {
+                                                                                 double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("FEE1")
         .startDate(LocalDate.of(2025, 1, 1))
@@ -144,24 +144,19 @@ class FeeCalculationUtilTest {
 
   }
 
-  @Test
-  void testIsFixedFeeWhenFixed() {
-    Assertions.assertTrue(FeeCalculationUtil.isFixedFee(FeeType.FIXED));
-  }
-
-  @Test
-  void testIsFixedFeeWhenNotFixed() {
-    Assertions.assertFalse(FeeCalculationUtil.isFixedFee(FeeType.HOURLY));
-  }
-
-  @Test
-  void testIsFixedFeeWhenNull() {
-    Assertions.assertFalse(FeeCalculationUtil.isFixedFee(null));
+  @ParameterizedTest
+  @CsvSource(value = {
+      "FIXED, true",
+      "HOURLY, false",
+      "null, false"
+  }, nullValues = {"null"})
+  void testIsFixedFee(FeeType feeType, boolean expected) {
+    Assertions.assertEquals(expected, FeeCalculationUtil.isFixedFee(feeType));
   }
 
   @ParameterizedTest
   @EnumSource(value = CategoryType.class, names = {
-      "POLICE_STATION", "PRISON_LAW"
+      "ASSOCIATED_CIVIL", "POLICE_STATION", "PRISON_LAW"
   })
   void calculate_ReturnDateFromUniqueFileNumber_forPoliceAndPrisonLaw(CategoryType categoryType) {
     FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
@@ -197,7 +192,6 @@ class FeeCalculationUtilTest {
 
     assertEquals(startDate, result);
   }
-
 
 
   @Test
