@@ -17,6 +17,7 @@ import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.exception.PoliceStationFeeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -70,8 +71,9 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
 
     // Apply VAT where applicable
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    LocalDate startDate = feeCalculationRequest.getStartDate();
-    BigDecimal calculatedVatAmount = getVatAmount(fixedFee, startDate, vatApplicable);
+    LocalDate claimStartDate = FeeCalculationUtil
+        .getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
+    BigDecimal calculatedVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
 
     BigDecimal finalTotal = fixedFee
         .add(calculatedVatAmount)
@@ -82,7 +84,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(policeStationFeesEntity.getFeeSchemeCode())
         .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
-        .feeCalculation(mapFeeCalculation(finalTotal, vatApplicable, startDate, calculatedVatAmount,
+        .feeCalculation(mapFeeCalculation(finalTotal, vatApplicable, claimStartDate, calculatedVatAmount,
             netDisbursementAmount, disbursementVatAmount, fixedFee))
         .build();
   }
@@ -92,9 +94,10 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
                                                                   FeeCalculationRequest feeCalculationRequest) {
 
     BigDecimal fixedFee = feeEntity.getFixedFee();
-    LocalDate startDate = feeCalculationRequest.getStartDate();
+    LocalDate claimStartDate = FeeCalculationUtil
+        .getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, startDate, vatApplicable);
+    BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
 
     BigDecimal finalTotal = fixedFee.add(fixedFeeVatAmount);
 
@@ -105,7 +108,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+            .vatRateApplied(toDouble(getVatRateForDate(claimStartDate)))
             .calculatedVatAmount(toDouble(fixedFeeVatAmount))
             .fixedFeeAmount(toDouble(fixedFee))
         .build()).build();
@@ -148,20 +151,20 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
    *
    * @param finalTotal BigDecimal
    * @param vatApplicable Boolean
-   * @param startDate LocalDate
+   * @param claimStartDate LocalDate
    * @param calculatedVatAmount BigDecimal
    * @param netDisbursementAmount BigDecimal
    * @param disbursementVatAmount BigDecimal
    * @param fixedFee BigDecimal
    * @return FeeCalculation
    */
-  private static FeeCalculation mapFeeCalculation(BigDecimal finalTotal, Boolean vatApplicable, LocalDate startDate,
+  private static FeeCalculation mapFeeCalculation(BigDecimal finalTotal, Boolean vatApplicable, LocalDate claimStartDate,
                                                       BigDecimal calculatedVatAmount, BigDecimal netDisbursementAmount,
                                                           BigDecimal disbursementVatAmount, BigDecimal fixedFee) {
     return FeeCalculation.builder()
         .totalAmount(toDouble(finalTotal))
         .vatIndicator(vatApplicable)
-        .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+        .vatRateApplied(toDouble(getVatRateForDate(claimStartDate)))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(toDouble(netDisbursementAmount))
         .disbursementVatAmount(toDouble(disbursementVatAmount))
