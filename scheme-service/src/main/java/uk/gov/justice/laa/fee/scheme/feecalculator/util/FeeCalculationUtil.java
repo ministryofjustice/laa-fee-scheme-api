@@ -8,6 +8,7 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
@@ -16,6 +17,7 @@ import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.util.DateUtil;
 
 /**
  * Utility class for fee calculation operations.
@@ -101,6 +103,22 @@ public final class FeeCalculationUtil {
             .boltOnFeeDetails(isMentalHealth ? boltOnFeeDetails : null)
             .build())
         .build();
+  }
+
+  /**
+   * Return appropriate date based on Category Type of the claim request.
+   *
+   * @param categoryType CategoryType
+   * @param feeCalculationRequest FeeCalculationRequest
+   * @return LocalDate
+   */
+  public static LocalDate getFeeClaimStartDate(CategoryType categoryType, FeeCalculationRequest feeCalculationRequest) {
+    return switch (categoryType) {
+      case POLICE_STATION, PRISON_LAW -> DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
+      case MAGS_COURT_DESIGNATED, MAGS_COURT_UNDESIGNATED, YOUTH_COURT_DESIGNATED, YOUTH_COURT_UNDESIGNATED ->
+          feeCalculationRequest.getRepresentationOrderDate();
+      default -> feeCalculationRequest.getStartDate();
+    };
   }
 
   /**

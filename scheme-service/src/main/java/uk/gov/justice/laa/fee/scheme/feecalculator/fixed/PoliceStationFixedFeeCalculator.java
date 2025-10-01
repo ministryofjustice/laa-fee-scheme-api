@@ -70,7 +70,9 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     // Apply VAT where applicable
     LocalDate startDate = feeCalculationRequest.getStartDate();
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal calculatedVatAmount = getVatAmount(fixedFee, startDate, vatApplicable);
+    LocalDate claimStartDate = FeeCalculationUtil
+        .getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
+    BigDecimal calculatedVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
 
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee, calculatedVatAmount,
         netDisbursementAmount, disbursementVatAmount);
@@ -98,10 +100,13 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     log.info("Calculate fixed fee and costs using fee entity");
 
     BigDecimal fixedFee = feeEntity.getFixedFee();
+    LocalDate claimStartDate = FeeCalculationUtil
+        .getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
 
     // Apply VAT where applicable
     LocalDate startDate = feeCalculationRequest.getStartDate();
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+    BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
     BigDecimal calculatedVatAmount = getVatAmount(fixedFee, startDate, vatApplicable);
 
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee, calculatedVatAmount);
@@ -114,6 +119,8 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
+            .vatRateApplied(toDouble(getVatRateForDate(claimStartDate)))
+            .calculatedVatAmount(toDouble(fixedFeeVatAmount))
             .vatRateApplied(toDouble(getVatRateForDate(startDate)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .fixedFeeAmount(toDouble(fixedFee))

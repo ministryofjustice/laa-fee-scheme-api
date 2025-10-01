@@ -68,11 +68,12 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
     }
 
     // Apply VAT where applicable
-    LocalDate startDate = feeCalculationRequest.getStartDate();
+    LocalDate claimStartDate = FeeCalculationUtil
+        .getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
 
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
 
-    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(feeTotal, startDate, vatApplicable);
+    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(feeTotal, claimStartDate, vatApplicable);
 
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
