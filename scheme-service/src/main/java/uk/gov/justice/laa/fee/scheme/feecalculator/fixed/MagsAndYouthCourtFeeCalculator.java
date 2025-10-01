@@ -22,7 +22,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 /**
- * Calculate the designated magistrates or youth court fee for a given fee entity and fee calculation request.
+ * Calculate the designated/undesignated magistrates or youth court fee for a given fee entity and fee calculation request.
  */
 @Slf4j
 @Component
