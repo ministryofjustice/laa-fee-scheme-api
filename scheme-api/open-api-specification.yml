@@ -99,7 +99,7 @@ components:
         startDate:
           type: string
           format: date
-          description: "Civil: case start date. Crime: Representation order date."
+          description: "Civil: case start date."
         policeStationId:
           type: string
           description: "Police Station ID."
@@ -108,7 +108,7 @@ components:
           description: "Police Station Scheme ID."
         uniqueFileNumber:
           type: string
-          description: "Unique File Number (UFN) for Police Station Fees category. Format DDMMYY/NNNN"
+          description: "Unique File Number (UFN) for Police Station/Prison Law category. Format DDMMYY/NNNN"
         netProfitCosts:
           type: number
           format: double
@@ -167,6 +167,10 @@ components:
         immigrationPriorAuthorityNumber:
           type: string
           description: "Authorisation specific to immigration, used for net profit costs over limit or disbursements over limit."
+        representationOrderDate:
+          type: string
+          format: date
+          description: "The official start date for claimable work carried out for Crime Lower categories"
 
     FeeCalculationResponse:
       type: object
