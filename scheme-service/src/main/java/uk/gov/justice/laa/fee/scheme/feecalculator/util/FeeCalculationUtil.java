@@ -127,11 +127,16 @@ public final class FeeCalculationUtil {
     };
   }
 
-  private static LocalDate getFeeClaimStartDateAdvocacyAppealsReviews(FeeCalculationRequest feeCalculationRequest) {
-
+  /**
+   * Calculate start date to use for Advocacy Assistance in the Crown Court or Appeals & Reviews,
+   * PROH will use representation order date if present, falls back to UFN if not.
+   */
+  public static LocalDate getFeeClaimStartDateAdvocacyAppealsReviews(FeeCalculationRequest feeCalculationRequest) {
     if (feeCalculationRequest.getFeeCode().equals("PROH") && nonNull(feeCalculationRequest.getRepresentationOrderDate())) {
+      log.info("Determining fee start date for PROH, using Representation Order Date");
       return feeCalculationRequest.getRepresentationOrderDate();
     } else  {
+      log.info("Determining fee start date, using Unique File Number");
       return DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
     }
   }
