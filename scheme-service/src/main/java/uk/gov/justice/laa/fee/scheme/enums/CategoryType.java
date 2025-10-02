@@ -4,8 +4,8 @@ package uk.gov.justice.laa.fee.scheme.enums;
  * Enum for the types of category of law.
  */
 public enum CategoryType {
-
   ADVOCACY_APPEALS_REVIEWS,
+  ASSOCIATED_CIVIL,
   CLAIMS_PUBLIC_AUTHORITIES,
   CLINICAL_NEGLIGENCE,
   COMMUNITY_CARE,

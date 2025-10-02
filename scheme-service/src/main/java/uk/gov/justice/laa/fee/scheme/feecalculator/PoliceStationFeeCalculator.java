@@ -34,7 +34,7 @@ public class PoliceStationFeeCalculator implements FeeCalculator {
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    if (isFixedFee(feeEntity.getFeeType().name())) {
+    if (isFixedFee(feeEntity.getFeeType())) {
       return policeStationFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
     } else {
       return policeStationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);

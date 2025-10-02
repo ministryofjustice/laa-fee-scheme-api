@@ -39,7 +39,13 @@ ON CONFLICT (scheme_code) DO NOTHING;
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('DISC_FS2013', 'Discrimination Scheme 2013', '2013-04-01', NULL)
-    ON CONFLICT (scheme_code) DO NOTHING;
+ON CONFLICT (scheme_code) DO NOTHING;
+
+-- Fee Scheme for 'Education' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('EDU_FS2013', 'Education Fee Scheme 2013', '2013-04-01', NULL)
+ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Housing - HLPAS' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
@@ -59,7 +65,7 @@ VALUES
     ('IMM_ASYLM_FS2013', 'Immigration and Asylum Scheme 2013', '2013-04-01', '2020-06-07'),
     ('IMM_ASYLM_FS2020', 'Immigration and Asylum Scheme 2020', '2020-06-08', '2023-03-31'),
     ('IMM_ASYLM_FS2023', 'Immigration and Asylum Scheme 2023', '2023-04-01', NULL)
-    ON CONFLICT (scheme_code) DO UPDATE
+ON CONFLICT (scheme_code) DO UPDATE
     SET
         valid_to = EXCLUDED.valid_to;
 
@@ -69,12 +75,6 @@ VALUES
     ('MAGS_COURT_FS2016', 'Criminal proceedings - Magistrates court 2016', '2016-04-01', '2022-09-29'),
     ('MAGS_COURT_FS2022', 'Criminal proceedings - Magistrates court 2022', '2022-09-30', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
-
--- Fee Scheme for 'Criminal proceedings - Youth court' category
-INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
-VALUES
-    ('YOUTH_COURT_FS2024', 'Criminal proceedings - Youth court 2022', '2024-12-06', NULL)
-    ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Mediation' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
@@ -86,7 +86,7 @@ ON CONFLICT (scheme_code) DO NOTHING;
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('MHL_FS2013', 'Mental Health Fee Scheme 2013', '2013-04-01', NULL)
-    ON CONFLICT (scheme_code) DO NOTHING;
+ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Miscellaneous' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
@@ -104,17 +104,16 @@ VALUES ('POL_FS2016', 'Police Station Work 2016', '2016-04-01', '2022-09-29'),
        ('POL_FS2021', 'Police Station Work 2021', '2021-06-07', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
+-- Fee Scheme for 'Prison Law' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('PRISON_FS2016', 'Prison Law 2016', '2016-04-01', NULL)
+    ON CONFLICT (scheme_code) DO NOTHING;
+
 -- Fee Scheme for 'Public Law' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('PUB_FS2013', 'Public Law Fee Scheme 2013', '2013-04-01', NULL)
-ON CONFLICT (scheme_code) DO NOTHING;
-
-
--- Fee Scheme for 'Education' category
-INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
-VALUES
-    ('EDU_FS2013', 'Education Fee Scheme 2013', '2013-04-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Welfare Benefits' category
@@ -124,10 +123,8 @@ VALUES
     ('WB_FS2025', 'Welfare Benefits Fee Scheme 2025', '2025-05-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
--- Fee Scheme for 'Prison Law' category
+-- Fee Scheme for 'Criminal proceedings - Youth court' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
-    ('PRISON_FS2016', 'Prison Law 2016', '2016-04-01', NULL)
+    ('YOUTH_COURT_FS2024', 'Criminal proceedings - Youth court 2022', '2024-12-06', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
-
-

@@ -13,6 +13,7 @@ import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -29,8 +30,24 @@ public final class FeeCalculationUtil {
   private FeeCalculationUtil() {
   }
 
-  public static boolean isFixedFee(String feeType) {
-    return feeType.equals("FIXED");
+  public static boolean isFixedFee(FeeType feeType) {
+    return feeType == FeeType.FIXED;
+  }
+
+  /**
+   * Calculate fee using Fixed Fee from FeeEntity.
+   */
+  public static FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+    BigDecimal fixedFee = defaultToZeroIfNull(feeEntity.getFixedFee());
+    return calculateAndBuildResponse(fixedFee, feeCalculationRequest, feeEntity);
+  }
+
+  /**
+   * Calculate fee using given Fixed Fee value.
+   */
+  public static FeeCalculationResponse calculate(BigDecimal fixedFee, FeeCalculationRequest feeCalculationRequest,
+                                                 FeeEntity feeEntity) {
+    return calculateAndBuildResponse(fixedFee, feeCalculationRequest, feeEntity);
   }
 
   /**
@@ -38,28 +55,14 @@ public final class FeeCalculationUtil {
    * If Applicable add VAT to subtotal.
    * subtotalWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
    */
-  public static FeeCalculationResponse calculate(FeeEntity feeEntity, FeeCalculationRequest feeCalculationRequest) {
-    BigDecimal fixedFee = defaultToZeroIfNull(feeEntity.getFixedFee());
-    // get the bolt fee details from util class
-    BoltOnFeeDetails boltOnFeeDetails = BoltOnUtil.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
-    return calculateAndBuildResponse(fixedFee, boltOnFeeDetails, feeCalculationRequest, feeEntity);
-  }
-
-  /**
-   * Given fixed fee + netDisbursementAmount = subtotal.
-   * If Applicable add VAT to subtotal.
-   * subtotalWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
-   */
-  public static FeeCalculationResponse calculate(BigDecimal fixedFee, FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
-    return calculateAndBuildResponse(fixedFee, null, feeCalculationRequest, feeEntity);
-  }
-
-  private static FeeCalculationResponse calculateAndBuildResponse(BigDecimal fixedFee, BoltOnFeeDetails boltOnFeeDetails,
+  private static FeeCalculationResponse calculateAndBuildResponse(BigDecimal fixedFee,
                                                                   FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+    // Calculate bolt on amounts if bolt ons exist
+    BoltOnFeeDetails boltOnFeeDetails = BoltOnUtil.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
 
     log.info("Get fields from fee calculation request");
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    LocalDate startDate = feeCalculationRequest.getStartDate();
+    LocalDate claimStartDate = getFeeClaimStartDate(feeEntity.getCategoryType(), feeCalculationRequest);
 
     BigDecimal boltOnVatAmount = BigDecimal.ZERO;
     BigDecimal boltOnValue = null;
@@ -68,15 +71,15 @@ public final class FeeCalculationUtil {
     if (isMentalHealth) {
       log.info("Calculate bolt on amounts for fee calculation");
       boltOnValue = toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount());
-      boltOnVatAmount = getVatAmount(boltOnValue, startDate, vatApplicable);
+      boltOnVatAmount = getVatAmount(boltOnValue, claimStartDate, vatApplicable);
     }
 
-    BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, startDate, vatApplicable);
+    BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
     BigDecimal calculatedVatAmount = boltOnVatAmount.add(fixedFeeVatAmount);
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    log.info("Calculate total fee amount with any disbursements, bolt ons and VAT");
+    log.info("Calculate total fee amount with any disbursements, bolt ons and VAT where applicable");
     BigDecimal finalTotal = fixedFee
         .add(fixedFeeVatAmount)
         .add(defaultToZeroIfNull(boltOnValue))
@@ -93,7 +96,7 @@ public final class FeeCalculationUtil {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+            .vatRateApplied(toDouble(getVatRateForDate(claimStartDate)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
             // disbursement not capped, so requested and calculated will be same
@@ -115,7 +118,8 @@ public final class FeeCalculationUtil {
    */
   public static LocalDate getFeeClaimStartDate(CategoryType categoryType, FeeCalculationRequest feeCalculationRequest) {
     return switch (categoryType) {
-      case POLICE_STATION, PRISON_LAW -> DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
+      case ASSOCIATED_CIVIL, POLICE_STATION, PRISON_LAW ->
+          DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
       case MAGS_COURT_DESIGNATED, MAGS_COURT_UNDESIGNATED, YOUTH_COURT_DESIGNATED, YOUTH_COURT_UNDESIGNATED ->
           feeCalculationRequest.getRepresentationOrderDate();
       case ADVOCACY_APPEALS_REVIEWS ->  getFeeClaimStartDateAdvocacyAppealsReviews(feeCalculationRequest);
@@ -136,7 +140,7 @@ public final class FeeCalculationUtil {
    * Calculate total amount when only fees and VAT are applicable.
    */
   public static BigDecimal calculateTotalAmount(BigDecimal feeTotal, BigDecimal calculatedVatAmount) {
-    log.info("Calculate total fee amount with any VAT where applicable.");
+    log.info("Calculate total fee amount with VAT where applicable");
 
     return feeTotal
         .add(calculatedVatAmount);
@@ -147,7 +151,7 @@ public final class FeeCalculationUtil {
    */
   public static BigDecimal calculateTotalAmount(BigDecimal feeTotal, BigDecimal calculatedVatAmount,
                                                 BigDecimal netDisbursementAmount, BigDecimal disbursementVatAmount) {
-    log.info("Calculate total fee amount with any disbursements and VAT where applicable.");
+    log.info("Calculate total fee amount with any disbursements and VAT where applicable");
 
     return feeTotal
         .add(calculatedVatAmount)

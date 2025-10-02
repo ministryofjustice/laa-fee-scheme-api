@@ -41,7 +41,7 @@ public class MediationFixedFeeCalculator implements FeeCalculator {
     } else {
       log.info("Using fixed fee to calculate Mediation fee");
       // Where fee code type is MAM numberOfMediationSessions is not required, and will be omitted from calculation
-      return FeeCalculationUtil.calculate(feeEntity, feeCalculationRequest);
+      return FeeCalculationUtil.calculate(feeCalculationRequest, feeEntity);
     }
   }
 
