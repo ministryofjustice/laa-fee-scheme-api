@@ -46,6 +46,12 @@ VALUES
     ('ELA_FS2024', 'Housing - HLPAS Fee Scheme 2024', '2024-09-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
+-- Fee Scheme for 'Family' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('FAM_FS2011', 'Family Fee Scheme 2011', '2011-01-03', NULL)
+ON CONFLICT (scheme_code) DO NOTHING;
+
 -- Fee Scheme for 'Housing' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
