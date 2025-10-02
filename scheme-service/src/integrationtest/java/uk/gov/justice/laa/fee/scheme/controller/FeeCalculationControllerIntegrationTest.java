@@ -87,6 +87,45 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   }
 
   @Test
+  void shouldGetFeeCalculation_associatedCivil() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "ASMS",
+                  "claimId": "claim_123",
+                  "uniqueFileNumber": "020416/001",
+                  "netDisbursementAmount": 55.35,
+                  "disbursementVatAmount": 11.07,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "ASMS",
+              "schemeId": "ASSOC_FS2016",
+              "claimId": "claim_123",
+              "escapeCaseFlag": false,
+              "feeCalculation": {
+                "totalAmount": 161.22,
+                "vatIndicator": true,
+                "vatRateApplied": 20.0,
+                "calculatedVatAmount": 15.8,
+                "disbursementAmount": 55.35,
+                "requestedNetDisbursementAmount": 55.35,
+                "disbursementVatAmount": 11.07,
+                "fixedFeeAmount": 79.0
+                }
+              }
+            """, STRICT));
+  }
+
+  @Test
   void shouldGetFeeCalculation_discrimination() throws Exception {
     mockMvc
         .perform(post(URI)

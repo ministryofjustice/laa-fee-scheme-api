@@ -17,6 +17,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -51,7 +52,7 @@ class FeeCalculationUtilTest {
         .adjornHearingBoltOn(boltOnFee)
         .build();
 
-    FeeCalculationResponse response = FeeCalculationUtil.calculate(feeEntity, feeCalculationRequest);
+    FeeCalculationResponse response = FeeCalculationUtil.calculate(feeCalculationRequest, feeEntity);
 
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("FEE1");
@@ -110,7 +111,7 @@ class FeeCalculationUtilTest {
         .categoryType(MENTAL_HEALTH)
         .build();
 
-    FeeCalculationResponse response = FeeCalculationUtil.calculate(feeEntity, feeCalculationRequest);
+    FeeCalculationResponse response = FeeCalculationUtil.calculate(feeCalculationRequest, feeEntity);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(470.94)
@@ -143,28 +144,21 @@ class FeeCalculationUtilTest {
 
   }
 
-  @Test
-  void testIsFixedFeeWhenFixed() {
-    Assertions.assertTrue(FeeCalculationUtil.isFixedFee("FIXED"));
-  }
-
-  @Test
-  void testIsFixedFeeWhenNotFixed() {
-    Assertions.assertFalse(FeeCalculationUtil.isFixedFee("HOURLY"));
-  }
-
-  @Test
-  void testIsFixedFeeWhenNull() {
-    assertThrows(NullPointerException.class, () -> {
-      FeeCalculationUtil.isFixedFee(null);
-    });
+  @ParameterizedTest
+  @CsvSource(value = {
+      "FIXED, true",
+      "HOURLY, false",
+      "null, false"
+  }, nullValues = {"null"})
+  void testIsFixedFee(FeeType feeType, boolean expected) {
+    Assertions.assertEquals(expected, FeeCalculationUtil.isFixedFee(feeType));
   }
 
   @ParameterizedTest
   @EnumSource(value = CategoryType.class, names = {
-      "POLICE_STATION", "PRISON_LAW"
+      "ASSOCIATED_CIVIL", "POLICE_STATION", "PRISON_LAW"
   })
-  void calculate_ReturnDateFromUniqueFileNumber_forPoliceAndPrisonLaw(CategoryType categoryType) {
+  void calculate_ReturnDateFromUniqueFileNumber_forAssociatedCivilAndPoliceAndPrisonLaw(CategoryType categoryType) {
     FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
     LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeDataRequest);
 
@@ -198,7 +192,6 @@ class FeeCalculationUtilTest {
 
     assertEquals(startDate, result);
   }
-
 
 
   @Test
@@ -242,4 +235,5 @@ class FeeCalculationUtilTest {
 
     assertThat(totalAmount).isEqualTo(new BigDecimal("144.60"));
   }
+
 }

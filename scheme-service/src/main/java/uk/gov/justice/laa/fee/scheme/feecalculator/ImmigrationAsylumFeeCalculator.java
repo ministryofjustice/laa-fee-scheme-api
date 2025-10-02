@@ -35,7 +35,7 @@ public class ImmigrationAsylumFeeCalculator implements FeeCalculator {
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    if (isFixedFee(feeEntity.getFeeType().name())) {
+    if (isFixedFee(feeEntity.getFeeType())) {
       return immigrationAsylumFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
     } else {
       return immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);

@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ASSOCIATED_CIVIL;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLAIMS_PUBLIC_AUTHORITIES;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLINICAL_NEGLIGENCE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
@@ -31,7 +32,7 @@ public class StandardFixedFeeCalculator implements FeeCalculator {
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
-    return Set.of(CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT,
+    return Set.of(ASSOCIATED_CIVIL, CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT,
         EDUCATION, HOUSING, HOUSING_HLPAS, MENTAL_HEALTH, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS
     );
   }
@@ -47,6 +48,6 @@ public class StandardFixedFeeCalculator implements FeeCalculator {
 
     log.info("Calculate Standard fixed fee");
 
-    return FeeCalculationUtil.calculate(feeEntity, feeCalculationRequest);
+    return FeeCalculationUtil.calculate(feeCalculationRequest, feeEntity);
   }
 }
