@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.Region;
 import uk.gov.justice.laa.fee.scheme.exception.FeeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -44,10 +45,18 @@ public class FeeDataService {
 
       // filter out valid fee entity for a given input parameters
       Optional<FeeEntity> feeEntityOptional =  feeEntityList.stream()
+          .filter(fee -> filterByRegion(fee, feeCalculationRequest.getLondonRate()))
           .filter(fee -> isValidFee(fee, claimStartDate)) // startDate <= inputDate
           .max(Comparator.comparing(fee -> fee.getFeeSchemeCode().getValidFrom()));
-      return feeEntityOptional
+
+      FeeEntity feeEntity = feeEntityOptional
           .orElseThrow(() -> new FeeNotFoundException(feeCalculationRequest.getFeeCode(), claimStartDate));
+
+      log.info("Retrieved fee entity with feeId: {} and schemeCode: {}", feeEntity.getFeeId(),
+          feeEntity.getFeeSchemeCode().getSchemeCode());
+
+      return feeEntity;
+
     } else {
       throw new FeeNotFoundException(feeCalculationRequest.getFeeCode(), feeCalculationRequest.getStartDate());
     }
@@ -58,5 +67,11 @@ public class FeeDataService {
         && (fee.getFeeSchemeCode().getValidTo() == null || claimStartDate.isBefore(fee.getFeeSchemeCode().getValidTo()));
   }
 
+  private static boolean filterByRegion(FeeEntity fee, Boolean isLondonRate) {
+    if (fee.getCategoryType() != CategoryType.FAMILY) {
+      return true;
+    }
 
+    return isLondonRate != null && fee.getRegion() == (isLondonRate ? Region.LONDON : Region.NON_LONDON);
+  }
 }

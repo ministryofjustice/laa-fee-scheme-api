@@ -1,4 +1,3 @@
--- Fee Scheme for 2016 'Associated Civil' category
 INSERT INTO fee
 (fee_code, description, fixed_fee, escape_threshold_limit, category_type, fee_type, fee_scheme_code)
 VALUES

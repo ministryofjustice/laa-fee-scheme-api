@@ -171,6 +171,9 @@ components:
           type: string
           format: date
           description: "The official start date for claimable work carried out for Crime Lower categories"
+        londonRate:
+          type: boolean
+          description: "Indicates if London rate is applied otherwise Non London rate is applied."
 
     FeeCalculationResponse:
       type: object

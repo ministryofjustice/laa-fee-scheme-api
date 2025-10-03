@@ -1,5 +1,3 @@
--- Fee Codes for Prison Law
-
 INSERT INTO fee (fee_code,description,fee_scheme_code,fixed_fee,escape_threshold_limit,category_type,total_limit,fee_type) VALUES
   ('PRIA','Free Standing Advice and Assistance','PRISON_FS2016',200.75,602.25,'PRISON_LAW',NULL,'FIXED'),
   ('PRIB1','Disciplinary Cases – Advocacy Assistance - lower standard fee','PRISON_FS2016',203.93,NULL,'PRISON_LAW_LOWER_STANDARD',357.06,'FIXED'),

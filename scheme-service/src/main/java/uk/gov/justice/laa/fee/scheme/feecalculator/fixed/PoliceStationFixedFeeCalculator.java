@@ -64,7 +64,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     log.info("Calculate fixed fee and costs using police station fees entity");
 
     BigDecimal fixedFee = policeStationFeesEntity.getFixedFee();
-    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+    BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
     // Apply VAT where applicable
@@ -75,7 +75,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     BigDecimal calculatedVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
 
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee, calculatedVatAmount,
-        netDisbursementAmount, disbursementVatAmount);
+        requestedNetDisbursementAmount, disbursementVatAmount);
 
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
@@ -87,7 +87,8 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
             .vatIndicator(vatApplicable)
             .vatRateApplied(toDouble(getVatRateForDate(startDate)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(toDouble(netDisbursementAmount))
+            .disbursementAmount(toDouble(requestedNetDisbursementAmount))
+            .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .fixedFeeAmount(toDouble(fixedFee)).build())
         .build();
