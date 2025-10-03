@@ -170,6 +170,46 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   }
 
   @Test
+  void shouldGetFeeCalculation_family() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "FPB010",
+                  "claimId": "claim_123",
+                  "startDate": "2022-02-01",
+                  "netDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "londonRate": true,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "FPB010",
+              "claimId": "claim_123",
+              "schemeId": "FAM_LON_FS2011",
+              "escapeCaseFlag": false,
+              "feeCalculation": {
+                  "totalAmount": 306.45,
+                  "vatIndicator": true,
+                  "vatRateApplied": 20.0,
+                  "calculatedVatAmount": 26.4,
+                  "disbursementAmount": 123.38,
+                  "requestedNetDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "fixedFeeAmount": 132.0
+                }
+              }
+            """, STRICT));
+  }
+
+  @Test
   void shouldGetFeeCalculation_immigrationAndAsylumFixedFee() throws Exception {
     mockMvc
         .perform(post(URI)
