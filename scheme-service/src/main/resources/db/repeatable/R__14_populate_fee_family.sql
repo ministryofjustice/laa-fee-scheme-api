@@ -9,7 +9,7 @@ VALUES ('FPB010', 'Public Family LH Fixed Fee', 132, 396, 'LONDON', 'FAMILY', 'F
        ('FVP100', 'Private Family LH Fixed Fee - Divorce Petitioner Only', 146, 438, 'LONDON', 'FAMILY', 'FIXED', 'FAM_LON_FS2011'),
        ('FVP100', 'Private Family LH Fixed Fee - Divorce Petitioner Only', 146, 438, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011'),
        ('FVP012', 'Private Family LH Fixed Fee - Divorce Respondent Only', 86, NULL, 'LONDON', 'FAMILY', 'FIXED', 'FAM_LON_FS2011'),
-       ('FVP012', 'Private Family LH Fixed Fee - Divorce Respondent Only', 86, NULL, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011'),
+       ('FVP012', 'Private Family LH Fixed Fee - Divorce Respondent Only', 86, NULL, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
 INSERT INTO fee
@@ -23,7 +23,7 @@ VALUES ('FVP011', 'Private Family LH Fixed Fee - Domestic Abuse Proceedings', 86
        ('FVP110', 'Private Family FH Fixed Fee - Children (settled)', 368, 690, 'LONDON', 'FAMILY', 'FIXED', 'FAM_LON_FS2011'),
        ('FVP110', 'Private Family FH Fixed Fee - Children (settled)', 318, 597, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011'),
        ('FVP130', 'Private Family FH Fixed Fee - Children (not settled)', 230, 690, 'LONDON', 'FAMILY', 'FIXED', 'FAM_LON_FS2011'),
-       ('FVP130', 'Private Family FH Fixed Fee - Children (not settled)', 199, 597, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011'),
+       ('FVP130', 'Private Family FH Fixed Fee - Children (not settled)', 199, 597, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
 INSERT INTO fee
@@ -37,7 +37,7 @@ VALUES ('FVP120', 'Private Family FH Fixed Fee - Finance (settled)', 386, 723, '
        ('FVP180', 'Private Family FH Fixed Fee - Children & Finance (neither settled)', 471, 1413, 'LONDON', 'FAMILY', 'FIXED', 'FAM_LON_FS2011'),
        ('FVP180', 'Private Family FH Fixed Fee - Children & Finance (neither settled)', 407, 1221, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011'),
        ('FVP160', 'Private Family FH Fixed Fee - Children & Finance (children settled)', 609, 1413, 'LONDON', 'FAMILY', 'FIXED', 'FAM_LON_FS2011'),
-       ('FVP160', 'Private Family FH Fixed Fee - Children & Finance (children settled)', 526, 1221, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011'),
+       ('FVP160', 'Private Family FH Fixed Fee - Children & Finance (children settled)', 526, 1221, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
 INSERT INTO fee
@@ -51,7 +51,7 @@ VALUES ('FVP170', 'Private Family FH Fixed Fee - Children & Finance (finance set
        ('FVP210', 'Help with Mediation - Advice & Finance Consent Order', 350, NULL, 'LONDON', 'FAMILY', 'FIXED', 'FAM_LON_FS2011'),
        ('FVP210', 'Help with Mediation - Advice & Finance Consent Order', 350, NULL, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011'),
        ('FVP020', 'Private Family LH Fixed Fee (Children or Finance) + FH Fixed Fee - Children (settled)', 454, 948, 'LONDON', 'FAMILY', 'FIXED', 'FAM_LON_FS2011'),
-       ('FVP020', 'Private Family LH Fixed Fee (Children or Finance) + FH Fixed Fee - Children (settled)', 404, 855, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011'),
+       ('FVP020', 'Private Family LH Fixed Fee (Children or Finance) + FH Fixed Fee - Children (settled)', 404, 855, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
 INSERT INTO fee
@@ -65,7 +65,7 @@ VALUES ('FVP040', 'Private Family LH Fixed Fee (Children or Finance) + FH Fixed 
        ('FVP060', 'Private Family LH Fixed Fee (Children or Finance) + FH Fixed Fee - Children & Finance (both settled)', 840, 1671, 'LONDON', 'FAMILY', 'FIXED', 'FAM_LON_FS2011'),
        ('FVP060', 'Private Family LH Fixed Fee (Children or Finance) + FH Fixed Fee - Children & Finance (both settled)', 737,1479, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011'),
        ('FVP090', 'Private Family LH Fixed Fee (Children or Finance) + FH Fixed Fee - Children & Finance (neither settled)', 557, 1671, 'LONDON', 'FAMILY', 'FIXED', 'FAM_LON_FS2011'),
-       ('FVP090', 'Private Family LH Fixed Fee (Children or Finance) + FH Fixed Fee - Children & Finance (neither settled)', 493, 1479, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011'),
+       ('FVP090', 'Private Family LH Fixed Fee (Children or Finance) + FH Fixed Fee - Children & Finance (neither settled)', 493, 1479, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
 INSERT INTO fee
@@ -79,7 +79,7 @@ VALUES ('FVP070', 'Private Family LH Fixed Fee (Children or Finance) + FH Fixed 
        ('FVP041', 'Private Family LH Fixed Fee (DA Proceedings) + FH Fixed Fee - Children (not settled)', 316, 948, 'LONDON', 'FAMILY', 'FIXED', 'FAM_LON_FS2011'),
        ('FVP041', 'Private Family LH Fixed Fee (DA Proceedings) + FH Fixed Fee - Children (not settled)', 285, 855, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011'),
        ('FVP031', 'Private Family LH Fixed Fee (DA Proceedings) + FH Fixed Fee - Finance (settled)', 472, 981, 'LONDON', 'FAMILY', 'FIXED', 'FAM_LON_FS2011'),
-       ('FVP031', 'Private Family LH Fixed Fee (DA Proceedings) + FH Fixed Fee - Finance (settled)', 419, 882, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011'),
+       ('FVP031', 'Private Family LH Fixed Fee (DA Proceedings) + FH Fixed Fee - Finance (settled)', 419, 882, 'NON_LONDON', 'FAMILY', 'FIXED', 'FAM_NON_LON_FS2011')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
 INSERT INTO fee
