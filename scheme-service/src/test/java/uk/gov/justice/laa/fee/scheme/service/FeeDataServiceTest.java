@@ -16,7 +16,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
+import uk.gov.justice.laa.fee.scheme.enums.Region;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
@@ -93,8 +95,6 @@ class FeeDataServiceTest {
     assertThat(feeEntityResponse).isNotNull();
     assertThat(feeEntityResponse.getFeeCode()).isEqualTo("INVC");
   }
-
-
 
   @Test
   void test_whenMultipleRecordsPresentInFeeTableAndFeeSchemeEnded_shouldReturnValidResponse() {
@@ -220,6 +220,41 @@ class FeeDataServiceTest {
 
     assertThatThrownBy(() -> feeDataService.getFeeEntity(feeData))
         .hasMessageContaining(String.format("Fee not found for feeCode: %s and startDate: %s", "INVC", feeData.getStartDate()));
+  }
+
+  @Test
+  void test_whenFilterByRegionAndLondonRateIsTrue_shouldReturnCorrectFeeEntity() {
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("FAM_FS2011")
+        .validFrom(LocalDate.of(2011,1,1)).build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("FPB010")
+        .feeSchemeCode(feeSchemesEntity)
+        .fixedFee(new BigDecimal("150"))
+        .escapeThresholdLimit(new BigDecimal("300"))
+        .region(Region.LONDON)
+        .categoryType(CategoryType.FAMILY)
+        .feeType(FeeType.FIXED)
+        .build();
+
+    when(feeRepository.findByFeeCode(any())).thenReturn(List.of(feeEntity));
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("FPB010")
+        .startDate(LocalDate.of(2025, 2, 11))
+        .vatIndicator(Boolean.TRUE)
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .londonRate(Boolean.TRUE)
+        .build();
+
+    FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeCalculationRequest);
+
+    assertThat(feeEntityResponse).isNotNull();
+    assertThat(feeEntityResponse.getFeeCode()).isEqualTo("FPB010");
+    assertThat(feeEntityResponse.getFixedFee()).isEqualTo(new BigDecimal("150"));
+    assertThat(feeEntityResponse.getRegion()).isEqualTo(Region.LONDON);
   }
 
   private static FeeCalculationRequest getFeeCalculationRequest() {

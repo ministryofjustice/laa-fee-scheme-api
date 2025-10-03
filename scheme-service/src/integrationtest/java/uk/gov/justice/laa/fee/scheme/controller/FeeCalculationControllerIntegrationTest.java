@@ -497,6 +497,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                 "vatRateApplied": 20.00,
                 "calculatedVatAmount": 0,
                 "disbursementAmount": 0,
+                "requestedNetDisbursementAmount" : 0,
                 "disbursementVatAmount": 0,
                 "fixedFeeAmount": 131.40
               }

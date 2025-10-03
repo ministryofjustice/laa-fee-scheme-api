@@ -49,8 +49,13 @@ ON CONFLICT (scheme_code) DO NOTHING;
 -- Fee Scheme for 'Family' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
-    ('FAM_FS2011', 'Family Fee Scheme 2011', '2011-01-03', NULL)
+    ('FAM_LON_FS2011', 'Family London Rate Fee Scheme 2011', '2011-01-03', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
+
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('FAM_NON_LON_FS2011', 'Family Non London Rate Fee Scheme 2011', '2011-01-03', NULL)
+    ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Housing' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
