@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
+import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -180,17 +181,29 @@ class FeeCalculationUtilTest {
   }
 
   @ParameterizedTest
-  @EnumSource(value = CategoryType.class, names = {
-      "IMMIGRATION_ASYLUM", "COMMUNITY_CARE", "EDUCATION",
-      "MENTAL_HEALTH", "WELFARE_BENEFITS", "MEDIATION"
+  @CsvSource(value = {
+      "ADVOCACY_APPEALS_REVIEWS, PROH, 2025-11-11, 090925/abc, 2025-11-11",
+      "ADVOCACY_APPEALS_REVIEWS, PROH, , 090925/abc, 2025-09-09",
+      "ADVOCACY_APPEALS_REVIEWS, APPA, , 090925/abc, 2025-09-09",
+      "ADVOCACY_APPEALS_REVIEWS, APPB, , 090925/abc, 2025-09-09"
   })
-  void shouldReturnStartDate_forOtherCategories(CategoryType categoryType) {
-    FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
-    LocalDate startDate = LocalDate.of(2024, 7, 20);
-    feeDataRequest.setStartDate(startDate);
-    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeDataRequest);
+  void shouldReturnStartDate_forOtherCategories(String categoryType, String feeCode, String repOrderDate, String ufn,
+                                                LocalDate expectedDate) {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode(feeCode)
+        .claimId("claim_123")
+        .representationOrderDate(nonNull(repOrderDate) ? LocalDate.parse(repOrderDate) : null)
+        .uniqueFileNumber(ufn)
+        .netProfitCosts(10.0)
+        .netDisbursementAmount(10.0)
+        .disbursementVatAmount(10.0)
+        .vatIndicator(true)
+        .netTravelCosts(10.0)
+        .netWaitingCosts(10.0)
+        .build();
 
-    assertEquals(startDate, result);
+    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(CategoryType.valueOf(categoryType), feeCalculationRequest);
+    assertEquals(expectedDate, result);
   }
 
 
