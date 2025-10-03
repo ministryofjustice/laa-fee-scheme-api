@@ -45,7 +45,7 @@ public class FeeDataService {
 
       // filter out valid fee entity for a given input parameters
       Optional<FeeEntity> feeEntityOptional =  feeEntityList.stream()
-          .filter(fee -> filterByRegion(fee, feeCalculationRequest.getLondonRate())) // filter by region)
+          .filter(fee -> filterByRegion(fee, feeCalculationRequest.getLondonRate()))
           .filter(fee -> isValidFee(fee, claimStartDate)) // startDate <= inputDate
           .max(Comparator.comparing(fee -> fee.getFeeSchemeCode().getValidFrom()));
 
