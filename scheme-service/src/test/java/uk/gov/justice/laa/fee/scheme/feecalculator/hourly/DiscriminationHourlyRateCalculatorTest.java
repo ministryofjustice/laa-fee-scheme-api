@@ -93,7 +93,7 @@ class DiscriminationHourlyRateCalculatorTest {
   private FeeEntity buildFeeEntity() {
     return FeeEntity.builder()
         .feeCode("DISC")
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("DISC_FS2013").build())
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("DISC_FS2013").build())
         .categoryType(DISCRIMINATION)
         .escapeThresholdLimit(new BigDecimal("700.00"))
         .build();

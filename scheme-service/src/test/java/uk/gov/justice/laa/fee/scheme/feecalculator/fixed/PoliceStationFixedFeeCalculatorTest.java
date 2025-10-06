@@ -45,7 +45,7 @@ class PoliceStationFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVC")
-        .feeSchemeCode(feeSchemesEntity)
+        .feeScheme(feeSchemesEntity)
         .profitCostLimit(new BigDecimal("123.56"))
         .fixedFee(new BigDecimal("200.56"))
         .categoryType(POLICE_STATION)
@@ -111,7 +111,7 @@ class PoliceStationFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVC")
-        .feeSchemeCode(feeSchemesEntity)
+        .feeScheme(feeSchemesEntity)
         .profitCostLimit(new BigDecimal("123.56"))
         .fixedFee(new BigDecimal("200.56"))
         .categoryType(POLICE_STATION)
@@ -206,7 +206,7 @@ class PoliceStationFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .feeSchemeCode(feeSchemesEntity)
+        .feeScheme(feeSchemesEntity)
         .profitCostLimit(profitCostLimit)
         .fixedFee(fixedFee)
         .categoryType(POLICE_STATION)
@@ -284,7 +284,7 @@ class PoliceStationFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .feeSchemeCode(feeSchemesEntity)
+        .feeScheme(feeSchemesEntity)
         .profitCostLimit(profitCostLimit)
         .fixedFee(fixedFee)
         .categoryType(POLICE_STATION)

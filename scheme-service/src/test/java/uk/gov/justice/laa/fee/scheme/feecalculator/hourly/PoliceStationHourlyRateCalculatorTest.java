@@ -112,7 +112,7 @@ class PoliceStationHourlyRateCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .feeSchemeCode(feeSchemesEntity)
+        .feeScheme(feeSchemesEntity)
         .profitCostLimit(profitCostLimit)
         .fixedFee(fixedFee)
         .categoryType(POLICE_STATION)
@@ -191,7 +191,7 @@ class PoliceStationHourlyRateCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .feeSchemeCode(feeSchemesEntity)
+        .feeScheme(feeSchemesEntity)
         .profitCostLimit(BigDecimal.valueOf(100000.00))
         .fixedFee(fixedFee)
         .categoryType(POLICE_STATION)

@@ -83,7 +83,7 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
     log.info("Build fee calculation response");
     return new FeeCalculationResponse().toBuilder()
         .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
+        .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .validationMessages(validationMessages)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
