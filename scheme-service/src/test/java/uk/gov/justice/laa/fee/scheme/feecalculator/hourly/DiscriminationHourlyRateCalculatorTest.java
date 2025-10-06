@@ -29,37 +29,39 @@ class DiscriminationHourlyRateCalculatorTest {
 
   @ParameterizedTest
   @CsvSource({
-      "false, 149.50, 300.50, 528.24, 0",  // Under escape threshold (No VAT)
-      "true, 149.50, 300.50, 618.24, 90.00",  // Under escape threshold limit (VAT applied)
-      "false, 199.50, 500.50, 778.24, 0", // Equal to escape threshold limit (No VAT)
-      "true, 199.50, 500.50, 918.24, 140.00" // Equal to escape threshold limit (VAT applied)
+      "false, 149.50, 300.50, 528.24, 0, 450.00",  // Under escape threshold (No VAT)
+      "true, 149.50, 300.50, 618.24, 90.00, 450.00",  // Under escape threshold limit (VAT applied)
+      "false, 199.50, 500.50, 778.24, 0, 700.00", // Equal to escape threshold limit (No VAT)
+      "true, 199.50, 500.50, 918.24, 140.00, 700.00" // Equal to escape threshold limit (VAT applied)
   })
   void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double netProfitCosts, double costOfCounsel,
-                                                    double expectedTotal, double expectedVat) {
+                                                    double expectedTotal, double expectedVat, double expectedHourlyTotal) {
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel);
     FeeEntity feeEntity = buildFeeEntity();
 
     FeeCalculationResponse result = discriminationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
 
-    assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel, expectedVat, false);
+    assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel,
+        expectedVat, expectedHourlyTotal, false);
 
     assertThat(result.getValidationMessages()).isEmpty();
   }
 
   @ParameterizedTest
   @CsvSource({
-      "false, 300.50, 500.50, 778.24, 0", // Over escape threshold limit (No VAT)
-      "true, 300.50, 500.50, 918.24, 140.00"  // Over escape threshold limit (VAT applied)
+      "false, 300.50, 500.50, 778.24, 0, 700.00", // Over escape threshold limit (No VAT)
+      "true, 300.50, 500.50, 918.24, 140.00, 700.00"  // Over escape threshold limit (VAT applied)
   })
   void calculate_shouldReturnFeeCalculationResponseWithWarning(boolean vatIndicator, double netProfitCosts,
-                                                            double costOfCounsel, double expectedTotal,
-                                                            double expectedVat) {
+                                                               double costOfCounsel, double expectedTotal,
+                                                               double expectedVat, double expectedHourlyTotal) {
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel);
     FeeEntity feeEntity = buildFeeEntity();
 
     FeeCalculationResponse result = discriminationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
 
-    assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel, expectedVat, true);
+    assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel, expectedVat,
+        expectedHourlyTotal, true);
 
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
         .message("123")
@@ -103,7 +105,7 @@ class DiscriminationHourlyRateCalculatorTest {
 
   private void assertFeeCalculation(FeeCalculationResponse response, double total, boolean vatIndicator,
                                     double netProfitCosts, double costOfCounsel, double expectedVat,
-                                    boolean expectedEscapeFlag) {
+                                    double expectedHourlyTotal, boolean expectedEscapeFlag) {
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("DISC");
     assertThat(response.getClaimId()).isEqualTo("claim_123");
@@ -121,5 +123,6 @@ class DiscriminationHourlyRateCalculatorTest {
     assertThat(calculation.getDisbursementAmount()).isEqualTo(65.20);
     assertThat(calculation.getRequestedNetDisbursementAmount()).isEqualTo(65.20);
     assertThat(calculation.getDisbursementVatAmount()).isEqualTo(13.04);
+    assertThat(calculation.getHourlyTotalAmount()).isEqualTo(expectedHourlyTotal);
   }
 }
