@@ -25,7 +25,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 @ExtendWith(MockitoExtension.class)
-class MediationFeeCalculatorTest {
+class MediationFixedFeeCalculatorTest {
 
   @InjectMocks
   MediationFixedFeeCalculator mediationFeeCalculator;

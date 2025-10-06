@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
+import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -17,6 +18,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -51,7 +53,7 @@ class FeeCalculationUtilTest {
         .adjornHearingBoltOn(boltOnFee)
         .build();
 
-    FeeCalculationResponse response = FeeCalculationUtil.calculate(feeEntity, feeCalculationRequest);
+    FeeCalculationResponse response = FeeCalculationUtil.calculate(feeCalculationRequest, feeEntity);
 
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("FEE1");
@@ -110,7 +112,7 @@ class FeeCalculationUtilTest {
         .categoryType(MENTAL_HEALTH)
         .build();
 
-    FeeCalculationResponse response = FeeCalculationUtil.calculate(feeEntity, feeCalculationRequest);
+    FeeCalculationResponse response = FeeCalculationUtil.calculate(feeCalculationRequest, feeEntity);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(470.94)
@@ -143,28 +145,21 @@ class FeeCalculationUtilTest {
 
   }
 
-  @Test
-  void testIsFixedFeeWhenFixed() {
-    Assertions.assertTrue(FeeCalculationUtil.isFixedFee("FIXED"));
-  }
-
-  @Test
-  void testIsFixedFeeWhenNotFixed() {
-    Assertions.assertFalse(FeeCalculationUtil.isFixedFee("HOURLY"));
-  }
-
-  @Test
-  void testIsFixedFeeWhenNull() {
-    assertThrows(NullPointerException.class, () -> {
-      FeeCalculationUtil.isFixedFee(null);
-    });
+  @ParameterizedTest
+  @CsvSource(value = {
+      "FIXED, true",
+      "HOURLY, false",
+      "null, false"
+  }, nullValues = {"null"})
+  void testIsFixedFee(FeeType feeType, boolean expected) {
+    Assertions.assertEquals(expected, FeeCalculationUtil.isFixedFee(feeType));
   }
 
   @ParameterizedTest
   @EnumSource(value = CategoryType.class, names = {
-      "POLICE_STATION", "PRISON_LAW"
+      "ASSOCIATED_CIVIL", "POLICE_STATION", "PRISON_LAW"
   })
-  void calculate_ReturnDateFromUniqueFileNumber_forPoliceAndPrisonLaw(CategoryType categoryType) {
+  void calculate_ReturnDateFromUniqueFileNumber_forAssociatedCivilAndPoliceAndPrisonLaw(CategoryType categoryType) {
     FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
     LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeDataRequest);
 
@@ -186,19 +181,30 @@ class FeeCalculationUtilTest {
   }
 
   @ParameterizedTest
-  @EnumSource(value = CategoryType.class, names = {
-      "IMMIGRATION_ASYLUM", "COMMUNITY_CARE", "EDUCATION",
-      "MENTAL_HEALTH", "WELFARE_BENEFITS", "MEDIATION"
+  @CsvSource(value = {
+      "ADVOCACY_APPEALS_REVIEWS, PROH, 2025-11-11, 090925/abc, 2025-11-11",
+      "ADVOCACY_APPEALS_REVIEWS, PROH, , 090925/abc, 2025-09-09",
+      "ADVOCACY_APPEALS_REVIEWS, APPA, , 090925/abc, 2025-09-09",
+      "ADVOCACY_APPEALS_REVIEWS, APPB, , 090925/abc, 2025-09-09"
   })
-  void shouldReturnStartDate_forOtherCategories(CategoryType categoryType) {
-    FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
-    LocalDate startDate = LocalDate.of(2024, 7, 20);
-    feeDataRequest.setStartDate(startDate);
-    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeDataRequest);
+  void shouldReturnStartDate_forOtherCategories(String categoryType, String feeCode, String repOrderDate, String ufn,
+                                                LocalDate expectedDate) {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode(feeCode)
+        .claimId("claim_123")
+        .representationOrderDate(nonNull(repOrderDate) ? LocalDate.parse(repOrderDate) : null)
+        .uniqueFileNumber(ufn)
+        .netProfitCosts(10.0)
+        .netDisbursementAmount(10.0)
+        .disbursementVatAmount(10.0)
+        .vatIndicator(true)
+        .netTravelCosts(10.0)
+        .netWaitingCosts(10.0)
+        .build();
 
-    assertEquals(startDate, result);
+    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(CategoryType.valueOf(categoryType), feeCalculationRequest);
+    assertEquals(expectedDate, result);
   }
-
 
 
   @Test
@@ -242,4 +248,5 @@ class FeeCalculationUtilTest {
 
     assertThat(totalAmount).isEqualTo(new BigDecimal("144.60"));
   }
+
 }
