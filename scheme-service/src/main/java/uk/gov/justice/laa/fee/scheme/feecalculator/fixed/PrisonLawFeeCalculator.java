@@ -53,7 +53,7 @@ public class PrisonLawFeeCalculator implements FeeCalculator {
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
+        .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
         .feeCalculation(feeCalculation).build();
   }
