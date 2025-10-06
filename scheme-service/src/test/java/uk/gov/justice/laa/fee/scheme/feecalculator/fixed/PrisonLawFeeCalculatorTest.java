@@ -75,7 +75,7 @@ class PrisonLawFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .feeSchemeCode(feeSchemesEntity)
+        .feeScheme(feeSchemesEntity)
         .fixedFee(BigDecimal.valueOf(fixedFeeAmount))
         .categoryType(PRISON_LAW)
         .feeType(FeeType.FIXED)

@@ -119,7 +119,7 @@ class MagsYouthCourtFixedFeeCalculatorTest {
 
       FeeEntity feeEntity = FeeEntity.builder()
           .feeCode(feeCode)
-          .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2022").build())
+          .feeScheme(FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2022").build())
           .fixedFee(new BigDecimal("286.02"))
           .categoryType(MAGS_COURT_DESIGNATED)
           .feeType(FIXED)
@@ -146,7 +146,7 @@ class MagsYouthCourtFixedFeeCalculatorTest {
 
       FeeEntity feeEntity = FeeEntity.builder()
           .feeCode(feeCode)
-          .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("YOUTH_COURT_FS2024").build())
+          .feeScheme(FeeSchemesEntity.builder().schemeCode("YOUTH_COURT_FS2024").build())
           .fixedFee(new BigDecimal("1141.17"))
           .categoryType(YOUTH_COURT_DESIGNATED)
           .feeType(FIXED)
@@ -264,7 +264,7 @@ class MagsYouthCourtFixedFeeCalculatorTest {
 
       FeeEntity feeEntity = FeeEntity.builder()
           .feeCode(feeCode)
-          .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2022").build())
+          .feeScheme(FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2022").build())
           .fixedFee(new BigDecimal("223.88"))
           .categoryType(MAGS_COURT_UNDESIGNATED)
           .feeType(FIXED)
@@ -296,7 +296,7 @@ class MagsYouthCourtFixedFeeCalculatorTest {
 
       FeeEntity feeEntity = FeeEntity.builder()
           .feeCode(feeCode)
-          .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("YOUTH_COURT_FS2024").build())
+          .feeScheme(FeeSchemesEntity.builder().schemeCode("YOUTH_COURT_FS2024").build())
           .fixedFee(new BigDecimal("919.96"))
           .categoryType(YOUTH_COURT_UNDESIGNATED)
           .feeType(FIXED)

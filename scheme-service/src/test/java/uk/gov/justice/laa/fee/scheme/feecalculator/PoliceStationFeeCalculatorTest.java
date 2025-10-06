@@ -54,7 +54,7 @@ class PoliceStationFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVC")
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
         .fixedFee(new BigDecimal("75.50"))
         .categoryType(POLICE_STATION)
         .feeType(FIXED)
@@ -111,7 +111,7 @@ class PoliceStationFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVK")
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("POL_FS2022").build())
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("POL_FS2022").build())
         .categoryType(POLICE_STATION)
         .feeType(HOURLY)
         .profitCostLimit(new BigDecimal("800.00"))

@@ -112,7 +112,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
         .fixedFee(new BigDecimal("75.50"))
         .categoryType(IMMIGRATION_ASYLUM)
         .feeType(FIXED)
@@ -180,7 +180,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
         .fixedFee(new BigDecimal("75.50"))
         .categoryType(IMMIGRATION_ASYLUM)
         .feeType(FIXED)

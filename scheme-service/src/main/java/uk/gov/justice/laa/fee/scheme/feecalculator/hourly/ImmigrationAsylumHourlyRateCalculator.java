@@ -103,7 +103,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
 
       return new FeeCalculationResponse().toBuilder()
           .feeCode(feeCalculationRequest.getFeeCode())
-          .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
+          .schemeId(feeEntity.getFeeScheme().getSchemeCode())
           .claimId(claimId)
           .validationMessages(validationMessages)
           .feeCalculation(FeeCalculation.builder()

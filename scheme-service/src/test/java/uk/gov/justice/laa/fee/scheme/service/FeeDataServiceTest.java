@@ -93,7 +93,7 @@ class FeeDataServiceTest {
 
     FeeEntity feeEntity1 = FeeEntity.builder()
         .feeCode("INVC")
-        .feeSchemeCode(feeSchemesEntity1)
+        .feeScheme(feeSchemesEntity1)
         .profitCostLimit(new BigDecimal("954.56"))
         .fixedFee(new BigDecimal("1256.66"))
         .categoryType(POLICE_STATION)
@@ -105,7 +105,7 @@ class FeeDataServiceTest {
 
     FeeEntity feeEntity2 = FeeEntity.builder()
         .feeCode("INVC")
-        .feeSchemeCode(feeSchemesEntity2)
+        .feeScheme(feeSchemesEntity2)
         .profitCostLimit(new BigDecimal("422.56"))
         .fixedFee(new BigDecimal("1698.38"))
         .categoryType(POLICE_STATION)
@@ -131,7 +131,7 @@ class FeeDataServiceTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVC")
-        .feeSchemeCode(feeSchemesEntity)
+        .feeScheme(feeSchemesEntity)
         .profitCostLimit(new BigDecimal("123.56"))
         .fixedFee(new BigDecimal("200.56"))
         .categoryType(POLICE_STATION)
@@ -157,7 +157,7 @@ class FeeDataServiceTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVC")
-        .feeSchemeCode(feeSchemesEntity)
+        .feeScheme(feeSchemesEntity)
         .profitCostLimit(new BigDecimal("123.56"))
         .fixedFee(new BigDecimal("200.56"))
         .categoryType(POLICE_STATION)
@@ -282,7 +282,7 @@ class FeeDataServiceTest {
   private FeeEntity policeStationFeeEntity(FeeSchemesEntity feeSchemesEntity) {
     return FeeEntity.builder()
         .feeCode("INVC")
-        .feeSchemeCode(feeSchemesEntity)
+        .feeScheme(feeSchemesEntity)
         .profitCostLimit(new BigDecimal("123.56"))
         .fixedFee(new BigDecimal("200.56"))
         .categoryType(POLICE_STATION)
@@ -293,7 +293,7 @@ class FeeDataServiceTest {
   private FeeEntity familyFeeEntity(FeeSchemesEntity feeSchemesEntity, Region region) {
     return  FeeEntity.builder()
         .feeCode("FPB010")
-        .feeSchemeCode(feeSchemesEntity)
+        .feeScheme(feeSchemesEntity)
         .fixedFee(new BigDecimal("150"))
         .escapeThresholdLimit(new BigDecimal("300"))
         .region(region)

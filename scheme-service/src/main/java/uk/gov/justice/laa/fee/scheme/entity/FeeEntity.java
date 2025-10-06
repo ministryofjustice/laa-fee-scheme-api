@@ -33,7 +33,7 @@ public class FeeEntity {
   private String description;
   @ManyToOne
   @JoinColumn(name = "fee_scheme_code", referencedColumnName = "scheme_code")
-  private FeeSchemesEntity feeSchemeCode;
+  private FeeSchemesEntity feeScheme;
   private BigDecimal fixedFee;
   private BigDecimal profitCostLimit;
   private BigDecimal disbursementLimit;

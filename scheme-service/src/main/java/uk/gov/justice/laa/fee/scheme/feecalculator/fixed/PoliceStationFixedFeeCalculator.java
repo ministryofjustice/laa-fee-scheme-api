@@ -115,7 +115,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
+        .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
@@ -143,11 +143,11 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     if (StringUtils.isNotBlank(feeCalculationRequest.getPoliceStationId())) {
 
       log.info("Get police station fees entity using policeStationId {} and schemeCode: {}",
-          feeCalculationRequest.getPoliceStationId(), feeEntity.getFeeSchemeCode().getSchemeCode());
+          feeCalculationRequest.getPoliceStationId(), feeEntity.getFeeScheme().getSchemeCode());
 
       policeStationFeesEntity = policeStationFeesRepository
           .findPoliceStationFeeByPoliceStationIdAndFeeSchemeCode(feeCalculationRequest.getPoliceStationId(),
-              feeEntity.getFeeSchemeCode().getSchemeCode())
+              feeEntity.getFeeScheme().getSchemeCode())
           .stream()
           .findFirst()
           .orElseThrow(() -> new PoliceStationFeeNotFoundException(feeCalculationRequest.getPoliceStationId(),
@@ -155,11 +155,11 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     } else if (StringUtils.isNotBlank(feeCalculationRequest.getPoliceStationSchemeId())) {
 
       log.info("Get police station fees entity using policeStationSchemeId: {} and schemeCode: {}",
-          feeCalculationRequest.getPoliceStationSchemeId(), feeEntity.getFeeSchemeCode().getSchemeCode());
+          feeCalculationRequest.getPoliceStationSchemeId(), feeEntity.getFeeScheme().getSchemeCode());
 
       policeStationFeesEntity = policeStationFeesRepository
           .findPoliceStationFeeByPsSchemeIdAndFeeSchemeCode(feeCalculationRequest.getPoliceStationSchemeId(),
-              feeEntity.getFeeSchemeCode().getSchemeCode())
+              feeEntity.getFeeScheme().getSchemeCode())
           .stream()
           .findFirst()
           .orElseThrow(() -> new PoliceStationFeeNotFoundException(feeCalculationRequest.getPoliceStationSchemeId()));

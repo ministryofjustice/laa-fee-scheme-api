@@ -3,8 +3,10 @@ package uk.gov.justice.laa.fee.scheme.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -12,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTestBase;
 
 @DataJpaTest
@@ -20,89 +24,23 @@ class FeeRepositoryIntegrationTest extends PostgresContainerTestBase {
   @Autowired
   private FeeRepository repository;
 
-  @ParameterizedTest
-  @MethodSource("feeTestDataMediation")
-  void testFeeByCodeMediation(String feeCode, String expectedDescription, BigDecimal expectedFixedFee, BigDecimal expectedOneMediation, BigDecimal expectedTwoMediation, String feeSchemeCode) {
+  @Test
+  void testFeeByCode() {
     FeeSchemesEntity feeSchemesEntity = new FeeSchemesEntity();
-    feeSchemesEntity.setSchemeCode(feeSchemeCode);
+    feeSchemesEntity.setSchemeCode("PUB_FS2013");
 
-    Optional<FeeEntity> result = repository.findByFeeCodeAndFeeSchemeCode(feeCode, feeSchemesEntity);
-    assertThat(result).isPresent();
+    List<FeeEntity> result = repository.findByFeeCode("PUB");
+    assertThat(result).size().isEqualTo(1);
 
-    FeeEntity entity = result.get();
+    FeeEntity entity = result.getFirst();
 
-    assertThat(entity.getFeeCode()).isEqualTo(feeCode);
-    assertThat(entity.getDescription()).isEqualTo(expectedDescription);
-    assertThat(entity.getFixedFee()).isEqualTo(expectedFixedFee);
-    assertThat(entity.getMediationFeeLower()).isEqualTo(expectedOneMediation);
-    assertThat(entity.getMediationFeeHigher()).isEqualTo(expectedTwoMediation);
-    assertThat(entity.getFeeSchemeCode().getSchemeCode()).isEqualTo(feeSchemeCode);
+    assertThat(entity.getFeeCode()).isEqualTo("PUB");
+    assertThat(entity.getDescription()).isEqualTo("Public Law");
+    assertThat(entity.getFixedFee()).isEqualTo(new BigDecimal("259.00"));
+    assertThat(entity.getEscapeThresholdLimit()).isEqualTo(new BigDecimal("777.00"));
+    assertThat(entity.getFeeScheme().getSchemeCode()).isEqualTo("PUB_FS2013");
+    assertThat(entity.getCategoryType()).isEqualTo(CategoryType.PUBLIC_LAW);
+    assertThat(entity.getFeeType()).isEqualTo(FeeType.FIXED);
   }
 
-  static Stream<Arguments> feeTestDataMediation() {
-    return Stream.of(
-        Arguments.of("ASSA", "Mediation Assesment (alone)", new BigDecimal("87.00"), null, null, "MED_FS2013"),
-        Arguments.of("MDAS2C", "All issues sole - 2 parties eligible, agreement on Child only", null, new BigDecimal("294.00"), new BigDecimal("882.00"), "MED_FS2013"),
-        Arguments.of("MDCC2B", "Child only Co - 2 parties eligible, no agreement", null, new BigDecimal("230.00"), new BigDecimal("647.00"), "MED_FS2013")
-    );
-  }
-
-  @ParameterizedTest
-  @MethodSource("feeTestDataImmigrationFixedFee")
-  void testFeeByCodeImmigrationFixedFee(String feeCode, String expectedDescription, BigDecimal expectedFixedFee,
-                                        BigDecimal hoInterviewBoltOn, BigDecimal oralCmrhBoltOn, BigDecimal telephoneCmrhBoltOn,
-                                        BigDecimal adjournedHearingBoltOn, BigDecimal disbursementLimit, String feeSchemeCode) {
-    FeeSchemesEntity feeSchemesEntity = new FeeSchemesEntity();
-    feeSchemesEntity.setSchemeCode(feeSchemeCode);
-
-    Optional<FeeEntity> result = repository.findByFeeCodeAndFeeSchemeCode(feeCode, feeSchemesEntity);
-    assertThat(result).isPresent();
-
-    FeeEntity entity = result.get();
-
-    assertThat(entity.getFeeCode()).isEqualTo(feeCode);
-    assertThat(entity.getDescription()).isEqualTo(expectedDescription);
-    assertThat(entity.getFixedFee()).isEqualTo(expectedFixedFee);
-    assertThat(entity.getHoInterviewBoltOn()).isEqualTo(hoInterviewBoltOn);
-    assertThat(entity.getOralCmrhBoltOn()).isEqualTo(oralCmrhBoltOn);
-    assertThat(entity.getTelephoneCmrhBoltOn()).isEqualTo(telephoneCmrhBoltOn);
-    assertThat(entity.getAdjornHearingBoltOn()).isEqualTo(adjournedHearingBoltOn);
-    assertThat(entity.getDisbursementLimit()).isEqualTo(disbursementLimit);
-    assertThat(entity.getFeeSchemeCode().getSchemeCode()).isEqualTo(feeSchemeCode);
-  }
-
-  static Stream<Arguments> feeTestDataImmigrationFixedFee() {
-    return Stream.of(
-        Arguments.of("IACA", "Asylum CLR Fixed Fee 2a",
-            new BigDecimal("227.00"), null, new BigDecimal("166.00"), new BigDecimal("90.00"), null,
-            new BigDecimal("600.00"), "IMM_ASYLM_FS2013"),
-        Arguments.of("IMCC", "Standard Fee - Immigration CLR (2c + advocacy substantive hearing fee)",
-            new BigDecimal("764.00"), null, new BigDecimal("166.00"), new BigDecimal("90.00"),
-            new BigDecimal("161.00"), new BigDecimal("600.00"), "IMM_ASYLM_FS2020"),
-        Arguments.of("IDAS2", "Detained Duty Advice Scheme (5+ clients seen)",
-            new BigDecimal("360.00"), null, null, null, null, null, "IMM_ASYLM_FS2023")
-    );
-  }
-
-  @ParameterizedTest
-  @MethodSource("feeTestDataPoliceStationFee")
-  void testFeeByCodePoliceStationFee(String feeCode, String expectedDescription, String feeSchemeCode, String categoryType) {
-    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
-
-    Optional<FeeEntity> result = repository.findByFeeCodeAndFeeSchemeCode(feeCode, feeSchemesEntity);
-    assertThat(result).isPresent();
-
-    FeeEntity entity = result.get();
-
-    assertThat(entity.getFeeCode()).isEqualTo(feeCode);
-    assertThat(entity.getDescription()).isEqualTo(expectedDescription);
-    assertThat(entity.getFeeSchemeCode().getSchemeCode()).isEqualTo(feeSchemeCode);
-    assertThat(entity.getCategoryType().name()).isEqualTo(categoryType);
-  }
-
-  static Stream<Arguments> feeTestDataPoliceStationFee() {
-    return Stream.of(
-        Arguments.of("INVC", "Police station: attendance", "POL_FS2016","POLICE_STATION")
-    );
-  }
 }

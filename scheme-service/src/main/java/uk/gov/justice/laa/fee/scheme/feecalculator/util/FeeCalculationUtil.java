@@ -90,7 +90,7 @@ public final class FeeCalculationUtil {
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
+        .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .claimId(feeCalculationRequest.getClaimId())
         .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
         .feeCalculation(FeeCalculation.builder()

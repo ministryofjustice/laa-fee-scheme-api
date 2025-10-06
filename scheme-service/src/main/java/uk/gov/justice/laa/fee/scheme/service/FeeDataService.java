@@ -47,13 +47,13 @@ public class FeeDataService {
       Optional<FeeEntity> feeEntityOptional =  feeEntityList.stream()
           .filter(fee -> filterByRegion(fee, feeCalculationRequest.getLondonRate()))
           .filter(fee -> isValidFee(fee, claimStartDate)) // startDate <= inputDate
-          .max(Comparator.comparing(fee -> fee.getFeeSchemeCode().getValidFrom()));
+          .max(Comparator.comparing(fee -> fee.getFeeScheme().getValidFrom()));
 
       FeeEntity feeEntity = feeEntityOptional
           .orElseThrow(() -> new FeeNotFoundException(feeCalculationRequest.getFeeCode(), claimStartDate));
 
       log.info("Retrieved fee entity with feeId: {} and schemeCode: {}", feeEntity.getFeeId(),
-          feeEntity.getFeeSchemeCode().getSchemeCode());
+          feeEntity.getFeeScheme().getSchemeCode());
 
       return feeEntity;
 
@@ -63,8 +63,8 @@ public class FeeDataService {
   }
 
   private static boolean isValidFee(FeeEntity fee, LocalDate claimStartDate) {
-    return !fee.getFeeSchemeCode().getValidFrom().isAfter(claimStartDate)
-        && (fee.getFeeSchemeCode().getValidTo() == null || claimStartDate.isBefore(fee.getFeeSchemeCode().getValidTo()));
+    return !fee.getFeeScheme().getValidFrom().isAfter(claimStartDate)
+        && (fee.getFeeScheme().getValidTo() == null || claimStartDate.isBefore(fee.getFeeScheme().getValidTo()));
   }
 
   private static boolean filterByRegion(FeeEntity fee, Boolean isLondonRate) {

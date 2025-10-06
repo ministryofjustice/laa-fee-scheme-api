@@ -103,7 +103,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     log.info("Build fee calculation response");
     return new FeeCalculationResponse().toBuilder()
         .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
+        .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .claimId(feeCalculationRequest.getClaimId())
         .validationMessages(validationMessages)
         .escapeCaseFlag(false) // temp hard coded

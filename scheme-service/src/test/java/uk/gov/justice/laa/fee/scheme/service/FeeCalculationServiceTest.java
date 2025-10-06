@@ -103,7 +103,7 @@ class FeeCalculationServiceTest {
 
     FeeEntity feeEntity =  FeeEntity.builder()
           .feeCode("INVC")
-          .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
+          .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
           .categoryType(IMMIGRATION_ASYLUM)
           .escapeThresholdLimit(new BigDecimal("700.00"))
           .build();

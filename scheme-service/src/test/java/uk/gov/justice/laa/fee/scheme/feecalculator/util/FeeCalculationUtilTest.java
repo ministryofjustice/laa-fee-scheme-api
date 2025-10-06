@@ -47,7 +47,7 @@ class FeeCalculationUtilTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("FEE1")
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
         .categoryType(MENTAL_HEALTH)
         .fixedFee(new BigDecimal("59.62"))
         .adjornHearingBoltOn(boltOnFee)
@@ -75,7 +75,7 @@ class FeeCalculationUtilTest {
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
         .categoryType(COMMUNITY_CARE)
         .build();
 
@@ -106,7 +106,7 @@ class FeeCalculationUtilTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("MHL02")
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("MHL_FS2013").build())
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("MHL_FS2013").build())
         .fixedFee(fixedFee)
         .adjornHearingBoltOn(new BigDecimal(100))
         .categoryType(MENTAL_HEALTH)
