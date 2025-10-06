@@ -5,33 +5,39 @@ import lombok.Data;
 @Data
 public class SubmissionDataDto {
 
-  // Top-level FeeCalculationResponse fields
+  // example of legal help specific field
+  private String legalHelpSpecific;
+  // example of crime Lower specific field
+  private String crimeLowerSpecific;
+
+  // example fields outside of fee scheme api
+  private String caseReference;
+  private String clientForename;
+  private String clientSurname;
+
+  // Top level FeeCalculationResponse fields
   private String feeCode;
   private String schemeId;
   private String claimId;
-  private Boolean escapeCaseFlag;
-
-  // Validation messages (optional, could flatten or keep as JSON string)
+  private Boolean caseEscaped;
   private String validationMessages;
 
   // Nested FeeCalculation fields
   private Double totalAmount;
-  private Boolean vatIndicator;
+  private Boolean vatOnClaim;
   private Double vatRateApplied;
-  private Double calculatedVatAmount;
+  private Double vatAmount;
   private Double disbursementAmount;
-  private Double requestedNetDisbursementAmount;
   private Double disbursementVatAmount;
-  private Double hourlyTotalAmount;
-  private Double fixedFeeAmount;
-  private Double netProfitCostsAmount;
-  private Double requestedNetProfitCostsAmount;
-  private Double netCostOfCounselAmount;
-  private Double netTravelCostsAmount;
-  private Double netWaitingCosts;
-  private Double detentionAndWaitingCostsAmount;
-  private Double jrFormFillingAmount;
-  private Double travelAndWaitingCostAmount;
+  private Double hourlyTotal;
+  private Double fixedFee;
+  private Double profitCosts;
+  private Double costOfCounsel;
+  private Double travelCosts;
+  private Double waitingCosts;
+  private Double detentionAndWaitingCosts;
+  private Double jrFormFilling;
+  private Double travelAndWaitingCosts;
 
   // Nested BoltOnFeeDetails
   private Double boltOnTotalFeeAmount;

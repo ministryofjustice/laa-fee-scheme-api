@@ -107,5 +107,9 @@ dependencies {
     implementation "io.sentry:sentry-logback:$versions.sentry"
     implementation "io.sentry:sentry-spring-boot-starter-jakarta:$versions.sentry"
 
-    implementation("org.mapstruct:mapstruct:1.6.3")
+    implementation "org.mapstruct:mapstruct:1.5.5.Final"
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.5.5.Final"
+    implementation 'org.apache.poi:poi-ooxml:5.2.3'
+
+
 }

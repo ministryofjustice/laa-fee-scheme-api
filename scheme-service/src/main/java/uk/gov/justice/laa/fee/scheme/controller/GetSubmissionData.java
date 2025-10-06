@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.controller;
 
+import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ public class GetSubmissionData  {
 
   @PostMapping("/api/v1/submission-data")
   public ResponseEntity<List<SubmissionDataDto>> getSubmissionData(
-      @RequestBody List<SubmissionJsonData> submissionJsonDataList) {
+      @RequestBody List<SubmissionJsonData> submissionJsonDataList) throws IOException {
 
     System.out.println(submissionJsonDataList);
 
