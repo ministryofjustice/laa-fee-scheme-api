@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
+import static java.util.Objects.nonNull;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
@@ -121,8 +122,23 @@ public final class FeeCalculationUtil {
           DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
       case MAGS_COURT_DESIGNATED, MAGS_COURT_UNDESIGNATED, YOUTH_COURT_DESIGNATED, YOUTH_COURT_UNDESIGNATED ->
           feeCalculationRequest.getRepresentationOrderDate();
+      case ADVOCACY_APPEALS_REVIEWS ->  getFeeClaimStartDateAdvocacyAppealsReviews(feeCalculationRequest);
       default -> feeCalculationRequest.getStartDate();
     };
+  }
+
+  /**
+   * Calculate start date to use for Advocacy Assistance in the Crown Court or Appeals & Reviews,
+   * PROH will use representation order date if present, falls back to UFN if not.
+   */
+  public static LocalDate getFeeClaimStartDateAdvocacyAppealsReviews(FeeCalculationRequest feeCalculationRequest) {
+    if (feeCalculationRequest.getFeeCode().equals("PROH") && nonNull(feeCalculationRequest.getRepresentationOrderDate())) {
+      log.info("Determining fee start date for PROH, using Representation Order Date");
+      return feeCalculationRequest.getRepresentationOrderDate();
+    } else  {
+      log.info("Determining fee start date, using Unique File Number");
+      return DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
+    }
   }
 
   /**
