@@ -48,11 +48,19 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
 
     log.info("Calculate Associated Civil fixed fee");
 
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(CategoryType.ASSOCIATED_CIVIL, feeCalculationRequest);
-
+    // Fixed fee calculation
     BigDecimal fixedFee = defaultToZeroIfNull(feeEntity.getFixedFee());
+    LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(CategoryType.ASSOCIATED_CIVIL, feeCalculationRequest);
+    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
 
+    BigDecimal calculatedVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
+    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+
+    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee,
+        calculatedVatAmount, netDisbursementAmount, disbursementVatAmount);
+
+    // Escape case logic
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal netTravelCosts = toBigDecimal(feeCalculationRequest.getNetTravelCosts());
     BigDecimal netWaitingCosts = toBigDecimal(feeCalculationRequest.getNetWaitingCosts());
@@ -72,13 +80,6 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
           .type(WARNING)
           .build());
     }
-
-    BigDecimal calculatedVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
-    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
-
-    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee,
-        calculatedVatAmount, netDisbursementAmount, disbursementVatAmount);
 
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
