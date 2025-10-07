@@ -233,7 +233,7 @@ class MagsYouthCourtFixedFeeCalculatorTest {
           .requestedNetDisbursementAmount(request.getNetDisbursementAmount())
           .disbursementVatAmount(request.getDisbursementVatAmount())
           .netTravelCostsAmount(expectedNetTravel)
-          .netWaitingCosts(expectedNetWaiting)
+          .netWaitingCostsAmount(expectedNetWaiting)
           .fixedFeeAmount(fixedFee)
           .calculatedVatAmount(expectedVat)
           .build();

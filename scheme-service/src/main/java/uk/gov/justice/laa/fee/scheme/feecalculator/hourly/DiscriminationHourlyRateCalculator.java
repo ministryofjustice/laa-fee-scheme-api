@@ -54,18 +54,17 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
 
     BigDecimal feeTotal = netProfitCosts.add(netCostOfCounsel);
 
-    boolean escaped = false;
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
+    boolean isEscaped = feeTotal.compareTo(escapeThresholdLimit) > 0;
 
-    if (feeTotal.compareTo(escapeThresholdLimit) > 0) {
+    if (isEscaped) {
       log.warn("Fee total exceeds escape threshold limit");
       validationMessages.add(ValidationMessagesInner.builder()
           .message(WARNING_CODE_DESCRIPTION)
           .type(WARNING)
           .build());
       feeTotal = escapeThresholdLimit;
-      escaped = true;
     }
 
     // Apply VAT where applicable
@@ -85,7 +84,7 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
         .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .claimId(feeCalculationRequest.getClaimId())
         .validationMessages(validationMessages)
-        .escapeCaseFlag(escaped)
+        .escapeCaseFlag(isEscaped)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
