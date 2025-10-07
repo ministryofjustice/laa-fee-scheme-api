@@ -79,7 +79,6 @@ class DiscriminationHourlyRateCalculatorTest {
     assertThat(result).isEqualTo(Set.of(DISCRIMINATION));
   }
 
-
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netProfitCosts,
                                              double costOfCounsel) {
     return FeeCalculationRequest.builder()

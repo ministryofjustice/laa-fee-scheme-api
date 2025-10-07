@@ -1,7 +1,9 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
+package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
@@ -16,43 +18,56 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
-import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 /**
- * Calculate the discrimination fee for a given fee entity and fee calculation request.
+ * Calculate the Associated Civil Work fee for a given fee entity and fee calculation request.
  */
 @Slf4j
 @Component
-public class DiscriminationHourlyRateCalculator implements FeeCalculator {
-
-  @Override
-  public Set<CategoryType> getSupportedCategories() {
-    return Set.of(DISCRIMINATION);
-  }
+public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
 
   private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
 
+  @Override
+  public Set<CategoryType> getSupportedCategories() {
+    return Set.of(CategoryType.ASSOCIATED_CIVIL);
+  }
+
   /**
    * Calculated fee based on the provided fee entity and fee calculation request.
-   * the fee entity containing fee details
    *
    * @param feeCalculationRequest the request containing fee calculation data
-   * @param feeEntity             the fee entity containing fee details
    * @return FeeCalculationResponse with calculated fee
    */
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    log.info("Calculate Discrimination hourly rate fee");
+    log.info("Calculate Associated Civil fixed fee");
 
+    // Fixed fee calculation
+    BigDecimal fixedFee = defaultToZeroIfNull(feeEntity.getFixedFee());
+    LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(CategoryType.ASSOCIATED_CIVIL, feeCalculationRequest);
+    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+
+    BigDecimal calculatedVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
+    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+
+    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee,
+        calculatedVatAmount, netDisbursementAmount, disbursementVatAmount);
+
+    // Escape case logic
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
-    BigDecimal netCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());
+    BigDecimal netTravelCosts = toBigDecimal(feeCalculationRequest.getNetTravelCosts());
+    BigDecimal netWaitingCosts = toBigDecimal(feeCalculationRequest.getNetWaitingCosts());
 
-    BigDecimal feeTotal = netProfitCosts.add(netCostOfCounsel);
+    BigDecimal feeTotal = netProfitCosts
+        .add(netTravelCosts)
+        .add(netWaitingCosts);
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
@@ -64,22 +79,10 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
           .message(WARNING_CODE_DESCRIPTION)
           .type(WARNING)
           .build());
-      feeTotal = escapeThresholdLimit;
     }
 
-    // Apply VAT where applicable
-    LocalDate startDate = feeCalculationRequest.getStartDate();
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(feeTotal, startDate, vatApplicable);
-
-    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
-
-    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(feeTotal, calculatedVatAmount,
-            netDisbursementAmount, disbursementVatAmount);
-
     log.info("Build fee calculation response");
-    return new FeeCalculationResponse().toBuilder()
+    return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .claimId(feeCalculationRequest.getClaimId())
@@ -88,18 +91,17 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(VatUtil.getVatRateForDate(startDate)))
+            .vatRateApplied(toDouble(getVatRateForDate(claimStartDate)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
-            // disbursement not capped, so requested and calculated will be same
             .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
-            .hourlyTotalAmount(toDouble(feeTotal))
-            .netCostOfCounselAmount(toDouble(netCostOfCounsel))
             .netProfitCostsAmount(toDouble(netProfitCosts))
-            // net profit cost not capped, so requested and calculated will be same
-            .requestedNetProfitCostsAmount(toDouble(netProfitCosts))
+            .netTravelCostsAmount(toDouble(netTravelCosts))
+            .netWaitingCostsAmount(toDouble(netWaitingCosts))
+            .fixedFeeAmount(toDouble(fixedFee))
             .build())
         .build();
   }
+
 }
