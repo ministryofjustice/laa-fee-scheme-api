@@ -163,4 +163,8 @@ public final class FeeCalculationUtil {
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
   }
+
+  public static boolean isEscapedCase(BigDecimal amount, BigDecimal escapeThresholdLimit) {
+    return escapeThresholdLimit!= null && amount.compareTo(escapeThresholdLimit) > 0;
+  }
 }

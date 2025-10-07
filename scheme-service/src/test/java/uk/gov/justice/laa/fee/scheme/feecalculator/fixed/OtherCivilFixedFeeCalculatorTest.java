@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
 class OtherCivilFixedFeeCalculatorTest {
@@ -38,6 +40,30 @@ class OtherCivilFixedFeeCalculatorTest {
     FeeCalculationResponse result = feeCalculator.calculate(feeCalculationRequest, feeEntity);
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, false);
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "false, 501.00, 370.33, 0", // Over escape threshold limit (No VAT)
+      "true, 501.00, 420.33, 50" // Over escape threshold limit (VAT applied)
+  })
+  void calculate_shouldReturnFeeCalculationResponseWithWarning(boolean vatIndicator, double netProfitCosts,
+                                                               double expectedTotal, double expectedVat) {
+
+    FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts);
+    FeeEntity feeEntity = buildFeeEntity();
+
+    FeeCalculationResponse result = feeCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, true);
+
+    ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
+        .message("123")
+        .type(WARNING)
+        .build();
+
+    assertThat(result.getValidationMessages()).size().isEqualTo(1);
+    assertThat(result.getValidationMessages().getFirst()).isEqualTo(validationMessage);
   }
 
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netProfitCosts) {

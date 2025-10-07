@@ -12,12 +12,15 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PUBLIC_LAW;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.WELFARE_BENEFITS;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -28,6 +31,7 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 /**
  * Calculate the Other Civil fee for a given fee entity and fee data.
@@ -35,6 +39,8 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 @Slf4j
 @Component
 public class OtherCivilFixedFeeCalculator implements FeeCalculator {
+  private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
+
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of(CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT,
@@ -58,13 +64,26 @@ public class OtherCivilFixedFeeCalculator implements FeeCalculator {
         calculatedVatAmount, netDisbursementAmount, disbursementVatAmount);
 
     // Escape case logic
+    BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
+
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+    boolean isEscaped = FeeCalculationUtil.isEscapedCase(netProfitCosts, feeEntity.getEscapeThresholdLimit());
+
+    if (isEscaped) {
+      log.warn("Fee total exceeds escape threshold limit");
+      validationMessages.add(ValidationMessagesInner.builder()
+          .message(WARNING_CODE_DESCRIPTION)
+          .type(WARNING)
+          .build());
+    }
 
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .claimId(feeCalculationRequest.getClaimId())
-        .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
+        .validationMessages(validationMessages)
+        .escapeCaseFlag(isEscaped)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
@@ -73,6 +92,7 @@ public class OtherCivilFixedFeeCalculator implements FeeCalculator {
             .disbursementAmount(toDouble(netDisbursementAmount))
             .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
+            .netProfitCostsAmount(toDouble(netProfitCosts))
             .fixedFeeAmount(toDouble(fixedFee))
             .build())
         .build();
