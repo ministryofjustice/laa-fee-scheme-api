@@ -3,9 +3,9 @@ package uk.gov.justice.laa.fee.scheme.mapstruct;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class dataMappingUtil {
+public class DataMappingUtil {
 
-  private dataMappingUtil() {
+  private DataMappingUtil() {
   }
 
   public static final Map<String, String> SCHEME_ID_MAP = Map.of(

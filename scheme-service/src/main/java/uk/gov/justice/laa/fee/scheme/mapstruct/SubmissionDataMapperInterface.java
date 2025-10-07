@@ -20,10 +20,10 @@ public interface SubmissionDataMapperInterface {
 
   // top level fee calculation response
   @Mapping(source = "feeCode", target = "feeCode")
-  @Mapping(expression = "java(dataMappingUtil.mapSchemeId(submissionJsonData))", target = "schemeId")
+  @Mapping(expression = "java(DataMappingUtil.mapSchemeId(submissionJsonData))", target = "schemeId")
   @Mapping(source = "claimId", target = "claimId")
   @Mapping(source = "escapeCaseFlag", target = "caseEscaped")
-  @Mapping(expression = "java(dataMappingUtil.mapValidationMessages(submissionJsonData))", target = "validationMessages")
+  @Mapping(expression = "java(DataMappingUtil.mapValidationMessages(submissionJsonData))", target = "validationMessages")
 
   // nested fee calculation response details
   @Mapping(source = "feeCalculation.totalAmount", target = "totalAmount")

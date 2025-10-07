@@ -1,21 +1,24 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
-import static uk.gov.justice.laa.fee.scheme.mapstruct.convertToExcelCrimeLower.writeExcelCrimeLower;
-import static uk.gov.justice.laa.fee.scheme.mapstruct.convertToExcelLegalHelp.writeExcelLegalHelp;
-
-import java.io.IOException;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.gov.justice.laa.fee.scheme.excelwriter.ConvertToExcelCrimeLower;
+import uk.gov.justice.laa.fee.scheme.excelwriter.ConvertToExcelLegalHelp;
 import uk.gov.justice.laa.fee.scheme.mapstruct.SubmissionDataDto;
 import uk.gov.justice.laa.fee.scheme.mapstruct.SubmissionDataMapperInterface;
 import uk.gov.justice.laa.fee.scheme.mapstruct.SubmissionJsonData;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class SubmissionDataService {
 
-  public List<SubmissionDataDto> generateExcel(List<SubmissionJsonData> submissionJsonDataList) throws IOException {
+  private final ConvertToExcelLegalHelp legalHelpWriter;
+  private final ConvertToExcelCrimeLower crimeLowerWriter;
+
+  public List<SubmissionDataDto> generateExcel(List<SubmissionJsonData> submissionJsonDataList) {
 
     List<SubmissionJsonData> legalHelpList = submissionJsonDataList.stream()
         .filter(submission -> "legalHelp".equalsIgnoreCase(submission.getAreaOfLaw()))
@@ -34,11 +37,11 @@ public class SubmissionDataService {
         .toList();
 
     if (!legalHelpDto.isEmpty()) {
-      writeExcelLegalHelp("submission_data_legal_help.xlsx", legalHelpDto);
+      legalHelpWriter.writeExcel(legalHelpDto);
     }
 
     if (!crimeDto.isEmpty()) {
-      writeExcelCrimeLower("submission_data_crime_lower.xlsx", crimeDto);
+      crimeLowerWriter.writeExcel(crimeDto);
     }
 
     return submissionJsonDataList.stream()

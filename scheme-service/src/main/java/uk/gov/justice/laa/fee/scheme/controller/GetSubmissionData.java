@@ -25,11 +25,7 @@ public class GetSubmissionData  {
   private final SubmissionDataService submissionDataService;
 
   @PostMapping("/api/v1/submission-data")
-  public ResponseEntity<List<SubmissionDataDto>> getSubmissionData(
-      @RequestBody List<SubmissionJsonData> submissionJsonDataList) throws IOException {
-
-    System.out.println(submissionJsonDataList);
-
+  public ResponseEntity<List<SubmissionDataDto>> getSubmissionData(@RequestBody List<SubmissionJsonData> submissionJsonDataList) {
     // Map to DTO using MapStruct
     List<SubmissionDataDto> dtoList = submissionDataService.generateExcel(submissionJsonDataList);
     return ResponseEntity.ok(dtoList);
