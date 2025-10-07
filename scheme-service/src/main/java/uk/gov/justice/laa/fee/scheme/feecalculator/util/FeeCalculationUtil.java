@@ -112,7 +112,7 @@ public final class FeeCalculationUtil {
   /**
    * Return appropriate date based on Category Type of the claim request.
    *
-   * @param categoryType CategoryType
+   * @param categoryType          CategoryType
    * @param feeCalculationRequest FeeCalculationRequest
    * @return LocalDate
    */
@@ -122,7 +122,7 @@ public final class FeeCalculationUtil {
           DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
       case MAGS_COURT_DESIGNATED, MAGS_COURT_UNDESIGNATED, YOUTH_COURT_DESIGNATED, YOUTH_COURT_UNDESIGNATED ->
           feeCalculationRequest.getRepresentationOrderDate();
-      case ADVOCACY_APPEALS_REVIEWS ->  getFeeClaimStartDateAdvocacyAppealsReviews(feeCalculationRequest);
+      case ADVOCACY_APPEALS_REVIEWS -> getFeeClaimStartDateAdvocacyAppealsReviews(feeCalculationRequest);
       default -> feeCalculationRequest.getStartDate();
     };
   }
@@ -135,7 +135,7 @@ public final class FeeCalculationUtil {
     if (feeCalculationRequest.getFeeCode().equals("PROH") && nonNull(feeCalculationRequest.getRepresentationOrderDate())) {
       log.info("Determining fee start date for PROH, using Representation Order Date");
       return feeCalculationRequest.getRepresentationOrderDate();
-    } else  {
+    } else {
       log.info("Determining fee start date, using Unique File Number");
       return DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
     }

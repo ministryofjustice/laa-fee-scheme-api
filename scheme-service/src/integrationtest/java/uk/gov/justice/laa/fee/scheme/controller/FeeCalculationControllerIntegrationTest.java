@@ -97,6 +97,9 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "feeCode": "ASMS",
                   "claimId": "claim_123",
                   "uniqueFileNumber": "020416/001",
+                  "netProfitCosts": 27.8,
+                  "netTravelCosts": 10.0,
+                  "netWaitingCosts": 11.5,
                   "netDisbursementAmount": 55.35,
                   "disbursementVatAmount": 11.07,
                   "vatIndicator": true
@@ -119,7 +122,10 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                 "disbursementAmount": 55.35,
                 "requestedNetDisbursementAmount": 55.35,
                 "disbursementVatAmount": 11.07,
-                "fixedFeeAmount": 79.0
+                "fixedFeeAmount": 79.0,
+                "netProfitCostsAmount": 27.8,
+                "netTravelCostsAmount": 10.0,
+                "netWaitingCostsAmount": 11.5
                 }
               }
             """, STRICT));
@@ -667,7 +673,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
           "disbursementAmount": 123.38,
           "requestedNetDisbursementAmount": 123.38,
           "disbursementVatAmount": 24.67,
-          "netWaitingCosts": %s,
+          "netWaitingCostsAmount": %s,
           "netTravelCostsAmount": %s,
           "fixedFeeAmount": %s
         }
@@ -725,7 +731,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             "netProfitCostsAmount": %s,
             "requestedNetProfitCostsAmount": %s,
             "netTravelCostsAmount": 50,
-            "netWaitingCosts": 50
+            "netWaitingCostsAmount": 50
           }
         }
         """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, expectedHourlyTotalAmount, netProfitCostsAmount, requestedNetProfitCostsAmount);

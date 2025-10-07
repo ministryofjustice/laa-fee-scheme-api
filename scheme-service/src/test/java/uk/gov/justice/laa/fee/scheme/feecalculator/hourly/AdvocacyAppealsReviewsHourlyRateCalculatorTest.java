@@ -112,7 +112,7 @@ class AdvocacyAppealsReviewsHourlyRateCalculatorTest {
         .netProfitCostsAmount(requestedProfitCosts)
         .requestedNetProfitCostsAmount(requestedProfitCosts)
         .netTravelCostsAmount(requestedTravelCosts)
-        .netWaitingCosts(requestedWaitingCosts)
+        .netWaitingCostsAmount(requestedWaitingCosts)
         .build();
 
     ValidationMessagesInner warning = ValidationMessagesInner.builder().message(WARNING_CODE_DESCRIPTION).type(WARNING).build();

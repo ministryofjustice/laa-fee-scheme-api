@@ -91,7 +91,7 @@ public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator
             .hourlyTotalAmount(toDouble(profitAndAdditionalCosts))
             .netProfitCostsAmount(toDouble(requestedNetProfitCosts))
             .requestedNetProfitCostsAmount(toDouble(requestedNetProfitCosts))
-            .netWaitingCosts(toDouble(requestedWaitingCosts))
+            .netWaitingCostsAmount(toDouble(requestedWaitingCosts))
             .netTravelCostsAmount(toDouble(requestedTravelCosts))
             .build())
         .build();

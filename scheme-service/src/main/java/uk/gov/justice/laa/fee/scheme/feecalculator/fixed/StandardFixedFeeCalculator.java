@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ASSOCIATED_CIVIL;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.FAMILY;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MENTAL_HEALTH;
 
@@ -23,7 +22,7 @@ public class StandardFixedFeeCalculator implements FeeCalculator {
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
-    return Set.of(ASSOCIATED_CIVIL, FAMILY, MENTAL_HEALTH);
+    return Set.of(FAMILY, MENTAL_HEALTH);
   }
 
   /**

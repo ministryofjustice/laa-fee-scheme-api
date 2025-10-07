@@ -59,9 +59,9 @@ class StandardFixedFeeCalculatorTest {
     Set<CategoryType> categories = standardFixedFeeCalculator.getSupportedCategories();
 
     assertThat(categories).isNotNull();
-    assertThat(categories).hasSize(3); // make sure the total count matches
+    assertThat(categories).hasSize(2); // make sure the total count matches
     assertThat(categories).containsExactlyInAnyOrder(
-        CategoryType.ASSOCIATED_CIVIL, CategoryType.FAMILY, CategoryType.MENTAL_HEALTH);
+        CategoryType.FAMILY, CategoryType.MENTAL_HEALTH);
   }
 
 }
