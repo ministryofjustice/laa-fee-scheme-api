@@ -13,6 +13,6 @@ public interface FeeCalculator {
 
   Set<CategoryType> getSupportedCategories();
 
-  FeeCalculationResponse calculate(FeeCalculationRequest request, FeeEntity feeEntity);
+  FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity);
   
 }
