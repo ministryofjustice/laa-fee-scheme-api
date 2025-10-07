@@ -64,7 +64,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     log.info("Calculate fixed fee and costs using police station fees entity");
 
     BigDecimal fixedFee = policeStationFeesEntity.getFixedFee();
-    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+    BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
     // Apply VAT where applicable
@@ -75,7 +75,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     BigDecimal calculatedVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
 
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee, calculatedVatAmount,
-        netDisbursementAmount, disbursementVatAmount);
+        requestedNetDisbursementAmount, disbursementVatAmount);
 
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
@@ -87,7 +87,8 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
             .vatIndicator(vatApplicable)
             .vatRateApplied(toDouble(getVatRateForDate(startDate)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(toDouble(netDisbursementAmount))
+            .disbursementAmount(toDouble(requestedNetDisbursementAmount))
+            .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .fixedFeeAmount(toDouble(fixedFee)).build())
         .build();
@@ -114,7 +115,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
+        .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
@@ -142,11 +143,11 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     if (StringUtils.isNotBlank(feeCalculationRequest.getPoliceStationId())) {
 
       log.info("Get police station fees entity using policeStationId {} and schemeCode: {}",
-          feeCalculationRequest.getPoliceStationId(), feeEntity.getFeeSchemeCode().getSchemeCode());
+          feeCalculationRequest.getPoliceStationId(), feeEntity.getFeeScheme().getSchemeCode());
 
       policeStationFeesEntity = policeStationFeesRepository
           .findPoliceStationFeeByPoliceStationIdAndFeeSchemeCode(feeCalculationRequest.getPoliceStationId(),
-              feeEntity.getFeeSchemeCode().getSchemeCode())
+              feeEntity.getFeeScheme().getSchemeCode())
           .stream()
           .findFirst()
           .orElseThrow(() -> new PoliceStationFeeNotFoundException(feeCalculationRequest.getPoliceStationId(),
@@ -154,11 +155,11 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     } else if (StringUtils.isNotBlank(feeCalculationRequest.getPoliceStationSchemeId())) {
 
       log.info("Get police station fees entity using policeStationSchemeId: {} and schemeCode: {}",
-          feeCalculationRequest.getPoliceStationSchemeId(), feeEntity.getFeeSchemeCode().getSchemeCode());
+          feeCalculationRequest.getPoliceStationSchemeId(), feeEntity.getFeeScheme().getSchemeCode());
 
       policeStationFeesEntity = policeStationFeesRepository
           .findPoliceStationFeeByPsSchemeIdAndFeeSchemeCode(feeCalculationRequest.getPoliceStationSchemeId(),
-              feeEntity.getFeeSchemeCode().getSchemeCode())
+              feeEntity.getFeeScheme().getSchemeCode())
           .stream()
           .findFirst()
           .orElseThrow(() -> new PoliceStationFeeNotFoundException(feeCalculationRequest.getPoliceStationSchemeId()));

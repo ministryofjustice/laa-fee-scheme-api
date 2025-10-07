@@ -101,7 +101,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
         .categoryType(IMMIGRATION_ASYLUM)
         .feeType(HOURLY)
         .profitCostLimit(new BigDecimal("800.00"))

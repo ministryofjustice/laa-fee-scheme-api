@@ -1,3 +1,10 @@
+-- Fee Scheme for 'Advocacy Assistance in the Crown Court or Appeals & Reviews' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('AAR_FS2016', 'Advocacy Assistance in the Crown Court or Appeals & Reviews Fee Scheme 2016', '2016-04-01', '2022-09-29'),
+    ('AAR_FS2022', 'Advocacy Assistance in the Crown Court or Appeals & Reviews Fee Scheme 2022', '2022-09-30', NULL)
+ON CONFLICT (scheme_code) DO NOTHING;
+
 -- Fee Scheme for 'Associated Civil' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
@@ -45,6 +52,17 @@ INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('ELA_FS2024', 'Housing - HLPAS Fee Scheme 2024', '2024-09-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
+
+-- Fee Scheme for 'Family' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('FAM_LON_FS2011', 'Family London Rate Fee Scheme 2011', '2011-01-03', NULL)
+ON CONFLICT (scheme_code) DO NOTHING;
+
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('FAM_NON_LON_FS2011', 'Family Non London Rate Fee Scheme 2011', '2011-01-03', NULL)
+    ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Housing' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)

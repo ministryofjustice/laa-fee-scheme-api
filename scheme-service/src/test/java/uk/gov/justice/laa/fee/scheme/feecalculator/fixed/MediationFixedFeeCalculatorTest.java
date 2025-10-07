@@ -25,7 +25,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 @ExtendWith(MockitoExtension.class)
-class MediationFeeCalculatorTest {
+class MediationFixedFeeCalculatorTest {
 
   @InjectMocks
   MediationFixedFeeCalculator mediationFeeCalculator;
@@ -86,7 +86,7 @@ class MediationFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("MED_FS2013").build())
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("MED_FS2013").build())
         .fixedFee(fixedFee)
         .mediationFeeLower(new BigDecimal("50"))
         .mediationFeeHigher(new BigDecimal("100"))
@@ -134,7 +134,7 @@ class MediationFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("MDAS2B")
-        .feeSchemeCode(FeeSchemesEntity.builder().schemeCode("MED_FS2013").build())
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("MED_FS2013").build())
         .fixedFee(null)
         .mediationFeeLower(new BigDecimal("50"))
         .mediationFeeHigher(new BigDecimal("100"))

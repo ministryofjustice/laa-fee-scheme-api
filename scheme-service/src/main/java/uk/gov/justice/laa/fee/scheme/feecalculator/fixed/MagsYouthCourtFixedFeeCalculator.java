@@ -116,7 +116,7 @@ public class MagsYouthCourtFixedFeeCalculator implements FeeCalculator {
                                                              FeeCalculation feeCalculation) {
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
+        .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .claimId(feeCalculationRequest.getClaimId())
         .feeCalculation(feeCalculation)
         .build();

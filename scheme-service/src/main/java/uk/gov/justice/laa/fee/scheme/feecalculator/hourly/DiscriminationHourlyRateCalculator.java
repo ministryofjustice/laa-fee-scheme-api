@@ -54,7 +54,6 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
 
     BigDecimal feeTotal = netProfitCosts.add(netCostOfCounsel);
 
-    // @TODO: escape case logic TBC
     boolean escaped = false;
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
@@ -83,7 +82,7 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
     log.info("Build fee calculation response");
     return new FeeCalculationResponse().toBuilder()
         .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(feeEntity.getFeeSchemeCode().getSchemeCode())
+        .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .claimId(feeCalculationRequest.getClaimId())
         .validationMessages(validationMessages)
         .escapeCaseFlag(escaped)

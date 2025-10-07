@@ -45,7 +45,7 @@ class PoliceStationFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVC")
-        .feeSchemeCode(feeSchemesEntity)
+        .feeScheme(feeSchemesEntity)
         .profitCostLimit(new BigDecimal("123.56"))
         .fixedFee(new BigDecimal("200.56"))
         .categoryType(POLICE_STATION)
@@ -84,6 +84,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .vatRateApplied(20.0)
         .calculatedVatAmount(40.11)
         .disbursementAmount(50.5)
+        .requestedNetDisbursementAmount(50.5)
         .disbursementVatAmount(20.15)
         .fixedFeeAmount(200.56)
         .calculatedVatAmount(40.11)
@@ -103,7 +104,6 @@ class PoliceStationFixedFeeCalculatorTest {
 
   }
 
-
   @Test
   void test_whenPoliceStationClaimForInvoiceSubmitted_PoliceStationId_NotSupplied_shouldReturnValidResponse() {
 
@@ -111,7 +111,7 @@ class PoliceStationFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVC")
-        .feeSchemeCode(feeSchemesEntity)
+        .feeScheme(feeSchemesEntity)
         .profitCostLimit(new BigDecimal("123.56"))
         .fixedFee(new BigDecimal("200.56"))
         .categoryType(POLICE_STATION)
@@ -140,9 +140,7 @@ class PoliceStationFixedFeeCalculatorTest {
     when(policeStationFeesRepository.findPoliceStationFeeByPsSchemeIdAndFeeSchemeCode(any(),
         any())).thenReturn(List.of(policeStationFeesEntity));
 
-
     FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);
-
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(311.32)
@@ -150,6 +148,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .vatRateApplied(20.0)
         .calculatedVatAmount(40.11)
         .disbursementAmount(50.5)
+        .requestedNetDisbursementAmount(50.5)
         .disbursementVatAmount(20.15)
         .fixedFeeAmount(200.56)
         .calculatedVatAmount(40.11)
@@ -168,9 +167,6 @@ class PoliceStationFixedFeeCalculatorTest {
         .isEqualTo(expectedResponse);
 
   }
-
-
-
 
   @ParameterizedTest
   @MethodSource("testPoliceStationAttendanceClaims")
@@ -210,7 +206,7 @@ class PoliceStationFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .feeSchemeCode(feeSchemesEntity)
+        .feeScheme(feeSchemesEntity)
         .profitCostLimit(profitCostLimit)
         .fixedFee(fixedFee)
         .categoryType(POLICE_STATION)
@@ -233,6 +229,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .vatIndicator(vatIndicator)
         .vatRateApplied(20.0)
         .disbursementAmount(expectedDisbursementAmount)
+        .requestedNetDisbursementAmount(50.5)
         .disbursementVatAmount(disbursementVatAmount)
         .fixedFeeAmount(expectedFixedFee)
         .calculatedVatAmount(expectedCalculatedVat)
@@ -287,13 +284,12 @@ class PoliceStationFixedFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .feeSchemeCode(feeSchemesEntity)
+        .feeScheme(feeSchemesEntity)
         .profitCostLimit(profitCostLimit)
         .fixedFee(fixedFee)
         .categoryType(POLICE_STATION)
         .feeType(FeeType.FIXED)
         .build();
-
 
     FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);
 
@@ -338,7 +334,6 @@ class PoliceStationFixedFeeCalculatorTest {
             50.5, 20.15, 14.4, 0.0, 0.0)
     );
   }
-
 
   public static Stream<Arguments> testPoliceStationTelephonicAdviceClaims() {
     return Stream.of(
