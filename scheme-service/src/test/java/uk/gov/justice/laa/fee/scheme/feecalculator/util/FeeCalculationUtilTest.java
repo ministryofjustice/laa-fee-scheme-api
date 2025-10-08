@@ -249,4 +249,15 @@ class FeeCalculationUtilTest {
     assertThat(totalAmount).isEqualTo(new BigDecimal("144.60"));
   }
 
+  @ParameterizedTest
+  @CsvSource({
+      "99, false",
+      "100, false",
+      "101, true",
+  })
+  void isEscapedCase_returnsResult(BigDecimal amount, boolean expected) {
+    boolean result = FeeCalculationUtil.isEscapedCase(amount, new BigDecimal("100"));
+
+    assertThat(result).isEqualTo(expected);
+  }
 }
