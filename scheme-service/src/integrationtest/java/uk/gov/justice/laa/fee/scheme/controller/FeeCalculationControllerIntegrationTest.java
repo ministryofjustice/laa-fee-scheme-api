@@ -488,6 +488,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
             "disbursementVatAmount": 24.67,
+            "netProfitCostsAmount": 239.06,
             "fixedFeeAmount": %s
           }
         }
@@ -501,6 +502,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "feeCode": "%s",
                   "claimId": "claim_123",
                   "startDate": "2025-02-01",
+                  "netProfitCosts": 239.06,
                   "netDisbursementAmount": 123.38,
                   "disbursementVatAmount": 24.67,
                   "vatIndicator": true

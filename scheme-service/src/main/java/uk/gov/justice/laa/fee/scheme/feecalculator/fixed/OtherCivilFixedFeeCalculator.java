@@ -1,5 +1,15 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLAIMS_PUBLIC_AUTHORITIES;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLINICAL_NEGLIGENCE;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DEBT;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.EDUCATION;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING_HLPAS;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MISCELLANEOUS;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PUBLIC_LAW;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.WELFARE_BENEFITS;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
@@ -24,17 +34,18 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 /**
- * Calculate the Associated Civil Work fee for a given fee entity and fee calculation request.
+ * Calculate the Other Civil fee for a given fee entity and fee data.
  */
 @Slf4j
 @Component
-public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
+public class OtherCivilFixedFeeCalculator implements FeeCalculator {
 
   private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
-    return Set.of(CategoryType.ASSOCIATED_CIVIL);
+    return Set.of(CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT,
+        EDUCATION, HOUSING, HOUSING_HLPAS, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS);
   }
 
   /**
@@ -46,11 +57,11 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    log.info("Calculate Associated Civil fixed fee");
+    log.info("Calculate Standard fixed fee");
 
     // Fixed fee calculation
     BigDecimal fixedFee = defaultToZeroIfNull(feeEntity.getFixedFee());
-    LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(CategoryType.ASSOCIATED_CIVIL, feeCalculationRequest);
+    LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(feeEntity.getCategoryType(), feeCalculationRequest);
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
 
     BigDecimal calculatedVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
@@ -62,15 +73,9 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
 
     // Escape case logic
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
-    BigDecimal netTravelCosts = toBigDecimal(feeCalculationRequest.getNetTravelCosts());
-    BigDecimal netWaitingCosts = toBigDecimal(feeCalculationRequest.getNetWaitingCosts());
-
-    BigDecimal feeTotal = netProfitCosts
-        .add(netTravelCosts)
-        .add(netWaitingCosts);
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    boolean isEscaped = FeeCalculationUtil.isEscapedCase(feeTotal, feeEntity.getEscapeThresholdLimit());
+    boolean isEscaped = FeeCalculationUtil.isEscapedCase(netProfitCosts, feeEntity.getEscapeThresholdLimit());
 
     if (isEscaped) {
       log.warn("Fee total exceeds escape threshold limit");
@@ -96,8 +101,6 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
             .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .netProfitCostsAmount(toDouble(netProfitCosts))
-            .netTravelCostsAmount(toDouble(netTravelCosts))
-            .netWaitingCostsAmount(toDouble(netWaitingCosts))
             .fixedFeeAmount(toDouble(fixedFee))
             .build())
         .build();
