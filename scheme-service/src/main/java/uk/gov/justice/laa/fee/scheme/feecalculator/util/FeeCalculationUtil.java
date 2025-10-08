@@ -30,8 +30,25 @@ public final class FeeCalculationUtil {
   private FeeCalculationUtil() {
   }
 
+  /**
+   * Check if the fee type is FIXED.
+   *
+   * @param feeType the fee type to check
+   * @return true if the fee type is FIXED, false otherwise
+   */
   public static boolean isFixedFee(FeeType feeType) {
     return feeType == FeeType.FIXED;
+  }
+
+  /**
+   * Determine if escaped case when amount exceeds the escape threshold limit.
+   *
+   * @param amount               the amount to compare
+   * @param escapeThresholdLimit the escape threshold limit
+   * @return true if amount exceeds the escape threshold limit, false otherwise
+   */
+  public static boolean isEscapedCase(BigDecimal amount, BigDecimal escapeThresholdLimit) {
+    return escapeThresholdLimit != null && amount.compareTo(escapeThresholdLimit) > 0;
   }
 
   /**
@@ -162,9 +179,5 @@ public final class FeeCalculationUtil {
         .add(calculatedVatAmount)
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
-  }
-
-  public static boolean isEscapedCase(BigDecimal amount, BigDecimal escapeThresholdLimit) {
-    return escapeThresholdLimit!= null && amount.compareTo(escapeThresholdLimit) > 0;
   }
 }

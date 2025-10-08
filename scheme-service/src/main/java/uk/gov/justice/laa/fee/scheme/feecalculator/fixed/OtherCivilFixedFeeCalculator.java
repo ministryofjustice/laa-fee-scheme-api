@@ -39,6 +39,7 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @Slf4j
 @Component
 public class OtherCivilFixedFeeCalculator implements FeeCalculator {
+
   private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
 
   @Override
@@ -47,8 +48,15 @@ public class OtherCivilFixedFeeCalculator implements FeeCalculator {
         EDUCATION, HOUSING, HOUSING_HLPAS, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS);
   }
 
+  /**
+   * Calculated fee based on the provided fee entity and fee calculation request.
+   *
+   * @param feeCalculationRequest the request containing fee calculation data
+   * @return FeeCalculationResponse with calculated fee
+   */
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+
     log.info("Calculate Standard fixed fee");
 
     // Fixed fee calculation
