@@ -69,7 +69,6 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
       List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
       if (IAXL.equals(feeCode) || IMXL.equals(feeCode)) {
-
         // Check net profit costs
         BigDecimal profitCostLimit = feeEntity.getProfitCostLimit();
         if (isOverLimitWithoutAuthority(netProfitCosts, profitCostLimit, immigrationPriorAuthorityNumber)) {

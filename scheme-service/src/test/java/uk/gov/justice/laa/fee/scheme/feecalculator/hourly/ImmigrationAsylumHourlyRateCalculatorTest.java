@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -35,42 +36,48 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
         // under profit costs and disbursements limits (No VAT)
         Arguments.of("IAXL", false, null, 166.25, 123.38, 24.67,
             314.3, 0, 289.63, 166.25, 123.38, List.of()),
-        // over profit costs limit with prior auth (No VAT)
-        Arguments.of("IAXL", false, "priorAuth", 919.16, 123.38, 24.67,
-            1067.21, 0, 1042.54, 919.16, 123.38, List.of()),
-        // over profit costs limit without prior auth (No VAT)
-        Arguments.of("IAXL", false, null, 919.16, 123.38, 24.67,
-            948.05, 0, 923.38, 800.00, 123.38, List.of("warning net profit costs")),
-        // over disbursements limit with prior auth (No VAT)
-        Arguments.of("IAXL", false, "priorAuth", 166.25, 425.17, 85.03,
-            676.45, 0, 591.42, 166.25, 425.17, List.of()),
-        // over disbursements limit without prior auth (No VAT)
-        Arguments.of("IAXL", false, null, 166.25, 425.17, 85.03,
-            651.28, 0, 566.25, 166.25, 400.00, List.of("warning net disbursements")),
-        // over profit costs and disbursements limits with prior auth (No VAT)
-        Arguments.of("IAXL", false, "priorAuth", 919.16, 425.17, 85.03,
-            1429.36, 0, 1344.33, 919.16, 425.17, List.of()),
-        // over profit costs and disbursements limits without prior auth (No VAT)
-        Arguments.of("IAXL", false, null, 919.16, 425.17, 85.03,
-            1285.03, 0, 1200, 800.00, 400.00, List.of("warning net profit costs", "warning net disbursements")),
         // under profit costs and disbursements limits (VAT applied)
         Arguments.of("IAXL", true, null, 166.25, 123.38, 24.67,
             347.55, 33.25, 289.63, 166.25, 123.38, List.of()),
+
+        // over profit costs limit with prior auth (No VAT)
+        Arguments.of("IAXL", false, "priorAuth", 919.16, 123.38, 24.67,
+            1067.21, 0, 1042.54, 919.16, 123.38, List.of()),
         // over profit costs limit with prior auth (VAT applied)
         Arguments.of("IAXL", true, "priorAuth", 919.16, 123.38, 24.67,
             1251.04, 183.83, 1042.54, 919.16, 123.38, List.of()),
+
+        // over profit costs limit without prior auth (No VAT)
+        Arguments.of("IAXL", false, null, 919.16, 123.38, 24.67,
+            948.05, 0, 923.38, 800.00, 123.38, List.of("warning net profit costs")),
         // over profit costs limit without prior auth (VAT applied)
         Arguments.of("IAXL", true, null, 919.16, 123.38, 24.67,
             1108.05, 160, 923.38, 800.00, 123.38, List.of("warning net profit costs")),
+
+        // over disbursements limit with prior auth (No VAT)
+        Arguments.of("IAXL", false, "priorAuth", 166.25, 425.17, 85.03,
+            676.45, 0, 591.42, 166.25, 425.17, List.of()),
         // over disbursements limit with prior auth (VAT applied)
         Arguments.of("IAXL", true, "priorAuth", 166.25, 425.17, 85.03,
             709.7, 33.25, 591.42, 166.25, 425.17, List.of()),
+
+        // over disbursements limit without prior auth (No VAT)
+        Arguments.of("IAXL", false, null, 166.25, 425.17, 85.03,
+            651.28, 0, 566.25, 166.25, 400.00, List.of("warning net disbursements")),
         // over disbursements limit without prior auth (VAT applied)
         Arguments.of("IAXL", true, null, 166.25, 425.17, 85.03,
             684.53, 33.25, 566.25, 166.25, 400.00, List.of("warning net disbursements")),
+
+        // over profit costs and disbursements limits with prior auth (No VAT)
+        Arguments.of("IAXL", false, "priorAuth", 919.16, 425.17, 85.03,
+            1429.36, 0, 1344.33, 919.16, 425.17, List.of()),
         // over profit costs and disbursements limits with prior auth (VAT applied)
         Arguments.of("IAXL", true, "priorAuth", 919.16, 425.17, 85.03,
             1613.19, 183.83, 1344.33, 919.16, 425.17, List.of()),
+
+        // over profit costs and disbursements limits without prior auth (No VAT)
+        Arguments.of("IAXL", false, null, 919.16, 425.17, 85.03,
+            1285.03, 0, 1200, 800.00, 400.00, List.of("warning net profit costs", "warning net disbursements")),
         // over profit costs and disbursements limits without prior auth (VAT applied)
         Arguments.of("IAXL", true, null, 919.16, 425.17, 85.03,
             1445.03, 160.00, 1200.00, 800.0, 400.00, List.of("warning net profit costs", "warning net disbursements")),
@@ -103,14 +110,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
         .immigrationPriorAuthorityNumber(priorAuthority)
         .build();
 
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode(feeCode)
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
-        .categoryType(IMMIGRATION_ASYLUM)
-        .feeType(HOURLY)
-        .profitCostLimit(new BigDecimal("800.00"))
-        .disbursementLimit(new BigDecimal("400.00"))
-        .build();
+    FeeEntity feeEntity = buildFeeEntity();
 
     FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
 
@@ -140,10 +140,60 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
         .isEqualTo(validationMessages);
   }
 
+  static Stream<Arguments> warningTestData() {
+    return Stream.of(
+        Arguments.of(314.3, null, List.of("warning travel and waiting costs")),
+        Arguments.of(null, 55.34, List.of("warning jr form filling")),
+        Arguments.of(314.3, 55.34, List.of("warning travel and waiting costs", "warning jr form filling"))
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("warningTestData")
+  void getFee_whenLegalHelpFeeCodeAndGivenUnexpectedField_shouldReturnWarning(Double travelAndWaitingCosts, Double jrFormFilling, List<String> expectedWarnings) {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("IAXL")
+        .startDate(LocalDate.of(2025, 5, 11))
+        .netProfitCosts(166.25)
+        .netDisbursementAmount(123.38)
+        .disbursementVatAmount(24.67)
+        .travelAndWaitingCosts(travelAndWaitingCosts)
+        .jrFormFilling(jrFormFilling)
+        .vatIndicator(false)
+        .build();
+
+    FeeEntity feeEntity = buildFeeEntity();
+
+    FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    List<ValidationMessagesInner> validationMessages = expectedWarnings.stream()
+        .map(i -> ValidationMessagesInner.builder()
+            .message(i)
+            .type(WARNING)
+            .build())
+        .toList();
+
+    assertThat(result).isNotNull();
+    assertThat(result.getValidationMessages())
+        .usingRecursiveComparison()
+        .isEqualTo(validationMessages);
+  }
+
   @Test
   void getSupportedCategories_shouldReturnEmptySet() {
     Set<CategoryType> result = immigrationAsylumHourlyRateCalculator.getSupportedCategories();
 
     assertThat(result).isEmpty();
+  }
+
+  private FeeEntity buildFeeEntity() {
+    return FeeEntity.builder()
+        .feeCode("IAXL")
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
+        .categoryType(IMMIGRATION_ASYLUM)
+        .feeType(HOURLY)
+        .profitCostLimit(new BigDecimal("800.00"))
+        .disbursementLimit(new BigDecimal("400.00"))
+        .build();
   }
 }
