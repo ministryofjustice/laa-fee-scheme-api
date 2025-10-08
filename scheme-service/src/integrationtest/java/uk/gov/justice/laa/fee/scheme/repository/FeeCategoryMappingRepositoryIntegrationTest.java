@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import uk.gov.justice.laa.fee.scheme.entity.FeeCategoryMappingEntity;
-import uk.gov.justice.laa.fee.scheme.enums.CategoryOfLawType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTestBase;
 
@@ -20,7 +19,7 @@ public class FeeCategoryMappingRepositoryIntegrationTest extends PostgresContain
   private FeeCategoryMappingRepository repository;
 
   @Test
-  void getFeeDetailsLookupRepositoryById() {
+  void should_Return_FeeCategoryMappingEntity_whenFeeCodeIsPresent() {
     String feeCode = "IACA";
     Optional<FeeCategoryMappingEntity> result = repository.findFeeCategoryMappingByFeeCode(feeCode);
 
@@ -30,5 +29,12 @@ public class FeeCategoryMappingRepositoryIntegrationTest extends PostgresContain
     assertThat(feeCategoryMappingEntity.getCategoryOfLawType().getCode()).isEqualTo("IMMAS");
     assertThat(feeCategoryMappingEntity.getFeeDescription()).isEqualTo("Standard Fee - Asylum CLR  (2a)");
     assertThat(feeCategoryMappingEntity.getFeeType()).isEqualTo(FeeType.FIXED);
+  }
+
+  @Test
+  void should_Return_Empty_whenFeeCodeIsNotPresent() {
+    String feeCode = "XYZ";
+    Optional<FeeCategoryMappingEntity> result = repository.findFeeCategoryMappingByFeeCode(feeCode);
+    assertThat(result).isEmpty();
   }
 }
