@@ -59,14 +59,14 @@ class StandardFixedFeeCalculatorTest {
     Set<CategoryType> categories = standardFixedFeeCalculator.getSupportedCategories();
 
     assertThat(categories).isNotNull();
-    assertThat(categories).hasSize(12); // make sure the total count matches
+    assertThat(categories).hasSize(11); // make sure the total count matches
     assertThat(categories).containsExactlyInAnyOrder(
         CategoryType.CLAIMS_PUBLIC_AUTHORITIES,
         CategoryType.CLINICAL_NEGLIGENCE, CategoryType.COMMUNITY_CARE,
         CategoryType.DEBT, CategoryType.EDUCATION, CategoryType.FAMILY,
         CategoryType.HOUSING, CategoryType.HOUSING_HLPAS,
-        CategoryType.MENTAL_HEALTH, CategoryType.MISCELLANEOUS,
-        CategoryType.PUBLIC_LAW, CategoryType.WELFARE_BENEFITS);
+        CategoryType.MISCELLANEOUS, CategoryType.PUBLIC_LAW,
+        CategoryType.WELFARE_BENEFITS);
   }
 
 }

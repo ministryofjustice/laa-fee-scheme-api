@@ -33,7 +33,7 @@ public class StandardFixedFeeCalculator implements FeeCalculator {
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of(CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT,
-        EDUCATION, FAMILY, HOUSING, HOUSING_HLPAS, MENTAL_HEALTH, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS
+        EDUCATION, FAMILY, HOUSING, HOUSING_HLPAS, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS
     );
   }
 
