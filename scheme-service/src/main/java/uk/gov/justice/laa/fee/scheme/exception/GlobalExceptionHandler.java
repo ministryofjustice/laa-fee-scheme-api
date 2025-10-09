@@ -1,9 +1,16 @@
 package uk.gov.justice.laa.fee.scheme.exception;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+
 import java.time.OffsetDateTime;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
 
@@ -11,12 +18,39 @@ import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
  * Global exception handler for our controllers.
  */
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
+
+  /**
+   * Global exception handler for HttpMessageNotReadableException exception.
+   * Duplicate fields, malformed request, type mismatch.
+   */
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+    return handleException(ex, HttpStatus.BAD_REQUEST);
+  }
+
+  /**
+   * Global exception handler for HttpMessageNotReadableException exception.
+   * Duplicate fields, malformed request, type mismatch.
+   */
+  @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+  public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
+    return handleException(ex, HttpStatus.METHOD_NOT_ALLOWED);
+  }
+
+  /**
+   * Handle missing request fields.
+   */
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ErrorResponse> handleMethodArgumentException(MethodArgumentNotValidException ex) {
+    return handleException(ex, HttpStatus.BAD_REQUEST);
+  }
 
   /**
    * Global exception handler for CategoryCodeNotFoundException exception.
    */
-  @ExceptionHandler(CategoryCodeNotFoundException.class)
+  @ExceptionHandler({CategoryCodeNotFoundException.class})
   public ResponseEntity<ErrorResponse> handleCategoryOfLawNotFound(CategoryCodeNotFoundException ex) {
     return handleException(ex, HttpStatus.NOT_FOUND);
   }
@@ -45,7 +79,19 @@ public class GlobalExceptionHandler {
     return handleException(ex, HttpStatus.NOT_FOUND);
   }
 
-  private ResponseEntity<ErrorResponse> handleException(RuntimeException ex, HttpStatus status) {
+  /**
+   * Global exception handler for all other exceptions.
+   */
+  @ExceptionHandler(Exception.class)
+  @ResponseStatus(INTERNAL_SERVER_ERROR)
+  public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+    return handleException(ex, INTERNAL_SERVER_ERROR);
+  }
+
+
+  private ResponseEntity<ErrorResponse> handleException(Throwable ex, HttpStatus status) {
+    log.error("Error occurred :: {error={}, status={}, message={}}", status.getReasonPhrase(), status.value(), ex.getMessage(), ex);
+
     ErrorResponse errorResponse = new ErrorResponse()
         .timestamp(OffsetDateTime.now())
         .status(status.value())

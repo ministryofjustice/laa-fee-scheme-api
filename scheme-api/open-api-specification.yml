@@ -3,10 +3,10 @@ info:
   version: 1.0.0
   title: Fee Scheme API
 paths:
-  /api/v1/category-of-law/{feeCode}:
+  /api/v1/fee-details/{feeCode}:
     get:
       tags:
-        - categoryOfLaw
+        - feeDetails
       parameters:
         - name: feeCode
           in: path
@@ -14,15 +14,15 @@ paths:
           description: Fee Code to retrieve Category of Law
           schema:
             type: string
-      summary: Get Category of Law
-      operationId: getCategoryOfLaw
+      summary: Get Category of Law and Fee details
+      operationId: getFeeDetails
       responses:
         '200':
           description: 'Success'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CategoryOfLawResponse"
+                $ref: "#/components/schemas/FeeDetailsResponse"
         '400':
           description: 'Bad request'
         '401':
@@ -68,28 +68,9 @@ paths:
         '500':
           description: Internal server error
 
-  /api/v1/error-log-sentry:
-    get:
-      tags:
-        - errorLogSentry
-      summary: Trigger endpoint to verify Sentry Configuration
-      operationId: captureErrorLogSentry
-      responses:
-        '200':
-          description: 'Success'
-        '400':
-          description: 'Bad request'
-        '401':
-          description: 'Unauthorized'
-        '403':
-          description: 'Forbidden'
-        '500':
-          description: 'Internal server error'
-
-
 components:
   schemas:
-    CategoryOfLawResponse:
+    FeeDetailsResponse:
       required:
         - categoryOfLawCode
       properties:
@@ -118,7 +99,7 @@ components:
         startDate:
           type: string
           format: date
-          description: "Civil: case start date. Crime: Representation order date."
+          description: "Civil: case start date."
         policeStationId:
           type: string
           description: "Police Station ID."
@@ -127,7 +108,7 @@ components:
           description: "Police Station Scheme ID."
         uniqueFileNumber:
           type: string
-          description: "Unique File Number (UFN) for Police Station Fees category. Format DDMMYY/NNNN"
+          description: "Unique File Number (UFN) for Police Station/Prison Law category. Format DDMMYY/NNNN"
         netProfitCosts:
           type: number
           format: double
@@ -186,6 +167,13 @@ components:
         immigrationPriorAuthorityNumber:
           type: string
           description: "Authorisation specific to immigration, used for net profit costs over limit or disbursements over limit."
+        representationOrderDate:
+          type: string
+          format: date
+          description: "The official start date for claimable work carried out for Crime Lower categories"
+        londonRate:
+          type: boolean
+          description: "Indicates if London rate is applied otherwise Non London rate is applied."
 
     FeeCalculationResponse:
       type: object
@@ -199,8 +187,8 @@ components:
         claimId:
           type: string
           description: "Unique identifier for a Claim record."
-        warnings:
-          $ref: "#/components/schemas/Warning"
+        validationMessages:
+          $ref: "#/components/schemas/ValidationMessages"
         escapeCaseFlag:
           type: boolean
           description: "For hourly fee code, If escape threshold has been passed, will be true, false otherwise."
@@ -229,6 +217,10 @@ components:
           type: number
           format: double
           description: "The disbursement amount calculated to be added."
+        requestedNetDisbursementAmount:
+          type: number
+          format: double
+          description: "The disbursement amount that was requested."
         disbursementVatAmount:
           type: number
           format: double
@@ -244,6 +236,10 @@ components:
         netProfitCostsAmount:
           type: number
           format: double
+          description: "The net profit cost amount calculated to be added."
+        requestedNetProfitCostsAmount:
+          type: number
+          format: double
           description: "The profit cost amount requested."
         netCostOfCounselAmount:
           type: number
@@ -253,7 +249,7 @@ components:
           type: number
           format: double
           description: "The net travel cost requested."
-        netWaitingCosts:
+        netWaitingCostsAmount:
           type: number
           format: double
           description: "The net waiting cost requested."
@@ -269,15 +265,46 @@ components:
           type: number
           format: double
           description: "The Travel and waiting costs requested."
-        boltOnFeeAmount:
-          type: number
-          format: double
-          description: "The total value of bolt ons that was calculated."
+        boltOnFeeDetails:
+          $ref: "#/components/schemas/BoltOnFeeDetails"
 
-    Warning:
+    ValidationMessages:
       type: array
       items:
-        type: string
+        type: object
+        properties:
+          type:
+            type: string
+            enum: [ERROR, WARNING]
+          message:
+            type: string
+
+    BoltOnFeeDetails:
+      type: object
+      properties:
+        boltOnTotalFeeAmount:
+          type: number
+          format: double
+        boltOnAdjournedHearingCount:
+          type: integer
+        boltOnAdjournedHearingFee:
+          type: number
+          format: double
+        boltOnCmrhTelephoneCount:
+          type: integer
+        boltOnCmrhTelephoneFee:
+          type: number
+          format: double
+        boltOnCmrhOralCount:
+          type: integer
+        boltOnCmrhOralFee:
+          type: number
+          format: double
+        boltOnHomeOfficeInterviewCount:
+          type: integer
+        boltOnHomeOfficeInterviewFee:
+          type: number
+          format: double
 
     BoltOnType:
       type: object

@@ -5,6 +5,6 @@ package uk.gov.justice.laa.fee.scheme.exception;
  */
 public class InvalidMediationSessionException extends IllegalArgumentException  {
   public InvalidMediationSessionException(String feeCode) {
-    super(String.format("Invalid mediation session for Fee code %s: numberOfMediationSessions required", feeCode));
+    super(String.format("Invalid mediation session for feeCode: %s numberOfMediationSessions required", feeCode));
   }
 }

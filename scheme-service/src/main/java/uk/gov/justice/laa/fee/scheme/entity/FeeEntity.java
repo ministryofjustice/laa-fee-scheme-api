@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.fee.scheme.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -13,7 +12,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.FeeBandType;
+import uk.gov.justice.laa.fee.scheme.enums.FeeType;
+import uk.gov.justice.laa.fee.scheme.enums.Region;
 
 /**
  * The entity class for fees.
@@ -31,7 +33,7 @@ public class FeeEntity {
   private String description;
   @ManyToOne
   @JoinColumn(name = "fee_scheme_code", referencedColumnName = "scheme_code")
-  private FeeSchemesEntity feeSchemeCode;
+  private FeeSchemesEntity feeScheme;
   private BigDecimal fixedFee;
   private BigDecimal profitCostLimit;
   private BigDecimal disbursementLimit;
@@ -46,9 +48,13 @@ public class FeeEntity {
   private BigDecimal adjornHearingBoltOn;
   private BigDecimal mediationFeeLower;
   private BigDecimal mediationFeeHigher;
-  private String region;
   @Enumerated(EnumType.STRING)
-  @Column(name = "calculation_type")
-  private CalculationType calculationType;
-  private String feeType;
+  private Region region;
+  @Enumerated(EnumType.STRING)
+  private CategoryType categoryType;
+  private BigDecimal totalLimit;
+  @Enumerated(EnumType.STRING)
+  private FeeType feeType;
+  @Enumerated(EnumType.STRING)
+  private FeeBandType feeBandType;
 }

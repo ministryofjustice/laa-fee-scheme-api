@@ -13,7 +13,7 @@ spring:
       pool-name: fee-scheme-DB-CP
       connection-timeout: 1000
       validation-timeout: 500
-      maximum-pool-size: 25
+      maximum-pool-size: 20
   jpa:
     properties:
       hibernate:
@@ -38,3 +38,36 @@ management:
   endpoint:
     health:
       show-details: always
+
+logging:
+  level:
+    root: ${ROOT_LOGGING_LEVEL:info}
+    org.springframework: ${SPRING_LOGGING_LEVEL:info}
+    uk.gov.justice.laa.fee.scheme: ${APP_LOGGING_LEVEL:info}
+
+laa.springboot.starter:
+  auth:
+    authentication-header: "Authorization"
+    authorized-clients: '[
+        {
+            "name": "data-claims-event-service",
+            "roles": [
+                "ALL"
+            ],
+            "token": "${DATA_CLAIMS_EVENT_SERVICE_TOKEN}"
+        }
+    ]'
+    authorized-roles: '[
+        {
+            "name": "ALL",
+            "URIs": [
+                "/**"
+            ]
+        }
+    ]'
+    unprotected-uris: [ "/actuator/**", "/swagger-ui.html",
+                        "/swagger-ui/**", "/v3/api-docs/**", "/favicon.ico"]
+
+sentry:
+  dsn: ${SENTRY_DSN}
+  environment: ${SENTRY_ENVIRONMENT}

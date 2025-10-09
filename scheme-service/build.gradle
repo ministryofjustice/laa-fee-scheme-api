@@ -1,11 +1,11 @@
 plugins {
-    id 'io.freefair.lombok' version '8.14.2'
+    id 'io.freefair.lombok' version '9.0.0'
     id 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
-    id "io.sentry.jvm.gradle" version "5.9.0"
+    id "io.sentry.jvm.gradle" version "5.12.0"
 }
 
 def versions = [
-        sentry 						: '8.19.1'
+        sentry 						: '8.22.0'
 ]
 
 test {
@@ -16,7 +16,7 @@ test {
 jacocoTestReport {
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/FeeSchemeApplication.class', '**/config/**'])
+            fileTree(dir: it, exclude: ['**/FeeSchemeApplication.class', '**/config/**', '**/enums/**'])
         }))
     }
 }
@@ -25,7 +25,7 @@ jacocoTestCoverageVerification {
     dependsOn jacocoTestReport
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/FeeSchemeApplication.class', '**/config/**'])
+            fileTree(dir: it, exclude: ['**/FeeSchemeApplication.class', '**/config/**', '**/enums/**'])
         }))
     }
 
@@ -73,19 +73,21 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.11'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
 
-    implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.10'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.11'
 
-    implementation 'org.apache.commons:commons-lang3:3.18.0'
+    implementation 'org.apache.commons:commons-lang3:3.19.0'
 
-    implementation 'org.postgresql:postgresql:42.7.7'
+    implementation 'uk.gov.laa.springboot:laa-spring-boot-starter-auth'
+
+    implementation 'org.postgresql:postgresql:42.7.8'
 
 // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
-    implementation 'org.flywaydb:flyway-core:11.11.2'
-    implementation 'org.flywaydb:flyway-database-postgresql:11.11.2'
+    implementation 'org.flywaydb:flyway-core:11.13.2'
+    implementation 'org.flywaydb:flyway-database-postgresql:11.13.2'
 
-    implementation 'io.micrometer:micrometer-registry-prometheus:1.15.3'
+    implementation 'io.micrometer:micrometer-registry-prometheus:1.15.4'
 
     runtimeOnly 'com.h2database:h2'
 

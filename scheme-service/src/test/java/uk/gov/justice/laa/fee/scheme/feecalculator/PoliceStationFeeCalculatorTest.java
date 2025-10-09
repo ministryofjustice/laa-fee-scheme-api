@@ -1,133 +1,152 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.CalculationType.POLICE_STATION;
+import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
+import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
+import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.stream.Stream;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import java.util.Set;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
-import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.PoliceStationFixedFeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.PoliceStationHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
+@ExtendWith(MockitoExtension.class)
 class PoliceStationFeeCalculatorTest {
 
-  public static Stream<Arguments> testData() {
-    return Stream.of(
-        arguments("INVC Police Fee Code, VAT applied", "INVC", "NE001",
-            "1001", "121216/7899", true, 87.93,
-            new BigDecimal("14.4"), null, "POL_2016", 2.88,
-            50.5, 20.15, 14.4),
+  @InjectMocks
+  PoliceStationFeeCalculator policeStationFeeCalculator;
 
-        arguments("INVC Police Fee Code, VAT not applied", "INVC", "NE013",
-            "1004", "121223/6655", false, 85.05,
-            new BigDecimal("14.4"), null, "POL_2023", 0,
-            50.5, 20.15, 14.4),
+  @Mock
+  PoliceStationFixedFeeCalculator policeStationFixedFeeCalculator;
 
-        arguments("INVM Police Fee Code, VAT applied", "INVM", "NE024",
-            "1007", "041223/6655", true, 100.65,
-            null, new BigDecimal("25.0"), "POL_2023", 5.0,
-            50.5, 20.15, 25.0)
-    );
-  }
+  @Mock
+  PoliceStationHourlyRateCalculator policeStationHourlyRateCalculator;
 
-  private static Arguments arguments(String testDescription,
-                                     String feeCode,
-                                     String policeStationId,
-                                     String policeStationSchemeId,
-                                     String uniqueFileNumber,
-                                     boolean vatIndicator,
-                                     double expectedTotal,
-                                     BigDecimal fixedFee,
-                                     BigDecimal profitCostLimit,
-                                     String feeSchemeCode,
-                                     double expectedCalculatedVat,
-                                     double disbursementAmount,
-                                     double disbursementVatAmount,
-                                     double fixedFeeAmount) {
-    return Arguments.of(testDescription, feeCode, policeStationId, policeStationSchemeId, uniqueFileNumber, vatIndicator,
-        expectedTotal, fixedFee, profitCostLimit, feeSchemeCode, expectedCalculatedVat, disbursementAmount,
-        disbursementVatAmount, fixedFeeAmount);
-  }
+  @Test
+  void getFee_whenPoliceStationFeeFixed_shouldReturnFeeCalculationResponse() {
 
-  @ParameterizedTest
-  @MethodSource("testData")
-  void test_whenPoliceStation_shouldReturnFee(
-      String description,
-      String feeCode,
-      String policeStationId,
-      String policeStationSchemeId,
-      String uniqueFileNumber,
-      boolean vatIndicator,
-      double expectedTotal,
-      BigDecimal fixedFee,
-      BigDecimal profitCostLimit,
-      String feeSchemeCode,
-      double expectedCalculatedVat,
-      double expectedDisbursementAmount,
-      double disbursementVatAmount,
-      double expectedFixedFee
-  ) {
-
-    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
-        .feeCode(feeCode)
-        .claimId("claim_123")
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("INVC")
         .startDate(LocalDate.of(2017, 7, 29))
-        .vatIndicator(vatIndicator)
-        .policeStationSchemeId(policeStationSchemeId)
-        .policeStationId(policeStationId)
+        .vatIndicator(true)
+        .policeStationSchemeId("1001")
+        .policeStationId("NE001")
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
-        .uniqueFileNumber(uniqueFileNumber)
+        .uniqueFileNumber("121222/4523")
+        .travelAndWaitingCosts(45.0)
+        .netProfitCosts(676.0)
         .build();
-
-    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
 
     FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode(feeCode)
-        .feeSchemeCode(feeSchemesEntity)
-        .profitCostLimit(profitCostLimit)
-        .fixedFee(fixedFee)
-        .calculationType(POLICE_STATION)
+        .feeCode("INVC")
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
+        .fixedFee(new BigDecimal("75.50"))
+        .categoryType(POLICE_STATION)
+        .feeType(FIXED)
+        .disbursementLimit(new BigDecimal(435))
+        .oralCmrhBoltOn(BigDecimal.valueOf(166))
+        .telephoneCmrhBoltOn(BigDecimal.valueOf(90))
         .build();
 
-    PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder()
-        .psSchemeId(policeStationSchemeId)
-        .feeSchemeCode(feeSchemeCode)
-        .fixedFee(fixedFee)
-        .build();
-
-    FeeCalculationResponse response = PoliceStationFeeCalculator.getFee(feeEntity, policeStationFeesEntity, feeData);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
-        .totalAmount(expectedTotal)
-        .vatIndicator(vatIndicator)
+        .totalAmount(311.32)
+        .vatIndicator(Boolean.TRUE)
         .vatRateApplied(20.0)
-        .disbursementAmount(expectedDisbursementAmount)
-        .disbursementVatAmount(disbursementVatAmount)
-        .fixedFeeAmount(expectedFixedFee)
-        .calculatedVatAmount(expectedCalculatedVat)
+        .calculatedVatAmount(40.11)
+        .disbursementAmount(50.5)
+        .disbursementVatAmount(20.15)
+        .fixedFeeAmount(200.56)
+        .calculatedVatAmount(40.11)
         .build();
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
-        .feeCode(feeCode)
-        .schemeId(feeSchemeCode)
-        .claimId("claim_123")
-        .warnings(new ArrayList<>())
+        .feeCode("INVC")
+        .schemeId("POL_FS2022")
+        .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();
 
-    assertThat(response)
-        .usingRecursiveComparison()
-        .isEqualTo(expectedResponse);
+    when(policeStationFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity)).thenReturn(expectedResponse);
+
+    FeeCalculationResponse result = policeStationFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    assertThat(result).isNotNull();
+    assertThat(result.getFeeCode()).isEqualTo("INVC");
+    assertThat(result.getFeeCalculation()).isNotNull();
+    assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(311.32);
+  }
+
+  @Test
+  void getFee_whenPoliceStationFeeHourly_shouldReturnFeeCalculationResponse() {
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("INVK")
+        .startDate(LocalDate.of(2017, 7, 29))
+        .vatIndicator(true)
+        .policeStationSchemeId("1001")
+        .policeStationId("NE001")
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .uniqueFileNumber("121222/4523")
+        .travelAndWaitingCosts(23.00)
+        .netProfitCosts(450.90)
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("INVK")
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("POL_FS2022").build())
+        .categoryType(POLICE_STATION)
+        .feeType(HOURLY)
+        .profitCostLimit(new BigDecimal("800.00"))
+        .disbursementLimit(new BigDecimal("400.00"))
+        .build();
+
+
+    FeeCalculation expectedCalculation = FeeCalculation.builder()
+        .totalAmount(311.32)
+        .build();
+
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
+        .feeCode("INVK")
+        .schemeId("POL_FS2022")
+        .validationMessages(new ArrayList<>())
+        .escapeCaseFlag(false)
+        .feeCalculation(expectedCalculation)
+        .build();
+
+    when(policeStationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity)).thenReturn(expectedResponse);
+
+
+    FeeCalculationResponse result = policeStationFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    assertThat(result).isNotNull();
+    assertThat(result.getFeeCode()).isEqualTo("INVK");
+    assertThat(result.getFeeCalculation()).isNotNull();
+    assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(311.32);
+  }
+
+  @Test
+  void getSupportedCategories_shouldReturnPoliceStationCategory() {
+    Set<CategoryType> result = policeStationFeeCalculator.getSupportedCategories();
+
+    assertThat(result).isEqualTo(Set.of(POLICE_STATION));
   }
 
 }

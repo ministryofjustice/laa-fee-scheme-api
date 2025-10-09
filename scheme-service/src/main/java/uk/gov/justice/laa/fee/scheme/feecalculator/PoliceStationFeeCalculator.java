@@ -1,99 +1,44 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.FeeCalculationUtility.calculate;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toBigDecimal;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.NumberUtility.toDouble;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.utility.VatUtility.getVatRateForDate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isFixedFee;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.Set;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
-import uk.gov.justice.laa.fee.scheme.exception.PoliceStationFeeNotFoundException;
-import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.PoliceStationFixedFeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.PoliceStationHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 /**
- * Calculate the police station fee for a given fee entity and fee data.
+ * Implementation class for police station fee category (Fixed and Hourly both).
  */
-public final class PoliceStationFeeCalculator {
+@RequiredArgsConstructor
+@Component
+public class PoliceStationFeeCalculator implements FeeCalculator {
 
-  public static final String INVC = "INVC";
+  private final PoliceStationFixedFeeCalculator policeStationFixedFeeCalculator;
 
-  private PoliceStationFeeCalculator() {
+  private final PoliceStationHourlyRateCalculator policeStationHourlyRateCalculator;
+
+  @Override
+  public Set<CategoryType> getSupportedCategories() {
+    return Set.of(CategoryType.POLICE_STATION);
   }
 
   /**
    * Determines the calculation based on police fee code.
    */
-  public static FeeCalculationResponse getFee(FeeEntity feeEntity, PoliceStationFeesEntity policeStationFeesEntity,
-                                              FeeCalculationRequest feeData) {
+  @Override
+  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    if (policeStationFeesEntity == null) {
-      throw new PoliceStationFeeNotFoundException(feeEntity.getFeeCode(), feeData.getPoliceStationSchemeId());
-    }
-    String policeStationFeeCode = feeData.getFeeCode();
-
-    if (policeStationFeeCode.equals(INVC)) {
-      return calculateFeesUsingPoliceStation(policeStationFeesEntity, feeData);
+    if (isFixedFee(feeEntity.getFeeType())) {
+      return policeStationFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
     } else {
-      return calculateFeesUsingFeeCode(feeEntity, feeData);
+      return policeStationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
     }
   }
 
-  /**
-   * Gets fixed fee from police station fees.
-   */
-  private static FeeCalculationResponse calculateFeesUsingPoliceStation(PoliceStationFeesEntity policeStationFeesEntity,
-                                                                            FeeCalculationRequest feeData) {
-    BigDecimal baseFee = policeStationFeesEntity.getFixedFee();
-
-    return calculateAndBuildResponsePoliceStation(baseFee, feeData, policeStationFeesEntity);
-  }
-
-  /**
-   * Gets fixed fee from static fixed_fee.
-   */
-  private static FeeCalculationResponse calculateFeesUsingFeeCode(FeeEntity feeEntity,
-                                                                               FeeCalculationRequest feeData) {
-
-    BigDecimal baseFee = feeEntity.getProfitCostLimit();
-
-    return calculate(baseFee, feeData, feeEntity);
-  }
-
-  private static FeeCalculationResponse calculateAndBuildResponsePoliceStation(BigDecimal fixedFee,
-                                                                               FeeCalculationRequest feeCalculationRequest,
-                                                                               PoliceStationFeesEntity policeStationFeesEntity) {
-    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
-    String claimId = feeCalculationRequest.getClaimId();
-
-    // Apply VAT where applicable
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    LocalDate startDate = feeCalculationRequest.getStartDate();
-    BigDecimal calculatedVatAmount = getVatAmount(fixedFee, startDate, vatApplicable);
-
-    BigDecimal finalTotal = fixedFee
-        .add(calculatedVatAmount)
-        .add(netDisbursementAmount)
-        .add(disbursementVatAmount);
-
-    return FeeCalculationResponse.builder()
-        .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(policeStationFeesEntity.getFeeSchemeCode())
-        .claimId(claimId)
-        .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
-        .feeCalculation(FeeCalculation.builder()
-            .totalAmount(toDouble(finalTotal))
-            .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(startDate)))
-            .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(toDouble(netDisbursementAmount))
-            .disbursementVatAmount(toDouble(disbursementVatAmount))
-            .fixedFeeAmount(toDouble(fixedFee)).build())
-        .build();
-  }
 }
