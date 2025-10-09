@@ -94,7 +94,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
       BigDecimal feeTotal = netProfitCosts.add(netDisbursementAmount);
 
       if (IA100.equals(feeCode)) {
-        log.info("Check total limit is below limit for fee calculation");
+        log.info("Check fee total is below limit for fee calculation");
         BigDecimal totalLimit = feeEntity.getTotalLimit();
         if (isOverLimitWithoutAuthority(feeTotal, totalLimit, immigrationPriorAuthorityNumber)) {
           log.warn("Total limit exceeded without prior authority capping to limit");
@@ -158,11 +158,11 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
   }
 
   private static void checkFieldIsEmpty(Double value, List<ValidationMessagesInner> validationMessages,
-                                        String warningTravelWaitingCosts, String logMessage) {
+                                        String warningMessage, String logMessage) {
     if (value != null) {
       log.warn(logMessage);
       validationMessages.add(ValidationMessagesInner.builder()
-          .message(warningTravelWaitingCosts)
+          .message(warningMessage)
           .type(WARNING)
           .build());
     }

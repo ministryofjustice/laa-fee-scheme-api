@@ -248,15 +248,6 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
         .build();
   }
 
-  private void assertFeeCalculation(FeeCalculationResponse response, String feeCode, double total) {
-    assertThat(response).isNotNull();
-    assertThat(response.getFeeCode()).isEqualTo(feeCode);
-
-    FeeCalculation calculation = response.getFeeCalculation();
-    assertThat(calculation).isNotNull();
-    assertThat(calculation.getTotalAmount()).isEqualTo(total);
-  }
-
   private void assertWarnings(List<ValidationMessagesInner> resultMessages, List<String> expectedWarnings) {
     List<ValidationMessagesInner> validationMessages = expectedWarnings.stream()
         .map(i -> ValidationMessagesInner.builder()
