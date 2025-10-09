@@ -52,7 +52,6 @@ public class FeeEntity {
   private Region region;
   @Enumerated(EnumType.STRING)
   private CategoryType categoryType;
-  private BigDecimal totalLimit;
   @Enumerated(EnumType.STRING)
   private FeeType feeType;
   @Enumerated(EnumType.STRING)
