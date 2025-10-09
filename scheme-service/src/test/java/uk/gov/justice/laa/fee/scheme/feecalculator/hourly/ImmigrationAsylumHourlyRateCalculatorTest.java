@@ -110,19 +110,10 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
     FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
 
-    List<ValidationMessagesInner> validationMessages = expectedWarnings.stream()
-        .map(i -> ValidationMessagesInner.builder()
-            .message(i)
-            .type(WARNING)
-            .build())
-        .toList();
-
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo(feeCode);
     assertThat(result.getSchemeId()).isEqualTo("IMM_ASYLM_FS2023");
-    assertThat(result.getValidationMessages())
-        .usingRecursiveComparison()
-        .isEqualTo(validationMessages);
+    assertWarnings(result.getValidationMessages(), expectedWarnings);
 
     FeeCalculation feeCalculation = result.getFeeCalculation();
     assertThat(feeCalculation).isNotNull();
@@ -190,19 +181,10 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
     FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
 
-    List<ValidationMessagesInner> validationMessages = expectedWarnings.stream()
-        .map(i -> ValidationMessagesInner.builder()
-            .message(i)
-            .type(WARNING)
-            .build())
-        .toList();
-
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo(feeCode);
     assertThat(result.getSchemeId()).isEqualTo("IMM_ASYLM_FS2023");
-    assertThat(result.getValidationMessages())
-        .usingRecursiveComparison()
-        .isEqualTo(validationMessages);
+    assertWarnings(result.getValidationMessages(), expectedWarnings);
 
     FeeCalculation feeCalculation = result.getFeeCalculation();
     assertThat(feeCalculation).isNotNull();
@@ -244,17 +226,8 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
     FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
 
-    List<ValidationMessagesInner> validationMessages = expectedWarnings.stream()
-        .map(i -> ValidationMessagesInner.builder()
-            .message(i)
-            .type(WARNING)
-            .build())
-        .toList();
-
     assertThat(result).isNotNull();
-    assertThat(result.getValidationMessages())
-        .usingRecursiveComparison()
-        .isEqualTo(validationMessages);
+    assertWarnings(result.getValidationMessages(), expectedWarnings);
   }
 
   @Test
@@ -273,5 +246,27 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
         .profitCostLimit(new BigDecimal("800.00"))
         .disbursementLimit(new BigDecimal("400.00"))
         .build();
+  }
+
+  private void assertFeeCalculation(FeeCalculationResponse response, String feeCode, double total) {
+    assertThat(response).isNotNull();
+    assertThat(response.getFeeCode()).isEqualTo(feeCode);
+
+    FeeCalculation calculation = response.getFeeCalculation();
+    assertThat(calculation).isNotNull();
+    assertThat(calculation.getTotalAmount()).isEqualTo(total);
+  }
+
+  private void assertWarnings(List<ValidationMessagesInner> resultMessages, List<String> expectedWarnings) {
+    List<ValidationMessagesInner> validationMessages = expectedWarnings.stream()
+        .map(i -> ValidationMessagesInner.builder()
+            .message(i)
+            .type(WARNING)
+            .build())
+        .toList();
+
+    assertThat(resultMessages)
+        .usingRecursiveComparison()
+        .isEqualTo(validationMessages);
   }
 }
