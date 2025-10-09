@@ -150,7 +150,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
   }
 
   private static boolean isLegalHelp(String feeCode) {
-    return "IAXL".equals(feeCode) || "IMXL".equals(feeCode) || "IA100".equals(feeCode);
+    return IAXL.equals(feeCode) || IMXL.equals(feeCode) || IA100.equals(feeCode);
   }
 
   private static boolean isOverLimitWithoutAuthority(BigDecimal amount, BigDecimal limit, String priorAuthorityNumber) {
