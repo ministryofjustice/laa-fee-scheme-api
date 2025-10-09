@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
@@ -36,9 +37,16 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     return Set.of(); // Only used by ImmigrationAsylumFeeCalculator and not available via FeeCalculatorFactory
   }
 
-  private static final List<String> FEE_CODES_WITH_NO_DISBURSEMENT_LIMIT = List.of("IDAS1", "IDAS2");
-  private static final String WARNING_CODE_WARIA1 = "TEMPORARY WARIA 1 MESSAGE";
-  private static final String WARNING_CODE_WARIA2 = "TEMPORARY WARIA 2 MESSAGE";
+  private static final Set<String> FEE_CODES_NO_DISBURSEMENT_LIMIT_NO_ESCAPE = Set.of("IDAS1", "IDAS2");
+  private static final Set<String> FEE_CODES_WITH_SUBSTANTIVE_HEARING = Set.of("IACB", "IACC", "IACF", "IMCB", "IMCC", "IMCD");
+  private static final Set<String> NO_COUNSEL_FEE_CODES = Set.of("IALB", "IMLB");
+  // @TODO: TBC during error and validation work, and likely moved to common util
+  public static final String WARNING_MESSAGE_WARIA1 = "Costs have been capped at £600 without an Immigration Priority "
+      + "Authority Number. Disbursement costs exceed the Disbursement Limit. ";
+  public static final String WARNING_MESSAGE_WARIA2 = "Costs have been capped at £400 without an Immigration Priority "
+      + "Authority Number. Disbursement costs exceed the Disbursement Limit.";
+  public static final String WARNING_MESSAGE_WARIA3 = "The claim exceeds the Escape Case Threshold. An Escape Case "
+      + "Claim must be submitted for further costs to be paid. ";
 
   /**
    * Calculated fee for Immigration and asylum fee based on the provided fee entity and fee calculation request.
@@ -84,13 +92,19 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFeeAndAdditionalCosts,
         calculatedVatAmount, netDisbursementAmount, requestedDisbursementVatAmount);
 
+    boolean escapeCaseFlag = false;
+    if (!FEE_CODES_NO_DISBURSEMENT_LIMIT_NO_ESCAPE.contains(feeCalculationRequest.getFeeCode())) {
+      log.info("calculate if case has escaped");
+      escapeCaseFlag = isEscaped(feeCalculationRequest, feeEntity, boltOnFeeDetails, validationMessages);
+    }
+
     log.info("Build fee calculation response");
     return new FeeCalculationResponse().toBuilder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .claimId(feeCalculationRequest.getClaimId())
         .validationMessages(validationMessages)
-        .escapeCaseFlag(false) // temp hard coded
+        .escapeCaseFlag(escapeCaseFlag)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
@@ -130,8 +144,8 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
 
     log.info("Disbursement above limit without authorisation capped to limit: {}", netDisbursementLimit);
     String message = ("IALB".equals(feeCalculationRequest.getFeeCode()) || "IMLB".equals(feeCalculationRequest.getFeeCode()))
-        ? WARNING_CODE_WARIA2
-        : WARNING_CODE_WARIA1;
+        ? WARNING_MESSAGE_WARIA2
+        : WARNING_MESSAGE_WARIA1;
 
     validationMessages.add(ValidationMessagesInner.builder()
         .message(message)
@@ -145,9 +159,44 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
    * determine if fee code is exempt from disbursement limiting.
    */
   private static boolean isDisbursementUnlimited(FeeEntity feeEntity) {
-    return FEE_CODES_WITH_NO_DISBURSEMENT_LIMIT.contains(feeEntity.getFeeCode());
+    return FEE_CODES_NO_DISBURSEMENT_LIMIT_NO_ESCAPE.contains(feeEntity.getFeeCode());
   }
 
+  /**
+   * Calculate if case has escaped (excluding "IDAS1", "IDAS2").
+   */
+  private boolean isEscaped(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity, BoltOnFeeDetails boltOnFeeDetails,
+                            List<ValidationMessagesInner> validationMessages) {
 
+    String feeCode = feeCalculationRequest.getFeeCode();
+    BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
+
+    // gross total
+    BigDecimal requestedNetProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
+    BigDecimal requestedNetCounselCosts = NO_COUNSEL_FEE_CODES.contains(feeCode)
+        ? BigDecimal.ZERO
+        : toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());
+    BigDecimal grossTotal = requestedNetProfitCosts.add(requestedNetCounselCosts);
+
+    // additional payments
+    BigDecimal requestedBoltOnCosts = toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount());
+    BigDecimal substantiveBoltOnCost = FEE_CODES_WITH_SUBSTANTIVE_HEARING.contains(feeCode)
+        ? feeEntity.getSubstantiveHearingBoltOn()
+        : BigDecimal.ZERO;
+    BigDecimal additionalPayments = requestedBoltOnCosts.add(substantiveBoltOnCost);
+    BigDecimal totalAmount = grossTotal.subtract(additionalPayments);
+
+    if (isEscapedCase(totalAmount, escapeThresholdLimit)) {
+      log.info("Case has escaped");
+      validationMessages.add(ValidationMessagesInner.builder()
+          .message(WARNING_MESSAGE_WARIA3)
+          .type(WARNING)
+          .build());
+      return true;
+    } else  {
+      log.info("Case has not escaped");
+      return false;
+    }
+  }
 }
 
