@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
-import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -69,7 +68,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
       List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
       if (IAXL.equals(feeCode) || IMXL.equals(feeCode)) {
-        // Check net profit costs
+        log.info("Check net profit cost are below limit for fee calculation");
         BigDecimal profitCostLimit = feeEntity.getProfitCostLimit();
         if (isOverLimitWithoutAuthority(netProfitCosts, profitCostLimit, immigrationPriorAuthorityNumber)) {
           log.warn("Profit costs limit exceeded without prior authority capping to limit");
@@ -80,7 +79,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
           netProfitCosts = profitCostLimit;
         }
 
-        // Check disbursements
+        log.info("Check disbursement is below limit for fee calculation");
         BigDecimal disbursementLimit = feeEntity.getDisbursementLimit();
         if (isOverLimitWithoutAuthority(netDisbursementAmount, disbursementLimit, immigrationPriorAuthorityNumber)) {
           log.warn("Disbursement limit exceeded without prior authority capping to limit");
@@ -95,7 +94,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
       BigDecimal feeTotal = netProfitCosts.add(netDisbursementAmount);
 
       if (IA100.equals(feeCode)) {
-        // Check total limit
+        log.info("Check total limit is below limit for fee calculation");
         BigDecimal totalLimit = feeEntity.getTotalLimit();
         if (isOverLimitWithoutAuthority(feeTotal, totalLimit, immigrationPriorAuthorityNumber)) {
           log.warn("Total limit exceeded without prior authority capping to limit");
@@ -107,23 +106,24 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
         }
       }
 
+      log.info("Check travel waiting and costs field is empty for fee calculation");
+      checkFieldIsEmpty(feeCalculationRequest.getTravelAndWaitingCosts(), validationMessages, WARNING_TRAVEL_WAITING_COSTS,
+          "Travel and waiting costs not applicable for legal help");
+
+      log.info("Check JR form filling field is empty for fee calculation");
+      checkFieldIsEmpty(feeCalculationRequest.getJrFormFilling(), validationMessages, WARNING_JR_FORM_FILLING,
+          "JR form filling not applicable for legal help");
+
       // Apply VAT where applicable
       LocalDate startDate = feeCalculationRequest.getStartDate();
       Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
 
       // VAT is calculated on net profit costs only
-      BigDecimal calculatedVatAmount = VatUtil.getVatAmount(netProfitCosts, startDate, vatApplicable);
+      BigDecimal netProfitCostsVatAmount = VatUtil.getVatAmount(netProfitCosts, startDate, vatApplicable);
 
       BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-      BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(netProfitCosts, calculatedVatAmount,
-          netDisbursementAmount, disbursementVatAmount);
-
-      checkFieldIsEmpty(feeCalculationRequest.getTravelAndWaitingCosts(), validationMessages, WARNING_TRAVEL_WAITING_COSTS,
-          "Travel and waiting costs not applicable for legal help");
-
-      checkFieldIsEmpty(feeCalculationRequest.getJrFormFilling(), validationMessages, WARNING_JR_FORM_FILLING,
-          "JR form filling not applicable for legal help");
+      BigDecimal totalAmount = feeTotal.add(netProfitCostsVatAmount).add(disbursementVatAmount);
 
       return new FeeCalculationResponse().toBuilder()
           .feeCode(feeCalculationRequest.getFeeCode())
@@ -134,7 +134,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
               .totalAmount(toDouble(totalAmount))
               .vatIndicator(feeCalculationRequest.getVatIndicator())
               .vatRateApplied(toDouble(VatUtil.getVatRateForDate(feeCalculationRequest.getStartDate())))
-              .calculatedVatAmount(toDouble(calculatedVatAmount))
+              .calculatedVatAmount(toDouble(netProfitCostsVatAmount))
               .disbursementAmount(toDouble(netDisbursementAmount))
               .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
               .disbursementVatAmount(toDouble(disbursementVatAmount))
