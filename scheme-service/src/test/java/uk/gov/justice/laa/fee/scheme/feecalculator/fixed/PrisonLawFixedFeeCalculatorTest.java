@@ -45,7 +45,7 @@ class PrisonLawFixedFeeCalculatorTest {
     assertEquals(1, prisonLawFeeCalculator.getSupportedCategories().size());
   }
 
-  // ✅ Positive scenario
+  // Positive scenario
   @ParameterizedTest
   @MethodSource("testDataForPrisonLawClaims")
   void test_whenClaimsSubmittedForPrisonLaw_shouldReturnFee(
