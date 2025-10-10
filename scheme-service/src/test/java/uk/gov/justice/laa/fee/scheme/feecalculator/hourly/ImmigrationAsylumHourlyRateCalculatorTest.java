@@ -210,14 +210,14 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
   @ParameterizedTest
   @MethodSource("warningTestData")
-  void calculateFee_whenLegalHelpFeeCodeAndGivenUnexpectedField_shouldReturnWarning(Double detentionAndWaitingCosts, Double jrFormFilling, List<String> expectedWarnings) {
+  void calculateFee_whenLegalHelpFeeCodeAndGivenUnexpectedField_shouldReturnWarning(Double detentionTravelAndWaitingCosts, Double jrFormFilling, List<String> expectedWarnings) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("IAXL")
         .startDate(LocalDate.of(2025, 5, 11))
         .netProfitCosts(166.25)
         .netDisbursementAmount(123.38)
         .disbursementVatAmount(24.67)
-        .detentionAndWaitingCosts(detentionAndWaitingCosts)
+        .detentionTravelAndWaitingCosts(detentionTravelAndWaitingCosts)
         .jrFormFilling(jrFormFilling)
         .vatIndicator(false)
         .build();

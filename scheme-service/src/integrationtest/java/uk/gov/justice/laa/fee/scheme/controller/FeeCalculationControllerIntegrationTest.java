@@ -234,7 +234,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                         "boltOnCmrhOral": 1.00,
                         "boltOnCmrhTelephone": 3.00
                   },
-                  "detentionAndWaitingCosts": 111.00,
+                  "detentionTravelAndWaitingCosts": 111.00,
                   "jrFormFilling": 50.00
                 }
                 """)
@@ -256,7 +256,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                 "requestedNetDisbursementAmount": 100.21,
                 "disbursementVatAmount": 20.12,
                 "fixedFeeAmount": 1092.00,
-                "detentionAndWaitingCostsAmount": 111.00,
+                "detentionTravelAndWaitingCostsAmount": 111.00,
                 "jrFormFillingAmount": 50,
                 "boltOnFeeDetails": {
                   "boltOnTotalFeeAmount": 758.00,
