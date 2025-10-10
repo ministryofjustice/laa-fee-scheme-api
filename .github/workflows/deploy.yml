@@ -35,7 +35,7 @@ jobs:
           distribution: 'corretto'
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Build and install dependencies
         run: ./gradlew clean build
