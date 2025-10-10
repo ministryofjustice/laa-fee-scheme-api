@@ -43,7 +43,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
   private static final String WARNING_NET_PROFIT_COSTS = "warning net profit costs"; // @TODO: TBC
   private static final String WARNING_NET_DISBURSEMENTS = "warning net disbursements"; // @TODO: TBC
   private static final String WARNING_TOTAL_LIMIT = "warning total limit"; // @TODO: TBC
-  private static final String WARNING_TRAVEL_WAITING_COSTS = "warning travel and waiting costs"; // @TODO: TBC
+  private static final String WARNING_DETENTION_TRAVEL_WAITING_COSTS = "warning detention travel and waiting costs"; // @TODO: TBC
   private static final String WARNING_JR_FORM_FILLING = "warning jr form filling"; // @TODO: TBC
 
   /**
@@ -106,9 +106,10 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
         }
       }
 
-      log.info("Check travel waiting and costs field is empty for fee calculation");
-      checkFieldIsEmpty(feeCalculationRequest.getTravelAndWaitingCosts(), validationMessages, WARNING_TRAVEL_WAITING_COSTS,
-          "Travel and waiting costs not applicable for legal help");
+      log.info("Check detention travel waiting and costs field is empty for fee calculation");
+      checkFieldIsEmpty(feeCalculationRequest.getDetentionTravelAndWaitingCosts(),
+          validationMessages, WARNING_DETENTION_TRAVEL_WAITING_COSTS,
+          "Detention travel and waiting costs not applicable for legal help");
 
       log.info("Check JR form filling field is empty for fee calculation");
       checkFieldIsEmpty(feeCalculationRequest.getJrFormFilling(), validationMessages, WARNING_JR_FORM_FILLING,

@@ -60,8 +60,8 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     // get the requested disbursement VAT amount from feeCalculationRequest
     BigDecimal requestedDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
-    // get the requested detentionAndTravelCosts amount from feeCalculationRequest
-    BigDecimal requestedDetentionAndTravelCosts = toBigDecimal(feeCalculationRequest.getDetentionAndWaitingCosts());
+    // get the requested detentionTravelAndWaitingCosts amount from feeCalculationRequest
+    BigDecimal requestedDetentionTravelAndWaitingCosts = toBigDecimal(feeCalculationRequest.getDetentionTravelAndWaitingCosts());
     // get the requested jrFormFilling amount from feeCalculationRequest
     BigDecimal requestedJrFormFillingCosts = toBigDecimal(feeCalculationRequest.getJrFormFilling());
     // get the bolt fee details from util class
@@ -81,7 +81,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     BigDecimal fixedFeeAmount = feeEntity.getFixedFee();
     BigDecimal fixedFeeAndAdditionalCosts = fixedFeeAmount
         .add(requestedJrFormFillingCosts)
-        .add(requestedDetentionAndTravelCosts)
+        .add(requestedDetentionTravelAndWaitingCosts)
         .add(toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount()));
 
     // Apply VAT where applicable
@@ -114,7 +114,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
             .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
             .disbursementVatAmount(toDouble(requestedDisbursementVatAmount))
             .fixedFeeAmount(toDouble(fixedFeeAmount))
-            .detentionAndWaitingCostsAmount(toDouble(requestedDetentionAndTravelCosts))
+            .detentionTravelAndWaitingCostsAmount(toDouble(requestedDetentionTravelAndWaitingCosts))
             .jrFormFillingAmount(toDouble(requestedJrFormFillingCosts))
             .boltOnFeeDetails(boltOnFeeDetails)
             .build())
