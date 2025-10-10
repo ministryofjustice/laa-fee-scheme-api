@@ -37,7 +37,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     return Set.of(); // Only used by ImmigrationAsylumFeeCalculator and not available via FeeCalculatorFactory
   }
 
-  private static final Set<String> FEE_CODES_NO_DISBURSEMENT_LIMIT_NO_ESCAPE = Set.of("IDAS1", "IDAS2");
+  private static final Set<String> FEE_CODES_NO_DISBURSEMENT_LIMIT_AND_NO_ESCAPE = Set.of("IDAS1", "IDAS2");
   private static final Set<String> FEE_CODES_WITH_SUBSTANTIVE_HEARING = Set.of("IACB", "IACC", "IACF", "IMCB", "IMCC", "IMCD");
   private static final Set<String> NO_COUNSEL_FEE_CODES = Set.of("IALB", "IMLB");
   // @TODO: TBC during error and validation work, and likely moved to common util
@@ -68,7 +68,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     BoltOnFeeDetails boltOnFeeDetails = BoltOnUtil.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
 
     BigDecimal netDisbursementAmount;
-    if (isDisbursementUnlimited(feeEntity)) {
+    if (FEE_CODES_NO_DISBURSEMENT_LIMIT_AND_NO_ESCAPE.contains(feeEntity.getFeeCode())) {
       log.info("Disbursement added with no limit");
       netDisbursementAmount = requestedNetDisbursementAmount;
     } else {
@@ -93,7 +93,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
         calculatedVatAmount, netDisbursementAmount, requestedDisbursementVatAmount);
 
     boolean escapeCaseFlag = false;
-    if (!FEE_CODES_NO_DISBURSEMENT_LIMIT_NO_ESCAPE.contains(feeCalculationRequest.getFeeCode())) {
+    if (!FEE_CODES_NO_DISBURSEMENT_LIMIT_AND_NO_ESCAPE.contains(feeCalculationRequest.getFeeCode())) {
       log.info("calculate if case has escaped");
       escapeCaseFlag = isEscaped(feeCalculationRequest, feeEntity, boltOnFeeDetails, validationMessages);
     }
@@ -153,13 +153,6 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
         .build());
 
     return netDisbursementLimit;
-  }
-
-  /**
-   * determine if fee code is exempt from disbursement limiting.
-   */
-  private static boolean isDisbursementUnlimited(FeeEntity feeEntity) {
-    return FEE_CODES_NO_DISBURSEMENT_LIMIT_NO_ESCAPE.contains(feeEntity.getFeeCode());
   }
 
   /**
