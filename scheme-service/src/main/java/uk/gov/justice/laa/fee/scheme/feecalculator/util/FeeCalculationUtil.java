@@ -56,9 +56,14 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Checks if the amount exceeds the limit without prior authority and caps it if necessary, adding a warning.
+   * Check if amount exceeds limit without authority and cap to limit if exceeded.
+   *
+   * @param amount          the amount to check
+   * @param limitContext    the limit context containing limit details
+   * @param validationMessages the list to add validation messages to
+   * @return the capped amount if limit exceeded without authority, otherwise the original amount
    */
-  public static BigDecimal checkLimitAndCapIfRequired(BigDecimal amount, LimitContext limitContext,
+  public static BigDecimal checkLimitAndCapIfExceeded(BigDecimal amount, LimitContext limitContext,
                                                       List<ValidationMessagesInner> validationMessages) {
     log.info("Check {} is below limit for fee calculation", limitContext.limitType().getDisplayName());
     BigDecimal limit = limitContext.limit();
