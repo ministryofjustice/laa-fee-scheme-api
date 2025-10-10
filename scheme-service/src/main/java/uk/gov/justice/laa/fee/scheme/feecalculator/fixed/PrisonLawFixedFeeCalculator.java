@@ -25,7 +25,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PrisonLawFeeCalculator implements FeeCalculator {
+public class PrisonLawFixedFeeCalculator implements FeeCalculator {
 
   @Override
   public Set<CategoryType> getSupportedCategories() {

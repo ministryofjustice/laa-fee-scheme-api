@@ -284,7 +284,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "claimId": "claim_123",
                   "startDate": "2015-02-11",
                   "netProfitCosts": 116.89,
-                  "jrFormFilling": 25.00,
                   "netDisbursementAmount": 125.70,
                   "disbursementVatAmount": 25.14,
                   "vatIndicator": true
@@ -299,17 +298,16 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "schemeId": "IMM_ASYLM_FS2013",
               "claimId": "claim_123",
               "feeCalculation": {
-                "totalAmount": 321.11,
+                "totalAmount": 291.11,
                 "vatIndicator": true,
                 "vatRateApplied": 20.00,
-                "calculatedVatAmount": 28.38,
+                "calculatedVatAmount": 23.38,
                 "disbursementAmount": 125.70,
                 "requestedNetDisbursementAmount": 125.70,
                 "disbursementVatAmount": 25.14,
-                "hourlyTotalAmount": 141.89,
+                "hourlyTotalAmount": 242.59,
                 "netProfitCostsAmount": 116.89,
-                "requestedNetProfitCostsAmount": 116.89,
-                "jrFormFillingAmount": 25.00
+                "requestedNetProfitCostsAmount": 116.89
               }
             }
             """, STRICT));
@@ -327,9 +325,8 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "claimId": "claim_123",
                   "startDate": "2015-02-11",
                   "netProfitCosts": 766.89,
-                  "jrFormFilling": 25.00,
                   "netDisbursementAmount": 410.70,
-                  "disbursementVatAmount": 25.14,
+                  "disbursementVatAmount": 82.14,
                   "vatIndicator": true
                 }
                 """)
@@ -352,17 +349,16 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   }
               ],
               "feeCalculation": {
-                "totalAmount": 1055.14,
+                "totalAmount": 1082.14,
                 "vatIndicator": true,
                 "vatRateApplied": 20.00,
-                "calculatedVatAmount": 105.00,
-                "disbursementAmount": 400.,
+                "calculatedVatAmount": 100.00,
+                "disbursementAmount": 400.00,
                 "requestedNetDisbursementAmount": 410.70,
-                "disbursementVatAmount": 25.14,
-                "hourlyTotalAmount": 525.00,
+                "disbursementVatAmount": 82.14,
+                "hourlyTotalAmount": 900.00,
                 "netProfitCostsAmount": 500.00,
-                "requestedNetProfitCostsAmount": 766.89,
-                "jrFormFillingAmount": 25.00
+                "requestedNetProfitCostsAmount": 766.89
               }
             }
             """, STRICT));

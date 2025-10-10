@@ -28,11 +28,11 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 @ExtendWith(MockitoExtension.class)
-class PrisonLawFeeCalculatorTest {
+class PrisonLawFixedFeeCalculatorTest {
 
   @Spy
   @InjectMocks
-  private PrisonLawFeeCalculator prisonLawFeeCalculator;
+  private PrisonLawFixedFeeCalculator prisonLawFeeCalculator;
 
   @BeforeEach
   void setUp() {
