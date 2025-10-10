@@ -106,9 +106,9 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
         }
       }
 
-      log.info("Check travel waiting and costs field is empty for fee calculation");
+      log.info("Check detention travel waiting and costs field is empty for fee calculation");
       checkFieldIsEmpty(feeCalculationRequest.getDetentionAndWaitingCosts(), validationMessages, WARNING_DETENTION_TRAVEL_WAITING_COSTS,
-          "Travel and waiting costs not applicable for legal help");
+          "Detention travel and waiting costs not applicable for legal help");
 
       log.info("Check JR form filling field is empty for fee calculation");
       checkFieldIsEmpty(feeCalculationRequest.getJrFormFilling(), validationMessages, WARNING_JR_FORM_FILLING,
