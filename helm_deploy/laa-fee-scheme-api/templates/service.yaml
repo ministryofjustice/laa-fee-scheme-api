@@ -4,7 +4,7 @@ metadata:
   name: "{{ .Chart.Name }}-service"
   namespace: {{ .Release.Namespace }}
   labels:
-    {{ include "laa-fee-scheme-api.labels" . | nindent 4 }}
+    {{- include "laa-fee-scheme-api.labels" . | nindent 4 }}
 spec:
   ports:
     - name: http
@@ -16,4 +16,4 @@ spec:
       targetPort: actuator
       protocol: TCP
   selector:
-    {{ include "laa-fee-scheme-api.selectorLabels" . | nindent 4 }}
+    {{- include "laa-fee-scheme-api.selectorLabels" . | nindent 4 }}
