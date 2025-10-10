@@ -44,7 +44,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
 
     private FeeCalculationRequest buildRequest(String feeCode, double netDisbursementAmount, double disbursementVatAmount,
                                                boolean vatIndicator, String immigrationPriorAuthority,
-                                               double detentionAndWaitingCosts, double jrFormFilling) {
+                                               double detentionTravelAndWaitingCosts, double jrFormFilling) {
       return FeeCalculationRequest.builder()
           .feeCode(feeCode)
           .claimId("claim_123")
@@ -57,7 +57,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
               .boltOnCmrhOral(2)
               .boltOnCmrhTelephone(2)
               .build())
-          .detentionAndWaitingCosts(detentionAndWaitingCosts)
+          .detentionTravelAndWaitingCosts(detentionTravelAndWaitingCosts)
           .jrFormFilling(jrFormFilling)
           .build();
     }
@@ -98,12 +98,12 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
     }
 
     private static Arguments arguments(String scenario, String feeCode, boolean vat, String priorAuthority, double netDisbursementAmount,
-                                       double disbursementVatAmount, BigDecimal netDisbursementLimit, double detentionAndWaitingCosts,
+                                       double disbursementVatAmount, BigDecimal netDisbursementLimit, double detentionTravelAndWaitingCosts,
                                        double jrFormfilling, double total, double requestedDisbursementAmount,
                                        double expectedTotalBoltOnFeeAmount, double expectedCalculatedVatAmount,
                                        double expectedFixedFeeAmount) {
       return Arguments.of(scenario, feeCode, vat, priorAuthority, netDisbursementAmount, disbursementVatAmount, netDisbursementLimit,
-          detentionAndWaitingCosts, jrFormfilling, total, requestedDisbursementAmount, expectedTotalBoltOnFeeAmount,
+          detentionTravelAndWaitingCosts, jrFormfilling, total, requestedDisbursementAmount, expectedTotalBoltOnFeeAmount,
           expectedCalculatedVatAmount, expectedFixedFeeAmount);
     }
 
@@ -117,7 +117,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         double netDisbursementAmount,
         double disbursementVatAmount,
         BigDecimal netDisbursementLimit,
-        double detentionAndWaitingCosts,
+        double detentionTravelAndWaitingCosts,
         double jrFormfilling,
         double expectedTotal,
         double requestedDisbursementAmount,
@@ -126,7 +126,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         double expectedFixedFee) {
 
       FeeCalculationRequest feeData = buildRequest(feeCode, netDisbursementAmount, disbursementVatAmount, vatIndicator,
-          immigrationPriorityAuthority, detentionAndWaitingCosts, jrFormfilling);
+          immigrationPriorityAuthority, detentionTravelAndWaitingCosts, jrFormfilling);
 
       FeeEntity feeEntity = buildFeeEntity(feeCode, BigDecimal.valueOf(expectedFixedFee), netDisbursementLimit,
           BigDecimal.valueOf(166), BigDecimal.valueOf(90));
@@ -140,7 +140,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
           .disbursementAmount(requestedDisbursementAmount)
           .requestedNetDisbursementAmount(feeData.getNetDisbursementAmount())
           .disbursementVatAmount(disbursementVatAmount)
-          .detentionAndWaitingCostsAmount(detentionAndWaitingCosts)
+          .detentionTravelAndWaitingCostsAmount(detentionTravelAndWaitingCosts)
           .jrFormFillingAmount(jrFormfilling)
           .boltOnFeeDetails(BoltOnFeeDetails.builder()
               .boltOnTotalFeeAmount(expectedTotalBoltOnFeeAmount)

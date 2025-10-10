@@ -53,7 +53,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
   private static final String WARNING_NET_PROFIT_COSTS = "warning net profit costs"; // @TODO: TBC
   private static final String WARNING_NET_DISBURSEMENTS = "warning net disbursements"; // @TODO: TBC
   private static final String WARNING_TOTAL_LIMIT = "warning total limit"; // @TODO: TBC
-  private static final String WARNING_TRAVEL_WAITING_COSTS = "warning travel and waiting costs"; // @TODO: TBC
+  private static final String WARNING_DETENTION_TRAVEL_WAITING_COSTS = "warning detention travel and waiting costs"; // @TODO: TBC
   private static final String WARNING_JR_FORM_FILLING = "warning jr form filling"; // @TODO: TBC
 
   /**
@@ -96,7 +96,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
           immigrationPriorAuthorityNumber, WARNING_NET_PROFIT_COSTS);
       netProfitCosts = checkLimitAndCapIfRequired(netProfitCosts, profitCostsLimitContext, validationMessages);
 
-      LimitContext disbursementLimitContext = new LimitContext(DISBURSEMENT,  feeEntity.getDisbursementLimit(),
+      LimitContext disbursementLimitContext = new LimitContext(DISBURSEMENT, feeEntity.getDisbursementLimit(),
           immigrationPriorAuthorityNumber, WARNING_NET_DISBURSEMENTS);
       netDisbursementAmount = checkLimitAndCapIfRequired(netDisbursementAmount, disbursementLimitContext, validationMessages);
     }
@@ -109,8 +109,13 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
       feeTotal = checkLimitAndCapIfRequired(feeTotal, totalLimitContext, validationMessages);
     }
 
+    log.info("Check detention travel waiting and costs field is empty for fee calculation");
+    checkFieldIsEmpty(feeCalculationRequest.getDetentionTravelAndWaitingCosts(),
+        validationMessages, WARNING_DETENTION_TRAVEL_WAITING_COSTS,
+        "Detention travel and waiting costs not applicable for legal help");
     log.info("Check travel waiting and costs field is empty for fee calculation");
-    checkFieldIsEmpty(feeCalculationRequest.getTravelAndWaitingCosts(), validationMessages, WARNING_TRAVEL_WAITING_COSTS,
+    checkFieldIsEmpty(feeCalculationRequest.getTravelAndWaitingCosts(),
+        validationMessages, WARNING_DETENTION_TRAVEL_WAITING_COSTS,
         "Travel and waiting costs not applicable for legal help");
 
     log.info("Check JR form filling field is empty for fee calculation");
