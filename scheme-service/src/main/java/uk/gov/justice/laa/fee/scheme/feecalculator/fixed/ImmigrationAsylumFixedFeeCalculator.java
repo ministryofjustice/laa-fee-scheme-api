@@ -41,9 +41,9 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
   private static final Set<String> FEE_CODES_WITH_SUBSTANTIVE_HEARING = Set.of("IACB", "IACC", "IACF", "IMCB", "IMCC", "IMCD");
   private static final Set<String> NO_COUNSEL_FEE_CODES = Set.of("IALB", "IMLB");
   // @TODO: TBC during error and validation work, and likely moved to common util
-  public static final String WARNING_MESSAGE_WARIA1 = "Costs have been capped at £600 without an Immigration Priority "
+  public static final String WARNING_MESSAGE_WARIA1 = "Costs have been capped at £600 without an Immigration Priority"
       + "Authority Number. Disbursement costs exceed the Disbursement Limit. ";
-  public static final String WARNING_MESSAGE_WARIA2 = "Costs have been capped at £400 without an Immigration Priority "
+  public static final String WARNING_MESSAGE_WARIA2 = "Costs have been capped at £400 without an Immigration Priority"
       + "Authority Number. Disbursement costs exceed the Disbursement Limit.";
   public static final String WARNING_MESSAGE_WARIA3 = "The claim exceeds the Escape Case Threshold. An Escape Case "
       + "Claim must be submitted for further costs to be paid. ";

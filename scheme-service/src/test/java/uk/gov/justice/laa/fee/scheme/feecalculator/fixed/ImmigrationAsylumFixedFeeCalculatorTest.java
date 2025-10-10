@@ -41,6 +41,41 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
   @Nested
   class FeeCalculationTest {
 
+
+    private FeeCalculationRequest buildRequest(String feeCode, double netDisbursementAmount, double disbursementVatAmount,
+                                               boolean vatIndicator, String immigrationPriorAuthority,
+                                               double detentionAndWaitingCosts, double jrFormFilling) {
+      return FeeCalculationRequest.builder()
+          .feeCode(feeCode)
+          .claimId("claim_123")
+          .startDate(LocalDate.of(2025, 7, 29))
+          .netDisbursementAmount(netDisbursementAmount)
+          .disbursementVatAmount(disbursementVatAmount)
+          .vatIndicator(vatIndicator)
+          .immigrationPriorAuthorityNumber(immigrationPriorAuthority)
+          .boltOns(BoltOnType.builder()
+              .boltOnCmrhOral(2)
+              .boltOnCmrhTelephone(2)
+              .build())
+          .detentionAndWaitingCosts(detentionAndWaitingCosts)
+          .jrFormFilling(jrFormFilling)
+          .build();
+    }
+
+    private FeeEntity buildFeeEntity(String feeCode, BigDecimal fixedFee, BigDecimal disbursementLimit, BigDecimal oralBoltOn,
+                                     BigDecimal telephoneBoltOn) {
+      return FeeEntity.builder()
+          .feeCode(feeCode)
+          .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
+          .fixedFee(fixedFee)
+          .categoryType(IMMIGRATION_ASYLUM)
+          .feeType(FIXED)
+          .disbursementLimit(disbursementLimit)
+          .oralCmrhBoltOn(oralBoltOn)
+          .telephoneCmrhBoltOn(telephoneBoltOn)
+          .build();
+    }
+
     public static Stream<Arguments> testDataWithDisbursementWithinLimit() {
       return Stream.of(
           arguments("IACA, Has Vat, eligible for disbursement, below limit",
@@ -64,11 +99,11 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
 
     private static Arguments arguments(String scenario, String feeCode, boolean vat, String priorAuthority, double netDisbursementAmount,
                                        double disbursementVatAmount, BigDecimal netDisbursementLimit, double detentionAndWaitingCosts,
-                                       double jrFormfilling, double total, double expectedDisbursementAmount,
+                                       double jrFormfilling, double total, double requestedDisbursementAmount,
                                        double expectedTotalBoltOnFeeAmount, double expectedCalculatedVatAmount,
                                        double expectedFixedFeeAmount) {
       return Arguments.of(scenario, feeCode, vat, priorAuthority, netDisbursementAmount, disbursementVatAmount, netDisbursementLimit,
-          detentionAndWaitingCosts, jrFormfilling, total, expectedDisbursementAmount, expectedTotalBoltOnFeeAmount,
+          detentionAndWaitingCosts, jrFormfilling, total, requestedDisbursementAmount, expectedTotalBoltOnFeeAmount,
           expectedCalculatedVatAmount, expectedFixedFeeAmount);
     }
 
@@ -85,37 +120,16 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         double detentionAndWaitingCosts,
         double jrFormfilling,
         double expectedTotal,
-        double expectedDisbursementAmount,
+        double requestedDisbursementAmount,
         double expectedTotalBoltOnFeeAmount,
         double expectedCalculatedVat,
         double expectedFixedFee) {
 
-      FeeCalculationRequest feeData = FeeCalculationRequest.builder()
-          .feeCode(feeCode)
-          .claimId("claim_123")
-          .startDate(LocalDate.of(2025, 7, 29))
-          .netDisbursementAmount(netDisbursementAmount)
-          .disbursementVatAmount(disbursementVatAmount)
-          .vatIndicator(vatIndicator)
-          .immigrationPriorAuthorityNumber(immigrationPriorityAuthority)
-          .boltOns(BoltOnType.builder()
-              .boltOnCmrhOral(2)
-              .boltOnCmrhTelephone(2)
-              .build())
-          .detentionAndWaitingCosts(detentionAndWaitingCosts)
-          .jrFormFilling(jrFormfilling)
-          .build();
+      FeeCalculationRequest feeData = buildRequest(feeCode, netDisbursementAmount, disbursementVatAmount, vatIndicator,
+          immigrationPriorityAuthority, detentionAndWaitingCosts, jrFormfilling);
 
-      FeeEntity feeEntity = FeeEntity.builder()
-          .feeCode(feeCode)
-          .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
-          .fixedFee(new BigDecimal("75.50"))
-          .categoryType(IMMIGRATION_ASYLUM)
-          .feeType(FIXED)
-          .disbursementLimit(netDisbursementLimit)
-          .oralCmrhBoltOn(BigDecimal.valueOf(166))
-          .telephoneCmrhBoltOn(BigDecimal.valueOf(90))
-          .build();
+      FeeEntity feeEntity = buildFeeEntity(feeCode, BigDecimal.valueOf(expectedFixedFee), netDisbursementLimit,
+          BigDecimal.valueOf(166), BigDecimal.valueOf(90));
 
       FeeCalculationResponse response = immigrationAsylumFixedFeeCalculator.calculate(feeData, feeEntity);
 
@@ -123,7 +137,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
           .totalAmount(expectedTotal)
           .vatIndicator(vatIndicator)
           .vatRateApplied(20.0)
-          .disbursementAmount(expectedDisbursementAmount)
+          .disbursementAmount(requestedDisbursementAmount)
           .requestedNetDisbursementAmount(feeData.getNetDisbursementAmount())
           .disbursementVatAmount(disbursementVatAmount)
           .detentionAndWaitingCostsAmount(detentionAndWaitingCosts)
@@ -144,7 +158,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
           .schemeId("IMM_ASYLM_FS2023")
           .claimId("claim_123")
           .validationMessages(new ArrayList<>())
-          .escapeCaseFlag(false) // hardcoded till escape logic implemented
+          .escapeCaseFlag(false)
           .feeCalculation(expectedCalculation)
           .build();
 
@@ -162,8 +176,12 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
     void calculate_whenImmigrationAndAsylum_withNoDisbursementLimit(String feeCode, double expectedTotal,
                                                                     double requestedDisbursementAmount) {
 
-      FeeCalculationRequest feeCalculationRequest = buildRequest(feeCode, requestedDisbursementAmount);
-      FeeEntity feeEntity = buildFeeEntity(feeCode, BigDecimal.valueOf(75.5), null);
+      FeeCalculationRequest feeCalculationRequest = buildRequest(feeCode, requestedDisbursementAmount, 20.0,
+          true, null, 0.0, 0.0
+      );
+
+      FeeEntity feeEntity = buildFeeEntity(feeCode, BigDecimal.valueOf(75.5), null, null, null);
+
       FeeCalculationResponse response = immigrationAsylumFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
       assertNotNull(response.getFeeCalculation());
@@ -182,8 +200,12 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
                                                                         double requestedDisbursementAmount,
                                                                         double disbursementLimit, String warningMessage) {
 
-      FeeCalculationRequest feeCalculationRequest = buildRequest(feeCode, requestedDisbursementAmount);
-      FeeEntity feeEntity = buildFeeEntity(feeCode, BigDecimal.valueOf(75.5), BigDecimal.valueOf(disbursementLimit));
+      FeeCalculationRequest feeCalculationRequest = buildRequest(feeCode, requestedDisbursementAmount, 20.0,
+          true, null, 0.0, 0.0);
+
+      FeeEntity feeEntity = buildFeeEntity(feeCode, BigDecimal.valueOf(75.5), BigDecimal.valueOf(disbursementLimit),
+          null, null);
+
       FeeCalculationResponse response = immigrationAsylumFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
       String expectedMessage = "WARIA_1".equals(warningMessage)
@@ -201,7 +223,13 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
       assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
     }
 
-    private FeeCalculationRequest buildRequest(String feeCode, double netDisbursementAmount) {
+  }
+
+  @Nested
+  class EscapeCaseTest {
+
+    private FeeCalculationRequest buildRequest(String feeCode, Double netDisbursementAmount, Double requestedNetProfitCosts,
+                                               Double requestedNetCounselCosts) {
       return FeeCalculationRequest.builder()
           .feeCode(feeCode)
           .claimId("claim_123")
@@ -210,10 +238,16 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
           .disbursementVatAmount(20.0)
           .vatIndicator(true)
           .immigrationPriorAuthorityNumber(null)
+          .netProfitCosts(requestedNetProfitCosts)
+          .netCostOfCounsel(requestedNetCounselCosts)
+          .boltOns(BoltOnType.builder()
+              .boltOnCmrhOral(4)
+              .build())
           .build();
     }
 
-    private FeeEntity buildFeeEntity(String feeCode, BigDecimal fixedFee, BigDecimal disbursementLimit) {
+    private FeeEntity buildFeeEntity(String feeCode, BigDecimal fixedFee, BigDecimal disbursementLimit,
+                                     Double substantiveBoltOnCost, BigDecimal escapeThresholdLimit) {
       return FeeEntity.builder()
           .feeCode(feeCode)
           .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
@@ -221,14 +255,11 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
           .categoryType(IMMIGRATION_ASYLUM)
           .feeType(FIXED)
           .disbursementLimit(disbursementLimit)
+          .oralCmrhBoltOn(BigDecimal.valueOf(166))
+          .substantiveHearingBoltOn(nonNull(substantiveBoltOnCost) ? BigDecimal.valueOf(substantiveBoltOnCost) : null)
+          .escapeThresholdLimit(escapeThresholdLimit)
           .build();
     }
-
-  }
-
-  @Nested
-  class EscapeCaseTest {
-
 
     @ParameterizedTest
     @CsvSource({
@@ -299,40 +330,6 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         assertThat(response.getValidationMessages()).isEmpty();
         assertThat(response.getEscapeCaseFlag()).isFalse();
       }
-
-    }
-
-    private FeeCalculationRequest buildRequest(String feeCode, Double netDisbursementAmount, Double requestedNetProfitCosts,
-                                               Double requestedNetCounselCosts) {
-      return FeeCalculationRequest.builder()
-          .feeCode(feeCode)
-          .claimId("claim_123")
-          .startDate(LocalDate.of(2025, 7, 29))
-          .netDisbursementAmount(netDisbursementAmount)
-          .disbursementVatAmount(20.0)
-          .vatIndicator(true)
-          .immigrationPriorAuthorityNumber(null)
-          .netProfitCosts(requestedNetProfitCosts)
-          .netCostOfCounsel(requestedNetCounselCosts)
-          .boltOns(BoltOnType.builder()
-              .boltOnCmrhOral(4)
-              .build())
-          .build();
-    }
-
-    private FeeEntity buildFeeEntity(String feeCode, BigDecimal fixedFee, BigDecimal disbursementLimit,
-                                     Double substantiveBoltOnCost, BigDecimal escapeThresholdLimit) {
-      return FeeEntity.builder()
-          .feeCode(feeCode)
-          .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
-          .fixedFee(fixedFee)
-          .categoryType(IMMIGRATION_ASYLUM)
-          .feeType(FIXED)
-          .disbursementLimit(disbursementLimit)
-          .oralCmrhBoltOn(BigDecimal.valueOf(166))
-          .substantiveHearingBoltOn(nonNull(substantiveBoltOnCost) ? BigDecimal.valueOf(substantiveBoltOnCost) : null)
-          .escapeThresholdLimit(escapeThresholdLimit)
-          .build();
     }
   }
 
@@ -341,6 +338,5 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
     Set<CategoryType> result = immigrationAsylumFixedFeeCalculator.getSupportedCategories();
     assertThat(result).isEmpty();
   }
-
 
 }
