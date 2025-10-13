@@ -126,7 +126,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     BigDecimal totalAmount = feeTotal.add(netProfitCostsVatAmount).add(disbursementVatAmount);
 
     FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, netProfitCostsVatAmount,
-        netDisbursementAmount, disbursementVatAmount, feeTotal, netProfitCosts);
+        netDisbursementAmount, disbursementVatAmount, feeTotal, netProfitCosts, false);
 
     return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, validationMessages, feeCalculation);
   }
@@ -169,7 +169,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     BigDecimal totalAmount = feeTotal.add(calculatedVatAmount).add(disbursementVatAmount);
 
     FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, calculatedVatAmount,
-        netDisbursementAmount, disbursementVatAmount, feeTotal, netProfitCosts);
+        netDisbursementAmount, disbursementVatAmount, feeTotal, netProfitCosts, true);
 
     return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, validationMessages, feeCalculation);
   }
@@ -223,7 +223,9 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
                                                     BigDecimal disbursementAmount,
                                                     BigDecimal disbursementVatAmount,
                                                     BigDecimal hourlyTotalAmount,
-                                                    BigDecimal netProfitCostsAmount) {
+                                                    BigDecimal netProfitCostsAmount,
+                                                    boolean includeCostOfCounsel
+                                                    ) {
     return FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
         .vatIndicator(feeCalculationRequest.getVatIndicator())
@@ -235,6 +237,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
         .hourlyTotalAmount(toDouble(hourlyTotalAmount))
         .netProfitCostsAmount(toDouble(netProfitCostsAmount))
         .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+        .netCostOfCounselAmount(includeCostOfCounsel ? feeCalculationRequest.getNetCostOfCounsel() : null)
         .build();
   }
 }

@@ -274,6 +274,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     assertThat(feeCalculation.getHourlyTotalAmount()).isEqualTo(expectedHourlyTotal);
     assertThat(feeCalculation.getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
     assertThat(feeCalculation.getRequestedNetProfitCostsAmount()).isEqualTo(netProfitCosts);
+    assertThat(feeCalculation.getNetCostOfCounselAmount()).isEqualTo(netCostOfCounsel);
   }
 
   static Stream<Arguments> feeTestDataClr() {

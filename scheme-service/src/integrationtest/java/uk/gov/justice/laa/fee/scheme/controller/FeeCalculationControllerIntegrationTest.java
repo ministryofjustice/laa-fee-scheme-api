@@ -365,6 +365,49 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   }
 
   @Test
+  void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate_clr() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "IAXC",
+                  "claimId": "claim_123",
+                  "startDate": "2015-02-11",
+                  "netProfitCosts": 116.89,
+                  "netCostOfCounsel": 356.90,
+                  "netDisbursementAmount": 125.70,
+                  "disbursementVatAmount": 25.14,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "IAXC",
+              "schemeId": "IMM_ASYLM_FS2013",
+              "claimId": "claim_123",
+              "feeCalculation": {
+                "totalAmount": 719.39,
+                "vatIndicator": true,
+                "vatRateApplied": 20.00,
+                "calculatedVatAmount": 94.76,
+                "disbursementAmount": 125.70,
+                "requestedNetDisbursementAmount": 125.70,
+                "disbursementVatAmount": 25.14,
+                "hourlyTotalAmount": 599.49,
+                "netProfitCostsAmount": 116.89,
+                "requestedNetProfitCostsAmount": 116.89,
+                "netCostOfCounselAmount": 356.90
+              }
+            }
+            """, STRICT));
+  }
+
+  @Test
   void shouldGetFeeCalculation_mediation() throws Exception {
     mockMvc
         .perform(post(URI)
