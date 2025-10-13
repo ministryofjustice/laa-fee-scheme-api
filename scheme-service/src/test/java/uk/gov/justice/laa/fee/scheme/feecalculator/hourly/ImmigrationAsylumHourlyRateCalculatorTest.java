@@ -128,79 +128,6 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
   }
 
   @ParameterizedTest
-  @MethodSource("feeTestDataClr")
-  void calculateFee_whenClr_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority,
-                                                               double netProfitCosts, double netCostOfCounsel, double netDisbursement,
-                                                               double disbursementVat, double expectedTotal, double expectedCalculatedVat,
-                                                               double expectedHourlyTotal, List<String> expectedWarnings) {
-
-    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode(feeCode)
-        .startDate(LocalDate.of(2025, 5, 11))
-        .netProfitCosts(netProfitCosts)
-        .netCostOfCounsel(netCostOfCounsel)
-        .netDisbursementAmount(netDisbursement)
-        .disbursementVatAmount(disbursementVat)
-        .vatIndicator(vatIndicator)
-        .immigrationPriorAuthorityNumber(priorAuthority)
-        .build();
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode(feeCode)
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
-        .categoryType(IMMIGRATION_ASYLUM)
-        .feeType(HOURLY)
-        .totalLimit(new BigDecimal("1600.00"))
-        .build();
-
-    FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
-
-    assertThat(result).isNotNull();
-    assertThat(result.getFeeCode()).isEqualTo(feeCode);
-    assertThat(result.getSchemeId()).isEqualTo("IMM_ASYLM_FS2023");
-    assertWarnings(result.getValidationMessages(), expectedWarnings);
-
-    FeeCalculation feeCalculation = result.getFeeCalculation();
-    assertThat(feeCalculation).isNotNull();
-    assertThat(feeCalculation.getTotalAmount()).isEqualTo(expectedTotal);
-    assertThat(feeCalculation.getVatIndicator()).isEqualTo(vatIndicator);
-    assertThat(feeCalculation.getVatRateApplied()).isEqualTo(20.0);
-    assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(expectedCalculatedVat);
-    assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(netDisbursement);
-    assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(netDisbursement);
-    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(disbursementVat);
-    assertThat(feeCalculation.getHourlyTotalAmount()).isEqualTo(expectedHourlyTotal);
-    assertThat(feeCalculation.getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
-    assertThat(feeCalculation.getRequestedNetProfitCostsAmount()).isEqualTo(netProfitCosts);
-  }
-
-  static Stream<Arguments> feeTestDataClr() {
-    return Stream.of(
-        // under profit costs and disbursements limits
-        Arguments.of("IAXC", NO_VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
-            1280.83, 0, 1250.37, List.of()),
-        Arguments.of("IAXC", VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
-            1500.44, 219.61, 1250.37, List.of()),
-
-        // over profit costs limit "with" prior authority
-        Arguments.of("IAXC", NO_VAT, AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
-            1677.75, 0, 1647.29, List.of()),
-        Arguments.of("IAXC", VAT, AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
-            1976.74, 298.99, 1647.29, List.of()),
-
-        // over profit costs limit "without" prior authority
-        Arguments.of("IAXC", NO_VAT, NO_AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
-            1630.46, 0, 1600, List.of("warning total limit")),
-        Arguments.of("IAXC", VAT, NO_AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
-            1929.45, 298.99, 1600, List.of("warning total limit")),
-
-        // IMXC
-        Arguments.of("IMXC", NO_VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
-            1280.83, 0, 1250.37, List.of())
-    );
-  }
-
-  @ParameterizedTest
   @MethodSource("feeTestDataIA100")
   void calculateFee_whenLegalHelpIA100_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority,
                                                                           double netProfitCosts, double netDisbursement, double disbursementVat,
@@ -299,6 +226,83 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
         Arguments.of( 314.3, null, List.of("warning detention travel and waiting costs")),
         Arguments.of(null, 55.34, List.of("warning jr form filling")),
         Arguments.of(314.3, 55.34, List.of("warning detention travel and waiting costs", "warning jr form filling"))
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("feeTestDataClr")
+  void calculateFee_whenClr_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority,
+                                                               double netProfitCosts, double netCostOfCounsel, double netDisbursement,
+                                                               double disbursementVat, double expectedTotal, double expectedCalculatedVat,
+                                                               double expectedHourlyTotal, List<String> expectedWarnings) {
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode(feeCode)
+        .startDate(LocalDate.of(2025, 5, 11))
+        .netProfitCosts(netProfitCosts)
+        .netCostOfCounsel(netCostOfCounsel)
+        .netDisbursementAmount(netDisbursement)
+        .disbursementVatAmount(disbursementVat)
+        .vatIndicator(vatIndicator)
+        .immigrationPriorAuthorityNumber(priorAuthority)
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode(feeCode)
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
+        .categoryType(IMMIGRATION_ASYLUM)
+        .feeType(HOURLY)
+        .totalLimit(new BigDecimal("1600.00"))
+        .build();
+
+    FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    assertThat(result).isNotNull();
+    assertThat(result.getFeeCode()).isEqualTo(feeCode);
+    assertThat(result.getSchemeId()).isEqualTo("IMM_ASYLM_FS2023");
+    assertWarnings(result.getValidationMessages(), expectedWarnings);
+
+    FeeCalculation feeCalculation = result.getFeeCalculation();
+    assertThat(feeCalculation).isNotNull();
+    assertThat(feeCalculation.getTotalAmount()).isEqualTo(expectedTotal);
+    assertThat(feeCalculation.getVatIndicator()).isEqualTo(vatIndicator);
+    assertThat(feeCalculation.getVatRateApplied()).isEqualTo(20.0);
+    assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(expectedCalculatedVat);
+    assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(netDisbursement);
+    assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(netDisbursement);
+    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(disbursementVat);
+    assertThat(feeCalculation.getHourlyTotalAmount()).isEqualTo(expectedHourlyTotal);
+    assertThat(feeCalculation.getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
+    assertThat(feeCalculation.getRequestedNetProfitCostsAmount()).isEqualTo(netProfitCosts);
+  }
+
+  static Stream<Arguments> feeTestDataClr() {
+    return Stream.of(
+        // under profit costs and disbursements limits
+        Arguments.of("IAXC", NO_VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
+            1280.83, 0, 1250.37, List.of()),
+        Arguments.of("IAXC", VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
+            1500.44, 219.61, 1250.37, List.of()),
+
+        // over profit costs limit "with" prior authority
+        Arguments.of("IAXC", NO_VAT, AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
+            1677.75, 0, 1647.29, List.of()),
+        Arguments.of("IAXC", VAT, AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
+            1976.74, 298.99, 1647.29, List.of()),
+
+        // over profit costs limit "without" prior authority
+        Arguments.of("IAXC", NO_VAT, NO_AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
+            1630.46, 0, 1600, List.of("warning total limit")),
+        Arguments.of("IAXC", VAT, NO_AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
+            1929.45, 298.99, 1600, List.of("warning total limit")),
+
+        // IMXC
+        Arguments.of("IMXC", NO_VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
+            1280.83, 0, 1250.37, List.of()),
+
+        // IRAR
+        Arguments.of("IRAR", NO_VAT, NO_AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
+            1677.75, 0, 1647.29, List.of())
     );
   }
 
