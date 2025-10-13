@@ -56,7 +56,7 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
-    boolean isEscaped = feeTotal.compareTo(escapeThresholdLimit) > 0;
+    boolean isEscaped = FeeCalculationUtil.isEscapedCase(feeTotal, feeEntity.getEscapeThresholdLimit());
 
     if (isEscaped) {
       log.warn("Fee total exceeds escape threshold limit");

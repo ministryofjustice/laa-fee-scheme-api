@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,6 +28,7 @@ import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.repository.PoliceStationFeesRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -93,7 +95,7 @@ class PoliceStationFixedFeeCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode("INVC")
         .schemeId("POL_FS2022")
-        .validationMessages(new ArrayList<>())
+        .validationMessages(null)
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();
@@ -157,7 +159,7 @@ class PoliceStationFixedFeeCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode("INVC")
         .schemeId("POL_FS2022")
-        .validationMessages(new ArrayList<>())
+        .validationMessages(null)
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();
@@ -238,7 +240,7 @@ class PoliceStationFixedFeeCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode(feeCode)
         .schemeId(feeSchemeCode)
-        .validationMessages(new ArrayList<>())
+        .validationMessages(null)
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();
@@ -314,6 +316,92 @@ class PoliceStationFixedFeeCalculatorTest {
         .isEqualTo(expectedResponse);
   }
 
+
+
+  @ParameterizedTest
+  @MethodSource("testPoliceStationAttendanceClaimsForEscapeCases")
+  void test_whenClaimsSubmittedForPoliceStationTelephonicAdviceAreFlaggedAsEscape_shouldReturnFeeWithEscapeFlagEnabled(
+      String description,
+      String feeCode,
+      String policeStationId,
+      String policeStationSchemeId,
+      String uniqueFileNumber,
+      boolean vatIndicator,
+      double expectedTotal,
+      BigDecimal fixedFee,
+      BigDecimal profitCostLimit,
+      String feeSchemeCode,
+      double expectedCalculatedVat,
+      double expectedDisbursementAmount,
+      double disbursementVatAmount,
+      double expectedFixedFee,
+      double travelAndWaitingCostAmount,
+      double netProfitCostsAmount
+  ) {
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode(feeCode)
+        .startDate(LocalDate.of(2022, 12, 29))
+        .vatIndicator(vatIndicator)
+        .policeStationSchemeId(policeStationSchemeId)
+        .policeStationId(policeStationId)
+        .uniqueFileNumber(uniqueFileNumber)
+        .netProfitCosts(netProfitCostsAmount)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode(feeCode)
+        .feeScheme(feeSchemesEntity)
+        .fixedFee(new BigDecimal("999.99"))
+        .categoryType(POLICE_STATION)
+        .feeType(FeeType.FIXED)
+        .build();
+
+    PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder()
+        .psSchemeId(policeStationSchemeId)
+        .feeSchemeCode(feeSchemeCode)
+        .fixedFee(new BigDecimal("999.99"))
+        .escapeThreshold(new BigDecimal("123.99"))
+        .build();
+
+    when(policeStationFeesRepository.findPoliceStationFeeByPoliceStationIdAndFeeSchemeCode(policeStationId,
+        feeSchemeCode)).thenReturn(List.of(policeStationFeesEntity));
+
+    FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);
+
+    FeeCalculation expectedCalculation = FeeCalculation.builder()
+        .totalAmount(expectedTotal)
+        .vatIndicator(vatIndicator)
+        .vatRateApplied(20.0)
+        .fixedFeeAmount(expectedFixedFee)
+        .calculatedVatAmount(expectedCalculatedVat)
+        .disbursementVatAmount(0.0)
+        .disbursementAmount(0.0)
+        .requestedNetDisbursementAmount(0.0)
+        .build();
+
+    ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
+        .message("123")
+        .type(WARNING)
+        .build();
+
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
+        .feeCode(feeCode)
+        .schemeId(feeSchemeCode)
+        .validationMessages(List.of(validationMessage))
+        .escapeCaseFlag(true)
+        .feeCalculation(expectedCalculation)
+        .build();
+
+
+
+    assertThat(response)
+        .usingRecursiveComparison()
+        .isEqualTo(expectedResponse);
+  }
+
   @Test
   void getSupportedCategories_shouldReturnEmptySet() {
     Set<CategoryType> result = policeStationFixedFeeCalculator.getSupportedCategories();
@@ -333,6 +421,17 @@ class PoliceStationFixedFeeCalculatorTest {
             new BigDecimal("14.4"), null, "POL_2023", 0,
             50.5, 20.15, 14.4, 0.0, 0.0)
     );
+  }
+
+
+
+  public static Stream<Arguments> testPoliceStationAttendanceClaimsForEscapeCases() {
+    return Stream.of(
+        arguments("INVC Police Fee Code, VAT applied", "INVC", "NE001",
+            "1001", "121222/7899", true, 1199.99,
+            new BigDecimal("14.4"), null, "POL_FS2022", 200.00,
+            50.5, 20.15, 999.99, 0.0, 0.0)
+ );
   }
 
   public static Stream<Arguments> testPoliceStationTelephonicAdviceClaims() {

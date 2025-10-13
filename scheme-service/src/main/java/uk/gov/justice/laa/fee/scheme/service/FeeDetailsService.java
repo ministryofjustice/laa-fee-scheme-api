@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.exception.CategoryCodeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponse;
-import uk.gov.justice.laa.fee.scheme.repository.FeeDetailsLookUpRepository;
+import uk.gov.justice.laa.fee.scheme.repository.FeeCategoryMappingRepository;
 
 /**
  * Service for retrieving category of law and Fee details based on fee code.
@@ -15,7 +15,7 @@ import uk.gov.justice.laa.fee.scheme.repository.FeeDetailsLookUpRepository;
 @Service
 public class FeeDetailsService {
 
-  private final FeeDetailsLookUpRepository feeDetailsLookUpRepository;
+  private final FeeCategoryMappingRepository feeCategoryMappingRepository;
 
   /**
    * Get a category of law code based on given fee code.
@@ -29,11 +29,11 @@ public class FeeDetailsService {
 
     log.info("Get category of law and fee details");
 
-    return feeDetailsLookUpRepository.findFeeCategoryInfoByFeeCode(feeCode)
-        .map(projection -> FeeDetailsResponse.builder()
-            .categoryOfLawCode(projection.getCategoryCode())
-            .feeCodeDescription(projection.getDescription())
-            .feeType(projection.getFeeType())
+    return feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(feeCode)
+        .map(feeCategoryMapping -> FeeDetailsResponse.builder()
+            .categoryOfLawCode(feeCategoryMapping.getCategoryOfLawType().getCode())
+            .feeCodeDescription(feeCategoryMapping.getFeeDescription())
+            .feeType(feeCategoryMapping.getFeeType().name())
             .build())
           .orElseThrow(() -> new CategoryCodeNotFoundException(feeCode));
   }

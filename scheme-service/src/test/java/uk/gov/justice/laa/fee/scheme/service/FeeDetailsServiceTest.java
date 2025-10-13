@@ -12,15 +12,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.laa.fee.scheme.entity.CategoryOfLawTypeEntity;
+import uk.gov.justice.laa.fee.scheme.entity.FeeCategoryMappingEntity;
+import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponse;
-import uk.gov.justice.laa.fee.scheme.repository.FeeDetailsLookUpRepository;
-import uk.gov.justice.laa.fee.scheme.repository.projection.FeeDetailsProjection;
+import uk.gov.justice.laa.fee.scheme.repository.FeeCategoryMappingRepository;
 
 @ExtendWith(MockitoExtension.class)
 class FeeDetailsServiceTest {
 
   @Mock
-  FeeDetailsLookUpRepository feeDetailsLookUpRepository;
+  FeeCategoryMappingRepository feeCategoryMappingRepository;
   @InjectMocks
   private FeeDetailsService feeDetailsService;
 
@@ -28,12 +30,15 @@ class FeeDetailsServiceTest {
   void getFeeDetails_shouldReturnExpectedFeeDetails() {
     String feeCode = "FEE123";
 
-    FeeDetailsProjection feeDetailsProjection = mock(FeeDetailsProjection.class);
-    when(feeDetailsProjection.getCategoryCode()).thenReturn("AAP");
-    when(feeDetailsProjection.getDescription()).thenReturn("Claims Against Public Authorities Legal Help Fixed Fee");
-    when(feeDetailsProjection.getFeeType()).thenReturn("FIXED");
+    CategoryOfLawTypeEntity categoryOfLawType  = CategoryOfLawTypeEntity.builder().code("AAP").build();
+    FeeType feeType = FeeType.FIXED;
 
-    when(feeDetailsLookUpRepository.findFeeCategoryInfoByFeeCode(any())).thenReturn(Optional.of(feeDetailsProjection));
+    FeeCategoryMappingEntity feeCategoryMappingEntity = mock(FeeCategoryMappingEntity.class);
+    when(feeCategoryMappingEntity.getCategoryOfLawType()).thenReturn(categoryOfLawType);
+    when(feeCategoryMappingEntity.getFeeDescription()).thenReturn("Claims Against Public Authorities Legal Help Fixed Fee");
+    when(feeCategoryMappingEntity.getFeeType()).thenReturn(feeType);
+
+    when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(any())).thenReturn(Optional.of(feeCategoryMappingEntity));
 
     FeeDetailsResponse response = feeDetailsService.getFeeDetails(feeCode);
 
@@ -46,7 +51,7 @@ class FeeDetailsServiceTest {
   void getFeeDetails_shouldReturnExceptionCategoryOfLawNotFound() {
     String feeCode = "FEE123";
 
-    when(feeDetailsLookUpRepository.findFeeCategoryInfoByFeeCode(any())).thenReturn(Optional.empty());
+    when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(any())).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> feeDetailsService.getFeeDetails(feeCode))
         .hasMessageContaining(String.format("Category of law code not found for feeCode: %s", feeCode));

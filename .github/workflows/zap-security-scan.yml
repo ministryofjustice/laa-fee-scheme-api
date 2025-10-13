@@ -59,10 +59,18 @@ jobs:
       - name: Wait for API to be ready
         run: |
           echo "Wait for application"
+          MAX_RETRIES=60
+          COUNT=0
           until docker run --rm --network docker-network byrnedo/alpine-curl \
             -s http://laa-fee-scheme-api:8185/actuator/health | grep UP > /dev/null; do
             echo "Waiting for application"
             sleep 5
+            COUNT=$((COUNT+1))
+            if [ $COUNT -ge $MAX_RETRIES ]; then
+              echo "Error with application starting."
+              docker logs laa-fee-scheme-api
+              exit 1
+            fi
           done
           echo "Application ready"
 

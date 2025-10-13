@@ -38,6 +38,7 @@ public class FeeEntity {
   private BigDecimal profitCostLimit;
   private BigDecimal disbursementLimit;
   private BigDecimal escapeThresholdLimit;
+  private BigDecimal totalLimit;
   private Boolean priorAuthorityApplicable;
   private Boolean scheduleReference;
   private BigDecimal hoInterviewBoltOn;
@@ -51,7 +52,6 @@ public class FeeEntity {
   private Region region;
   @Enumerated(EnumType.STRING)
   private CategoryType categoryType;
-  private BigDecimal totalLimit;
   @Enumerated(EnumType.STRING)
   private FeeType feeType;
   @Enumerated(EnumType.STRING)

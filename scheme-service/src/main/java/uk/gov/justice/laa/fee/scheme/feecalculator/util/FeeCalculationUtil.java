@@ -3,14 +3,17 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 import static java.util.Objects.nonNull;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
@@ -19,6 +22,7 @@ import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.util.DateUtil;
 
 /**
@@ -30,8 +34,52 @@ public final class FeeCalculationUtil {
   private FeeCalculationUtil() {
   }
 
+  /**
+   * Check if the fee type is FIXED.
+   *
+   * @param feeType the fee type to check
+   * @return true if the fee type is FIXED, false otherwise
+   */
   public static boolean isFixedFee(FeeType feeType) {
     return feeType == FeeType.FIXED;
+  }
+
+  /**
+   * Determine if escaped case when amount exceeds the escape threshold limit.
+   *
+   * @param amount               the amount to compare
+   * @param escapeThresholdLimit the escape threshold limit
+   * @return true if amount exceeds the escape threshold limit, false otherwise
+   */
+  public static boolean isEscapedCase(BigDecimal amount, BigDecimal escapeThresholdLimit) {
+    return escapeThresholdLimit != null && amount.compareTo(escapeThresholdLimit) > 0;
+  }
+
+  /**
+   * Check if amount exceeds limit without authority and cap to limit if exceeded.
+   *
+   * @param amount          the amount to check
+   * @param limitContext    the limit context containing limit details
+   * @param validationMessages the list to add validation messages to
+   * @return the capped amount if limit exceeded without authority, otherwise the original amount
+   */
+  public static BigDecimal checkLimitAndCapIfExceeded(BigDecimal amount, LimitContext limitContext,
+                                                      List<ValidationMessagesInner> validationMessages) {
+    log.info("Check {} is below limit for fee calculation", limitContext.limitType().getDisplayName());
+    BigDecimal limit = limitContext.limit();
+
+    if (isOverLimitWithoutAuthority(amount, limitContext)) {
+      log.warn("{} limit exceeded without prior authority capping to limit: {}",
+          limitContext.limitType().getDisplayName(), limitContext.limit());
+
+      validationMessages.add(ValidationMessagesInner.builder()
+          .message(limitContext.warningMessage())
+          .type(WARNING)
+          .build());
+
+      return limit;
+    }
+    return amount;
   }
 
   /**
@@ -162,5 +210,11 @@ public final class FeeCalculationUtil {
         .add(calculatedVatAmount)
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
+  }
+
+  private static boolean isOverLimitWithoutAuthority(BigDecimal amount, LimitContext limitContext) {
+    return limitContext.limit() != null
+           && amount.compareTo(limitContext.limit()) > 0
+           && StringUtils.isBlank(limitContext.authority());
   }
 }

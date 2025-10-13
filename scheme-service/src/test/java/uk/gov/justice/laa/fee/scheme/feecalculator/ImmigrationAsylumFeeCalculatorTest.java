@@ -51,7 +51,7 @@ class ImmigrationAsylumFeeCalculatorTest {
             .boltOnCmrhOral(2)
             .boltOnCmrhTelephone(2)
             .build())
-        .detentionAndWaitingCosts(234.98)
+        .detentionTravelAndWaitingCosts(234.98)
         .jrFormFilling(34.9)
         .build();
 

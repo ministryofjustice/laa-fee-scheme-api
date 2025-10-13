@@ -234,7 +234,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                         "boltOnCmrhOral": 1.00,
                         "boltOnCmrhTelephone": 3.00
                   },
-                  "detentionAndWaitingCosts": 111.00,
+                  "detentionTravelAndWaitingCosts": 111.00,
                   "jrFormFilling": 50.00
                 }
                 """)
@@ -256,7 +256,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                 "requestedNetDisbursementAmount": 100.21,
                 "disbursementVatAmount": 20.12,
                 "fixedFeeAmount": 1092.00,
-                "detentionAndWaitingCostsAmount": 111.00,
+                "detentionTravelAndWaitingCostsAmount": 111.00,
                 "jrFormFillingAmount": 50,
                 "boltOnFeeDetails": {
                   "boltOnTotalFeeAmount": 758.00,
@@ -284,7 +284,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "claimId": "claim_123",
                   "startDate": "2015-02-11",
                   "netProfitCosts": 116.89,
-                  "jrFormFilling": 25.00,
                   "netDisbursementAmount": 125.70,
                   "disbursementVatAmount": 25.14,
                   "vatIndicator": true
@@ -299,17 +298,16 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "schemeId": "IMM_ASYLM_FS2013",
               "claimId": "claim_123",
               "feeCalculation": {
-                "totalAmount": 321.11,
+                "totalAmount": 291.11,
                 "vatIndicator": true,
                 "vatRateApplied": 20.00,
-                "calculatedVatAmount": 28.38,
+                "calculatedVatAmount": 23.38,
                 "disbursementAmount": 125.70,
                 "requestedNetDisbursementAmount": 125.70,
                 "disbursementVatAmount": 25.14,
-                "hourlyTotalAmount": 141.89,
+                "hourlyTotalAmount": 242.59,
                 "netProfitCostsAmount": 116.89,
-                "requestedNetProfitCostsAmount": 116.89,
-                "jrFormFillingAmount": 25.00
+                "requestedNetProfitCostsAmount": 116.89
               }
             }
             """, STRICT));
@@ -327,9 +325,8 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "claimId": "claim_123",
                   "startDate": "2015-02-11",
                   "netProfitCosts": 766.89,
-                  "jrFormFilling": 25.00,
                   "netDisbursementAmount": 410.70,
-                  "disbursementVatAmount": 25.14,
+                  "disbursementVatAmount": 82.14,
                   "vatIndicator": true
                 }
                 """)
@@ -352,17 +349,59 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   }
               ],
               "feeCalculation": {
-                "totalAmount": 1055.14,
+                "totalAmount": 1082.14,
                 "vatIndicator": true,
                 "vatRateApplied": 20.00,
-                "calculatedVatAmount": 105.00,
-                "disbursementAmount": 400.,
+                "calculatedVatAmount": 100.00,
+                "disbursementAmount": 400.00,
                 "requestedNetDisbursementAmount": 410.70,
-                "disbursementVatAmount": 25.14,
-                "hourlyTotalAmount": 525.00,
+                "disbursementVatAmount": 82.14,
+                "hourlyTotalAmount": 900.00,
                 "netProfitCostsAmount": 500.00,
-                "requestedNetProfitCostsAmount": 766.89,
-                "jrFormFillingAmount": 25.00
+                "requestedNetProfitCostsAmount": 766.89
+              }
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate_clr() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "IAXC",
+                  "claimId": "claim_123",
+                  "startDate": "2015-02-11",
+                  "netProfitCosts": 116.89,
+                  "netCostOfCounsel": 356.90,
+                  "netDisbursementAmount": 125.70,
+                  "disbursementVatAmount": 25.14,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "IAXC",
+              "schemeId": "IMM_ASYLM_FS2013",
+              "claimId": "claim_123",
+              "feeCalculation": {
+                "totalAmount": 719.39,
+                "vatIndicator": true,
+                "vatRateApplied": 20.00,
+                "calculatedVatAmount": 94.76,
+                "disbursementAmount": 125.70,
+                "requestedNetDisbursementAmount": 125.70,
+                "disbursementVatAmount": 25.14,
+                "hourlyTotalAmount": 599.49,
+                "netProfitCostsAmount": 116.89,
+                "requestedNetProfitCostsAmount": 116.89,
+                "netCostOfCounselAmount": 356.90
               }
             }
             """, STRICT));
@@ -488,6 +527,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
             "disbursementVatAmount": 24.67,
+            "netProfitCostsAmount": 239.06,
             "fixedFeeAmount": %s
           }
         }
@@ -501,6 +541,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "feeCode": "%s",
                   "claimId": "claim_123",
                   "startDate": "2025-02-01",
+                  "netProfitCosts": 239.06,
                   "netDisbursementAmount": 123.38,
                   "disbursementVatAmount": 24.67,
                   "vatIndicator": true
