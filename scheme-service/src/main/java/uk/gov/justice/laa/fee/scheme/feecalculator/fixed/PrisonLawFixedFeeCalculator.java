@@ -34,9 +34,10 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
 
   private static final Set<String> FEE_CODES_ESCAPE_USING_ESCAPE_THRESHOLD = Set.of("PRIA", "PRIB2", "PRIC2", "PRID2", "PRIE2");
   private static final Set<String> FEE_CODES_ESCAPE_USING_FEE_LIMIT = Set.of("PRIB1", "PRIC1", "PRID1", "PRIE1");
-  private static final String WARNING_MESSAGE_WARCRM5 = "Costs are included. Profit and Waiting Costs exceed the Lower "
+  // @TODO: TBC during error and validation work, and likely moved to common util
+  public static final String WARNING_MESSAGE_WARCRM5 = "Costs are included. Profit and Waiting Costs exceed the Lower "
       + "Standard Fee Limit. An escape fee may be payable.";
-  private static final String WARNING_MESSAGE_WARCRM6 = "The claim exceeds the Escape Case Threshold. An Escape Case Claim "
+  public static final String WARNING_MESSAGE_WARCRM6 = "The claim exceeds the Escape Case Threshold. An Escape Case Claim "
       + "must be submitted for further costs to be paid.";
 
   @Override
@@ -76,14 +77,15 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
         .feeCalculation(feeCalculation).build();
   }
 
+  /**
+   * Calculate if case has escaped.
+   */
   private boolean isEscapedOrPastFeeLimit(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
                                           List<ValidationMessagesInner> validationMessages) {
 
     BigDecimal requestedNetProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal requestedNetWaitingCosts = toBigDecimal(feeCalculationRequest.getNetWaitingCosts());
     BigDecimal totalAmount = requestedNetProfitCosts.add(requestedNetWaitingCosts);
-
-    System.out.println("Total amount: " + totalAmount);
 
     if (FEE_CODES_ESCAPE_USING_ESCAPE_THRESHOLD.contains(feeCalculationRequest.getFeeCode())) {
       return escapeCaseValidation(feeEntity, validationMessages, totalAmount);
@@ -94,11 +96,14 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
     return false;
   }
 
+  /**
+   * Calculate if the  case may have escaped using fee limit,
+   * escape flag will always be false.
+   */
   private void feeLimitValidation(FeeEntity feeEntity, List<ValidationMessagesInner> validationMessages,
                                      BigDecimal totalAmount) {
 
     BigDecimal feeLimit = feeEntity.getTotalLimit();
-    System.out.println("Fee limit: " + feeLimit);
     if (isEscapedCase(totalAmount, feeLimit)) {
       log.info("Case has exceeded fee limit");
       validationMessages.add(ValidationMessagesInner.builder()
@@ -110,11 +115,14 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
     }
   }
 
+  /**
+   * Calculate if the has escaped using EscapeThresholdLimit,
+   * escape flag will be true when it has.
+   */
   private boolean escapeCaseValidation(FeeEntity feeEntity, List<ValidationMessagesInner> validationMessages,
                                        BigDecimal totalAmount) {
 
     BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
-    System.out.println("Escape threshold limit: " + escapeThresholdLimit);
     if (isEscapedCase(totalAmount, escapeThresholdLimit)) {
       log.info("Case has escaped");
       validationMessages.add(ValidationMessagesInner.builder()
