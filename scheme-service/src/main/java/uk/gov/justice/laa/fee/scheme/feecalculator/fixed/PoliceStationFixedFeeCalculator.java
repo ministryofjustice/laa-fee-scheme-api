@@ -1,12 +1,16 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +25,7 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.repository.PoliceStationFeesRepository;
 
 /**
@@ -30,6 +35,8 @@ import uk.gov.justice.laa.fee.scheme.repository.PoliceStationFeesRepository;
 @Component
 @RequiredArgsConstructor
 public class PoliceStationFixedFeeCalculator implements FeeCalculator {
+
+  private static final String ESCAPE_CASE_WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -77,11 +84,26 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee, calculatedVatAmount,
         requestedNetDisbursementAmount, disbursementVatAmount);
 
+    Boolean isEscapeCase = Boolean.FALSE;
+
+    List<ValidationMessagesInner> validationMessages = null;
+
+    if (isEscapedCase(totalAmount, policeStationFeesEntity.getEscapeThreshold())) {
+      validationMessages = new ArrayList<>();
+      isEscapeCase = Boolean.TRUE;
+      log.warn("Fee total exceeds escape threshold limit");
+      validationMessages.add(ValidationMessagesInner.builder()
+            .message(ESCAPE_CASE_WARNING_CODE_DESCRIPTION)
+            .type(WARNING)
+            .build());
+    }
+
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(policeStationFeesEntity.getFeeSchemeCode())
-        .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
+        .escapeCaseFlag(isEscapeCase)
+        .validationMessages(validationMessages)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
