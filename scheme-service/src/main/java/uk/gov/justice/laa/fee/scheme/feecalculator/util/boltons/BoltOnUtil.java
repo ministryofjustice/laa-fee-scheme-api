@@ -5,7 +5,6 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnTyp
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnType.CMRH_TELEPHONE;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnType.HOME_OFFICE_INTERVIEW;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;

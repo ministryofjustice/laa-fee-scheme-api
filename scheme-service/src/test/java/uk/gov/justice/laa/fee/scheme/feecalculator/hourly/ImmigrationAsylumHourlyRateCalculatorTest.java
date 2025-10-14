@@ -334,6 +334,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
         .netProfitCosts(netProfitCosts)
         .netCostOfCounsel(netCostOfCounsel)
         .boltOns(BoltOnType.builder()
+            .boltOnAdjournedHearing(1)
             .boltOnCmrhOral(2)
             .boltOnCmrhTelephone(1)
             .boltOnSubstantiveHearing(true)
@@ -349,6 +350,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
         .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
         .categoryType(IMMIGRATION_ASYLUM)
         .feeType(HOURLY)
+        .adjornHearingBoltOn(new BigDecimal("50"))
         .oralCmrhBoltOn(new BigDecimal("166"))
         .telephoneCmrhBoltOn(new BigDecimal("90"))
         .substantiveHearingBoltOn(new BigDecimal("302"))
@@ -363,12 +365,14 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     assertWarnings(result.getValidationMessages(), expectedWarnings);
 
     BoltOnFeeDetails boltOnFeeDetails = BoltOnFeeDetails.builder()
+        .boltOnAdjournedHearingCount(1)
+        .boltOnAdjournedHearingFee(50.0)
         .boltOnCmrhOralCount(2)
         .boltOnCmrhOralFee(332.0)
         .boltOnCmrhTelephoneCount(1)
         .boltOnCmrhTelephoneFee(90.0)
         .boltOnSubstantiveHearing(302.0)
-        .boltOnTotalFeeAmount(724.0)
+        .boltOnTotalFeeAmount(774.0)
         .build();
 
     assertFeeCalculation(result.getFeeCalculation(), expectedTotal, vatIndicator,
@@ -380,25 +384,25 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     return Stream.of(
         // under total limit
         Arguments.of("IACD", NO_VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
-            2004.83, 0, 1974.37, List.of()),
+            2054.83, 0, 2024.37, List.of()),
         Arguments.of("IACD", VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
-            2369.24, 364.41, 1974.37, List.of()),
+            2429.24, 374.41, 2024.37, List.of()),
 
         // over total "with" prior authority
         Arguments.of("IACD", NO_VAT, AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
-            2401.75, 0, 2371.29, List.of()),
+            2451.75, 0, 2421.29, List.of()),
         Arguments.of("IACD", VAT, AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
-            2845.54, 443.79, 2371.29, List.of()),
+            2905.54, 453.79, 2421.29, List.of()),
 
         // over total limit "without" prior authority
         Arguments.of("IACD", NO_VAT, NO_AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
-            2354.46, 0, 2324, List.of("warning total limit")),
+            2404.46, 0, 2374, List.of("warning total limit")),
         Arguments.of("IACD", VAT, NO_AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
-            2798.25, 443.79, 2324, List.of("warning total limit")),
+            2858.25, 453.79, 2374, List.of("warning total limit")),
 
         // IMCD
         Arguments.of("IMCD", NO_VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
-            2004.83, 0, 1974.37, List.of())
+            2054.83, 0, 2024.37, List.of())
     );
   }
 
