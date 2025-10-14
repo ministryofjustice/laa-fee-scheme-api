@@ -317,8 +317,6 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
 
       FeeCalculationResponse response = immigrationAsylumFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
-      System.out.println(response);
-
       if (hasWarning) {
         ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
             .message(WARNING_MESSAGE_WARIA3)
