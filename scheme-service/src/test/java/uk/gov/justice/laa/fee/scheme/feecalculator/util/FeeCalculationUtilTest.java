@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.FAMILY;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MENTAL_HEALTH;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
@@ -34,6 +35,8 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 class FeeCalculationUtilTest {
+
+  private static final String ESCAPE_CASE_WARNING_CODE_DESCRIPTION = "123warning";
 
   @CsvSource(value = {
       "false, null, null, 94.96", // false VAT indicator
@@ -144,6 +147,63 @@ class FeeCalculationUtilTest {
         .claimId("claim_123")
         .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false)
+        .feeCalculation(expectedCalculation)
+        .build();
+
+    assertThat(response)
+        .usingRecursiveComparison()
+        .isEqualTo(expectedResponse);
+
+  }
+
+  @Test
+  void should_returnValidationWarningMessageInResponse_when_total_fee_exceeds_escape_threshold_limit_for_family() {
+    BigDecimal fixedFee = new BigDecimal("263.00");
+    BigDecimal escapeThresoldLimit = new BigDecimal("550.00");
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("FPB010")
+        .claimId("claim_124")
+        .startDate(LocalDate.of(2025, 1, 1))
+        .vatIndicator(true)
+        .netDisbursementAmount(29.45)
+        .disbursementVatAmount(1005.89)
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("FPB010")
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("FAM_NON_LON_FS2011").build())
+        .fixedFee(fixedFee)
+        .escapeThresholdLimit(escapeThresoldLimit)
+        .categoryType(FAMILY)
+        .build();
+
+    FeeCalculationResponse response = FeeCalculationUtil.calculate(feeCalculationRequest, feeEntity);
+
+    FeeCalculation expectedCalculation = FeeCalculation.builder()
+        .totalAmount(1350.94)
+        .vatIndicator(true)
+        .vatRateApplied(20.0)
+        .disbursementAmount(29.45)
+        .requestedNetDisbursementAmount(29.45)
+        .disbursementVatAmount(1005.89)
+        .fixedFeeAmount(263.00)
+        .calculatedVatAmount(52.60)
+        .build();
+
+
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+
+    validationMessages.add(ValidationMessagesInner.builder()
+        .message(ESCAPE_CASE_WARNING_CODE_DESCRIPTION)
+        .type(WARNING)
+        .build());
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
+        .feeCode("FPB010")
+        .schemeId("FAM_NON_LON_FS2011")
+        .claimId("claim_124")
+        .validationMessages(validationMessages)
+        .escapeCaseFlag(true)
         .feeCalculation(expectedCalculation)
         .build();
 

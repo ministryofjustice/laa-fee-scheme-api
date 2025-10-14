@@ -10,6 +10,7 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,8 @@ import uk.gov.justice.laa.fee.scheme.util.DateUtil;
  */
 @Slf4j
 public final class FeeCalculationUtil {
+
+  private static final String ESCAPE_CASE_WARNING_CODE_DESCRIPTION = "123warning";
 
   private FeeCalculationUtil() {
   }
@@ -105,6 +108,9 @@ public final class FeeCalculationUtil {
    */
   private static FeeCalculationResponse calculateAndBuildResponse(BigDecimal fixedFee,
                                                                   FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+
+    boolean isFamilyClaimCase = Boolean.FALSE;
+
     // Calculate bolt on amounts if bolt ons exist
     BoltOnFeeDetails boltOnFeeDetails = BoltOnUtil.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
 
@@ -120,12 +126,14 @@ public final class FeeCalculationUtil {
       log.info("Calculate bolt on amounts for fee calculation");
       boltOnValue = toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount());
       boltOnVatAmount = getVatAmount(boltOnValue, claimStartDate, vatApplicable);
+    } else if (feeEntity.getCategoryType().equals(CategoryType.FAMILY)) {
+      isFamilyClaimCase = Boolean.TRUE;
     }
 
     BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
-    BigDecimal calculatedVatAmount = boltOnVatAmount.add(fixedFeeVatAmount);
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+
 
     log.info("Calculate total fee amount with any disbursements, bolt ons and VAT where applicable");
     BigDecimal finalTotal = fixedFee
@@ -135,12 +143,31 @@ public final class FeeCalculationUtil {
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
 
+    boolean isClaimEscaped = Boolean.FALSE;
+
+    List<ValidationMessagesInner> validationMessages = null;
+
+    if (isFamilyClaimCase) {
+      isClaimEscaped = FeeCalculationUtil.isEscapedCase(finalTotal, feeEntity.getEscapeThresholdLimit());
+      if (isClaimEscaped) {
+        validationMessages = new ArrayList<>();
+        log.warn("Fee total exceeds escape threshold limit");
+        validationMessages.add(ValidationMessagesInner.builder()
+            .message(ESCAPE_CASE_WARNING_CODE_DESCRIPTION)
+            .type(WARNING)
+            .build());
+      }
+    }
+
+    BigDecimal calculatedVatAmount = boltOnVatAmount.add(fixedFeeVatAmount);
+
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .claimId(feeCalculationRequest.getClaimId())
-        .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
+        .validationMessages(isClaimEscaped ? validationMessages : List.of())
+        .escapeCaseFlag(isClaimEscaped) // temp hard coded, till escape logic implemented
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(vatApplicable)
