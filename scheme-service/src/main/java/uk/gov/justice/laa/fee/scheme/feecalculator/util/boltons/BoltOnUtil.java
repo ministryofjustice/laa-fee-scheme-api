@@ -4,6 +4,8 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnTyp
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnType.CMRH_ORAL;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnType.CMRH_TELEPHONE;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnType.HOME_OFFICE_INTERVIEW;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
@@ -30,7 +32,7 @@ public class BoltOnUtil {
    * Add each boltOnXXXXXXFee for a total, boltOnTotalFeeAmount 
    */
   public static BoltOnFeeDetails calculateBoltOnAmounts(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
-    BoltOnFeeDetails boltOnTotal = BoltOnFeeDetails.builder().boltOnTotalFeeAmount(toDouble(BigDecimal.ZERO)).build();
+    BoltOnFeeDetails boltOnFeeDetails = BoltOnFeeDetails.builder().boltOnTotalFeeAmount(toDouble(BigDecimal.ZERO)).build();
 
     if (feeCalculationRequest.getBoltOns() != null) {
 
@@ -54,20 +56,20 @@ public class BoltOnUtil {
 
             switch (i.type()) {
               case ADJOURNED_HEARING -> {
-                boltOnTotal.setBoltOnAdjournedHearingCount(i.requested());
-                boltOnTotal.setBoltOnAdjournedHearingFee(toDouble(total));
+                boltOnFeeDetails.setBoltOnAdjournedHearingCount(i.requested());
+                boltOnFeeDetails.setBoltOnAdjournedHearingFee(toDouble(total));
               }
               case HOME_OFFICE_INTERVIEW -> {
-                boltOnTotal.setBoltOnHomeOfficeInterviewCount(i.requested());
-                boltOnTotal.setBoltOnHomeOfficeInterviewFee(toDouble(total));
+                boltOnFeeDetails.setBoltOnHomeOfficeInterviewCount(i.requested());
+                boltOnFeeDetails.setBoltOnHomeOfficeInterviewFee(toDouble(total));
               }
               case CMRH_ORAL -> {
-                boltOnTotal.setBoltOnCmrhOralCount(i.requested());
-                boltOnTotal.setBoltOnCmrhOralFee(toDouble(total));
+                boltOnFeeDetails.setBoltOnCmrhOralCount(i.requested());
+                boltOnFeeDetails.setBoltOnCmrhOralFee(toDouble(total));
               }
               case CMRH_TELEPHONE -> {
-                boltOnTotal.setBoltOnCmrhTelephoneCount(i.requested());
-                boltOnTotal.setBoltOnCmrhTelephoneFee(toDouble(total));
+                boltOnFeeDetails.setBoltOnCmrhTelephoneCount(i.requested());
+                boltOnFeeDetails.setBoltOnCmrhTelephoneFee(toDouble(total));
               }
               default -> throw new IllegalStateException("Unexpected bolt on type: " + i.type());
             }
@@ -75,10 +77,16 @@ public class BoltOnUtil {
           })
           .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-      boltOnTotal.setBoltOnTotalFeeAmount(toDouble(totalFee));
+      if (Boolean.TRUE.equals(feeCalculationRequest.getBoltOns().getBoltOnSubstantiveHearing())) {
+        BigDecimal substantiveHearingBoltOn = defaultToZeroIfNull(feeEntity.getSubstantiveHearingBoltOn());
+        boltOnFeeDetails.setBoltOnSubstantiveHearing(toDouble(substantiveHearingBoltOn));
+        totalFee = totalFee.add(substantiveHearingBoltOn);
+      }
+
+      boltOnFeeDetails.setBoltOnTotalFeeAmount(toDouble(totalFee));
     }
 
-    return boltOnTotal;
+    return boltOnFeeDetails;
   }
 
 }

@@ -20,6 +20,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
+import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -159,18 +161,9 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     assertThat(result.getSchemeId()).isEqualTo("IMM_ASYLM_FS2023");
     assertWarnings(result.getValidationMessages(), expectedWarnings);
 
-    FeeCalculation feeCalculation = result.getFeeCalculation();
-    assertThat(feeCalculation).isNotNull();
-    assertThat(feeCalculation.getTotalAmount()).isEqualTo(expectedTotal);
-    assertThat(feeCalculation.getVatIndicator()).isEqualTo(vatIndicator);
-    assertThat(feeCalculation.getVatRateApplied()).isEqualTo(20.0);
-    assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(expectedCalculatedVat);
-    assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(netDisbursement);
-    assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(netDisbursement);
-    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(disbursementVat);
-    assertThat(feeCalculation.getHourlyTotalAmount()).isEqualTo(expectedHourlyTotal);
-    assertThat(feeCalculation.getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
-    assertThat(feeCalculation.getRequestedNetProfitCostsAmount()).isEqualTo(netProfitCosts);
+    assertFeeCalculation(result.getFeeCalculation(), expectedTotal, vatIndicator,
+        expectedCalculatedVat, netDisbursement, disbursementVat,
+        expectedHourlyTotal, netProfitCosts, null, null);
   }
 
   static Stream<Arguments> feeTestDataIA100() {
@@ -223,7 +216,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
   static Stream<Arguments> warningTestDataLegalHelp() {
     return Stream.of(
         // Legal Help
-        Arguments.of( 314.3, null, List.of("warning detention travel and waiting costs")),
+        Arguments.of(314.3, null, List.of("warning detention travel and waiting costs")),
         Arguments.of(null, 55.34, List.of("warning jr form filling")),
         Arguments.of(314.3, 55.34, List.of("warning detention travel and waiting costs", "warning jr form filling"))
     );
@@ -262,36 +255,26 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     assertThat(result.getSchemeId()).isEqualTo("IMM_ASYLM_FS2023");
     assertWarnings(result.getValidationMessages(), expectedWarnings);
 
-    FeeCalculation feeCalculation = result.getFeeCalculation();
-    assertThat(feeCalculation).isNotNull();
-    assertThat(feeCalculation.getTotalAmount()).isEqualTo(expectedTotal);
-    assertThat(feeCalculation.getVatIndicator()).isEqualTo(vatIndicator);
-    assertThat(feeCalculation.getVatRateApplied()).isEqualTo(20.0);
-    assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(expectedCalculatedVat);
-    assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(netDisbursement);
-    assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(netDisbursement);
-    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(disbursementVat);
-    assertThat(feeCalculation.getHourlyTotalAmount()).isEqualTo(expectedHourlyTotal);
-    assertThat(feeCalculation.getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
-    assertThat(feeCalculation.getRequestedNetProfitCostsAmount()).isEqualTo(netProfitCosts);
-    assertThat(feeCalculation.getNetCostOfCounselAmount()).isEqualTo(netCostOfCounsel);
+    assertFeeCalculation(result.getFeeCalculation(), expectedTotal, vatIndicator,
+        expectedCalculatedVat, netDisbursement, disbursementVat,
+        expectedHourlyTotal, netProfitCosts, netCostOfCounsel, null);
   }
 
   static Stream<Arguments> feeTestDataClr() {
     return Stream.of(
-        // under profit costs and disbursements limits
+        // under total limit
         Arguments.of("IAXC", NO_VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
             1280.83, 0, 1250.37, List.of()),
         Arguments.of("IAXC", VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
             1500.44, 219.61, 1250.37, List.of()),
 
-        // over profit costs limit "with" prior authority
+        // over total limit "with" prior authority
         Arguments.of("IAXC", NO_VAT, AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
             1677.75, 0, 1647.29, List.of()),
         Arguments.of("IAXC", VAT, AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
             1976.74, 298.99, 1647.29, List.of()),
 
-        // over profit costs limit "without" prior authority
+        // over total "without" prior authority
         Arguments.of("IAXC", NO_VAT, NO_AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
             1630.46, 0, 1600, List.of("warning total limit")),
         Arguments.of("IAXC", VAT, NO_AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
@@ -333,8 +316,89 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
   static Stream<Arguments> warningTestDataClr() {
     return Stream.of(
         Arguments.of(314.3, null, List.of("warning detention travel and waiting costs")),
-        Arguments.of( null, 55.34, List.of("warning jr form filling")),
+        Arguments.of(null, 55.34, List.of("warning jr form filling")),
         Arguments.of(314.3, 55.34, List.of("warning detention travel and waiting costs", "warning jr form filling"))
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("feeTestDataClrInterim")
+  void calculateFee_whenClrInterim_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority,
+                                                                      double netProfitCosts, double netCostOfCounsel, double netDisbursement,
+                                                                      double disbursementVat, double expectedTotal, double expectedCalculatedVat,
+                                                                      double expectedHourlyTotal, List<String> expectedWarnings) {
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode(feeCode)
+        .startDate(LocalDate.of(2025, 5, 11))
+        .netProfitCosts(netProfitCosts)
+        .netCostOfCounsel(netCostOfCounsel)
+        .boltOns(BoltOnType.builder()
+            .boltOnCmrhOral(2)
+            .boltOnCmrhTelephone(1)
+            .boltOnSubstantiveHearing(true)
+            .build())
+        .netDisbursementAmount(netDisbursement)
+        .disbursementVatAmount(disbursementVat)
+        .vatIndicator(vatIndicator)
+        .immigrationPriorAuthorityNumber(priorAuthority)
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode(feeCode)
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
+        .categoryType(IMMIGRATION_ASYLUM)
+        .feeType(HOURLY)
+        .oralCmrhBoltOn(new BigDecimal("166"))
+        .telephoneCmrhBoltOn(new BigDecimal("90"))
+        .substantiveHearingBoltOn(new BigDecimal("302"))
+        .totalLimit(new BigDecimal("1600.00"))
+        .build();
+
+    FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    assertThat(result).isNotNull();
+    assertThat(result.getFeeCode()).isEqualTo(feeCode);
+    assertThat(result.getSchemeId()).isEqualTo("IMM_ASYLM_FS2023");
+    assertWarnings(result.getValidationMessages(), expectedWarnings);
+
+    BoltOnFeeDetails boltOnFeeDetails = BoltOnFeeDetails.builder()
+        .boltOnCmrhOralCount(2)
+        .boltOnCmrhOralFee(332.0)
+        .boltOnCmrhTelephoneCount(1)
+        .boltOnCmrhTelephoneFee(90.0)
+        .boltOnSubstantiveHearing(302.0)
+        .boltOnTotalFeeAmount(724.0)
+        .build();
+
+    assertFeeCalculation(result.getFeeCalculation(), expectedTotal, vatIndicator,
+        expectedCalculatedVat, netDisbursement, disbursementVat,
+        expectedHourlyTotal, netProfitCosts, netCostOfCounsel, boltOnFeeDetails);
+  }
+
+  static Stream<Arguments> feeTestDataClrInterim() {
+    return Stream.of(
+        // under total limit
+        Arguments.of("IACD", NO_VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
+            2004.83, 0, 1974.37, List.of()),
+        Arguments.of("IACD", VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
+            2369.24, 364.41, 1974.37, List.of()),
+
+        // over total "with" prior authority
+        Arguments.of("IACD", NO_VAT, AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
+            2401.75, 0, 2371.29, List.of()),
+        Arguments.of("IACD", VAT, AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
+            2845.54, 443.79, 2371.29, List.of()),
+
+        // over total limit "without" prior authority
+        Arguments.of("IACD", NO_VAT, NO_AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
+            2354.46, 0, 2324, List.of("warning total limit")),
+        Arguments.of("IACD", VAT, NO_AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
+            2798.25, 443.79, 2324, List.of("warning total limit")),
+
+        // IMCD
+        Arguments.of("IMCD", NO_VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
+            2004.83, 0, 1974.37, List.of())
     );
   }
 
@@ -354,6 +418,25 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
         .profitCostLimit(new BigDecimal("800.00"))
         .disbursementLimit(new BigDecimal("400.00"))
         .build();
+  }
+
+  private void assertFeeCalculation(FeeCalculation feeCalculation, Double total, Boolean vatIndicator,
+                                    Double calculatedVat, Double netDisbursement, Double disbursementVat,
+                                    Double hourlyTotal, Double netProfitCosts, Double netCostOfCounsel,
+                                    BoltOnFeeDetails boltOnFeeDetails) {
+    assertThat(feeCalculation).isNotNull();
+    assertThat(feeCalculation.getTotalAmount()).isEqualTo(total);
+    assertThat(feeCalculation.getVatIndicator()).isEqualTo(vatIndicator);
+    assertThat(feeCalculation.getVatRateApplied()).isEqualTo(20.0);
+    assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(calculatedVat);
+    assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(netDisbursement);
+    assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(netDisbursement);
+    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(disbursementVat);
+    assertThat(feeCalculation.getHourlyTotalAmount()).isEqualTo(hourlyTotal);
+    assertThat(feeCalculation.getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
+    assertThat(feeCalculation.getRequestedNetProfitCostsAmount()).isEqualTo(netProfitCosts);
+    assertThat(feeCalculation.getNetCostOfCounselAmount()).isEqualTo(netCostOfCounsel);
+    assertThat(feeCalculation.getBoltOnFeeDetails()).isEqualTo(boltOnFeeDetails);
   }
 
   private void assertWarnings(List<ValidationMessagesInner> resultMessages, List<String> expectedWarnings) {
