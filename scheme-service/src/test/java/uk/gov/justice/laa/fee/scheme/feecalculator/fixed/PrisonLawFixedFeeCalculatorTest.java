@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,79 +39,6 @@ class PrisonLawFixedFeeCalculatorTest {
   @InjectMocks
   private PrisonLawFixedFeeCalculator prisonLawFeeCalculator;
 
-  private static Arguments arguments(String testDescription,
-                                     String feeCode,
-                                     String uniqueFileNumber,
-                                     boolean vatIndicator,
-                                     double fixedFeeAmount,
-                                     double disbursementAmount,
-                                     double disbursementVatAmount,
-                                     double expectedTotal,
-                                     double expectedFixedFee,
-                                     double expectedCalculatedVat) {
-    return Arguments.of(testDescription, feeCode, uniqueFileNumber, vatIndicator,
-        fixedFeeAmount, disbursementAmount, disbursementVatAmount, expectedTotal, expectedFixedFee,
-        expectedCalculatedVat);
-  }
-
-  public static Stream<Arguments> testDataForPrisonLawClaims() {
-    return Stream.of(
-        arguments("PRIA Prison Law Fee Code, VAT applied", "PRIA",
-            "121221/799", true, 200.75, 100.00,
-            20.00, 360.9, 200.75, 40.15),
-
-        arguments("PRIB1 Prison Law Fee Code, VAT not applied", "PRIB1",
-            "121216/899", true, 203.93, 100.00,
-            20.00, 364.72, 203.93, 40.79)
-    );
-  }
-
-  private static Arguments argumentsEscape(String testDescription,
-                                           String feeCode,
-                                           String uniqueFileNumber,
-                                           boolean vatIndicator,
-                                           double fixedFeeAmount,
-                                           double disbursementAmount,
-                                           double disbursementVatAmount,
-                                           double expectedTotal,
-                                           double expectedFixedFee,
-                                           double expectedCalculatedVat,
-                                           Double requestedNetProfitCosts,
-                                           Double requestedNetWaitingCosts,
-                                           Double escapeThresholdLimit,
-                                           Double feeLimit,
-                                           String warningMessage,
-                                           boolean hasEscaped) {
-    return Arguments.of(testDescription, feeCode, uniqueFileNumber, vatIndicator,
-        fixedFeeAmount, disbursementAmount, disbursementVatAmount, expectedTotal, expectedFixedFee,
-        expectedCalculatedVat, requestedNetProfitCosts, requestedNetWaitingCosts, escapeThresholdLimit, feeLimit,
-        warningMessage, hasEscaped);
-  }
-
-  public static Stream<Arguments> testDataForPrisonLawEscapeLogic() {
-    return Stream.of(
-        argumentsEscape("PRIC2,escape using escape case threshold, above limit", "PRIC2",
-            "121221/799", true, 200.75, 100.00, 20.00,
-            360.9, 200.75, 40.15, 1000.0,
-            500.0, 1454.44, null, "WARCRM6", true),
-
-        argumentsEscape("PRID1, escape using fee limit, above limit", "PRID1",
-            "121216/899", true, 203.93, 100.00, 20.00,
-            364.72, 203.93, 40.79, 250.0,
-            120.0, null, 357.06, "WARCRM5", false),
-
-        argumentsEscape("PRIC2,escape using escape case threshold, below limit", "PRIC2",
-            "121221/799", true, 200.75, 100.00, 20.00,
-            360.9, 200.75, 40.15, 1000.0, 200.0,
-            1454.44, null, null, false),
-
-        argumentsEscape("PRID1, escape using fee limit, below limit", "PRID1",
-            "121216/899", true, 203.93, 100.00, 20.00,
-            364.72, 203.93, 40.79, 250.0, 60.0,
-            null, 357.06, null, false)
-    );
-  }
-
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
@@ -120,119 +48,6 @@ class PrisonLawFixedFeeCalculatorTest {
   void testGetSupportedCategories() {
     assertTrue(prisonLawFeeCalculator.getSupportedCategories().contains(CategoryType.PRISON_LAW));
     assertEquals(1, prisonLawFeeCalculator.getSupportedCategories().size());
-  }
-
-  // Positive scenario
-  @ParameterizedTest
-  @MethodSource("testDataForPrisonLawClaims")
-  void test_whenClaimsSubmittedForPrisonLaw_shouldReturnFee(
-      String description,
-      String feeCode,
-      String uniqueFileNumber,
-      boolean vatIndicator,
-      double fixedFeeAmount,
-      double disbursementAmount,
-      double disbursementVatAmount,
-      double expectedTotal,
-      double expectedFixedFee,
-      double expectedCalculatedVat
-  ) {
-
-    FeeCalculationRequest feeCalculationRequest = buildFeeCalculationRequest(feeCode, uniqueFileNumber, vatIndicator,
-        disbursementAmount, disbursementVatAmount, null, null
-    );
-
-    FeeEntity feeEntity = buildFeeEntity(feeCode, fixedFeeAmount, null, null);
-
-    FeeCalculationResponse response = prisonLawFeeCalculator.calculate(feeCalculationRequest, feeEntity);
-
-    FeeCalculation expectedCalculation = FeeCalculation.builder()
-        .totalAmount(expectedTotal)
-        .vatIndicator(vatIndicator)
-        .vatRateApplied(20.0)
-        .fixedFeeAmount(expectedFixedFee)
-        .calculatedVatAmount(expectedCalculatedVat)
-        .disbursementAmount(100.0)
-        .disbursementVatAmount(20.0)
-        .requestedNetDisbursementAmount(100.0)
-        .build();
-
-    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
-        .feeCode(feeCode)
-        .schemeId("PRISON_FS2016")
-        .validationMessages(new ArrayList<>())
-        .escapeCaseFlag(false)
-        .feeCalculation(expectedCalculation)
-        .build();
-
-    assertThat(response)
-        .usingRecursiveComparison()
-        .isEqualTo(expectedResponse);
-  }
-
-  @ParameterizedTest
-  @MethodSource("testDataForPrisonLawEscapeLogic")
-  void test_whenClaimsSubmittedForPrisonLaw_escapeLogic(
-      String description,
-      String feeCode,
-      String uniqueFileNumber,
-      boolean vatIndicator,
-      double fixedFeeAmount,
-      double disbursementAmount,
-      double disbursementVatAmount,
-      double expectedTotal,
-      double expectedFixedFee,
-      double expectedCalculatedVat,
-      Double requestedNetProfitCosts,
-      Double requestedNetWaitingCosts,
-      Double escapeThresholdLimit,
-      Double feeLimit,
-      String warningMessage,
-      boolean hasEscaped
-  ) {
-
-    FeeCalculationRequest feeCalculationRequest = buildFeeCalculationRequest(feeCode, uniqueFileNumber, vatIndicator,
-        disbursementAmount, disbursementVatAmount, requestedNetProfitCosts, requestedNetWaitingCosts);
-
-    FeeEntity feeEntity = buildFeeEntity(feeCode, fixedFeeAmount, escapeThresholdLimit, feeLimit);
-
-    FeeCalculationResponse response = prisonLawFeeCalculator.calculate(feeCalculationRequest, feeEntity);
-
-    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    if (nonNull(warningMessage)) {
-      String expectedMessage = "WARCRM5".equals(warningMessage)
-          ? PrisonLawFixedFeeCalculator.WARNING_MESSAGE_WARCRM5
-          : PrisonLawFixedFeeCalculator.WARNING_MESSAGE_WARCRM6;
-
-      ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
-          .message(expectedMessage)
-          .type(WARNING)
-          .build();
-      validationMessages.add(validationMessage);
-    }
-
-    FeeCalculation expectedCalculation = FeeCalculation.builder()
-        .totalAmount(expectedTotal)
-        .vatIndicator(vatIndicator)
-        .vatRateApplied(20.0)
-        .fixedFeeAmount(expectedFixedFee)
-        .calculatedVatAmount(expectedCalculatedVat)
-        .disbursementAmount(100.0)
-        .disbursementVatAmount(20.0)
-        .requestedNetDisbursementAmount(100.0)
-        .build();
-
-    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
-        .feeCode(feeCode)
-        .schemeId("PRISON_FS2016")
-        .validationMessages(validationMessages)
-        .escapeCaseFlag(hasEscaped)
-        .feeCalculation(expectedCalculation)
-        .build();
-
-    assertThat(response)
-        .usingRecursiveComparison()
-        .isEqualTo(expectedResponse);
   }
 
   private FeeEntity buildFeeEntity(String feeCode, double fixedFeeAmount, Double escapeThreshold, Double feeLimit) {
@@ -266,5 +81,200 @@ class PrisonLawFixedFeeCalculatorTest {
         .netProfitCosts(profitCosts)
         .netWaitingCosts(waitingCosts)
         .build();
+  }
+
+  @Nested
+  class PrisonLawFeeCalculationTest {
+
+    public static Stream<Arguments> testDataForPrisonLawClaims() {
+      return Stream.of(
+          arguments("PRIA Prison Law Fee Code, VAT applied", "PRIA",
+              "121221/799", true, 200.75, 100.00,
+              20.00, 360.9, 200.75, 40.15),
+
+          arguments("PRIB1 Prison Law Fee Code, VAT not applied", "PRIB1",
+              "121216/899", true, 203.93, 100.00,
+              20.00, 364.72, 203.93, 40.79)
+      );
+    }
+
+    private static Arguments arguments(String testDescription,
+                                       String feeCode,
+                                       String uniqueFileNumber,
+                                       boolean vatIndicator,
+                                       double fixedFeeAmount,
+                                       double disbursementAmount,
+                                       double disbursementVatAmount,
+                                       double expectedTotal,
+                                       double expectedFixedFee,
+                                       double expectedCalculatedVat) {
+      return Arguments.of(testDescription, feeCode, uniqueFileNumber, vatIndicator,
+          fixedFeeAmount, disbursementAmount, disbursementVatAmount, expectedTotal, expectedFixedFee,
+          expectedCalculatedVat);
+    }
+
+    // Positive scenario
+    @ParameterizedTest
+    @MethodSource("testDataForPrisonLawClaims")
+    void test_whenClaimsSubmittedForPrisonLaw_shouldReturnFee(
+        String description,
+        String feeCode,
+        String uniqueFileNumber,
+        boolean vatIndicator,
+        double fixedFeeAmount,
+        double disbursementAmount,
+        double disbursementVatAmount,
+        double expectedTotal,
+        double expectedFixedFee,
+        double expectedCalculatedVat
+    ) {
+
+      FeeCalculationRequest feeCalculationRequest = buildFeeCalculationRequest(feeCode, uniqueFileNumber, vatIndicator,
+          disbursementAmount, disbursementVatAmount, null, null
+      );
+
+      FeeEntity feeEntity = buildFeeEntity(feeCode, fixedFeeAmount, null, null);
+
+      FeeCalculationResponse response = prisonLawFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+
+      FeeCalculation expectedCalculation = FeeCalculation.builder()
+          .totalAmount(expectedTotal)
+          .vatIndicator(vatIndicator)
+          .vatRateApplied(20.0)
+          .fixedFeeAmount(expectedFixedFee)
+          .calculatedVatAmount(expectedCalculatedVat)
+          .disbursementAmount(100.0)
+          .disbursementVatAmount(20.0)
+          .requestedNetDisbursementAmount(100.0)
+          .build();
+
+      FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
+          .feeCode(feeCode)
+          .schemeId("PRISON_FS2016")
+          .validationMessages(new ArrayList<>())
+          .escapeCaseFlag(false)
+          .feeCalculation(expectedCalculation)
+          .build();
+
+      assertThat(response)
+          .usingRecursiveComparison()
+          .isEqualTo(expectedResponse);
+    }
+
+  }
+
+  @Nested
+  class PrisonLawEscapeCaseTest {
+
+    public static Stream<Arguments> testDataForPrisonLawEscapeLogic() {
+      return Stream.of(
+          argumentsEscape("PRIC2,escape using escape case threshold, above limit", "PRIC2",
+              "121221/799", true, 200.75, 100.00, 20.00,
+              360.9, 200.75, 40.15, 1000.0,
+              500.0, 1454.44, null, "WARCRM6", true),
+
+          argumentsEscape("PRID1, escape using fee limit, above limit", "PRID1",
+              "121216/899", true, 203.93, 100.00, 20.00,
+              364.72, 203.93, 40.79, 250.0,
+              120.0, null, 357.06, "WARCRM5", false),
+
+          argumentsEscape("PRIC2,escape using escape case threshold, below limit", "PRIC2",
+              "121221/799", true, 200.75, 100.00, 20.00,
+              360.9, 200.75, 40.15, 1000.0, 200.0,
+              1454.44, null, null, false),
+
+          argumentsEscape("PRID1, escape using fee limit, below limit", "PRID1",
+              "121216/899", true, 203.93, 100.00, 20.00,
+              364.72, 203.93, 40.79, 250.0, 60.0,
+              null, 357.06, null, false)
+      );
+    }
+
+    private static Arguments argumentsEscape(String testDescription,
+                                             String feeCode,
+                                             String uniqueFileNumber,
+                                             boolean vatIndicator,
+                                             double fixedFeeAmount,
+                                             double disbursementAmount,
+                                             double disbursementVatAmount,
+                                             double expectedTotal,
+                                             double expectedFixedFee,
+                                             double expectedCalculatedVat,
+                                             Double requestedNetProfitCosts,
+                                             Double requestedNetWaitingCosts,
+                                             Double escapeThresholdLimit,
+                                             Double feeLimit,
+                                             String warningMessage,
+                                             boolean hasEscaped) {
+      return Arguments.of(testDescription, feeCode, uniqueFileNumber, vatIndicator,
+          fixedFeeAmount, disbursementAmount, disbursementVatAmount, expectedTotal, expectedFixedFee,
+          expectedCalculatedVat, requestedNetProfitCosts, requestedNetWaitingCosts, escapeThresholdLimit, feeLimit,
+          warningMessage, hasEscaped);
+    }
+
+    @ParameterizedTest
+    @MethodSource("testDataForPrisonLawEscapeLogic")
+    void test_whenClaimsSubmittedForPrisonLaw_escapeLogic(
+        String description,
+        String feeCode,
+        String uniqueFileNumber,
+        boolean vatIndicator,
+        double fixedFeeAmount,
+        double disbursementAmount,
+        double disbursementVatAmount,
+        double expectedTotal,
+        double expectedFixedFee,
+        double expectedCalculatedVat,
+        Double requestedNetProfitCosts,
+        Double requestedNetWaitingCosts,
+        Double escapeThresholdLimit,
+        Double feeLimit,
+        String warningMessage,
+        boolean hasEscaped
+    ) {
+
+      FeeCalculationRequest feeCalculationRequest = buildFeeCalculationRequest(feeCode, uniqueFileNumber, vatIndicator,
+          disbursementAmount, disbursementVatAmount, requestedNetProfitCosts, requestedNetWaitingCosts);
+
+      FeeEntity feeEntity = buildFeeEntity(feeCode, fixedFeeAmount, escapeThresholdLimit, feeLimit);
+
+      FeeCalculationResponse response = prisonLawFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+
+      List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+      if (nonNull(warningMessage)) {
+        String expectedMessage = "WARCRM5".equals(warningMessage)
+            ? PrisonLawFixedFeeCalculator.WARNING_MESSAGE_WARCRM5
+            : PrisonLawFixedFeeCalculator.WARNING_MESSAGE_WARCRM6;
+
+        ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
+            .message(expectedMessage)
+            .type(WARNING)
+            .build();
+        validationMessages.add(validationMessage);
+      }
+
+      FeeCalculation expectedCalculation = FeeCalculation.builder()
+          .totalAmount(expectedTotal)
+          .vatIndicator(vatIndicator)
+          .vatRateApplied(20.0)
+          .fixedFeeAmount(expectedFixedFee)
+          .calculatedVatAmount(expectedCalculatedVat)
+          .disbursementAmount(100.0)
+          .disbursementVatAmount(20.0)
+          .requestedNetDisbursementAmount(100.0)
+          .build();
+
+      FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
+          .feeCode(feeCode)
+          .schemeId("PRISON_FS2016")
+          .validationMessages(validationMessages)
+          .escapeCaseFlag(hasEscaped)
+          .feeCalculation(expectedCalculation)
+          .build();
+
+      assertThat(response)
+          .usingRecursiveComparison()
+          .isEqualTo(expectedResponse);
+    }
   }
 }
