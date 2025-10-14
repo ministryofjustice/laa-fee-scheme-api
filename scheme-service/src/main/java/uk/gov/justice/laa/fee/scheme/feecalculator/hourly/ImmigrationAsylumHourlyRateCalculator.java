@@ -9,7 +9,6 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -91,11 +90,11 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
   private static FeeCalculationResponse calculateFeeLegalHelp(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     log.info("Calculate Immigration and Asylum (Legal Help) hourly rate fee");
 
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-
     String immigrationPriorAuthorityNumber = feeCalculationRequest.getImmigrationPriorAuthorityNumber();
-    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
     String feeCode = feeEntity.getFeeCode();
     if (IAXL.equals(feeCode) || IMXL.equals(feeCode)) {
@@ -122,18 +121,15 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
 
     checkFieldsAreEmpty(feeCalculationRequest, validationMessages);
 
-    // Apply VAT where applicable
-    LocalDate startDate = feeCalculationRequest.getStartDate();
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-
     // VAT is calculated on net profit costs only
-    BigDecimal netProfitCostsVatAmount = VatUtil.getVatAmount(netProfitCosts, startDate, vatApplicable);
+    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(netProfitCosts,
+        feeCalculationRequest.getStartDate(), feeCalculationRequest.getVatIndicator());
 
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    BigDecimal totalAmount = feeTotal.add(netProfitCostsVatAmount).add(disbursementVatAmount);
+    BigDecimal totalAmount = feeTotal.add(calculatedVatAmount).add(disbursementVatAmount);
 
-    FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, netProfitCostsVatAmount,
+    FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, calculatedVatAmount,
         netDisbursementAmount, disbursementVatAmount, feeTotal, netProfitCosts, false, null);
 
     return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, validationMessages, feeCalculation);
@@ -151,17 +147,8 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal netCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());
 
-    // Apply VAT where applicable
-    LocalDate startDate = feeCalculationRequest.getStartDate();
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-
-    // VAT is calculated on net profit costs and net cost of counsel only
-    BigDecimal feeWithoutDisbursements = netProfitCosts.add(netCostOfCounsel);
-    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(feeWithoutDisbursements, startDate, vatApplicable);
-    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
-
     // total = net profit costs + net cost of counsel + net disbursements
-    BigDecimal feeTotal = feeWithoutDisbursements.add(netDisbursementAmount);
+    BigDecimal feeTotal = netProfitCosts.add(netCostOfCounsel).add(netDisbursementAmount);
 
     String feeCode = feeEntity.getFeeCode();
     if (IAXC.equals(feeCode) || IMXC.equals(feeCode)) {
@@ -173,6 +160,13 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
 
     checkFieldsAreEmpty(feeCalculationRequest, validationMessages);
 
+    // VAT is calculated on net profit costs and net cost of counsel only
+    BigDecimal feeWithoutDisbursements = netProfitCosts.add(netCostOfCounsel);
+    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(feeWithoutDisbursements,
+        feeCalculationRequest.getStartDate(), feeCalculationRequest.getVatIndicator());
+
+    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+
     BigDecimal totalAmount = feeTotal.add(calculatedVatAmount).add(disbursementVatAmount);
 
     FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, calculatedVatAmount,
@@ -182,7 +176,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
   }
 
   /**
-   * Calculate fee for CLR Interim (IACD, IAMD, fee codes).
+   * Calculate fee for CLR Interim (IACD, IAMD fee codes).
    */
   private static FeeCalculationResponse calculateFeeClrInterim(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     log.info("Calculate Immigration and Asylum (CLR Interim) hourly rate fee");
@@ -210,9 +204,8 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
 
     // VAT is calculated on net profit costs, net cost of counsel & bolt ons only
     BigDecimal feeWithoutDisbursements = netProfitCosts.add(netCostOfCounsel).add(boltsOnTotal);
-    LocalDate startDate = feeCalculationRequest.getStartDate();
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(feeWithoutDisbursements, startDate, vatApplicable);
+    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(feeWithoutDisbursements,
+        feeCalculationRequest.getStartDate(), feeCalculationRequest.getVatIndicator());
 
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 

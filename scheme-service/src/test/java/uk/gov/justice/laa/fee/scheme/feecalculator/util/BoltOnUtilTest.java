@@ -175,7 +175,7 @@ class BoltOnUtilTest {
         .boltOnCmrhOralFee(boltOnCmrhOralFee)
         .boltOnHomeOfficeInterviewCount(boltOnHomeOfficeInterviewCount)
         .boltOnHomeOfficeInterviewFee(boltOnHomeOfficeInterviewFee)
-        .boltOnSubstantiveHearing(boltOnSubstantiveHearingFee)
+        .boltOnSubstantiveHearingFee(boltOnSubstantiveHearingFee)
         .build();
 
 

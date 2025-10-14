@@ -305,7 +305,7 @@ components:
         boltOnHomeOfficeInterviewFee:
           type: number
           format: double
-        boltOnSubstantiveHearing:
+        boltOnSubstantiveHearingFee:
           type: number
           format: double
 

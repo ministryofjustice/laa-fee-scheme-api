@@ -1,7 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PUBLIC_LAW;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
@@ -291,10 +293,10 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
   }
 
   @ParameterizedTest
-  @MethodSource("warningTestDataClr")
-  void calculateFee_whenClrFeeCodeAndGivenUnexpectedField_shouldReturnWarning(Double detentionTravelAndWaitingCosts, Double jrFormFilling, List<String> expectedWarnings) {
+  @MethodSource( value = {"warningTestDataClr", "warningTestDataClrInterim"})
+  void calculateFee_whenClrAndGivenUnexpectedField_shouldReturnWarning(String feeCode, Double detentionTravelAndWaitingCosts, Double jrFormFilling, List<String> expectedWarnings) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode("IAXC")
+        .feeCode(feeCode)
         .startDate(LocalDate.of(2025, 5, 11))
         .netProfitCosts(486.78)
         .netCostOfCounsel(611.25)
@@ -315,9 +317,17 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
   static Stream<Arguments> warningTestDataClr() {
     return Stream.of(
-        Arguments.of(314.3, null, List.of("warning detention travel and waiting costs")),
-        Arguments.of(null, 55.34, List.of("warning jr form filling")),
-        Arguments.of(314.3, 55.34, List.of("warning detention travel and waiting costs", "warning jr form filling"))
+        Arguments.of("IAXC", 314.3, null, List.of("warning detention travel and waiting costs")),
+        Arguments.of("IAXC", null, 55.34, List.of("warning jr form filling")),
+        Arguments.of("IAXC", 314.3, 55.34, List.of("warning detention travel and waiting costs", "warning jr form filling"))
+    );
+  }
+
+  static Stream<Arguments> warningTestDataClrInterim() {
+    return Stream.of(
+        Arguments.of("IACD", 314.3, null, List.of("warning detention travel and waiting costs")),
+        Arguments.of("IACD", null, 55.34, List.of("warning jr form filling")),
+        Arguments.of("IACD", 314.3, 55.34, List.of("warning detention travel and waiting costs", "warning jr form filling"))
     );
   }
 
@@ -371,7 +381,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
         .boltOnCmrhOralFee(332.0)
         .boltOnCmrhTelephoneCount(1)
         .boltOnCmrhTelephoneFee(90.0)
-        .boltOnSubstantiveHearing(302.0)
+        .boltOnSubstantiveHearingFee(302.0)
         .boltOnTotalFeeAmount(774.0)
         .build();
 
@@ -411,6 +421,17 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     Set<CategoryType> result = immigrationAsylumHourlyRateCalculator.getSupportedCategories();
 
     assertThat(result).isEmpty();
+  }
+
+  @Test
+  void shouldThrowException_whenCategoryTypeIsUnsupported() {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder().feeCode("AAAA").build();
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("AAAA")
+        .build();
+
+    assertThatThrownBy(() -> immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity))
+        .isInstanceOf(IllegalArgumentException.class).hasMessage("Fee code not supported: AAAA");
   }
 
   private FeeEntity buildFeeEntity() {

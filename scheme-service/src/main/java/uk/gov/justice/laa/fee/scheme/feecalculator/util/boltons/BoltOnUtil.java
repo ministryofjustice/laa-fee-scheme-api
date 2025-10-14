@@ -78,7 +78,7 @@ public class BoltOnUtil {
 
       if (Boolean.TRUE.equals(feeCalculationRequest.getBoltOns().getBoltOnSubstantiveHearing())) {
         BigDecimal substantiveHearingBoltOn = defaultToZeroIfNull(feeEntity.getSubstantiveHearingBoltOn());
-        boltOnFeeDetails.setBoltOnSubstantiveHearing(toDouble(substantiveHearingBoltOn));
+        boltOnFeeDetails.setBoltOnSubstantiveHearingFee(toDouble(substantiveHearingBoltOn));
         totalFee = totalFee.add(substantiveHearingBoltOn);
       }
 
