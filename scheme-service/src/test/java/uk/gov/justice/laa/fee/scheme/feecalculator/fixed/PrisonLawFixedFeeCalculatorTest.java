@@ -38,6 +38,79 @@ class PrisonLawFixedFeeCalculatorTest {
   @InjectMocks
   private PrisonLawFixedFeeCalculator prisonLawFeeCalculator;
 
+  private static Arguments arguments(String testDescription,
+                                     String feeCode,
+                                     String uniqueFileNumber,
+                                     boolean vatIndicator,
+                                     double fixedFeeAmount,
+                                     double disbursementAmount,
+                                     double disbursementVatAmount,
+                                     double expectedTotal,
+                                     double expectedFixedFee,
+                                     double expectedCalculatedVat) {
+    return Arguments.of(testDescription, feeCode, uniqueFileNumber, vatIndicator,
+        fixedFeeAmount, disbursementAmount, disbursementVatAmount, expectedTotal, expectedFixedFee,
+        expectedCalculatedVat);
+  }
+
+  public static Stream<Arguments> testDataForPrisonLawClaims() {
+    return Stream.of(
+        arguments("PRIA Prison Law Fee Code, VAT applied", "PRIA",
+            "121221/799", true, 200.75, 100.00,
+            20.00, 360.9, 200.75, 40.15),
+
+        arguments("PRIB1 Prison Law Fee Code, VAT not applied", "PRIB1",
+            "121216/899", true, 203.93, 100.00,
+            20.00, 364.72, 203.93, 40.79)
+    );
+  }
+
+  private static Arguments argumentsEscape(String testDescription,
+                                           String feeCode,
+                                           String uniqueFileNumber,
+                                           boolean vatIndicator,
+                                           double fixedFeeAmount,
+                                           double disbursementAmount,
+                                           double disbursementVatAmount,
+                                           double expectedTotal,
+                                           double expectedFixedFee,
+                                           double expectedCalculatedVat,
+                                           Double requestedNetProfitCosts,
+                                           Double requestedNetWaitingCosts,
+                                           Double escapeThresholdLimit,
+                                           Double feeLimit,
+                                           String warningMessage,
+                                           boolean hasEscaped) {
+    return Arguments.of(testDescription, feeCode, uniqueFileNumber, vatIndicator,
+        fixedFeeAmount, disbursementAmount, disbursementVatAmount, expectedTotal, expectedFixedFee,
+        expectedCalculatedVat, requestedNetProfitCosts, requestedNetWaitingCosts, escapeThresholdLimit, feeLimit,
+        warningMessage, hasEscaped);
+  }
+
+  public static Stream<Arguments> testDataForPrisonLawEscapeLogic() {
+    return Stream.of(
+        argumentsEscape("PRIC2,escape using escape case threshold, above limit", "PRIC2",
+            "121221/799", true, 200.75, 100.00, 20.00,
+            360.9, 200.75, 40.15, 1000.0,
+            500.0, 1454.44, null, "WARCRM6", true),
+
+        argumentsEscape("PRID1, escape using fee limit, above limit", "PRID1",
+            "121216/899", true, 203.93, 100.00, 20.00,
+            364.72, 203.93, 40.79, 250.0,
+            120.0, null, 357.06, "WARCRM5", false),
+
+        argumentsEscape("PRIC2,escape using escape case threshold, below limit", "PRIC2",
+            "121221/799", true, 200.75, 100.00, 20.00,
+            360.9, 200.75, 40.15, 1000.0, 200.0,
+            1454.44, null, null, false),
+
+        argumentsEscape("PRID1, escape using fee limit, below limit", "PRID1",
+            "121216/899", true, 203.93, 100.00, 20.00,
+            364.72, 203.93, 40.79, 250.0, 60.0,
+            null, 357.06, null, false)
+    );
+  }
+
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
@@ -95,33 +168,6 @@ class PrisonLawFixedFeeCalculatorTest {
     assertThat(response)
         .usingRecursiveComparison()
         .isEqualTo(expectedResponse);
-  }
-
-  private static Arguments arguments(String testDescription,
-                                     String feeCode,
-                                     String uniqueFileNumber,
-                                     boolean vatIndicator,
-                                     double fixedFeeAmount,
-                                     double disbursementAmount,
-                                     double disbursementVatAmount,
-                                     double expectedTotal,
-                                     double expectedFixedFee,
-                                     double expectedCalculatedVat) {
-    return Arguments.of(testDescription, feeCode, uniqueFileNumber, vatIndicator,
-        fixedFeeAmount, disbursementAmount, disbursementVatAmount, expectedTotal, expectedFixedFee,
-        expectedCalculatedVat);
-  }
-
-  public static Stream<Arguments> testDataForPrisonLawClaims() {
-    return Stream.of(
-        arguments("PRIA Prison Law Fee Code, VAT applied", "PRIA",
-            "121221/799", true, 200.75, 100.00,
-            20.00, 360.9, 200.75, 40.15),
-
-        arguments("PRIB1 Prison Law Fee Code, VAT not applied", "PRIB1",
-            "121216/899", true, 203.93, 100.00,
-            20.00, 364.72, 203.93,40.79)
-    );
   }
 
   @ParameterizedTest
@@ -187,52 +233,6 @@ class PrisonLawFixedFeeCalculatorTest {
     assertThat(response)
         .usingRecursiveComparison()
         .isEqualTo(expectedResponse);
-  }
-
-  private static Arguments argumentsEscape(String testDescription,
-                                     String feeCode,
-                                     String uniqueFileNumber,
-                                     boolean vatIndicator,
-                                     double fixedFeeAmount,
-                                     double disbursementAmount,
-                                     double disbursementVatAmount,
-                                     double expectedTotal,
-                                     double expectedFixedFee,
-                                     double expectedCalculatedVat,
-                                     Double requestedNetProfitCosts,
-                                     Double requestedNetWaitingCosts,
-                                     Double escapeThresholdLimit,
-                                     Double feeLimit,
-                                     String warningMessage,
-                                     boolean hasEscaped) {
-    return Arguments.of(testDescription, feeCode, uniqueFileNumber, vatIndicator,
-        fixedFeeAmount, disbursementAmount, disbursementVatAmount, expectedTotal, expectedFixedFee,
-        expectedCalculatedVat, requestedNetProfitCosts, requestedNetWaitingCosts, escapeThresholdLimit, feeLimit,
-        warningMessage, hasEscaped);
-  }
-
-  public static Stream<Arguments> testDataForPrisonLawEscapeLogic() {
-    return Stream.of(
-        argumentsEscape("PRIC2,escape using escape case threshold, above limit", "PRIC2",
-            "121221/799", true, 200.75, 100.00, 20.00,
-            360.9, 200.75, 40.15, 1000.0,
-            500.0, 1454.44, null, "WARCRM6", true),
-
-        argumentsEscape("PRID1, escape using fee limit, above limit", "PRID1",
-            "121216/899", true, 203.93, 100.00, 20.00,
-            364.72, 203.93,40.79, 250.0,
-            120.0, null, 357.06, "WARCRM5", false),
-
-        argumentsEscape("PRIC2,escape using escape case threshold, below limit", "PRIC2",
-            "121221/799", true, 200.75, 100.00, 20.00,
-            360.9, 200.75, 40.15, 1000.0, 200.0,
-            1454.44, null, null, false),
-
-        argumentsEscape("PRID1, escape using fee limit, below limit", "PRID1",
-            "121216/899", true, 203.93, 100.00, 20.00,
-            364.72, 203.93,40.79, 250.0, 60.0,
-            null, 357.06, null, false)
-    );
   }
 
   private FeeEntity buildFeeEntity(String feeCode, double fixedFeeAmount, Double escapeThreshold, Double feeLimit) {

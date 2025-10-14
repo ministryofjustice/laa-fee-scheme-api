@@ -2,12 +2,16 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static java.util.Objects.nonNull;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,15 +25,18 @@ import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 /**
- * Calculate the
+ * Calculate the Mental Health fee for a given fee entity and fee calculation request.
  */
 @Slf4j
 @Component
-public class MentalhealthFixedFeeCalculator implements FeeCalculator {
+public class MentalHealthFixedFeeCalculator implements FeeCalculator {
 
-  private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
+  // @TODO: TBC during error and validation work, and likely moved to common util
+  public static final String WARNING_MESSAGE_WARMH1 = "The claim exceeds the Escape Case Threshold. An Escape Case Claim "
+      + "must be submitted for further costs to be paid.";
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -67,9 +74,10 @@ public class MentalhealthFixedFeeCalculator implements FeeCalculator {
         requestedDisbursementVatAmount
     );
 
-    boolean mentalHealthEscaped = false;
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+    boolean escapeCaseFlag = false;
     if (nonNull(feeEntity.getEscapeThresholdLimit())) {
-      mentalHealthEscapeCalculation(feeCalculationRequest, feeEntity, boltOnFeeDetails, fixedFeeAmount, totalAmount);
+      escapeCaseFlag = isEscaped(feeCalculationRequest, feeEntity, boltOnFeeDetails, validationMessages);
     }
 
     log.info("Build fee calculation response");
@@ -77,7 +85,8 @@ public class MentalhealthFixedFeeCalculator implements FeeCalculator {
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .claimId(feeCalculationRequest.getClaimId())
-        .escapeCaseFlag(false)
+        .escapeCaseFlag(escapeCaseFlag)
+        .validationMessages(validationMessages)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
@@ -92,35 +101,27 @@ public class MentalhealthFixedFeeCalculator implements FeeCalculator {
         .build();
   }
 
-  private BigDecimal mentalHealthEscapeCalculation(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
-                                                   BoltOnFeeDetails boltOnFeeDetails, BigDecimal fixedFeeAmount, BigDecimal totalAmount) {
+  private boolean isEscaped(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
+                               BoltOnFeeDetails boltOnFeeDetails, List<ValidationMessagesInner> validationMessages) {
 
-    // total A
-    BigDecimal requestedNetCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());
     BigDecimal requestedNetProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
+    BigDecimal requestedNetCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());
     BigDecimal totalA = requestedNetProfitCosts.add(requestedNetCostOfCounsel);
 
-    // Total B
     BigDecimal escapeCaseThreshold = feeEntity.getEscapeThresholdLimit();
-    BigDecimal multipliedFixedFee = fixedFeeAmount.multiply(BigDecimal.valueOf(3));
-    BigDecimal requestedBoltOnValue = toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount());
-    BigDecimal totalB = multipliedFixedFee.add(escapeCaseThreshold).add(requestedBoltOnValue);
+    BigDecimal requestedBoltOnTotalAmount = toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount());
+    BigDecimal totalB = escapeCaseThreshold.add(requestedBoltOnTotalAmount);
 
-
-    if (totalA.compareTo(totalB) > 0) {
-      if(totalA.compareTo(escapeCaseThreshold) <= 0) {
-        return totalAmount;
-      }
-      if(totalA.compareTo(escapeCaseThreshold) > 0) {
-
-      }
-
+    if (isEscapedCase(totalA, totalB)) {
+      log.warn("Case has escaped");
+      validationMessages.add(ValidationMessagesInner.builder()
+          .message(WARNING_MESSAGE_WARMH1)
+          .type(WARNING)
+          .build());
+      return true;
+    } else {
+      log.warn("Case has not escaped");
+      return false;
     }
-
-
-
-
-    return requestedNetCostOfCounsel;
   }
-
 }
