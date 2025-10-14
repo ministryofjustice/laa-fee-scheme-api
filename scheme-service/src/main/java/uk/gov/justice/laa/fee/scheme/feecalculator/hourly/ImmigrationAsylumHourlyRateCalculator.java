@@ -229,7 +229,6 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     return IACD.equals(feeCode) || IMCD.equals(feeCode);
   }
 
-
   private static void checkFieldsAreEmpty(FeeCalculationRequest feeCalculationRequest,
                                           List<ValidationMessagesInner> validationMessages) {
     log.info("Check detention travel waiting and costs field is empty for fee calculation");

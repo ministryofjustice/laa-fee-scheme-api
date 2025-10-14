@@ -14,11 +14,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.CategoryOfLawTypeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeCategoryMappingEntity;
-import uk.gov.justice.laa.fee.scheme.enums.CategoryOfLawType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponse;
 import uk.gov.justice.laa.fee.scheme.repository.FeeCategoryMappingRepository;
-import uk.gov.justice.laa.fee.scheme.repository.projection.FeeDetailsProjection;
 
 @ExtendWith(MockitoExtension.class)
 class FeeDetailsServiceTest {

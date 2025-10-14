@@ -9,14 +9,11 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,7 +26,6 @@ import uk.gov.justice.laa.fee.scheme.exception.FeeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
-import uk.gov.justice.laa.fee.scheme.util.DateUtil;
 
 @ExtendWith(MockitoExtension.class)
 class FeeDataServiceTest {
@@ -40,6 +36,18 @@ class FeeDataServiceTest {
   @InjectMocks
   private FeeDataService feeDataService;
 
+  private static FeeCalculationRequest getFeeCalculationRequest() {
+    return FeeCalculationRequest.builder()
+        .feeCode("INVC")
+        .startDate(LocalDate.of(2017, 7, 29))
+        .vatIndicator(Boolean.TRUE)
+        .policeStationSchemeId("1003")
+        .policeStationId("NA2093")
+        .uniqueFileNumber("010122/456")
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .build();
+  }
 
   @Test
   void getFeeEntity_whenFeeSchemeIdAndFeeCodePresentInDatabase_shouldReturnValidResponse() {
@@ -47,7 +55,7 @@ class FeeDataServiceTest {
     FeeCalculationRequest feeData = getFeeCalculationRequest();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022")
-        .validFrom(LocalDate.of(2022,1,1)).build();
+        .validFrom(LocalDate.of(2022, 1, 1)).build();
 
     FeeEntity feeEntity = policeStationFeeEntity(feeSchemesEntity);
 
@@ -66,12 +74,12 @@ class FeeDataServiceTest {
     FeeCalculationRequest feeData = getFeeCalculationRequest();
 
     FeeSchemesEntity feeSchemesEntity1 = FeeSchemesEntity.builder().schemeCode("POL_FS2022")
-        .validFrom(LocalDate.of(2022,1,1)).build();
+        .validFrom(LocalDate.of(2022, 1, 1)).build();
 
     FeeEntity feeEntity1 = policeStationFeeEntity(feeSchemesEntity1);
 
     FeeSchemesEntity feeSchemesEntity2 = FeeSchemesEntity.builder().schemeCode("POL_FS2016")
-        .validFrom(LocalDate.of(2016,1,1)).build();
+        .validFrom(LocalDate.of(2016, 1, 1)).build();
 
     FeeEntity feeEntity2 = policeStationFeeEntity(feeSchemesEntity2);
 
@@ -89,7 +97,7 @@ class FeeDataServiceTest {
     FeeCalculationRequest feeData = getFeeCalculationRequest();
 
     FeeSchemesEntity feeSchemesEntity1 = FeeSchemesEntity.builder().schemeCode("POL_FS2022")
-        .validFrom(LocalDate.of(2022,1,1)).validTo(LocalDate.of(2023,1,1)).build();
+        .validFrom(LocalDate.of(2022, 1, 1)).validTo(LocalDate.of(2023, 1, 1)).build();
 
     FeeEntity feeEntity1 = FeeEntity.builder()
         .feeCode("INVC")
@@ -101,7 +109,7 @@ class FeeDataServiceTest {
         .build();
 
     FeeSchemesEntity feeSchemesEntity2 = FeeSchemesEntity.builder().schemeCode("POL_FS2016")
-        .validFrom(LocalDate.of(2016,1,1)).build();
+        .validFrom(LocalDate.of(2016, 1, 1)).build();
 
     FeeEntity feeEntity2 = FeeEntity.builder()
         .feeCode("INVC")
@@ -127,7 +135,7 @@ class FeeDataServiceTest {
     FeeCalculationRequest feeData = getFeeCalculationRequest();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022")
-        .validFrom(LocalDate.of(2021,12,31)).build();
+        .validFrom(LocalDate.of(2021, 12, 31)).build();
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVC")
@@ -153,7 +161,7 @@ class FeeDataServiceTest {
     FeeCalculationRequest feeData = getFeeCalculationRequest();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022")
-          .validFrom(LocalDate.of(2022,1,1)).build();
+        .validFrom(LocalDate.of(2022, 1, 1)).build();
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("INVC")
@@ -181,7 +189,7 @@ class FeeDataServiceTest {
     LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(POLICE_STATION, feeData);
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2025")
-        .validFrom(LocalDate.of(2025,10,1)).build();
+        .validFrom(LocalDate.of(2025, 10, 1)).build();
 
     FeeEntity feeEntity = policeStationFeeEntity(feeSchemesEntity);
 
@@ -210,10 +218,10 @@ class FeeDataServiceTest {
   void getFeeEntity_whenFamilyCategoryAndGivenLondonRate_shouldReturnCorrectFeeEntity(Boolean isLondonRate, Region expectedRegion) {
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("FAM_LON_FS2011")
-        .validFrom(LocalDate.of(2011,1,1)).build();
+        .validFrom(LocalDate.of(2011, 1, 1)).build();
 
     FeeSchemesEntity feeSchemesEntity2 = FeeSchemesEntity.builder().schemeCode("FAM_NON_FS2011")
-        .validFrom(LocalDate.of(2011,1,1)).build();
+        .validFrom(LocalDate.of(2011, 1, 1)).build();
 
     FeeEntity feeEntity = familyFeeEntity(feeSchemesEntity, Region.LONDON);
 
@@ -241,10 +249,10 @@ class FeeDataServiceTest {
   @Test
   void getFeeEntity_whenFamilyCategoryAndLondonRateIsMissing_shouldReturnCorrectFeeEntity() {
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("FAM_LON_FS2011")
-        .validFrom(LocalDate.of(2011,1,1)).build();
+        .validFrom(LocalDate.of(2011, 1, 1)).build();
 
     FeeSchemesEntity feeSchemesEntity2 = FeeSchemesEntity.builder().schemeCode("FAM_NON_FS2011")
-        .validFrom(LocalDate.of(2011,1,1)).build();
+        .validFrom(LocalDate.of(2011, 1, 1)).build();
 
     FeeEntity feeEntity = familyFeeEntity(feeSchemesEntity, Region.LONDON);
 
@@ -266,19 +274,6 @@ class FeeDataServiceTest {
     assertThat(feeNotFoundException.getMessage()).isEqualTo("Fee not found for feeCode: FPB010 and startDate: 2025-02-11");
   }
 
-  private static FeeCalculationRequest getFeeCalculationRequest() {
-    return FeeCalculationRequest.builder()
-        .feeCode("INVC")
-        .startDate(LocalDate.of(2017, 7, 29))
-        .vatIndicator(Boolean.TRUE)
-        .policeStationSchemeId("1003")
-        .policeStationId("NA2093")
-        .uniqueFileNumber("010122/456")
-        .netDisbursementAmount(50.50)
-        .disbursementVatAmount(20.15)
-        .build();
-  }
-
   private FeeEntity policeStationFeeEntity(FeeSchemesEntity feeSchemesEntity) {
     return FeeEntity.builder()
         .feeCode("INVC")
@@ -291,7 +286,7 @@ class FeeDataServiceTest {
   }
 
   private FeeEntity familyFeeEntity(FeeSchemesEntity feeSchemesEntity, Region region) {
-    return  FeeEntity.builder()
+    return FeeEntity.builder()
         .feeCode("FPB010")
         .feeScheme(feeSchemesEntity)
         .fixedFee(new BigDecimal("150"))

@@ -39,7 +39,7 @@ class AssociatedCivilFixedFeeCalculatorTest {
 
     FeeCalculationResponse result = associatedCivilFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
-    assertFeeCalculation(result, expectedTotal,vatIndicator, netTravelCosts, netWaitingCosts, expectedVat, false);
+    assertFeeCalculation(result, expectedTotal, vatIndicator, netTravelCosts, netWaitingCosts, expectedVat, false);
   }
 
   @ParameterizedTest
@@ -56,7 +56,7 @@ class AssociatedCivilFixedFeeCalculatorTest {
 
     FeeCalculationResponse result = associatedCivilFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
-    assertFeeCalculation(result, expectedTotal,vatIndicator, netTravelCosts, netWaitingCosts, expectedVat, true);
+    assertFeeCalculation(result, expectedTotal, vatIndicator, netTravelCosts, netWaitingCosts, expectedVat, true);
 
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
         .message("123")
