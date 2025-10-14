@@ -63,10 +63,7 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
     FeeCalculation feeCalculation = mapFeeCalculation(feeCalculationRequest, feeEntity.getFixedFee());
-
-
     boolean escapeCaseFlag = isEscapedOrPastFeeLimit(feeCalculationRequest, feeEntity, validationMessages);
-
 
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
@@ -105,13 +102,13 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
 
     BigDecimal feeLimit = feeEntity.getTotalLimit();
     if (isEscapedCase(totalAmount, feeLimit)) {
-      log.info("Case has exceeded fee limit");
+      log.warn("Case has exceeded fee limit");
       validationMessages.add(ValidationMessagesInner.builder()
           .message(WARNING_MESSAGE_WARCRM5)
           .type(WARNING)
           .build());
     } else {
-      log.info("Case has not exceeded fee limit");
+      log.warn("Case has not exceeded fee limit");
     }
   }
 
@@ -124,14 +121,14 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
 
     BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
     if (isEscapedCase(totalAmount, escapeThresholdLimit)) {
-      log.info("Case has escaped");
+      log.warn("Case has escaped");
       validationMessages.add(ValidationMessagesInner.builder()
           .message(WARNING_MESSAGE_WARCRM6)
           .type(WARNING)
           .build());
       return true;
     }
-    log.info("Case has not escaped");
+    log.warn("Case has not escaped");
     return false;
   }
 

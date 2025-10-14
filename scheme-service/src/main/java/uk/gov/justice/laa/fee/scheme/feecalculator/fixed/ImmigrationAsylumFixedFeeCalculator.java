@@ -180,14 +180,14 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     BigDecimal totalAmount = grossTotal.subtract(additionalPayments);
 
     if (isEscapedCase(totalAmount, escapeThresholdLimit)) {
-      log.info("Case has escaped");
+      log.warn("Case has escaped");
       validationMessages.add(ValidationMessagesInner.builder()
           .message(WARNING_MESSAGE_WARIA3)
           .type(WARNING)
           .build());
       return true;
     } else  {
-      log.info("Case has not escaped");
+      log.warn("Case has not escaped");
       return false;
     }
   }
