@@ -81,7 +81,7 @@ class BoltOnUtilTest {
             null,
             2,
             null,
-            300.000,
+            300.00,
             null,
             200.00,
             null

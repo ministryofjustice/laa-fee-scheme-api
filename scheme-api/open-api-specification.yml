@@ -303,6 +303,9 @@ components:
         boltOnHomeOfficeInterviewFee:
           type: number
           format: double
+        boltOnSubstantiveHearingFee:
+          type: number
+          format: double
 
     BoltOnType:
       type: object
@@ -315,6 +318,8 @@ components:
           type: integer
         boltOnHomeOfficeInterview:
           type: integer
+        boltOnSubstantiveHearing:
+          type: boolean
 
     ErrorResponse:
       type: object

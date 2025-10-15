@@ -154,7 +154,6 @@ class FeeCalculationUtilTest {
     assertEquals(expectedDate, result);
   }
 
-
   @Test
   void shouldThrowException_ifUniqueFileNumberIsNullForPoliceStation() {
     FeeCalculationRequest request = getFeeCalculationRequest();
@@ -198,13 +197,15 @@ class FeeCalculationUtilTest {
   }
 
   @ParameterizedTest
-  @CsvSource({
-      "99, false",
-      "100, false",
-      "101, true",
-  })
-  void isEscapedCase_returnsResult(BigDecimal amount, boolean expected) {
-    boolean result = FeeCalculationUtil.isEscapedCase(amount, new BigDecimal("100"));
+  @CsvSource(value = {
+      "99, null, false",
+      "99, 100, false",
+      "100, 100, false",
+      "101, null, false",
+      "101, 100, true",
+  }, nullValues = {"null"})
+  void isEscapedCase_returnsResult(BigDecimal amount, BigDecimal limit, boolean expected) {
+    boolean result = FeeCalculationUtil.isEscapedCase(amount, limit);
 
     assertThat(result).isEqualTo(expected);
   }
@@ -232,5 +233,4 @@ class FeeCalculationUtilTest {
             List.of(ValidationMessagesInner.builder().type(WARNING).message("Warning message").build()))
     );
   }
-
 }
