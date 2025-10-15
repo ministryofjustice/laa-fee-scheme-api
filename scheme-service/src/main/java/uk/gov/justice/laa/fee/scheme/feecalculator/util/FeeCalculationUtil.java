@@ -10,7 +10,6 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
-import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
-import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -31,8 +28,6 @@ import uk.gov.justice.laa.fee.scheme.util.DateUtil;
  */
 @Slf4j
 public final class FeeCalculationUtil {
-
-  private static final String ESCAPE_CASE_WARNING_CODE_DESCRIPTION = "123warning";
 
   private FeeCalculationUtil() {
   }
@@ -102,84 +97,43 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Fixed fee + bolt ons (if exists) + netDisbursementAmount = subtotal.
+   * Fixed fee + netDisbursementAmount = subtotal.
    * If Applicable add VAT to subtotal.
    * subtotalWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
    */
   private static FeeCalculationResponse calculateAndBuildResponse(BigDecimal fixedFee,
                                                                   FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    boolean isFamilyClaimCase = Boolean.FALSE;
-
-    // Calculate bolt on amounts if bolt ons exist
-    BoltOnFeeDetails boltOnFeeDetails = BoltOnUtil.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
-
     log.info("Get fields from fee calculation request");
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
     LocalDate claimStartDate = getFeeClaimStartDate(feeEntity.getCategoryType(), feeCalculationRequest);
-
-    BigDecimal boltOnVatAmount = BigDecimal.ZERO;
-    BigDecimal boltOnValue = null;
-    // Mental health has bolt on, rest do not
-    boolean isMentalHealth = feeEntity.getCategoryType().equals(CategoryType.MENTAL_HEALTH);
-    if (isMentalHealth) {
-      log.info("Calculate bolt on amounts for fee calculation");
-      boltOnValue = toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount());
-      boltOnVatAmount = getVatAmount(boltOnValue, claimStartDate, vatApplicable);
-    } else if (feeEntity.getCategoryType().equals(CategoryType.FAMILY)) {
-      isFamilyClaimCase = Boolean.TRUE;
-    }
 
     BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-
     log.info("Calculate total fee amount with any disbursements, bolt ons and VAT where applicable");
     BigDecimal finalTotal = fixedFee
         .add(fixedFeeVatAmount)
-        .add(defaultToZeroIfNull(boltOnValue))
-        .add(boltOnVatAmount)
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
-
-    boolean isClaimEscaped = Boolean.FALSE;
-
-    List<ValidationMessagesInner> validationMessages = null;
-
-    if (isFamilyClaimCase) {
-      isClaimEscaped = FeeCalculationUtil.isEscapedCase(finalTotal, feeEntity.getEscapeThresholdLimit());
-      if (isClaimEscaped) {
-        validationMessages = new ArrayList<>();
-        log.warn("Fee total exceeds escape threshold limit");
-        validationMessages.add(ValidationMessagesInner.builder()
-            .message(ESCAPE_CASE_WARNING_CODE_DESCRIPTION)
-            .type(WARNING)
-            .build());
-      }
-    }
-
-    BigDecimal calculatedVatAmount = boltOnVatAmount.add(fixedFeeVatAmount);
 
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .claimId(feeCalculationRequest.getClaimId())
-        .validationMessages(isClaimEscaped ? validationMessages : List.of())
-        .escapeCaseFlag(isClaimEscaped) // temp hard coded, till escape logic implemented
+        .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(vatApplicable)
             .vatRateApplied(toDouble(getVatRateForDate(claimStartDate)))
-            .calculatedVatAmount(toDouble(calculatedVatAmount))
+            .calculatedVatAmount(toDouble(fixedFeeVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
             // disbursement not capped, so requested and calculated will be same
             .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .fixedFeeAmount(toDouble(fixedFee))
-            // Mental health has bolt on, rest do not
-            .boltOnFeeDetails(isMentalHealth ? boltOnFeeDetails : null)
             .build())
         .build();
   }
