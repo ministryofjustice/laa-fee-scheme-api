@@ -4,7 +4,6 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnTyp
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnType.CMRH_ORAL;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnType.CMRH_TELEPHONE;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnType.HOME_OFFICE_INTERVIEW;
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
@@ -75,12 +74,6 @@ public class BoltOnUtil {
             return total;
           })
           .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-      if (Boolean.TRUE.equals(feeCalculationRequest.getBoltOns().getBoltOnSubstantiveHearing())) {
-        BigDecimal substantiveHearingBoltOn = defaultToZeroIfNull(feeEntity.getSubstantiveHearingBoltOn());
-        boltOnFeeDetails.setBoltOnSubstantiveHearingFee(toDouble(substantiveHearingBoltOn));
-        totalFee = totalFee.add(substantiveHearingBoltOn);
-      }
 
       boltOnFeeDetails.setBoltOnTotalFeeAmount(toDouble(totalFee));
     }

@@ -3,7 +3,6 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PUBLIC_LAW;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
@@ -293,7 +292,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
   }
 
   @ParameterizedTest
-  @MethodSource( value = {"warningTestDataClr", "warningTestDataClrInterim"})
+  @MethodSource(value = {"warningTestDataClr", "warningTestDataClrInterim"})
   void calculateFee_whenClrAndGivenUnexpectedField_shouldReturnWarning(String feeCode, Double detentionTravelAndWaitingCosts, Double jrFormFilling, List<String> expectedWarnings) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -333,7 +332,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
   @ParameterizedTest
   @MethodSource("feeTestDataClrInterim")
-  void calculateFee_whenClrInterim_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority,
+  void calculateFee_whenClrInterim_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority, BoltOnType requestedBoltOns,
                                                                       double netProfitCosts, double netCostOfCounsel, double netDisbursement,
                                                                       double disbursementVat, double expectedTotal, double expectedCalculatedVat,
                                                                       double expectedHourlyTotal, List<String> expectedWarnings) {
@@ -343,12 +342,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
         .startDate(LocalDate.of(2025, 5, 11))
         .netProfitCosts(netProfitCosts)
         .netCostOfCounsel(netCostOfCounsel)
-        .boltOns(BoltOnType.builder()
-            .boltOnAdjournedHearing(1)
-            .boltOnCmrhOral(2)
-            .boltOnCmrhTelephone(1)
-            .boltOnSubstantiveHearing(true)
-            .build())
+        .boltOns(requestedBoltOns)
         .netDisbursementAmount(netDisbursement)
         .disbursementVatAmount(disbursementVat)
         .vatIndicator(vatIndicator)
@@ -374,44 +368,44 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     assertThat(result.getSchemeId()).isEqualTo("IMM_ASYLM_FS2023");
     assertWarnings(result.getValidationMessages(), expectedWarnings);
 
-    BoltOnFeeDetails boltOnFeeDetails = BoltOnFeeDetails.builder()
-        .boltOnAdjournedHearingCount(1)
-        .boltOnAdjournedHearingFee(50.0)
-        .boltOnCmrhOralCount(2)
-        .boltOnCmrhOralFee(332.0)
-        .boltOnCmrhTelephoneCount(1)
-        .boltOnCmrhTelephoneFee(90.0)
-        .boltOnSubstantiveHearingFee(302.0)
-        .boltOnTotalFeeAmount(774.0)
-        .build();
+    BoltOnFeeDetails expectedBoltOnFeeDetails = requestedBoltOns == null ? BoltOnFeeDetails.builder().boltOnTotalFeeAmount(0.0).build() :
+          expectedBoltOnFeeDetails(requestedBoltOns.getBoltOnSubstantiveHearing());
 
     assertFeeCalculation(result.getFeeCalculation(), expectedTotal, vatIndicator,
         expectedCalculatedVat, netDisbursement, disbursementVat,
-        expectedHourlyTotal, netProfitCosts, netCostOfCounsel, boltOnFeeDetails);
+        expectedHourlyTotal, netProfitCosts, netCostOfCounsel, expectedBoltOnFeeDetails);
   }
 
   static Stream<Arguments> feeTestDataClrInterim() {
     return Stream.of(
         // under total limit
-        Arguments.of("IACD", NO_VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
+        Arguments.of("IACD", NO_VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 611.25, 152.34, 30.46,
             2054.83, 0, 2024.37, List.of()),
-        Arguments.of("IACD", VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
+        Arguments.of("IACD", VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 611.25, 152.34, 30.46,
             2429.24, 374.41, 2024.37, List.of()),
 
         // over total "with" prior authority
-        Arguments.of("IACD", NO_VAT, AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
+        Arguments.of("IACD", NO_VAT, AUTHORITY, buildBoltOn(true), 486.78, 1008.17, 152.34, 30.46,
             2451.75, 0, 2421.29, List.of()),
-        Arguments.of("IACD", VAT, AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
+        Arguments.of("IACD", VAT, AUTHORITY, buildBoltOn(true), 486.78, 1008.17, 152.34, 30.46,
             2905.54, 453.79, 2421.29, List.of()),
 
         // over total limit "without" prior authority
-        Arguments.of("IACD", NO_VAT, NO_AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
+        Arguments.of("IACD", NO_VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 1008.17, 152.34, 30.46,
             2404.46, 0, 2374, List.of("warning total limit")),
-        Arguments.of("IACD", VAT, NO_AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
+        Arguments.of("IACD", VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 1008.17, 152.34, 30.46,
             2858.25, 453.79, 2374, List.of("warning total limit")),
 
+        // substantive hearing bolt on = false
+        Arguments.of("IACD", NO_VAT, NO_AUTHORITY, buildBoltOn(false), 486.78, 611.25, 152.34, 30.46,
+            1752.83, 0, 1722.37, List.of()),
+
+        // no bolt ons
+        Arguments.of("IACD", NO_VAT, NO_AUTHORITY, null, 486.78, 611.25, 152.34, 30.46,
+            1280.83, 0, 1250.37, List.of()),
+
         // IMCD
-        Arguments.of("IMCD", NO_VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
+        Arguments.of("IMCD", NO_VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 611.25, 152.34, 30.46,
             2054.83, 0, 2024.37, List.of())
     );
   }
@@ -475,5 +469,32 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     assertThat(resultMessages)
         .usingRecursiveComparison()
         .isEqualTo(validationMessages);
+  }
+
+  private static BoltOnType buildBoltOn(boolean substantiveHearing) {
+    return BoltOnType.builder()
+        .boltOnAdjournedHearing(1)
+        .boltOnCmrhOral(2)
+        .boltOnCmrhTelephone(1)
+        .boltOnSubstantiveHearing(substantiveHearing)
+        .build();
+  }
+
+  private static BoltOnFeeDetails expectedBoltOnFeeDetails(Boolean substantiveHearing) {
+    return Boolean.TRUE.equals(substantiveHearing) ?
+       expectedBoltOnFeeDetails(302.0, 774.0) : expectedBoltOnFeeDetails(null, 472.0) ;
+  }
+
+  private static BoltOnFeeDetails expectedBoltOnFeeDetails(Double boltOnSubstantiveHearingFee, Double boltOnTotalFeeAmount) {
+    return BoltOnFeeDetails.builder()
+        .boltOnAdjournedHearingCount(1)
+        .boltOnAdjournedHearingFee(50.0)
+        .boltOnCmrhOralCount(2)
+        .boltOnCmrhOralFee(332.0)
+        .boltOnCmrhTelephoneCount(1)
+        .boltOnCmrhTelephoneFee(90.0)
+        .boltOnSubstantiveHearingFee(boltOnSubstantiveHearingFee)
+        .boltOnTotalFeeAmount(boltOnTotalFeeAmount)
+        .build();
   }
 }

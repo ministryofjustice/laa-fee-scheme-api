@@ -40,8 +40,7 @@ class BoltOnUtilTest {
             200.00,
             200.00,
             200.00,
-            200.00,
-            null
+            200.00
         ),
         arguments(
             "No bolts ons requested",
@@ -52,7 +51,6 @@ class BoltOnUtilTest {
                 .adjornHearingBoltOn(BigDecimal.valueOf(100))
                 .build(),
             0.0,
-            null,
             null,
             null,
             null,
@@ -86,59 +84,6 @@ class BoltOnUtilTest {
             300.00,
             null,
             200.00,
-            null,
-            null
-        ),
-        arguments(
-            "Substantive bolt on requested",
-            FeeCalculationRequest.builder()
-                .boltOns(BoltOnType.builder()
-                    .boltOnCmrhOral(2)
-                    .boltOnCmrhTelephone(1)
-                    .boltOnSubstantiveHearing(true)
-                    .build())
-                .build(),
-            FeeEntity.builder()
-                .adjornHearingBoltOn(BigDecimal.valueOf(100))
-                .telephoneCmrhBoltOn(BigDecimal.valueOf(100))
-                .oralCmrhBoltOn(BigDecimal.valueOf(100))
-                .substantiveHearingBoltOn(BigDecimal.valueOf(100))
-                .build(),
-            400.00,
-            null,
-            1,
-            2,
-            null,
-            null,
-            100.00,
-            200.00,
-            null,
-            100.00
-        ),
-        arguments(
-            "Substantive bolt on not requested",
-            FeeCalculationRequest.builder()
-                .boltOns(BoltOnType.builder()
-                    .boltOnCmrhOral(2)
-                    .boltOnCmrhTelephone(1)
-                    .boltOnSubstantiveHearing(false)
-                    .build())
-                .build(),
-            FeeEntity.builder()
-                .adjornHearingBoltOn(BigDecimal.valueOf(100))
-                .telephoneCmrhBoltOn(BigDecimal.valueOf(100))
-                .oralCmrhBoltOn(BigDecimal.valueOf(100))
-                .substantiveHearingBoltOn(BigDecimal.valueOf(100))
-                .build(),
-            300.00,
-            null,
-            1,
-            2,
-            null,
-            null,
-            100.00,
-            200.00,
-            null,
             null
         )
     );
@@ -148,11 +93,10 @@ class BoltOnUtilTest {
                                      Double boltOnTotalFeeAmount, Integer boltOnAdjournedHearingCount,
                                      Integer boltOnCmrhTelephoneCount, Integer boltOnCmrhOralCount,
                                      Integer boltOnHomeOfficeInterviewCount, Double boltOnAdjournedHearingFee,
-                                     Double boltOnCmrhTelephoneFee, Double boltOnCmrhOralFee, Double boltOnHomeOfficeInterviewFee,
-                                     Double boltOnSubstantiveHearingFee) {
+                                     Double boltOnCmrhTelephoneFee, Double boltOnCmrhOralFee, Double boltOnHomeOfficeInterviewFee) {
     return Arguments.of(scenario, feeCalculationRequest, feeEntity, boltOnTotalFeeAmount, boltOnAdjournedHearingCount,
         boltOnCmrhTelephoneCount, boltOnCmrhOralCount, boltOnHomeOfficeInterviewCount, boltOnAdjournedHearingFee,
-        boltOnCmrhTelephoneFee, boltOnCmrhOralFee, boltOnHomeOfficeInterviewFee, boltOnSubstantiveHearingFee);
+        boltOnCmrhTelephoneFee, boltOnCmrhOralFee, boltOnHomeOfficeInterviewFee);
   }
 
   @ParameterizedTest
@@ -160,8 +104,7 @@ class BoltOnUtilTest {
   void shouldCalculateBoltOnAmount(String scenario, FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
                                    Double boltOnTotalFeeAmount, Integer boltOnAdjournedHearingCount, Integer boltOnCmrhTelephoneCount,
                                    Integer boltOnCmrhOralCount, Integer boltOnHomeOfficeInterviewCount, Double boltOnAdjournedHearingFee,
-                                   Double boltOnCmrhTelephoneFee, Double boltOnCmrhOralFee, Double boltOnHomeOfficeInterviewFee,
-                                   Double boltOnSubstantiveHearingFee) {
+                                   Double boltOnCmrhTelephoneFee, Double boltOnCmrhOralFee, Double boltOnHomeOfficeInterviewFee) {
 
     BoltOnFeeDetails result = BoltOnUtil.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
 
@@ -175,7 +118,6 @@ class BoltOnUtilTest {
         .boltOnCmrhOralFee(boltOnCmrhOralFee)
         .boltOnHomeOfficeInterviewCount(boltOnHomeOfficeInterviewCount)
         .boltOnHomeOfficeInterviewFee(boltOnHomeOfficeInterviewFee)
-        .boltOnSubstantiveHearingFee(boltOnSubstantiveHearingFee)
         .build();
 
 

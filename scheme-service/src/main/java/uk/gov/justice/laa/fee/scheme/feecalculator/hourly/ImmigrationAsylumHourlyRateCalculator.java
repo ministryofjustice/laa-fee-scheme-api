@@ -5,6 +5,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.LimitType.PROFIT_COST;
 import static uk.gov.justice.laa.fee.scheme.enums.LimitType.TOTAL;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.checkLimitAndCapIfExceeded;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
@@ -198,8 +199,19 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     checkFieldsAreEmpty(feeCalculationRequest, validationMessages);
 
     // Add any bolts on to fee total
+    BigDecimal boltsOnTotal = BigDecimal.ZERO;
     BoltOnFeeDetails boltOnFeeDetails = BoltOnUtil.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
-    BigDecimal boltsOnTotal = toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount());
+    if (feeCalculationRequest.getBoltOns() != null) {
+      if (Boolean.TRUE.equals(feeCalculationRequest.getBoltOns().getBoltOnSubstantiveHearing())) {
+        BigDecimal substantiveHearingBoltOn = defaultToZeroIfNull(feeEntity.getSubstantiveHearingBoltOn());
+        boltsOnTotal = toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount()).add(substantiveHearingBoltOn);
+        boltOnFeeDetails.setBoltOnTotalFeeAmount(toDouble(boltsOnTotal));
+        boltOnFeeDetails.setBoltOnSubstantiveHearingFee(toDouble(substantiveHearingBoltOn));
+      } else {
+        boltsOnTotal = toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount());
+      }
+    }
+
     BigDecimal feeTotalWithBoltsOn = feeTotal.add(boltsOnTotal);
 
     // VAT is calculated on net profit costs, net cost of counsel & bolt ons only
