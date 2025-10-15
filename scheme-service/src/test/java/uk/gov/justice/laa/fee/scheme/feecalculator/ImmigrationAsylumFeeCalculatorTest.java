@@ -1,29 +1,24 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
-import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
-import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.FeeType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.disbursement.ImmigrationAndAsylumDisbursementOnlyCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.ImmigrationAsylumFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.ImmigrationAsylumHourlyRateCalculator;
-import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
-import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
-import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 @ExtendWith(MockitoExtension.class)
 class ImmigrationAsylumFeeCalculatorTest {
@@ -34,115 +29,32 @@ class ImmigrationAsylumFeeCalculatorTest {
   @Mock
   ImmigrationAsylumHourlyRateCalculator immigrationAsylumHourlyRateCalculator;
 
+  @Mock
+  ImmigrationAndAsylumDisbursementOnlyCalculator immigrationAndAsylumDisbursementOnlyCalculator;
+
   @InjectMocks
   ImmigrationAsylumFeeCalculator immigrationAsylumFeeCalculator;
 
-  @Test
-  void getFee_whenImmigrationAsylumClaimFeeCodeFixed_shouldReturnFeeCalculationResponse() {
-    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode("IACA")
-        .claimId("claim_123")
-        .startDate(LocalDate.of(2025, 7, 29))
-        .netDisbursementAmount(120.0)
-        .disbursementVatAmount(24.0)
-        .vatIndicator(true)
-        .immigrationPriorAuthorityNumber("er23")
-        .boltOns(BoltOnType.builder()
-            .boltOnCmrhOral(2)
-            .boltOnCmrhTelephone(2)
-            .build())
-        .detentionTravelAndWaitingCosts(234.98)
-        .jrFormFilling(34.9)
-        .build();
-
+  @ParameterizedTest
+  @CsvSource({
+      "IMMIGRATION_ASYLUM, FIXED",
+      "IMMIGRATION_ASYLUM, HOURLY",
+      "IMMIGRATION_ASYLUM, DISB_ONLY"
+  })
+  void shouldReturnCorrectCalculator_whenGivenCategoryAndType(CategoryType categoryType, FeeType feeType) {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder().build();
     FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("IACA")
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
-        .fixedFee(new BigDecimal("75.50"))
-        .categoryType(IMMIGRATION_ASYLUM)
-        .feeType(FIXED)
-        .disbursementLimit(new BigDecimal(435))
-        .oralCmrhBoltOn(BigDecimal.valueOf(166))
-        .telephoneCmrhBoltOn(BigDecimal.valueOf(90))
+        .categoryType(categoryType)
+        .feeType(feeType)
         .build();
 
-    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
-        .feeCode("IACA")
-        .schemeId("IMM_ASYLM_FS2023")
-        .validationMessages(new ArrayList<>())
-        .escapeCaseFlag(false)
-        .feeCalculation(FeeCalculation.builder()
-            .totalAmount(1354.66)
-            .vatIndicator(Boolean.TRUE)
-            .vatRateApplied(20.0)
-            .calculatedVatAmount(201.78)
-            .disbursementAmount(120.0)
-            .disbursementVatAmount(24.0)
-            .fixedFeeAmount(227.0)
-            .build())
-        .build();
+    immigrationAsylumFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
-    when(immigrationAsylumFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity)).thenReturn(expectedResponse);
-
-    FeeCalculationResponse result = immigrationAsylumFeeCalculator.calculate(feeCalculationRequest, feeEntity);
-
-    assertThat(result).isNotNull();
-    assertThat(result.getFeeCode()).isEqualTo("IACA");
-    assertThat(result.getFeeCalculation()).isNotNull();
-    assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(1354.66);
-  }
-
-  @Test
-  void getFee_whenImmigrationAsylumClaimFeeCodeHourly_shouldReturnFeeCalculationResponse() {
-    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode("IAXL")
-        .startDate(LocalDate.of(2025, 5, 11))
-        .netProfitCosts(166.25)
-        .jrFormFilling(67.89)
-        .netDisbursementAmount(120.0)
-        .disbursementVatAmount(24.0)
-        .vatIndicator(true)
-        .immigrationPriorAuthorityNumber("1334WA")
-        .build();
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("IAXL")
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
-        .categoryType(IMMIGRATION_ASYLUM)
-        .feeType(HOURLY)
-        .profitCostLimit(new BigDecimal("800.00"))
-        .disbursementLimit(new BigDecimal("400.00"))
-        .build();
-
-
-    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
-        .feeCode("IAXL")
-        .schemeId("IMM_ASYLM_FS2023")
-        .validationMessages(new ArrayList<>())
-        .escapeCaseFlag(false)
-        .feeCalculation(FeeCalculation.builder()
-            .totalAmount(424.97)
-            .vatIndicator(Boolean.TRUE)
-            .vatRateApplied(20.0)
-            .calculatedVatAmount(46.83)
-            .disbursementAmount(120.0)
-            .requestedNetDisbursementAmount(120.0)
-            .disbursementVatAmount(24.0)
-            .hourlyTotalAmount(234.14)
-            .jrFormFillingAmount(67.89)
-            .netProfitCostsAmount(166.25)
-            .requestedNetProfitCostsAmount(166.25)
-            .build())
-        .build();
-
-    when(immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity)).thenReturn(expectedResponse);
-
-    FeeCalculationResponse result = immigrationAsylumFeeCalculator.calculate(feeCalculationRequest, feeEntity);
-
-    assertThat(result).isNotNull();
-    assertThat(result.getFeeCode()).isEqualTo("IAXL");
-    assertThat(result.getFeeCalculation()).isNotNull();
-    assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(424.97);
+    switch (feeType) {
+      case FIXED -> verify(immigrationAsylumFixedFeeCalculator).calculate(feeCalculationRequest, feeEntity);
+      case HOURLY -> verify(immigrationAsylumHourlyRateCalculator).calculate(feeCalculationRequest, feeEntity);
+      case DISB_ONLY -> verify(immigrationAndAsylumDisbursementOnlyCalculator).calculate(feeCalculationRequest, feeEntity);
+    }
   }
 
   @Test
