@@ -796,4 +796,37 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(content().json(expectedJson, STRICT));
   }
 
+  @Test
+  void shouldGetFeeCalculation_immigrationDisbursementOnly() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "ICASD",
+                  "claimId": "claim_123",
+                  "startDate": "2019-09-30",
+                  "netDisbursementAmount": 55.35,
+                  "disbursementVatAmount": 11.07
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "ICASD",
+              "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2013",
+              "claimId": "claim_123",
+              "feeCalculation": {
+                "totalAmount": 66.42,
+                "disbursementAmount": 55.35,
+                "requestedNetDisbursementAmount": 55.35,
+                "disbursementVatAmount": 11.07
+                }
+              }
+            """, STRICT));
+  }
+
 }
