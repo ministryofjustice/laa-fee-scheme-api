@@ -91,15 +91,15 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
             .vatIndicator(feeCalculationRequest.getVatIndicator())
             .vatRateApplied(toDoubleOrNull(VatUtil.getVatRateForDate(feeCalculationRequest.getStartDate(), vatApplicable)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(toDouble(netDisbursementAmount))
+            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             // disbursement not capped, so requested and calculated will be same
-            .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
-            .disbursementVatAmount(toDouble(disbursementVatAmount))
+            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
             .hourlyTotalAmount(toDouble(feeTotal))
             .travelAndWaitingCostAmount(feeCalculationRequest.getTravelAndWaitingCosts())
-            .netProfitCostsAmount(toDouble(netProfitCosts))
+            .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
             // net profit cost not capped, so requested and calculated will be same
-            .requestedNetProfitCostsAmount(toDouble(netProfitCosts))
+            .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
             .build())
         .build();
   }

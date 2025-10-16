@@ -89,9 +89,9 @@ public class FamilyFixedFeeCalculator implements FeeCalculator {
             .vatIndicator(vatApplicable)
             .vatRateApplied(toDoubleOrNull(getVatRateForDate(claimStartDate, vatApplicable)))
             .calculatedVatAmount(toDouble(fixedFeeVatAmount))
-            .disbursementAmount(toDouble(netDisbursementAmount))
-            .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
-            .disbursementVatAmount(toDouble(disbursementVatAmount))
+            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
             .fixedFeeAmount(toDouble(fixedFee))
             .build())
         .build();

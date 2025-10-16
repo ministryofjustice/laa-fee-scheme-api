@@ -69,9 +69,9 @@ public class MagsYouthCourtFixedFeeCalculator implements FeeCalculator {
         .vatIndicator(vatApplicable)
         .vatRateApplied(toDoubleOrNull(getVatRateForDate(startDate, vatApplicable)))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
-        .disbursementAmount(toDouble(requestedNetDisbursementAmount))
-        .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
-        .disbursementVatAmount(toDouble(requestedDisbursementVatAmount))
+        .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+        .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .build();
 

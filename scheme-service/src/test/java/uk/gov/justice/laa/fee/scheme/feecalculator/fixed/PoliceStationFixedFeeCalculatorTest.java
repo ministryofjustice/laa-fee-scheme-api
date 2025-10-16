@@ -377,9 +377,9 @@ class PoliceStationFixedFeeCalculatorTest {
         .vatRateApplied(vatIndicator ? 20.0 : null)
         .fixedFeeAmount(expectedFixedFee)
         .calculatedVatAmount(expectedCalculatedVat)
-        .disbursementVatAmount(0.0)
-        .disbursementAmount(0.0)
-        .requestedNetDisbursementAmount(0.0)
+        .disbursementVatAmount(null)
+        .disbursementAmount(null)
+        .requestedNetDisbursementAmount(null)
         .build();
 
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()

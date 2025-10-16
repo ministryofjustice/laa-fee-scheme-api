@@ -92,10 +92,10 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
             .vatIndicator(vatApplicable)
             .vatRateApplied(toDoubleOrNull(getVatRateForDate(startDate, vatApplicable)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(toDouble(netDisbursementAmount))
+            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             // disbursement not capped, so requested and calculated will be same
-            .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
-            .disbursementVatAmount(toDouble(disbursementVatAmount))
+            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
             .hourlyTotalAmount(toDouble(feeTotal))
             .netCostOfCounselAmount(feeCalculationRequest.getNetCostOfCounsel())
             .netProfitCostsAmount(toDouble(netProfitCosts))

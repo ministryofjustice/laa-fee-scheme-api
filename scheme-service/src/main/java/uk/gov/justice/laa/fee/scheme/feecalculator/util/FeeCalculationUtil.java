@@ -131,10 +131,10 @@ public final class FeeCalculationUtil {
             .vatIndicator(vatApplicable)
             .vatRateApplied(toDoubleOrNull(getVatRateForDate(claimStartDate, vatApplicable)))
             .calculatedVatAmount(toDouble(fixedFeeVatAmount))
-            .disbursementAmount(toDouble(netDisbursementAmount))
+            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             // disbursement not capped, so requested and calculated will be same
-            .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
-            .disbursementVatAmount(toDouble(disbursementVatAmount))
+            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
             .fixedFeeAmount(toDouble(fixedFee))
             .build())
         .build();

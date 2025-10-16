@@ -162,9 +162,9 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
         .vatIndicator(vatApplicable)
         .vatRateApplied(toDoubleOrNull(getVatRateForDate(claimStartDate, vatApplicable)))
         .calculatedVatAmount(toDouble(fixedFeeVatAmount))
-        .disbursementAmount(toDouble(requestedNetDisbursementAmount))
-        .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
-        .disbursementVatAmount(toDouble(requestedDisbursementVatAmount))
+        .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+        .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .fixedFeeAmount(toDouble(fixedFee))
         .build();
   }

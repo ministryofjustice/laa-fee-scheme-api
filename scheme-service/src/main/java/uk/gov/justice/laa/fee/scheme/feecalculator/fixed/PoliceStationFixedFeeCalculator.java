@@ -110,9 +110,9 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
             .vatIndicator(vatApplicable)
             .vatRateApplied(toDoubleOrNull(getVatRateForDate(startDate, vatApplicable)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(toDouble(requestedNetDisbursementAmount))
-            .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
-            .disbursementVatAmount(toDouble(disbursementVatAmount))
+            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
             .fixedFeeAmount(toDouble(fixedFee)).build())
         .build();
   }
