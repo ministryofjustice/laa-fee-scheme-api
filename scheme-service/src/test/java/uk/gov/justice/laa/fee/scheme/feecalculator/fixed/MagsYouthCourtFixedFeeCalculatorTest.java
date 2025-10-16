@@ -175,7 +175,7 @@ class MagsYouthCourtFixedFeeCalculatorTest {
               50.0, 60.0, 50.0, 60.0),
           argumentsUndesignated("PROE1, Undesignated, no travel or waiting", "PROE1", true,
               388.66, 44.78,
-              null, null, 0, 0)
+              null, null, null, null)
       );
     }
 
@@ -189,13 +189,13 @@ class MagsYouthCourtFixedFeeCalculatorTest {
               50.0, 60.0, 50.0, 60.0),
           argumentsUndesignated("YOUE3, Undesignated, no travel or waiting", "YOUE3", true,
               1223.95, 183.99,
-              null, null, 0, 0)
+              null, null, null, null)
       );
     }
 
     private static Arguments argumentsUndesignated(String scenario, String feeCode, boolean vat, double expectedTotal,
                                                    double expectedVat, Double requestedNetTravel, Double requestedNetWaiting,
-                                                   double expectedNetTravel, double expectedNetWaiting) {
+                                                   Double expectedNetTravel, Double expectedNetWaiting) {
       return Arguments.of(scenario, feeCode, vat, expectedTotal, expectedVat, requestedNetTravel,
           requestedNetWaiting, expectedNetTravel, expectedNetWaiting);
     }
@@ -222,8 +222,8 @@ class MagsYouthCourtFixedFeeCalculatorTest {
         boolean vatIndicator,
         double expectedTotal,
         double expectedVat,
-        double expectedNetTravel,
-        double expectedNetWaiting
+        Double expectedNetTravel,
+        Double expectedNetWaiting
     ) {
       FeeCalculation expectedCalculation = FeeCalculation.builder()
           .totalAmount(expectedTotal)
@@ -256,8 +256,8 @@ class MagsYouthCourtFixedFeeCalculatorTest {
         double expectedVat,
         Double requestedNetTravel,
         Double requestedNetWaiting,
-        double expectedNetTravel,
-        double expectedNetWaiting
+        Double expectedNetTravel,
+        Double expectedNetWaiting
     ) {
       FeeCalculationRequest feeCalculationRequest = buildRequestUndesignated(feeCode, vatIndicator, requestedNetTravel,
           requestedNetWaiting);
@@ -288,8 +288,8 @@ class MagsYouthCourtFixedFeeCalculatorTest {
         double expectedVat,
         Double requestedNetTravel,
         Double requestedNetWaiting,
-        double expectedNetTravel,
-        double expectedNetWaiting
+        Double expectedNetTravel,
+        Double expectedNetWaiting
     ) {
       FeeCalculationRequest feeCalculationRequest = buildRequestUndesignated(feeCode, vatIndicator, requestedNetTravel,
           requestedNetWaiting);

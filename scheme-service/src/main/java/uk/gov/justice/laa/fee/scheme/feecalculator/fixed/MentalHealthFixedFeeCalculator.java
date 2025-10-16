@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static java.util.Objects.nonNull;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.filterBoltOnFeeDetails;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
@@ -96,7 +97,7 @@ public class MentalHealthFixedFeeCalculator implements FeeCalculator {
             .requestedNetDisbursementAmount(toDouble(requestNetDisbursementAmount))
             .disbursementVatAmount(toDouble(requestedDisbursementVatAmount))
             .fixedFeeAmount(toDouble(fixedFeeAmount))
-            .boltOnFeeDetails(boltOnFeeDetails)
+            .boltOnFeeDetails(filterBoltOnFeeDetails(boltOnFeeDetails))
             .build())
         .build();
   }

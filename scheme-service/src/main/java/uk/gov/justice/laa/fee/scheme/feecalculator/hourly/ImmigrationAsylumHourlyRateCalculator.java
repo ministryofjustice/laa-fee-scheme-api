@@ -4,6 +4,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.LimitType.DISBURSEMENT;
 import static uk.gov.justice.laa.fee.scheme.enums.LimitType.PROFIT_COST;
 import static uk.gov.justice.laa.fee.scheme.enums.LimitType.TOTAL;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.checkLimitAndCapIfExceeded;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.filterBoltOnFeeDetails;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
@@ -298,7 +299,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
         .netProfitCostsAmount(toDouble(netProfitCostsAmount))
         .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
         .netCostOfCounselAmount(includeCostOfCounsel ? feeCalculationRequest.getNetCostOfCounsel() : null)
-        .boltOnFeeDetails(boltOnFeeDetails)
+        .boltOnFeeDetails(filterBoltOnFeeDetails(boltOnFeeDetails))
         .build();
   }
 }

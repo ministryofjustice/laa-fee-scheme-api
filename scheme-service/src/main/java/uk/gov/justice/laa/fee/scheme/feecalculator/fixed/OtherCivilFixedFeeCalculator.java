@@ -100,6 +100,7 @@ public class OtherCivilFixedFeeCalculator implements FeeCalculator {
             .disbursementAmount(toDouble(netDisbursementAmount))
             .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
+            .requestedNetProfitCostsAmount(toDouble(netProfitCosts))
             .netProfitCostsAmount(toDouble(netProfitCosts))
             .fixedFeeAmount(toDouble(fixedFee))
             .build())

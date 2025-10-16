@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.filterBoltOnFeeDetails;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
@@ -114,9 +115,9 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
             .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
             .disbursementVatAmount(toDouble(requestedDisbursementVatAmount))
             .fixedFeeAmount(toDouble(fixedFeeAmount))
-            .detentionTravelAndWaitingCostsAmount(toDouble(requestedDetentionTravelAndWaitingCosts))
-            .jrFormFillingAmount(toDouble(requestedJrFormFillingCosts))
-            .boltOnFeeDetails(boltOnFeeDetails)
+            .detentionTravelAndWaitingCostsAmount(feeCalculationRequest.getDetentionTravelAndWaitingCosts())
+            .jrFormFillingAmount(feeCalculationRequest.getJrFormFilling())
+            .boltOnFeeDetails(filterBoltOnFeeDetails(boltOnFeeDetails))
             .build())
         .build();
   }

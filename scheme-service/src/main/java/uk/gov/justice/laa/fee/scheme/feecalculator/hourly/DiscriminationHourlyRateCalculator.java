@@ -95,7 +95,7 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
             .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .hourlyTotalAmount(toDouble(feeTotal))
-            .netCostOfCounselAmount(toDouble(netCostOfCounsel))
+            .netCostOfCounselAmount(feeCalculationRequest.getNetCostOfCounsel())
             .netProfitCostsAmount(toDouble(netProfitCosts))
             // net profit cost not capped, so requested and calculated will be same
             .requestedNetProfitCostsAmount(toDouble(netProfitCosts))

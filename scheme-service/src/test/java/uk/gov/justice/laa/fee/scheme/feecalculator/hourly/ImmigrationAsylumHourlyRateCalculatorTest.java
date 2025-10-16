@@ -368,7 +368,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     assertThat(result.getSchemeId()).isEqualTo("IMM_ASYLM_FS2023");
     assertWarnings(result.getValidationMessages(), expectedWarnings);
 
-    BoltOnFeeDetails expectedBoltOnFeeDetails = requestedBoltOns == null ? BoltOnFeeDetails.builder().boltOnTotalFeeAmount(0.0).build() :
+    BoltOnFeeDetails expectedBoltOnFeeDetails = requestedBoltOns == null ? null :
           expectedBoltOnFeeDetails(requestedBoltOns.getBoltOnSubstantiveHearing());
 
     assertFeeCalculation(result.getFeeCalculation(), expectedTotal, vatIndicator,

@@ -96,8 +96,9 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
             .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
             .disbursementVatAmount(toDouble(disbursementVatAmount))
             .netProfitCostsAmount(toDouble(netProfitCosts))
-            .netTravelCostsAmount(toDouble(netTravelCosts))
-            .netWaitingCostsAmount(toDouble(netWaitingCosts))
+            .requestedNetProfitCostsAmount(toDouble(netProfitCosts))
+            .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())
+            .netWaitingCostsAmount(feeCalculationRequest.getNetWaitingCosts())
             .fixedFeeAmount(toDouble(fixedFee))
             .build())
         .build();

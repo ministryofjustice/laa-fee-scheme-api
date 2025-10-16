@@ -124,6 +124,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                 "disbursementVatAmount": 11.07,
                 "fixedFeeAmount": 79.0,
                 "netProfitCostsAmount": 27.8,
+                "requestedNetProfitCostsAmount": 27.8,
                 "netTravelCostsAmount": 10.0,
                 "netWaitingCostsAmount": 11.5
                 }
@@ -586,6 +587,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
             "disbursementVatAmount": 24.67,
+            "requestedNetProfitCostsAmount": 239.06,
             "netProfitCostsAmount": 239.06,
             "fixedFeeAmount": %s
           }

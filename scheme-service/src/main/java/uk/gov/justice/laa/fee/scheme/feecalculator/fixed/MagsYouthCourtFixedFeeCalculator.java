@@ -105,8 +105,8 @@ public class MagsYouthCourtFixedFeeCalculator implements FeeCalculator {
         .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
         .disbursementVatAmount(toDouble(requestedDisbursementVatAmount))
         .fixedFeeAmount(toDouble(fixedFeeAmount))
-        .netWaitingCostsAmount(toDouble(requestedWaitingCosts))
-        .netTravelCostsAmount(toDouble(requestedTravelCosts))
+        .netWaitingCostsAmount(feeCalculationRequest.getNetWaitingCosts())
+        .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())
         .build();
 
     return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation);
