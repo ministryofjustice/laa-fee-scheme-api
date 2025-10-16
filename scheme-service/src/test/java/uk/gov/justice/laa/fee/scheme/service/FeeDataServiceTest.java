@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGS_COURT_DESIGNATED;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 
 import java.math.BigDecimal;
@@ -131,6 +132,88 @@ class FeeDataServiceTest {
     assertThat(feeEntityResponse).isNotNull();
     assertThat(feeEntityResponse.getFeeCode()).isEqualTo("INVC");
     assertThat(feeEntityResponse.getFixedFee()).isEqualTo("1256.66");
+  }
+
+  @Test
+  void getFeeEntity_whenMultipleRecordsPresentInFeeTableAndFeeSchemeEndedForMagCourt_shouldReturnValidResponse() {
+
+    FeeCalculationRequest feeData = getFeeCalculationRequest();
+    feeData.setFeeCode("PROJ7");
+    feeData.setRepresentationOrderDate(LocalDate.of(2022,9,29));
+    feeData.setDisbursementVatAmount(15.50);
+    feeData.setNetDisbursementAmount(20.00);
+
+    FeeSchemesEntity feeSchemesEntity1 = FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2016")
+        .validFrom(LocalDate.of(2016, 4, 1)).validTo(LocalDate.of(2022, 9, 29)).build();
+
+    FeeEntity feeEntity1 = FeeEntity.builder()
+        .feeCode("PROJ7")
+        .feeScheme(feeSchemesEntity1)
+        .fixedFee(new BigDecimal("471.81"))
+        .categoryType(MAGS_COURT_DESIGNATED)
+        .feeType(FeeType.FIXED)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity2 = FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2022")
+        .validFrom(LocalDate.of(2016, 1, 1)).build();
+
+    FeeEntity feeEntity2 = FeeEntity.builder()
+        .feeCode("PROJ7")
+        .feeScheme(feeSchemesEntity2)
+        .fixedFee(new BigDecimal("542.58"))
+        .categoryType(MAGS_COURT_DESIGNATED)
+        .feeType(FeeType.FIXED)
+        .build();
+
+    when(feeRepository.findByFeeCode(any())).thenReturn(List.of(feeEntity1, feeEntity2));
+
+    FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeData);
+
+    assertThat(feeEntityResponse).isNotNull();
+    assertThat(feeEntityResponse.getFeeCode()).isEqualTo("PROJ7");
+    assertThat(feeEntityResponse.getFixedFee()).isEqualTo("471.81");
+    assertThat(feeEntityResponse.getFeeScheme().getSchemeCode()).isEqualTo("MAGS_COURT_FS2016");
+  }
+
+  @Test
+  void getFeeEntity_whenMultipleRecordsPresentInFeeTableForMagCourt_shouldReturnValidResponse() {
+
+    FeeCalculationRequest feeData = getFeeCalculationRequest();
+    feeData.setFeeCode("PROJ7");
+    feeData.setRepresentationOrderDate(LocalDate.of(2022,9,30));
+    feeData.setDisbursementVatAmount(15.50);
+    feeData.setNetDisbursementAmount(20.00);
+
+    FeeSchemesEntity feeSchemesEntity1 = FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2016")
+        .validFrom(LocalDate.of(2016, 4, 1)).validTo(LocalDate.of(2022, 9, 29)).build();
+
+    FeeEntity feeEntity1 = FeeEntity.builder()
+        .feeCode("PROJ7")
+        .feeScheme(feeSchemesEntity1)
+        .fixedFee(new BigDecimal("471.81"))
+        .categoryType(MAGS_COURT_DESIGNATED)
+        .feeType(FeeType.FIXED)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity2 = FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2022")
+        .validFrom(LocalDate.of(2016, 1, 1)).build();
+
+    FeeEntity feeEntity2 = FeeEntity.builder()
+        .feeCode("PROJ7")
+        .feeScheme(feeSchemesEntity2)
+        .fixedFee(new BigDecimal("542.58"))
+        .categoryType(MAGS_COURT_DESIGNATED)
+        .feeType(FeeType.FIXED)
+        .build();
+
+    when(feeRepository.findByFeeCode(any())).thenReturn(List.of(feeEntity1, feeEntity2));
+
+    FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeData);
+
+    assertThat(feeEntityResponse).isNotNull();
+    assertThat(feeEntityResponse.getFeeCode()).isEqualTo("PROJ7");
+    assertThat(feeEntityResponse.getFixedFee()).isEqualTo("542.58");
+    assertThat(feeEntityResponse.getFeeScheme().getSchemeCode()).isEqualTo("MAGS_COURT_FS2022");
   }
 
   @Test

@@ -88,7 +88,6 @@ components:
       type: object
       required:
         - feeCode
-        - vatIndicator
       properties:
         feeCode:
           type: string

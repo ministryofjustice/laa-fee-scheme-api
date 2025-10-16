@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
+import static uk.gov.justice.laa.fee.scheme.enums.LimitType.DISBURSEMENT;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.checkLimitAndCapIfExceeded;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
@@ -17,6 +19,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.LimitContext;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
@@ -66,6 +69,8 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     BigDecimal requestedJrFormFillingCosts = toBigDecimal(feeCalculationRequest.getJrFormFilling());
     // get the bolt fee details from util class
     BoltOnFeeDetails boltOnFeeDetails = BoltOnUtil.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
+    // get the immigration Prior Authority Number
+    String immigrationPriorAuthorityNumber = feeCalculationRequest.getImmigrationPriorAuthorityNumber();
 
     BigDecimal netDisbursementAmount;
     if (FEE_CODES_NO_DISBURSEMENT_LIMIT_AND_NO_ESCAPE.contains(feeEntity.getFeeCode())) {
@@ -73,8 +78,13 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
       netDisbursementAmount = requestedNetDisbursementAmount;
     } else {
       log.info("Check disbursement for fee calculation");
-      netDisbursementAmount = getNetDisbursement(requestedNetDisbursementAmount, feeCalculationRequest,
-          feeEntity, validationMessages);
+      String message = ("IALB".equals(feeCalculationRequest.getFeeCode()) || "IMLB".equals(feeCalculationRequest.getFeeCode()))
+          ? WARNING_MESSAGE_WARIA2
+          : WARNING_MESSAGE_WARIA1;
+      LimitContext disbursementLimitContext = new LimitContext(DISBURSEMENT, feeEntity.getDisbursementLimit(),
+          immigrationPriorAuthorityNumber, message);
+
+      netDisbursementAmount = checkLimitAndCapIfExceeded(requestedNetDisbursementAmount, disbursementLimitContext, validationMessages);
     }
 
     log.info("Calculate fixed fee and costs");
@@ -119,40 +129,6 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
             .boltOnFeeDetails(boltOnFeeDetails)
             .build())
         .build();
-  }
-
-  /**
-   * Calculate net disbursement amount based on requested amount, limit and prior authority.
-   */
-  private static BigDecimal getNetDisbursement(BigDecimal requestedNetDisbursementAmount,
-                                               FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
-                                               List<ValidationMessagesInner> validationMessages) {
-
-    BigDecimal netDisbursementLimit = feeEntity.getDisbursementLimit();
-
-    if (requestedNetDisbursementAmount.compareTo(netDisbursementLimit) <= 0) {
-      // Where requestedNetDisbursementAmount is below limit, we allow request as is.
-      log.info("Disbursement is below limit for fee calculation");
-      return requestedNetDisbursementAmount;
-    }
-    // Where requestedNetDisbursementAmount is above limit, we allow request as is, if they have authorisation,
-    // if no authorisation default to limit.
-    if (feeCalculationRequest.getImmigrationPriorAuthorityNumber() != null) {
-      log.info("Disbursement above limit with authorisation");
-      return requestedNetDisbursementAmount;
-    }
-
-    log.info("Disbursement above limit without authorisation capped to limit: {}", netDisbursementLimit);
-    String message = ("IALB".equals(feeCalculationRequest.getFeeCode()) || "IMLB".equals(feeCalculationRequest.getFeeCode()))
-        ? WARNING_MESSAGE_WARIA2
-        : WARNING_MESSAGE_WARIA1;
-
-    validationMessages.add(ValidationMessagesInner.builder()
-        .message(message)
-        .type(WARNING)
-        .build());
-
-    return netDisbursementLimit;
   }
 
   /**
