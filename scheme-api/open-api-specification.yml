@@ -274,6 +274,8 @@ components:
           type:
             type: string
             enum: [ERROR, WARNING]
+          code:
+            type: string
           message:
             type: string
 

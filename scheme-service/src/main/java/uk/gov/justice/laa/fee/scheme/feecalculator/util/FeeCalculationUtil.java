@@ -56,8 +56,8 @@ public final class FeeCalculationUtil {
   /**
    * Check if amount exceeds limit without authority and cap to limit if exceeded.
    *
-   * @param amount          the amount to check
-   * @param limitContext    the limit context containing limit details
+   * @param amount             the amount to check
+   * @param limitContext       the limit context containing limit details
    * @param validationMessages the list to add validation messages to
    * @return the capped amount if limit exceeded without authority, otherwise the original amount
    */

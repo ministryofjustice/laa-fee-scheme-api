@@ -15,8 +15,10 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import uk.gov.justice.laa.fee.scheme.controller.FeeCalculationController;
+import uk.gov.justice.laa.fee.scheme.enums.ValidationError;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 @ExtendWith(MockitoExtension.class)
 class GlobalExceptionHandlerTest {
@@ -72,17 +74,19 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
-  void handleFeeEntityNotfoundForScheme() {
-    LocalDate date = LocalDate.of(2025, 2, 20);
-    FeeNotFoundException exception = new FeeNotFoundException("FEE123", date);
+  void handleFeeException() throws NoSuchMethodException {
+    ValidationException exception = new ValidationException(ValidationError.ERRALL1, new FeeContext("FEE123", LocalDate.of(2020, 3, 1) ,"SchemeOne", "claim_123"));
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeeCodeNotfound(exception);
+    ResponseEntity<FeeCalculationResponse> response = globalExceptionHandler.handleFeeException(exception);
 
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().getStatus()).isEqualTo(404);
-    assertThat(response.getBody().getMessage())
-        .isEqualTo("Fee not found for feeCode: FEE123 and startDate: 2025-02-20");
+
+    FeeCalculationResponse feeCalculationResponse = response.getBody();
+    assertThat(feeCalculationResponse.getFeeCode()).isEqualTo("FEE123");
+    assertThat(feeCalculationResponse.getSchemeId()).isEqualTo("SchemeOne");
+    assertThat(feeCalculationResponse.getClaimId()).isEqualTo("claim_123");
+    assertThat(feeCalculationResponse.getFeeCalculation()).isNull();
   }
 
   @Test
