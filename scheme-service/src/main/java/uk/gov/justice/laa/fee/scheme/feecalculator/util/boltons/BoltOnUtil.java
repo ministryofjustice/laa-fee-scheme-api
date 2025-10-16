@@ -30,7 +30,7 @@ public class BoltOnUtil {
    * Add each boltOnXXXXXXFee for a total, boltOnTotalFeeAmount 
    */
   public static BoltOnFeeDetails calculateBoltOnAmounts(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
-    BoltOnFeeDetails boltOnTotal = BoltOnFeeDetails.builder().boltOnTotalFeeAmount(toDouble(BigDecimal.ZERO)).build();
+    BoltOnFeeDetails boltOnFeeDetails = BoltOnFeeDetails.builder().boltOnTotalFeeAmount(toDouble(BigDecimal.ZERO)).build();
 
     if (feeCalculationRequest.getBoltOns() != null) {
 
@@ -54,20 +54,20 @@ public class BoltOnUtil {
 
             switch (i.type()) {
               case ADJOURNED_HEARING -> {
-                boltOnTotal.setBoltOnAdjournedHearingCount(i.requested());
-                boltOnTotal.setBoltOnAdjournedHearingFee(toDouble(total));
+                boltOnFeeDetails.setBoltOnAdjournedHearingCount(i.requested());
+                boltOnFeeDetails.setBoltOnAdjournedHearingFee(toDouble(total));
               }
               case HOME_OFFICE_INTERVIEW -> {
-                boltOnTotal.setBoltOnHomeOfficeInterviewCount(i.requested());
-                boltOnTotal.setBoltOnHomeOfficeInterviewFee(toDouble(total));
+                boltOnFeeDetails.setBoltOnHomeOfficeInterviewCount(i.requested());
+                boltOnFeeDetails.setBoltOnHomeOfficeInterviewFee(toDouble(total));
               }
               case CMRH_ORAL -> {
-                boltOnTotal.setBoltOnCmrhOralCount(i.requested());
-                boltOnTotal.setBoltOnCmrhOralFee(toDouble(total));
+                boltOnFeeDetails.setBoltOnCmrhOralCount(i.requested());
+                boltOnFeeDetails.setBoltOnCmrhOralFee(toDouble(total));
               }
               case CMRH_TELEPHONE -> {
-                boltOnTotal.setBoltOnCmrhTelephoneCount(i.requested());
-                boltOnTotal.setBoltOnCmrhTelephoneFee(toDouble(total));
+                boltOnFeeDetails.setBoltOnCmrhTelephoneCount(i.requested());
+                boltOnFeeDetails.setBoltOnCmrhTelephoneFee(toDouble(total));
               }
               default -> throw new IllegalStateException("Unexpected bolt on type: " + i.type());
             }
@@ -75,10 +75,10 @@ public class BoltOnUtil {
           })
           .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-      boltOnTotal.setBoltOnTotalFeeAmount(toDouble(totalFee));
+      boltOnFeeDetails.setBoltOnTotalFeeAmount(toDouble(totalFee));
     }
 
-    return boltOnTotal;
+    return boltOnFeeDetails;
   }
 
 }

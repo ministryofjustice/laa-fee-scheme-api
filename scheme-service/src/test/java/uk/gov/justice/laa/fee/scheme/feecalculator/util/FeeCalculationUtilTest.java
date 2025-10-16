@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.FAMILY;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MENTAL_HEALTH;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
@@ -36,21 +37,17 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 class FeeCalculationUtilTest {
 
   @CsvSource(value = {
-      "false, null, null, 94.96", // false VAT indicator
-      "true, null, null, 106.88", // true VAT indicator
-      "false, 2, 22.15, 139.26", // false VAT indicator with bolt ons
-      "true, 2, 22.15, 160.04", // true VAT indicator with bolt ons
+      "false, 94.96", // false VAT indicator
+      "true, 106.88", // true VAT indicator
   }, nullValues = {"null"})
   @ParameterizedTest
-  void calculate_givenFeeEntity_returnsFeeCalculationResponse(Boolean vatIndicator, Integer noBoltOns, BigDecimal boltOnFee,
-                                                              double expectedTotal) {
+  void calculate_givenFeeEntity_returnsFeeCalculationResponse(Boolean vatIndicator, double expectedTotal) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("FEE1")
         .startDate(LocalDate.of(2025, 1, 1))
         .vatIndicator(vatIndicator)
         .netDisbursementAmount(29.45)
         .disbursementVatAmount(5.89)
-        .boltOns(noBoltOns != null ? BoltOnType.builder().boltOnAdjournedHearing(noBoltOns).build() : null)
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
@@ -58,7 +55,6 @@ class FeeCalculationUtilTest {
         .feeScheme(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
         .categoryType(MENTAL_HEALTH)
         .fixedFee(new BigDecimal("59.62"))
-        .adjornHearingBoltOn(boltOnFee)
         .build();
 
     FeeCalculationResponse response = FeeCalculationUtil.calculate(feeCalculationRequest, feeEntity);
@@ -95,62 +91,6 @@ class FeeCalculationUtilTest {
     FeeCalculation calculation = response.getFeeCalculation();
     assertThat(calculation).isNotNull();
     assertThat(calculation.getTotalAmount()).isEqualTo(106.88);
-  }
-
-  @Test
-  void calculate_givenFixedFeeWithBoltOns_returnsFeeCalculationResponse() {
-    BigDecimal fixedFee = new BigDecimal("263.00");
-    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode("MHL02")
-        .claimId("claim_123")
-        .startDate(LocalDate.of(2025, 1, 1))
-        .vatIndicator(true)
-        .netDisbursementAmount(29.45)
-        .disbursementVatAmount(5.89)
-        .boltOns(BoltOnType.builder()
-            .boltOnAdjournedHearing(1)
-            .build())
-        .build();
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("MHL02")
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("MHL_FS2013").build())
-        .fixedFee(fixedFee)
-        .adjornHearingBoltOn(new BigDecimal(100))
-        .categoryType(MENTAL_HEALTH)
-        .build();
-
-    FeeCalculationResponse response = FeeCalculationUtil.calculate(feeCalculationRequest, feeEntity);
-
-    FeeCalculation expectedCalculation = FeeCalculation.builder()
-        .totalAmount(470.94)
-        .vatIndicator(true)
-        .vatRateApplied(20.0)
-        .disbursementAmount(29.45)
-        .requestedNetDisbursementAmount(29.45)
-        .disbursementVatAmount(5.89)
-        .fixedFeeAmount(263.00)
-        .calculatedVatAmount(72.60)
-        .boltOnFeeDetails(BoltOnFeeDetails.builder()
-            .boltOnTotalFeeAmount(100.00)
-            .boltOnAdjournedHearingCount(1)
-            .boltOnAdjournedHearingFee(100.00)
-            .build())
-        .build();
-
-    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
-        .feeCode("MHL02")
-        .schemeId("MHL_FS2013")
-        .claimId("claim_123")
-        .validationMessages(new ArrayList<>())
-        .escapeCaseFlag(false)
-        .feeCalculation(expectedCalculation)
-        .build();
-
-    assertThat(response)
-        .usingRecursiveComparison()
-        .isEqualTo(expectedResponse);
-
   }
 
   @ParameterizedTest
@@ -214,7 +154,6 @@ class FeeCalculationUtilTest {
     assertEquals(expectedDate, result);
   }
 
-
   @Test
   void shouldThrowException_ifUniqueFileNumberIsNullForPoliceStation() {
     FeeCalculationRequest request = getFeeCalculationRequest();
@@ -258,13 +197,15 @@ class FeeCalculationUtilTest {
   }
 
   @ParameterizedTest
-  @CsvSource({
-      "99, false",
-      "100, false",
-      "101, true",
-  })
-  void isEscapedCase_returnsResult(BigDecimal amount, boolean expected) {
-    boolean result = FeeCalculationUtil.isEscapedCase(amount, new BigDecimal("100"));
+  @CsvSource(value = {
+      "99, null, false",
+      "99, 100, false",
+      "100, 100, false",
+      "101, null, false",
+      "101, 100, true",
+  }, nullValues = {"null"})
+  void isEscapedCase_returnsResult(BigDecimal amount, BigDecimal limit, boolean expected) {
+    boolean result = FeeCalculationUtil.isEscapedCase(amount, limit);
 
     assertThat(result).isEqualTo(expected);
   }
@@ -292,5 +233,4 @@ class FeeCalculationUtilTest {
             List.of(ValidationMessagesInner.builder().type(WARNING).message("Warning message").build()))
     );
   }
-
 }
