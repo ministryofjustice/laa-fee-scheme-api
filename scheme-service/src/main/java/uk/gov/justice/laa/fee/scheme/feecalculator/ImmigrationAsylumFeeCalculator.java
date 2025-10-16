@@ -1,13 +1,13 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isFixedFee;
 
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.disbursement.ImmigrationAsylumDisbursementOnlyCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.ImmigrationAsylumFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.ImmigrationAsylumHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -21,8 +21,8 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 public class ImmigrationAsylumFeeCalculator implements FeeCalculator {
 
   private final ImmigrationAsylumFixedFeeCalculator immigrationAsylumFixedFeeCalculator;
-
   private final ImmigrationAsylumHourlyRateCalculator immigrationAsylumHourlyRateCalculator;
+  private final ImmigrationAsylumDisbursementOnlyCalculator immigrationAsylumDisbursementOnlyCalculator;
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -35,11 +35,12 @@ public class ImmigrationAsylumFeeCalculator implements FeeCalculator {
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    if (isFixedFee(feeEntity.getFeeType())) {
-      return immigrationAsylumFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
-    } else {
-      return immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
-    }
+    return switch (feeEntity.getFeeType()) {
+      case FIXED -> immigrationAsylumFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+      case HOURLY -> immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
+      case DISB_ONLY -> immigrationAsylumDisbursementOnlyCalculator.calculate(feeCalculationRequest, feeEntity);
+    };
+
   }
 
 }
