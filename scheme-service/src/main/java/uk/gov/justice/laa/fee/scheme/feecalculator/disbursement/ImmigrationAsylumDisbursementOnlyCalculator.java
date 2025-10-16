@@ -22,7 +22,7 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
  */
 @Slf4j
 @Component
-public class ImmigrationAndAsylumDisbursementOnlyCalculator {
+public class ImmigrationAsylumDisbursementOnlyCalculator {
   // @TODO: TBC during error and validation work, and likely moved to common util
   public static final String WARNING_MESSAGE_WARIA11 = "Costs have been capped without an Immigration Priority Authority "
       + "Number. Disbursement costs exceed the Disbursement Limit.";

@@ -3,7 +3,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.disbursement;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.DISB_ONLY;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.disbursement.ImmigrationAndAsylumDisbursementOnlyCalculator.WARNING_MESSAGE_WARIA11;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.disbursement.ImmigrationAsylumDisbursementOnlyCalculator.WARNING_MESSAGE_WARIA11;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -25,10 +25,10 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
-class ImmigrationAndAsylumDisbursementOnlyCalculatorTest {
+class ImmigrationAsylumDisbursementOnlyCalculatorTest {
 
   @InjectMocks
-  ImmigrationAndAsylumDisbursementOnlyCalculator immigrationAndAsylumDisbursementOnlyCalculator;
+  ImmigrationAsylumDisbursementOnlyCalculator immigrationAsylumDisbursementOnlyCalculator;
 
   public static Stream<Arguments> testData() {
     return Stream.of(
@@ -85,7 +85,7 @@ class ImmigrationAndAsylumDisbursementOnlyCalculatorTest {
         .disbursementLimit(BigDecimal.valueOf(disbursementLimit))
         .build();
 
-    FeeCalculationResponse response = immigrationAndAsylumDisbursementOnlyCalculator.calculate(feeCalculationRequest, feeEntity);
+    FeeCalculationResponse response = immigrationAsylumDisbursementOnlyCalculator.calculate(feeCalculationRequest, feeEntity);
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     if (hasWarning) {

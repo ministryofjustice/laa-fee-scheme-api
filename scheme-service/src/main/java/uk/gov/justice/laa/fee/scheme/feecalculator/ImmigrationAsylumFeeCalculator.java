@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.feecalculator.disbursement.ImmigrationAndAsylumDisbursementOnlyCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.disbursement.ImmigrationAsylumDisbursementOnlyCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.ImmigrationAsylumFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.ImmigrationAsylumHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -22,7 +22,7 @@ public class ImmigrationAsylumFeeCalculator implements FeeCalculator {
 
   private final ImmigrationAsylumFixedFeeCalculator immigrationAsylumFixedFeeCalculator;
   private final ImmigrationAsylumHourlyRateCalculator immigrationAsylumHourlyRateCalculator;
-  private final ImmigrationAndAsylumDisbursementOnlyCalculator immigrationAndAsylumDisbursementOnlyCalculator;
+  private final ImmigrationAsylumDisbursementOnlyCalculator immigrationAsylumDisbursementOnlyCalculator;
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -38,7 +38,7 @@ public class ImmigrationAsylumFeeCalculator implements FeeCalculator {
     return switch (feeEntity.getFeeType()) {
       case FIXED -> immigrationAsylumFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
       case HOURLY -> immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
-      case DISB_ONLY -> immigrationAndAsylumDisbursementOnlyCalculator.calculate(feeCalculationRequest, feeEntity);
+      case DISB_ONLY -> immigrationAsylumDisbursementOnlyCalculator.calculate(feeCalculationRequest, feeEntity);
     };
 
   }

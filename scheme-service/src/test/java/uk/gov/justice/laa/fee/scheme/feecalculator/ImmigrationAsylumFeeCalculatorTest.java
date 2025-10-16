@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
-import uk.gov.justice.laa.fee.scheme.feecalculator.disbursement.ImmigrationAndAsylumDisbursementOnlyCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.disbursement.ImmigrationAsylumDisbursementOnlyCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.ImmigrationAsylumFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.ImmigrationAsylumHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -30,7 +30,7 @@ class ImmigrationAsylumFeeCalculatorTest {
   ImmigrationAsylumHourlyRateCalculator immigrationAsylumHourlyRateCalculator;
 
   @Mock
-  ImmigrationAndAsylumDisbursementOnlyCalculator immigrationAndAsylumDisbursementOnlyCalculator;
+  ImmigrationAsylumDisbursementOnlyCalculator immigrationAsylumDisbursementOnlyCalculator;
 
   @InjectMocks
   ImmigrationAsylumFeeCalculator immigrationAsylumFeeCalculator;
@@ -53,7 +53,7 @@ class ImmigrationAsylumFeeCalculatorTest {
     switch (feeType) {
       case FIXED -> verify(immigrationAsylumFixedFeeCalculator).calculate(feeCalculationRequest, feeEntity);
       case HOURLY -> verify(immigrationAsylumHourlyRateCalculator).calculate(feeCalculationRequest, feeEntity);
-      case DISB_ONLY -> verify(immigrationAndAsylumDisbursementOnlyCalculator).calculate(feeCalculationRequest, feeEntity);
+      case DISB_ONLY -> verify(immigrationAsylumDisbursementOnlyCalculator).calculate(feeCalculationRequest, feeEntity);
     }
   }
 
