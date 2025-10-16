@@ -136,7 +136,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
       FeeCalculation expectedCalculation = FeeCalculation.builder()
           .totalAmount(expectedTotal)
           .vatIndicator(vatIndicator)
-          .vatRateApplied(20.0)
+          .vatRateApplied(vatIndicator ? 20.0 : null)
           .disbursementAmount(requestedDisbursementAmount)
           .requestedNetDisbursementAmount(feeData.getNetDisbursementAmount())
           .disbursementVatAmount(disbursementVatAmount)

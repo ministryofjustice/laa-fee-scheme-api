@@ -70,7 +70,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     assertThat(feeCalculation).isNotNull();
     assertThat(feeCalculation.getTotalAmount()).isEqualTo(expectedTotal);
     assertThat(feeCalculation.getVatIndicator()).isEqualTo(vatIndicator);
-    assertThat(feeCalculation.getVatRateApplied()).isEqualTo(20.0);
+    assertThat(feeCalculation.getVatRateApplied()).isEqualTo(vatIndicator ? 20.0 : null);
     assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(expectedCalculatedVat);
     assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(expectedNetDisbursement);
     assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(netDisbursement);
@@ -446,7 +446,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     assertThat(feeCalculation).isNotNull();
     assertThat(feeCalculation.getTotalAmount()).isEqualTo(total);
     assertThat(feeCalculation.getVatIndicator()).isEqualTo(vatIndicator);
-    assertThat(feeCalculation.getVatRateApplied()).isEqualTo(20.0);
+    assertThat(feeCalculation.getVatRateApplied()).isEqualTo(vatIndicator ? 20.0 : null);
     assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(calculatedVat);
     assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(netDisbursement);
     assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(netDisbursement);

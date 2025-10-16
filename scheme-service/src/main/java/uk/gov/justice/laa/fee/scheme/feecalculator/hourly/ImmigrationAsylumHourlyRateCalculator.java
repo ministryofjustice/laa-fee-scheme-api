@@ -9,6 +9,7 @@ import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEn
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -290,7 +291,8 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     return FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
         .vatIndicator(feeCalculationRequest.getVatIndicator())
-        .vatRateApplied(toDouble(VatUtil.getVatRateForDate(feeCalculationRequest.getStartDate())))
+        .vatRateApplied(toDoubleOrNull(VatUtil
+            .getVatRateForDate(feeCalculationRequest.getStartDate(), feeCalculationRequest.getVatIndicator())))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(toDouble(disbursementAmount))
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())

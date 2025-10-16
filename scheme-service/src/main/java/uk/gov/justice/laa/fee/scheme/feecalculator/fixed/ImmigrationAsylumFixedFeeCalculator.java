@@ -6,6 +6,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRat
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -109,7 +110,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+            .vatRateApplied(toDoubleOrNull(getVatRateForDate(startDate, vatApplicable)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
             .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))

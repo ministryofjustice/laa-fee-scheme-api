@@ -8,6 +8,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmo
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -66,7 +67,7 @@ public class MagsYouthCourtFixedFeeCalculator implements FeeCalculator {
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
         .vatIndicator(vatApplicable)
-        .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+        .vatRateApplied(toDoubleOrNull(getVatRateForDate(startDate, vatApplicable)))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(toDouble(requestedNetDisbursementAmount))
         .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
@@ -99,7 +100,7 @@ public class MagsYouthCourtFixedFeeCalculator implements FeeCalculator {
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
         .vatIndicator(vatApplicable)
-        .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+        .vatRateApplied(toDoubleOrNull(getVatRateForDate(startDate, vatApplicable)))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(toDouble(requestedNetDisbursementAmount))
         .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))

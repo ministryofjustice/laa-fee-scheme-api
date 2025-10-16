@@ -3,6 +3,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -88,7 +89,7 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(feeCalculationRequest.getVatIndicator())
-            .vatRateApplied(toDouble(VatUtil.getVatRateForDate(feeCalculationRequest.getStartDate())))
+            .vatRateApplied(toDoubleOrNull(VatUtil.getVatRateForDate(feeCalculationRequest.getStartDate(), vatApplicable)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
             // disbursement not capped, so requested and calculated will be same

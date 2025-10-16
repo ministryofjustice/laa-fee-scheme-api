@@ -52,7 +52,7 @@ class MentalHealthFixedFeeCalculatorTest {
     return FeeCalculation.builder()
         .totalAmount(expectedTotal)
         .vatIndicator(vatIndicator)
-        .vatRateApplied(20.0)
+        .vatRateApplied(vatIndicator ? 20.0 : null)
         .disbursementAmount(50.50)
         .requestedNetDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
