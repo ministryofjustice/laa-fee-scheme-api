@@ -80,7 +80,7 @@ public class GlobalExceptionHandler {
         .feeCode(context.feeCode())
         .schemeId(context.schemeId())
         .claimId(context.claimId())
-        .validationMessages(List.of()).build();
+        .validationMessages(List.of(validationMessages)).build();
 
     return ResponseEntity.ok(feeCalculationResponse);
   }

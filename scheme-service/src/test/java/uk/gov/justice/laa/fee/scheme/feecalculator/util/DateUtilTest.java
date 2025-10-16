@@ -12,7 +12,7 @@ class DateUtilTest {
 
   @Test
   void testValidDateHavingValidDayAndMonth() {
-    LocalDate result = DateUtil.toLocalDate("120325/8789");
+    LocalDate result = DateUtil.toLocalDate("12032025/8789");
     assertEquals(LocalDate.of(2025, 3, 12), result);
   }
 
