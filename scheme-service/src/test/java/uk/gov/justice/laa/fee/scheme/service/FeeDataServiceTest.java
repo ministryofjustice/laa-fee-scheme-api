@@ -24,7 +24,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.Region;
-import uk.gov.justice.laa.fee.scheme.exception.FeeNotFoundException;
+import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
@@ -269,7 +269,6 @@ class FeeDataServiceTest {
   }
 
   @Test
-  @Disabled
   void getFeeEntity_whenNoRecordReturnedAfterFilteringFeeEntityList_shouldThrowException() {
 
     FeeCalculationRequest feeData = getFeeCalculationRequest();
@@ -284,11 +283,11 @@ class FeeDataServiceTest {
     when(feeRepository.findByFeeCode(any())).thenReturn(List.of(feeEntity));
 
     assertThatThrownBy(() -> feeDataService.getFeeEntity(feeData))
-        .hasMessageContaining(String.format("Fee not found for feeCode: %s and startDate: %s", "INVC", claimStartDate));
+        .isInstanceOf(ValidationException.class)
+        .hasMessage("Fee Code is not valid for Case Start Date.");
   }
 
   @Test
-  @Disabled
   void test_whenNoRecordPresentInFeeTable_shouldThrowException() {
 
     FeeCalculationRequest feeData = getFeeCalculationRequest();
@@ -296,7 +295,8 @@ class FeeDataServiceTest {
     when(feeRepository.findByFeeCode(any())).thenReturn(List.of());
 
     assertThatThrownBy(() -> feeDataService.getFeeEntity(feeData))
-        .hasMessageContaining(String.format("Fee not found for feeCode: %s and startDate: %s", "INVC", feeData.getStartDate()));
+        .isInstanceOf(ValidationException.class)
+        .hasMessageContaining("Enter a valid Fee Code");
   }
 
   @ParameterizedTest()
@@ -336,8 +336,7 @@ class FeeDataServiceTest {
   }
 
   @Test
-  @Disabled
-  void getFeeEntity_whenFamilyCategoryAndLondonRateIsMissing_shouldReturnCorrectFeeEntity() {
+  void getFeeEntity_whenFamilyCategoryAndLondonRateIsMissing_shouldThrowException() {
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("FAM_LON_FS2011")
         .validFrom(LocalDate.of(2011, 1, 1)).build();
 
@@ -358,10 +357,9 @@ class FeeDataServiceTest {
         .disbursementVatAmount(20.15)
         .build();
 
-    FeeNotFoundException feeNotFoundException = assertThrows(FeeNotFoundException.class, () -> {
-      feeDataService.getFeeEntity(feeCalculationRequest);
-    });
-    assertThat(feeNotFoundException.getMessage()).isEqualTo("Fee not found for feeCode: FPB010 and startDate: 2025-02-11");
+    assertThatThrownBy(() -> feeDataService.getFeeEntity(feeCalculationRequest))
+        .isInstanceOf(ValidationException.class)
+        .hasMessageContaining("Fee Code is not valid for Case Start Date.");
   }
 
   private FeeEntity policeStationFeeEntity(FeeSchemesEntity feeSchemesEntity) {

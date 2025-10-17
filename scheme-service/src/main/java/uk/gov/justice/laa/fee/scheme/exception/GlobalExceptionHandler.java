@@ -94,7 +94,7 @@ public class GlobalExceptionHandler {
   }
 
   /**
-   * Global exception handler for FeeNotFoundException exception.
+   * Global exception handler for PoliceStationFeeNotFoundException exception.
    */
   @ExceptionHandler(PoliceStationFeeNotFoundException.class)
   public ResponseEntity<ErrorResponse> handlePoliceStationFeeNotfound(PoliceStationFeeNotFoundException ex) {

@@ -7,7 +7,6 @@ import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCIV2;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -63,13 +62,7 @@ public class FeeDataService {
     }
 
     // filter out valid fee entity for a given input parameters
-    Optional<FeeEntity> feeEntityOptional = feeEntityList.stream()
-        .filter(fee -> filterByRegion(fee, feeCalculationRequest.getLondonRate()))
-        .filter(fee -> isValidFee(fee, claimStartDate)) // startDate <= inputDate
-        .max(Comparator.comparing(fee -> fee.getFeeScheme().getValidFrom()));
-
-    FeeEntity feeEntity = feeEntityOptional
-        .orElseThrow(() -> new ValidationException(ERRCIV1, new FeeContext(feeCalculationRequest)));
+    FeeEntity feeEntity = getValidFeeEntity(feeEntityList, feeCalculationRequest, claimStartDate);
 
     log.info("Retrieved fee entity with feeId: {} and schemeCode: {}", feeEntity.getFeeId(),
         feeEntity.getFeeScheme().getSchemeCode());
@@ -96,5 +89,14 @@ public class FeeDataService {
     AreaOfLawType areaOfLaw = feeDetailsService.getAreaOfLaw(feeCode);
 
     return areaOfLaw == AreaOfLawType.LEGAL_HELP || areaOfLaw == AreaOfLawType.MEDIATION;
+  }
+
+  private FeeEntity getValidFeeEntity(List<FeeEntity> feeEntityList,
+                                                FeeCalculationRequest feeCalculationRequest, LocalDate claimStartDate) {
+    return feeEntityList.stream()
+        .filter(fee -> filterByRegion(fee, feeCalculationRequest.getLondonRate()))
+        .filter(fee -> isValidFee(fee, claimStartDate)) // startDate <= inputDate
+        .max(Comparator.comparing(fee -> fee.getFeeScheme().getValidFrom()))
+        .orElseThrow(() -> new ValidationException(ERRCIV1, new FeeContext(feeCalculationRequest)));
   }
 }
