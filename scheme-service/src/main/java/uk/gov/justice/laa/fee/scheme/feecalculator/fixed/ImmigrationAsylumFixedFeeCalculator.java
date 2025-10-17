@@ -25,6 +25,7 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.util.LimitContext;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
+import uk.gov.justice.laa.fee.scheme.model.EscapeCaseCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -47,6 +48,10 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
       + "Authority Number. Disbursement costs exceed the Disbursement Limit.";
   public static final String WARNING_MESSAGE_WARIA3 = "The claim exceeds the Escape Case Threshold. An Escape Case "
       + "Claim must be submitted for further costs to be paid. ";
+
+  private record EscapeCaseResult(boolean escaped, BigDecimal calculatedEscapeCaseValue, BigDecimal escapeThresholdLimit) {}
+
+  private EscapeCaseResult escapeCaseResult = new EscapeCaseResult(false, BigDecimal.ZERO, BigDecimal.ZERO);
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -104,10 +109,9 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFeeAndAdditionalCosts,
         calculatedVatAmount, netDisbursementAmount, requestedDisbursementVatAmount);
 
-    boolean escapeCaseFlag = false;
     if (!FEE_CODES_NO_DISBURSEMENT_LIMIT_AND_NO_ESCAPE.contains(feeCalculationRequest.getFeeCode())) {
       log.info("calculate if case has escaped");
-      escapeCaseFlag = isEscaped(feeCalculationRequest, feeEntity, boltOnFeeDetails, validationMessages);
+      escapeCaseResult = isEscaped(feeCalculationRequest, feeEntity, boltOnFeeDetails, validationMessages);
     }
 
     log.info("Build fee calculation response");
@@ -116,7 +120,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
         .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .claimId(feeCalculationRequest.getClaimId())
         .validationMessages(validationMessages)
-        .escapeCaseFlag(escapeCaseFlag)
+        .escapeCaseFlag(escapeCaseResult.escaped())
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
@@ -130,14 +134,16 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
             .jrFormFillingAmount(feeCalculationRequest.getJrFormFilling())
             .boltOnFeeDetails(filterBoltOnFeeDetails(boltOnFeeDetails))
             .build())
+        .escapeCaseCalculation(escapeCaseResult.escaped()
+            ? getEscapeCalculation(feeCalculationRequest, feeEntity, escapeCaseResult.calculatedEscapeCaseValue()) : null)
         .build();
   }
 
   /**
    * Calculate if case has escaped (excluding "IDAS1", "IDAS2").
    */
-  private boolean isEscaped(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity, BoltOnFeeDetails boltOnFeeDetails,
-                            List<ValidationMessagesInner> validationMessages) {
+  private EscapeCaseResult isEscaped(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity, BoltOnFeeDetails boltOnFeeDetails,
+                                                                    List<ValidationMessagesInner> validationMessages) {
 
     String feeCode = feeCalculationRequest.getFeeCode();
     BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
@@ -155,19 +161,32 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
         ? feeEntity.getSubstantiveHearingBoltOn()
         : BigDecimal.ZERO;
     BigDecimal additionalPayments = requestedBoltOnCosts.add(substantiveBoltOnCost);
-    BigDecimal totalAmount = grossTotal.subtract(additionalPayments);
+    BigDecimal calculatedEscapeCaseValue = grossTotal.subtract(additionalPayments);
 
-    if (isEscapedCase(totalAmount, escapeThresholdLimit)) {
+    if (isEscapedCase(calculatedEscapeCaseValue, escapeThresholdLimit)) {
       log.warn("Case has escaped");
       validationMessages.add(ValidationMessagesInner.builder()
           .message(WARNING_MESSAGE_WARIA3)
           .type(WARNING)
           .build());
-      return true;
+      return new EscapeCaseResult(true, calculatedEscapeCaseValue, escapeThresholdLimit);
     } else {
       log.warn("Case has not escaped");
-      return false;
+      return new EscapeCaseResult(false, calculatedEscapeCaseValue, escapeThresholdLimit);
     }
+  }
+
+  private static EscapeCaseCalculation getEscapeCalculation(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
+                                                            BigDecimal calculatedEscapeCaseValue) {
+    return EscapeCaseCalculation.builder()
+        .calculatedEscapeCaseValue(toDouble(calculatedEscapeCaseValue))
+        .escapeCaseThreshold(toDouble(feeEntity.getEscapeThresholdLimit()))
+        .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+        .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+        .netCostOfCounselAmount(NO_COUNSEL_FEE_CODES.contains(feeCalculationRequest.getFeeCode())
+            ? null
+            : feeCalculationRequest.getNetCostOfCounsel())
+        .build();
   }
 }
 

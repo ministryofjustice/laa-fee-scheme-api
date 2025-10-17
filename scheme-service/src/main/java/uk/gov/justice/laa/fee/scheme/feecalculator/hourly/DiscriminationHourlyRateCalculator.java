@@ -19,6 +19,7 @@ import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
+import uk.gov.justice.laa.fee.scheme.model.EscapeCaseCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -54,12 +55,13 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal netCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());
 
-    BigDecimal feeTotal = netProfitCosts.add(netCostOfCounsel);
+    BigDecimal calculatedEscapeCaseValue = netProfitCosts.add(netCostOfCounsel);
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
-    boolean isEscaped = FeeCalculationUtil.isEscapedCase(feeTotal, feeEntity.getEscapeThresholdLimit());
+    boolean isEscaped = FeeCalculationUtil.isEscapedCase(calculatedEscapeCaseValue, feeEntity.getEscapeThresholdLimit());
 
+    BigDecimal feeTotal = calculatedEscapeCaseValue;
     if (isEscaped) {
       log.warn("Fee total exceeds escape threshold limit");
       validationMessages.add(ValidationMessagesInner.builder()
@@ -102,6 +104,19 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
             // net profit cost not capped, so requested and calculated will be same
             .requestedNetProfitCostsAmount(toDouble(netProfitCosts))
             .build())
+        .escapeCaseCalculation(isEscaped
+            ? getEscapeCalculation(feeCalculationRequest, feeEntity, calculatedEscapeCaseValue) : null)
+        .build();
+  }
+
+  private static EscapeCaseCalculation getEscapeCalculation(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
+                                                            BigDecimal calculatedEscapeCaseValue) {
+    return EscapeCaseCalculation.builder()
+        .calculatedEscapeCaseValue(toDouble(calculatedEscapeCaseValue))
+        .escapeCaseThreshold(toDouble(feeEntity.getEscapeThresholdLimit()))
+        .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+        .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+        .netCostOfCounselAmount(feeCalculationRequest.getNetCostOfCounsel())
         .build();
   }
 }

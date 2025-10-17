@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.model.EscapeCaseCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -56,6 +57,8 @@ class OtherCivilFixedFeeCalculatorTest {
     FeeCalculationResponse result = feeCalculator.calculate(feeCalculationRequest, feeEntity);
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, true);
+
+    assertEscapeCaseCalculation(result, netProfitCosts);
 
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
         .message("123")
@@ -107,4 +110,14 @@ class OtherCivilFixedFeeCalculatorTest {
     assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.22);
     assertThat(feeCalculation.getFixedFeeAmount()).isEqualTo(250);
   }
+
+  private void assertEscapeCaseCalculation(FeeCalculationResponse response, double netProfitCosts) {
+    EscapeCaseCalculation escapeCaseCalculation = response.getEscapeCaseCalculation();
+    assertThat(escapeCaseCalculation).isNotNull();
+    assertThat(escapeCaseCalculation.getCalculatedEscapeCaseValue()).isEqualTo(netProfitCosts);
+    assertThat(escapeCaseCalculation.getEscapeCaseThreshold()).isEqualTo(500.0);
+    assertThat(escapeCaseCalculation.getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
+    assertThat(escapeCaseCalculation.getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
+  }
+
 }

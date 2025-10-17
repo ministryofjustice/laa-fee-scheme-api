@@ -24,6 +24,7 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
+import uk.gov.justice.laa.fee.scheme.model.EscapeCaseCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -39,6 +40,10 @@ public class MentalHealthFixedFeeCalculator implements FeeCalculator {
   // @TODO: TBC during error and validation work, and likely moved to common util
   public static final String WARNING_MESSAGE_WARMH1 = "The claim exceeds the Escape Case Threshold. An Escape Case Claim "
       + "must be submitted for further costs to be paid.";
+
+  private record EscapeCaseResult(boolean escaped, BigDecimal calculatedEscapeCaseValue, BigDecimal escapeThresholdLimit) {}
+
+  private EscapeCaseResult escapeCaseResult = new EscapeCaseResult(false, BigDecimal.ZERO, BigDecimal.ZERO);
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -77,9 +82,8 @@ public class MentalHealthFixedFeeCalculator implements FeeCalculator {
     );
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    boolean escapeCaseFlag = false;
     if (nonNull(feeEntity.getEscapeThresholdLimit())) {
-      escapeCaseFlag = isEscaped(feeCalculationRequest, feeEntity, boltOnFeeDetails, validationMessages);
+      escapeCaseResult = isEscaped(feeCalculationRequest, feeEntity, boltOnFeeDetails, validationMessages);
     }
 
     log.info("Build fee calculation response");
@@ -87,7 +91,7 @@ public class MentalHealthFixedFeeCalculator implements FeeCalculator {
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .claimId(feeCalculationRequest.getClaimId())
-        .escapeCaseFlag(escapeCaseFlag)
+        .escapeCaseFlag(escapeCaseResult.escaped())
         .validationMessages(validationMessages)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
@@ -100,30 +104,44 @@ public class MentalHealthFixedFeeCalculator implements FeeCalculator {
             .fixedFeeAmount(toDouble(fixedFeeAmount))
             .boltOnFeeDetails(filterBoltOnFeeDetails(boltOnFeeDetails))
             .build())
+        .escapeCaseCalculation(escapeCaseResult.escaped
+            ? getEscapeCalculation(feeCalculationRequest, escapeCaseResult.calculatedEscapeCaseValue(),
+            escapeCaseResult.escapeThresholdLimit()) : null)
         .build();
   }
 
-  private boolean isEscaped(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
-                               BoltOnFeeDetails boltOnFeeDetails, List<ValidationMessagesInner> validationMessages) {
+  private EscapeCaseResult isEscaped(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
+                            BoltOnFeeDetails boltOnFeeDetails, List<ValidationMessagesInner> validationMessages) {
 
     BigDecimal requestedNetProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal requestedNetCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());
-    BigDecimal totalA = requestedNetProfitCosts.add(requestedNetCostOfCounsel);
+    BigDecimal calculatedEscapeCaseValue = requestedNetProfitCosts.add(requestedNetCostOfCounsel);
 
     BigDecimal escapeCaseThreshold = feeEntity.getEscapeThresholdLimit();
     BigDecimal requestedBoltOnTotalAmount = toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount());
-    BigDecimal totalB = escapeCaseThreshold.add(requestedBoltOnTotalAmount);
+    BigDecimal escapeThresholdLimit = escapeCaseThreshold.add(requestedBoltOnTotalAmount);
 
-    if (isEscapedCase(totalA, totalB)) {
+    if (isEscapedCase(calculatedEscapeCaseValue, escapeThresholdLimit)) {
       log.warn("Case has escaped");
       validationMessages.add(ValidationMessagesInner.builder()
           .message(WARNING_MESSAGE_WARMH1)
           .type(WARNING)
           .build());
-      return true;
+      return new EscapeCaseResult(true, calculatedEscapeCaseValue, escapeThresholdLimit);
     } else {
       log.warn("Case has not escaped");
-      return false;
+      return new EscapeCaseResult(false, calculatedEscapeCaseValue, escapeThresholdLimit);
     }
+  }
+
+  private static EscapeCaseCalculation getEscapeCalculation(FeeCalculationRequest feeCalculationRequest,
+                                                            BigDecimal calculatedEscapeCaseValue, BigDecimal escapeThresholdLimit) {
+    return EscapeCaseCalculation.builder()
+        .calculatedEscapeCaseValue(toDouble(calculatedEscapeCaseValue))
+        .escapeCaseThreshold(toDouble(escapeThresholdLimit))
+        .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+        .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+        .netCostOfCounselAmount(feeCalculationRequest.getNetCostOfCounsel())
+        .build();
   }
 }

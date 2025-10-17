@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.model.EscapeCaseCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -39,7 +40,7 @@ class AssociatedCivilFixedFeeCalculatorTest {
 
     FeeCalculationResponse result = associatedCivilFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
-    assertFeeCalculation(result, expectedTotal, vatIndicator, netTravelCosts, netWaitingCosts, expectedVat, false);
+    assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, false);
   }
 
   @ParameterizedTest
@@ -56,7 +57,9 @@ class AssociatedCivilFixedFeeCalculatorTest {
 
     FeeCalculationResponse result = associatedCivilFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
-    assertFeeCalculation(result, expectedTotal, vatIndicator, netTravelCosts, netWaitingCosts, expectedVat, true);
+    assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, true);
+
+    assertEscapeCaseCalculation(result, netTravelCosts, netWaitingCosts);
 
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
         .message("123")
@@ -92,8 +95,8 @@ class AssociatedCivilFixedFeeCalculatorTest {
         .build();
   }
 
-  private void assertFeeCalculation(FeeCalculationResponse response, double total, boolean vatIndicator,
-                                    double netTravelCosts, double netWaitingCosts, double vat, boolean escapeFlag) {
+  private void assertFeeCalculation(FeeCalculationResponse response, double total, boolean vatIndicator, double vat,
+                                    boolean escapeFlag) {
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("ASMS");
     assertThat(response.getClaimId()).isEqualTo("claim_123");
@@ -109,8 +112,17 @@ class AssociatedCivilFixedFeeCalculatorTest {
     assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(100.11);
     assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(100.11);
     assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.22);
-    assertThat(feeCalculation.getNetTravelCostsAmount()).isEqualTo(netTravelCosts);
-    assertThat(feeCalculation.getNetWaitingCostsAmount()).isEqualTo(netWaitingCosts);
     assertThat(feeCalculation.getFixedFeeAmount()).isEqualTo(50);
+  }
+
+  private void assertEscapeCaseCalculation(FeeCalculationResponse response, double netTravelCosts, double netWaitingCosts) {
+    EscapeCaseCalculation escapeCaseCalculation = response.getEscapeCaseCalculation();
+    assertThat(escapeCaseCalculation).isNotNull();
+    assertThat(escapeCaseCalculation.getCalculatedEscapeCaseValue()).isEqualTo(510);
+    assertThat(escapeCaseCalculation.getEscapeCaseThreshold()).isEqualTo(500.0);
+    assertThat(escapeCaseCalculation.getNetProfitCostsAmount()).isEqualTo(400.00);
+    assertThat(escapeCaseCalculation.getRequestedNetProfitCostsAmount()).isEqualTo(400.00);
+    assertThat(escapeCaseCalculation.getNetTravelCostsAmount()).isEqualTo(netTravelCosts);
+    assertThat(escapeCaseCalculation.getNetWaitingCostsAmount()).isEqualTo(netWaitingCosts);
   }
 }
