@@ -18,7 +18,7 @@ class VatUtilTest {
   })
   void should_getVatRateForDate(String date, String expectedVatRate) {
     LocalDate localDate = LocalDate.parse(date);
-    assertThat(VatUtil.getVatRateForDate(localDate)).isEqualTo(expectedVatRate);
+    assertThat(VatUtil.getVatRateForDate(localDate, true)).isEqualTo(expectedVatRate);
   }
 
   @Test

@@ -50,7 +50,7 @@ class BoltOnUtilTest {
                 .hoInterviewBoltOn(BigDecimal.valueOf(100))
                 .adjornHearingBoltOn(BigDecimal.valueOf(100))
                 .build(),
-            0.0,
+            null,
             null,
             null,
             null,

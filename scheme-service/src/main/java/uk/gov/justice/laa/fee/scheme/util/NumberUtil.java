@@ -32,6 +32,17 @@ public final class NumberUtil {
   }
 
   /**
+   * Converts a Double value to a BigDecimal with scaling.
+   * Where null or Zero, return null.
+   */
+  public static Double toDoubleOrNull(BigDecimal value) {
+    if (value == null || BigDecimal.ZERO.compareTo(value) == 0) {
+      return null;
+    }
+    return value.doubleValue();
+  }
+
+  /**
    * Returns the given BigDecimal value or BigDecimal.ZERO if the value is null.
    *
    * @param value the BigDecimal value to check

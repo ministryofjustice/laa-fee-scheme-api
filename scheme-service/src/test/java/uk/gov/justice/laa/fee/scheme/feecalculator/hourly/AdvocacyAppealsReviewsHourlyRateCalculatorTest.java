@@ -103,7 +103,7 @@ class AdvocacyAppealsReviewsHourlyRateCalculatorTest {
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(expectedTotal)
         .vatIndicator(vatIndicator)
-        .vatRateApplied(20.0)
+        .vatRateApplied(vatIndicator ? 20.0 : null)
         .calculatedVatAmount(calculatedVatAmount)
         .disbursementAmount(netDisbursementAmount)
         .requestedNetDisbursementAmount(netDisbursementAmount)

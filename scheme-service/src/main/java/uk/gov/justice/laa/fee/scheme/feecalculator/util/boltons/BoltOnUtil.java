@@ -30,7 +30,7 @@ public class BoltOnUtil {
    * Add each boltOnXXXXXXFee for a total, boltOnTotalFeeAmount 
    */
   public static BoltOnFeeDetails calculateBoltOnAmounts(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
-    BoltOnFeeDetails boltOnFeeDetails = BoltOnFeeDetails.builder().boltOnTotalFeeAmount(toDouble(BigDecimal.ZERO)).build();
+    BoltOnFeeDetails boltOnFeeDetails = BoltOnFeeDetails.builder().build();
 
     if (feeCalculationRequest.getBoltOns() != null) {
 

@@ -7,6 +7,7 @@ import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEn
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
+import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -127,12 +129,12 @@ public final class FeeCalculationUtil {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(claimStartDate)))
+            .vatRateApplied(toDoubleOrNull(getVatRateForDate(claimStartDate, vatApplicable)))
             .calculatedVatAmount(toDouble(fixedFeeVatAmount))
-            .disbursementAmount(toDouble(netDisbursementAmount))
+            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             // disbursement not capped, so requested and calculated will be same
-            .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
-            .disbursementVatAmount(toDouble(disbursementVatAmount))
+            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
             .fixedFeeAmount(toDouble(fixedFee))
             .build())
         .build();
@@ -197,5 +199,15 @@ public final class FeeCalculationUtil {
     return limitContext.limit() != null
            && amount.compareTo(limitContext.limit()) > 0
            && StringUtils.isBlank(limitContext.authority());
+  }
+
+  /**
+   * If bolts ons are null, return null for request.
+   */
+  public static BoltOnFeeDetails filterBoltOnFeeDetails(BoltOnFeeDetails boltOnFeeDetails) {
+    if (boltOnFeeDetails == null || boltOnFeeDetails.getBoltOnTotalFeeAmount() == null) {
+      return null;
+    }
+    return boltOnFeeDetails;
   }
 }

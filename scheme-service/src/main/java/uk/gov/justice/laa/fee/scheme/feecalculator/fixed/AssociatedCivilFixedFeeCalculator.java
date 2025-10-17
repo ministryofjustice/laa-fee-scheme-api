@@ -6,6 +6,7 @@ import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEn
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
+import uk.gov.justice.laa.fee.scheme.model.EscapeCaseCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -65,12 +67,12 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
     BigDecimal netTravelCosts = toBigDecimal(feeCalculationRequest.getNetTravelCosts());
     BigDecimal netWaitingCosts = toBigDecimal(feeCalculationRequest.getNetWaitingCosts());
 
-    BigDecimal feeTotal = netProfitCosts
+    BigDecimal calculatedEscapeCaseValue = netProfitCosts
         .add(netTravelCosts)
         .add(netWaitingCosts);
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    boolean isEscaped = FeeCalculationUtil.isEscapedCase(feeTotal, feeEntity.getEscapeThresholdLimit());
+    boolean isEscaped = FeeCalculationUtil.isEscapedCase(calculatedEscapeCaseValue, feeEntity.getEscapeThresholdLimit());
 
     if (isEscaped) {
       log.warn("Fee total exceeds escape threshold limit");
@@ -90,16 +92,27 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(claimStartDate)))
+            .vatRateApplied(toDoubleOrNull(getVatRateForDate(claimStartDate, vatApplicable)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(toDouble(netDisbursementAmount))
-            .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
-            .disbursementVatAmount(toDouble(disbursementVatAmount))
-            .netProfitCostsAmount(toDouble(netProfitCosts))
-            .netTravelCostsAmount(toDouble(netTravelCosts))
-            .netWaitingCostsAmount(toDouble(netWaitingCosts))
+            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
             .fixedFeeAmount(toDouble(fixedFee))
             .build())
+        .escapeCaseCalculation(isEscaped
+            ? getEscapeCalculation(feeCalculationRequest, feeEntity, calculatedEscapeCaseValue) : null)
+        .build();
+  }
+
+  private static EscapeCaseCalculation getEscapeCalculation(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
+                                                            BigDecimal calculatedEscapeCaseValue) {
+    return EscapeCaseCalculation.builder()
+        .calculatedEscapeCaseValue(toDouble(calculatedEscapeCaseValue))
+        .escapeCaseThreshold(toDouble(feeEntity.getEscapeThresholdLimit()))
+        .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+        .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+        .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())
+        .netWaitingCostsAmount(feeCalculationRequest.getNetWaitingCosts())
         .build();
   }
 }
