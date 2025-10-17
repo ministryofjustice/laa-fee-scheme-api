@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.exception;
 
 import lombok.Getter;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import uk.gov.justice.laa.fee.scheme.enums.ValidationError;
 
 /**
@@ -21,5 +22,13 @@ public class ValidationException extends RuntimeException  {
     super(error.getErrorMessage());
     this.error = error;
     this.context = context;
+  }
+
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this)
+        .append("error", error)
+        .append("context", context)
+        .toString();
   }
 }
