@@ -623,7 +623,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "feeCode": "INVC",
                   "claimId": "claim_123",
                   "startDate": "2019-12-12",
-                  "uniqueFileNumber": "12122019/2423",
+                  "uniqueFileNumber": "121219/2423",
                   "policeStationId": "NE001",
                   "policeStationSchemeId": "1001",
                   "vatIndicator": false

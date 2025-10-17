@@ -2,6 +2,8 @@ package uk.gov.justice.laa.fee.scheme.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -10,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Immutable;
+import uk.gov.justice.laa.fee.scheme.enums.AreaOfLawType;
 
 /**
  *  Entity to hold values returned from area_of_law_type table.
@@ -29,7 +32,8 @@ public class AreaOfLawTypeEntity {
   @Column(name = "area_of_law_type_id", updatable = false, insertable = false)
   private Long id;
 
-  private String code;
+  @Enumerated(EnumType.STRING)
+  private AreaOfLawType code;
 
   private String description;
 }

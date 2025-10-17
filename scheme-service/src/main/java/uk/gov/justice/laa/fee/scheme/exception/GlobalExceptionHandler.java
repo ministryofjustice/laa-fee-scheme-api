@@ -1,8 +1,10 @@
 package uk.gov.justice.laa.fee.scheme.exception;
 
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.ERROR;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +14,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import uk.gov.justice.laa.fee.scheme.enums.ValidationError;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 /**
  * Global exception handler for our controllers.
@@ -56,11 +61,28 @@ public class GlobalExceptionHandler {
   }
 
   /**
-   * Global exception handler for FeeNotFoundException exception.
+   * Global exception handler for ValidationException exception.
    */
-  @ExceptionHandler(FeeNotFoundException.class)
-  public ResponseEntity<ErrorResponse> handleFeeCodeNotfound(FeeNotFoundException ex) {
-    return handleException(ex, HttpStatus.NOT_FOUND);
+  @ExceptionHandler(ValidationException.class)
+  public ResponseEntity<FeeCalculationResponse> handleValidationException(ValidationException ex) {
+    ValidationError error = ex.getError();
+    FeeContext context = ex.getContext();
+
+    log.error("Validation error with code: {} and message: {} :: {feeCode={}, startDate={}}",
+        ex.getError().name(), ex.getMessage(), context.feeCode(), context.startDate(), ex);
+
+    ValidationMessagesInner validationMessages = ValidationMessagesInner.builder()
+        .type(ERROR)
+        .code(error.name())
+        .message(error.getErrorMessage()).build();
+
+    FeeCalculationResponse feeCalculationResponse = FeeCalculationResponse.builder()
+        .feeCode(context.feeCode())
+        .schemeId(context.schemeId())
+        .claimId(context.claimId())
+        .validationMessages(List.of(validationMessages)).build();
+
+    return ResponseEntity.ok(feeCalculationResponse);
   }
 
   /**
@@ -72,7 +94,7 @@ public class GlobalExceptionHandler {
   }
 
   /**
-   * Global exception handler for FeeNotFoundException exception.
+   * Global exception handler for PoliceStationFeeNotFoundException exception.
    */
   @ExceptionHandler(PoliceStationFeeNotFoundException.class)
   public ResponseEntity<ErrorResponse> handlePoliceStationFeeNotfound(PoliceStationFeeNotFoundException ex) {
