@@ -61,14 +61,14 @@ public class GlobalExceptionHandler {
   }
 
   /**
-   * Global exception handler for Fee exception.
+   * Global exception handler for ValidationException exception.
    */
   @ExceptionHandler(ValidationException.class)
-  public ResponseEntity<FeeCalculationResponse> handleFeeException(ValidationException ex) {
+  public ResponseEntity<FeeCalculationResponse> handleValidationException(ValidationException ex) {
     ValidationError error = ex.getError();
     FeeContext context = ex.getContext();
 
-    log.error("Fee calculation error with code: {} and message: {} :: {feeCode={}, startDate={}}",
+    log.error("Validation error with code: {} and message: {} :: {feeCode={}, startDate={}}",
         ex.getError().name(), ex.getMessage(), context.feeCode(), context.startDate(), ex);
 
     ValidationMessagesInner validationMessages = ValidationMessagesInner.builder()

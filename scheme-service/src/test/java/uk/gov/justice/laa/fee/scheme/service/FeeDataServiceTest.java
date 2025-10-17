@@ -2,16 +2,20 @@ package uk.gov.justice.laa.fee.scheme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGS_COURT_DESIGNATED;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
+import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRALL1;
+import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCIV1;
+import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCIV2;
+import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCRM1;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,11 +25,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.AreaOfLawType;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.Region;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
-import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
 
@@ -65,6 +69,7 @@ class FeeDataServiceTest {
     FeeEntity feeEntity = policeStationFeeEntity(feeSchemesEntity);
 
     when(feeRepository.findByFeeCode(any())).thenReturn(List.of(feeEntity));
+    when(feeDetailsService.getAreaOfLaw("INVC")).thenReturn(AreaOfLawType.CRIME_LOWER);
 
     FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeData);
 
@@ -89,6 +94,7 @@ class FeeDataServiceTest {
     FeeEntity feeEntity2 = policeStationFeeEntity(feeSchemesEntity2);
 
     when(feeRepository.findByFeeCode(any())).thenReturn(List.of(feeEntity1, feeEntity2));
+    when(feeDetailsService.getAreaOfLaw("INVC")).thenReturn(AreaOfLawType.CRIME_LOWER);
 
     FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeData);
 
@@ -126,6 +132,7 @@ class FeeDataServiceTest {
         .build();
 
     when(feeRepository.findByFeeCode(any())).thenReturn(List.of(feeEntity1, feeEntity2));
+    when(feeDetailsService.getAreaOfLaw("INVC")).thenReturn(AreaOfLawType.CRIME_LOWER);
 
     FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeData);
 
@@ -139,7 +146,7 @@ class FeeDataServiceTest {
 
     FeeCalculationRequest feeData = getFeeCalculationRequest();
     feeData.setFeeCode("PROJ7");
-    feeData.setRepresentationOrderDate(LocalDate.of(2022,9,29));
+    feeData.setRepresentationOrderDate(LocalDate.of(2022, 9, 29));
     feeData.setDisbursementVatAmount(15.50);
     feeData.setNetDisbursementAmount(20.00);
 
@@ -166,6 +173,7 @@ class FeeDataServiceTest {
         .build();
 
     when(feeRepository.findByFeeCode(any())).thenReturn(List.of(feeEntity1, feeEntity2));
+    when(feeDetailsService.getAreaOfLaw("PROJ7")).thenReturn(AreaOfLawType.CRIME_LOWER);
 
     FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeData);
 
@@ -180,7 +188,7 @@ class FeeDataServiceTest {
 
     FeeCalculationRequest feeData = getFeeCalculationRequest();
     feeData.setFeeCode("PROJ7");
-    feeData.setRepresentationOrderDate(LocalDate.of(2022,9,30));
+    feeData.setRepresentationOrderDate(LocalDate.of(2022, 9, 30));
     feeData.setDisbursementVatAmount(15.50);
     feeData.setNetDisbursementAmount(20.00);
 
@@ -207,6 +215,7 @@ class FeeDataServiceTest {
         .build();
 
     when(feeRepository.findByFeeCode(any())).thenReturn(List.of(feeEntity1, feeEntity2));
+    when(feeDetailsService.getAreaOfLaw("PROJ7")).thenReturn(AreaOfLawType.CRIME_LOWER);
 
     FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeData);
 
@@ -234,6 +243,7 @@ class FeeDataServiceTest {
         .build();
 
     when(feeRepository.findByFeeCode(any())).thenReturn(List.of(feeEntity));
+    when(feeDetailsService.getAreaOfLaw("INVC")).thenReturn(AreaOfLawType.CRIME_LOWER);
 
     FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeData);
 
@@ -260,6 +270,7 @@ class FeeDataServiceTest {
         .build();
 
     when(feeRepository.findByFeeCode(any())).thenReturn(List.of(feeEntity));
+    when(feeDetailsService.getAreaOfLaw("INVC")).thenReturn(AreaOfLawType.CRIME_LOWER);
 
     FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeData);
 
@@ -269,11 +280,70 @@ class FeeDataServiceTest {
   }
 
   @Test
-  void getFeeEntity_whenNoRecordReturnedAfterFilteringFeeEntityList_shouldThrowException() {
+  void getFeeEntity_whenCivilFeeCodeAndStartDateIsInvalid_shouldThrowException() {
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode("DISC")
+        .startDate(LocalDate.of(2025, 5, 1))
+        .vatIndicator(Boolean.TRUE)
+        .netProfitCosts(1499.0)
+        .netCostOfCounsel(200.0)
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("DISC_FS2013")
+        .validFrom(LocalDate.of(2025, 3, 1))
+        .validTo(LocalDate.of(2025, 4, 1))
+        .build();
+
+    FeeEntity feeEntity = discriminationFeeEntity(feeSchemesEntity);
+
+    when(feeRepository.findByFeeCode("DISC")).thenReturn(List.of(feeEntity));
+    when(feeDetailsService.getAreaOfLaw("DISC")).thenReturn(AreaOfLawType.LEGAL_HELP);
+
+    assertThatThrownBy(() -> feeDataService.getFeeEntity(feeData))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERRCIV1)
+        .hasMessage("Fee Code is not valid for Case Start Date.");
+  }
+
+  @Test
+  void getFeeEntity_whenCivilFeeCodeAndDateTooFarInPast_shouldThrowException() {
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode("DISC")
+        .startDate(LocalDate.of(2025, 2, 11))
+        .vatIndicator(Boolean.TRUE)
+        .netProfitCosts(1499.0)
+        .netCostOfCounsel(200.0)
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("DISC_FS2013")
+        .validFrom(LocalDate.of(2025, 10, 1)).build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("DISC")
+        .feeScheme(feeSchemesEntity)
+        .categoryType(DISCRIMINATION)
+        .feeType(FeeType.FIXED)
+        .build();
+
+    when(feeRepository.findByFeeCode("DISC")).thenReturn(List.of(feeEntity));
+    when(feeDetailsService.getAreaOfLaw("DISC")).thenReturn(AreaOfLawType.LEGAL_HELP);
+
+    assertThatThrownBy(() -> feeDataService.getFeeEntity(feeData))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERRCIV2)
+        .hasMessage("Case Start Date is too far in the past.");
+  }
+
+  @Test
+  void getFeeEntity_whenCrimeFeeCodeAndStartDateIsInvalid_shouldThrowException() {
 
     FeeCalculationRequest feeData = getFeeCalculationRequest();
-
-    LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(POLICE_STATION, feeData);
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2025")
         .validFrom(LocalDate.of(2025, 10, 1)).build();
@@ -281,9 +351,11 @@ class FeeDataServiceTest {
     FeeEntity feeEntity = policeStationFeeEntity(feeSchemesEntity);
 
     when(feeRepository.findByFeeCode(any())).thenReturn(List.of(feeEntity));
+    when(feeDetailsService.getAreaOfLaw("INVC")).thenReturn(AreaOfLawType.CRIME_LOWER);
 
     assertThatThrownBy(() -> feeDataService.getFeeEntity(feeData))
         .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERRCRM1)
         .hasMessage("Fee Code is not valid for Case Start Date.");
   }
 
@@ -292,11 +364,12 @@ class FeeDataServiceTest {
 
     FeeCalculationRequest feeData = getFeeCalculationRequest();
 
-    when(feeRepository.findByFeeCode(any())).thenReturn(List.of());
+    when(feeRepository.findByFeeCode("INVC")).thenReturn(List.of());
 
     assertThatThrownBy(() -> feeDataService.getFeeEntity(feeData))
         .isInstanceOf(ValidationException.class)
-        .hasMessageContaining("Enter a valid Fee Code");
+        .hasFieldOrPropertyWithValue("error", ERRALL1)
+        .hasMessage("Enter a valid Fee Code.");
   }
 
   @ParameterizedTest()
@@ -360,6 +433,15 @@ class FeeDataServiceTest {
     assertThatThrownBy(() -> feeDataService.getFeeEntity(feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining("Fee Code is not valid for Case Start Date.");
+  }
+
+  private FeeEntity discriminationFeeEntity(FeeSchemesEntity feeSchemesEntity) {
+    return  FeeEntity.builder()
+        .feeCode("DISC")
+        .feeScheme(feeSchemesEntity)
+        .categoryType(DISCRIMINATION)
+        .feeType(FeeType.FIXED)
+        .build();
   }
 
   private FeeEntity policeStationFeeEntity(FeeSchemesEntity feeSchemesEntity) {

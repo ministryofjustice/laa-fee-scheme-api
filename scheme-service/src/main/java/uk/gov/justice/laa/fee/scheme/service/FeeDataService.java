@@ -3,10 +3,12 @@ package uk.gov.justice.laa.fee.scheme.service;
 import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRALL1;
 import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCIV1;
 import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCIV2;
+import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCRM1;
 
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.AreaOfLawType;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.Region;
+import uk.gov.justice.laa.fee.scheme.enums.ValidationError;
 import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
@@ -62,7 +65,12 @@ public class FeeDataService {
     }
 
     // filter out valid fee entity for a given input parameters
-    FeeEntity feeEntity = getValidFeeEntity(feeEntityList, feeCalculationRequest, claimStartDate);
+    Optional<FeeEntity> feeEntityOptional = getValidFeeEntity(feeEntityList, feeCalculationRequest, claimStartDate);
+    FeeEntity feeEntity = feeEntityOptional
+        .orElseThrow(() -> {
+          ValidationError error = isCivil(feeCode) ? ERRCIV1 : ERRCRM1;
+          return new ValidationException(error, new FeeContext(feeCalculationRequest));
+        });
 
     log.info("Retrieved fee entity with feeId: {} and schemeCode: {}", feeEntity.getFeeId(),
         feeEntity.getFeeScheme().getSchemeCode());
@@ -91,12 +99,11 @@ public class FeeDataService {
     return areaOfLaw == AreaOfLawType.LEGAL_HELP || areaOfLaw == AreaOfLawType.MEDIATION;
   }
 
-  private FeeEntity getValidFeeEntity(List<FeeEntity> feeEntityList,
+  private Optional<FeeEntity> getValidFeeEntity(List<FeeEntity> feeEntityList,
                                                 FeeCalculationRequest feeCalculationRequest, LocalDate claimStartDate) {
     return feeEntityList.stream()
         .filter(fee -> filterByRegion(fee, feeCalculationRequest.getLondonRate()))
         .filter(fee -> isValidFee(fee, claimStartDate)) // startDate <= inputDate
-        .max(Comparator.comparing(fee -> fee.getFeeScheme().getValidFrom()))
-        .orElseThrow(() -> new ValidationException(ERRCIV1, new FeeContext(feeCalculationRequest)));
+        .max(Comparator.comparing(fee -> fee.getFeeScheme().getValidFrom()));
   }
 }

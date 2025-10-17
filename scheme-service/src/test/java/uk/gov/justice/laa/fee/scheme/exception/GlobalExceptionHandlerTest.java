@@ -1,6 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRALL1;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.ERROR;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +22,7 @@ import uk.gov.justice.laa.fee.scheme.enums.ValidationError;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
 class GlobalExceptionHandlerTest {
@@ -74,10 +78,11 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
-  void handleFeeException() throws NoSuchMethodException {
-    ValidationException exception = new ValidationException(ValidationError.ERRALL1, new FeeContext("FEE123", LocalDate.of(2020, 3, 1) ,"SchemeOne", "claim_123"));
+  void handleValidationException() {
+    FeeContext feeContext = new FeeContext("FEE123", LocalDate.of(2020, 3, 1), "SchemeOne", "claim_123");
+    ValidationException exception = new ValidationException(ERRALL1, feeContext);
 
-    ResponseEntity<FeeCalculationResponse> response = globalExceptionHandler.handleFeeException(exception);
+    ResponseEntity<FeeCalculationResponse> response = globalExceptionHandler.handleValidationException(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isNotNull();
@@ -86,6 +91,14 @@ class GlobalExceptionHandlerTest {
     assertThat(feeCalculationResponse.getFeeCode()).isEqualTo("FEE123");
     assertThat(feeCalculationResponse.getSchemeId()).isEqualTo("SchemeOne");
     assertThat(feeCalculationResponse.getClaimId()).isEqualTo("claim_123");
+
+    ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
+        .code("ERRALL1")
+        .type(ERROR)
+        .message("Enter a valid Fee Code.")
+        .build();
+    assertThat(feeCalculationResponse.getValidationMessages()).containsExactly(validationMessage);
+
     assertThat(feeCalculationResponse.getFeeCalculation()).isNull();
   }
 

@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme;
+package uk.gov.justice.laa.fee.scheme.validation;
 
 import static org.springframework.test.json.JsonCompareMode.STRICT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -61,40 +61,7 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
   }
 
   @Test
-  void shouldReturnValidationError_whenStartDateIsInvalid() throws Exception {
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "INVK",
-                  "claimId": "claim_123",
-                  "startDate": "2023-12-12",
-                  "uniqueFileNumber": "121223/2423",
-                  "policeStationId": "NE001",
-                  "policeStationSchemeId": "1001",
-                  "vatIndicator": false
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().json("""
-            {
-              "feeCode": "INVK",
-              "claimId": "claim_123",
-              "validationMessages": [
-                {
-                  "type":"ERROR",
-                  "code":"ERRCIV1",
-                  "message":"Fee Code is not valid for Case Start Date."
-                }
-              ]
-            }
-            """, STRICT));
-  }
-
-  @Test
-  void shouldReturnValidationError_whenStartDateIsTooFarInThePast() throws Exception {
+  void shouldReturnValidationError_whenCivilFeeCodeAndStartDateIsTooFarInThePast() throws Exception {
     mockMvc.perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
@@ -121,6 +88,39 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                   "type":"ERROR",
                   "code":"ERRCIV2",
                   "message":"Case Start Date is too far in the past."
+                }
+              ]
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationError_whenCrimeFeeCodeAndStartDateIsInvalid() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "INVK",
+                  "claimId": "claim_123",
+                  "startDate": "2023-12-12",
+                  "uniqueFileNumber": "121223/2423",
+                  "policeStationId": "NE001",
+                  "policeStationSchemeId": "1001",
+                  "vatIndicator": false
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json("""
+            {
+              "feeCode": "INVK",
+              "claimId": "claim_123",
+              "validationMessages": [
+                {
+                  "type":"ERROR",
+                  "code":"ERRCRM1",
+                  "message":"Fee Code is not valid for Case Start Date."
                 }
               ]
             }
