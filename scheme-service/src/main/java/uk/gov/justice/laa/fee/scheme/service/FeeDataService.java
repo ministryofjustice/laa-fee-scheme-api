@@ -63,8 +63,10 @@ public class FeeDataService {
   }
 
   private static boolean isValidFee(FeeEntity fee, LocalDate claimStartDate) {
-    return !fee.getFeeScheme().getValidFrom().isAfter(claimStartDate)
-        && (fee.getFeeScheme().getValidTo() == null || claimStartDate.isBefore(fee.getFeeScheme().getValidTo()));
+    LocalDate validFrom = fee.getFeeScheme().getValidFrom();
+    LocalDate validTo = fee.getFeeScheme().getValidTo();
+
+    return !validFrom.isAfter(claimStartDate) && (validTo == null || !claimStartDate.isAfter(validTo));
   }
 
   private static boolean filterByRegion(FeeEntity fee, Boolean isLondonRate) {
