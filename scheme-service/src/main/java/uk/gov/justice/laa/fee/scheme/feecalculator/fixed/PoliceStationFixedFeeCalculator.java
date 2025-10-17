@@ -145,7 +145,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
             .vatIndicator(vatApplicable)
             .vatRateApplied(toDoubleOrNull(getVatRateForDate(claimStartDate, vatApplicable)))
             .calculatedVatAmount(toDouble(fixedFeeVatAmount))
-            // Why are we returning VAT twice here
+            // @TODO: Why are we returning VAT twice here
             .vatRateApplied(toDoubleOrNull(getVatRateForDate(startDate, vatApplicable)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .fixedFeeAmount(toDouble(fixedFee))

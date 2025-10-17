@@ -101,6 +101,7 @@ public class OtherCivilFixedFeeCalculator implements FeeCalculator {
             .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+            // @TODO: clarify what to do with escape logic specific fields
             .requestedNetProfitCostsAmount(toDouble(netProfitCosts))
             .netProfitCostsAmount(toDouble(netProfitCosts))
             .fixedFeeAmount(toDouble(fixedFee))

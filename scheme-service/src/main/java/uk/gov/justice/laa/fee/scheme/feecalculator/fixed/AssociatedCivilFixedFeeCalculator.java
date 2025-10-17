@@ -96,6 +96,7 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
             .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+            // @TODO: clarify what to do with escape logic specific fields
             .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
             .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
             .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())

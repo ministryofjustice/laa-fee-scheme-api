@@ -1,8 +1,8 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.filterBoltOnFeeDetails;
 import static uk.gov.justice.laa.fee.scheme.enums.LimitType.DISBURSEMENT;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.checkLimitAndCapIfExceeded;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.filterBoltOnFeeDetails;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
@@ -37,11 +37,6 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @Component
 public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator {
 
-  @Override
-  public Set<CategoryType> getSupportedCategories() {
-    return Set.of(); // Only used by ImmigrationAsylumFeeCalculator and not available via FeeCalculatorFactory
-  }
-
   private static final Set<String> FEE_CODES_NO_DISBURSEMENT_LIMIT_AND_NO_ESCAPE = Set.of("IDAS1", "IDAS2");
   private static final Set<String> FEE_CODES_WITH_SUBSTANTIVE_HEARING = Set.of("IACB", "IACC", "IACF", "IMCB", "IMCC", "IMCD");
   private static final Set<String> NO_COUNSEL_FEE_CODES = Set.of("IALB", "IMLB");
@@ -52,6 +47,11 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
       + "Authority Number. Disbursement costs exceed the Disbursement Limit.";
   public static final String WARNING_MESSAGE_WARIA3 = "The claim exceeds the Escape Case Threshold. An Escape Case "
       + "Claim must be submitted for further costs to be paid. ";
+
+  @Override
+  public Set<CategoryType> getSupportedCategories() {
+    return Set.of(); // Only used by ImmigrationAsylumFeeCalculator and not available via FeeCalculatorFactory
+  }
 
   /**
    * Calculated fee for Immigration and asylum fee based on the provided fee entity and fee calculation request.
@@ -164,7 +164,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
           .type(WARNING)
           .build());
       return true;
-    } else  {
+    } else {
       log.warn("Case has not escaped");
       return false;
     }
