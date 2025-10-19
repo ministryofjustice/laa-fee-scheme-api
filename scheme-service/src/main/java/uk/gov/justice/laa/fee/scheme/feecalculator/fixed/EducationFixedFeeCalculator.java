@@ -1,14 +1,5 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLAIMS_PUBLIC_AUTHORITIES;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLINICAL_NEGLIGENCE;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DEBT;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING_HLPAS;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MISCELLANEOUS;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PUBLIC_LAW;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.WELFARE_BENEFITS;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
@@ -33,18 +24,17 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 /**
- * Calculate the Other Civil fee for a given fee entity and fee data.
+ * Calculate Education fee for a given fee entity and fee data.
  */
 @Slf4j
 @Component
-public class OtherCivilFixedFeeCalculator implements FeeCalculator {
+public class EducationFixedFeeCalculator implements FeeCalculator {
 
   private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
-    return Set.of(CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT,
-        HOUSING, HOUSING_HLPAS, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS);
+    return Set.of();
   }
 
   /**

@@ -7,37 +7,37 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.feecalculator.disbursement.MentalHealthDisbursementOnlyCalculator;
-import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.MentalHealthFixedFeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.disbursement.EducationDisbursementOnlyCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.EducationFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 /**
- * Implementation class for Mental Health fee category (Fixed and Disbursement both).
+ * Implementation class for Education fee category (Fixed and Disbursement both).
  */
 @RequiredArgsConstructor
 @Component
-public class MentalHealthFeeCalculator implements FeeCalculator {
+public class EducationFeeCalculator implements FeeCalculator {
 
-  private final MentalHealthFixedFeeCalculator mentalHealthFixedFeeCalculator;
+  private final EducationFixedFeeCalculator educationFixedFeeCalculator;
 
-  private final MentalHealthDisbursementOnlyCalculator mentalHealthDisbursementOnlyCalculator;
+  private final EducationDisbursementOnlyCalculator educationDisbursementOnlyCalculator;
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
-    return Set.of(CategoryType.MENTAL_HEALTH);
+    return Set.of(CategoryType.EDUCATION);
   }
 
   /**
-   * Determines the calculation based on Mental Health fee code.
+   * Determines the calculation based on Education fee code.
    */
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
     if (isFixedFee(feeEntity.getFeeType())) {
-      return mentalHealthFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+      return educationFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
     } else {
-      return mentalHealthDisbursementOnlyCalculator.calculate(feeCalculationRequest, feeEntity);
+      return educationDisbursementOnlyCalculator.calculate(feeCalculationRequest, feeEntity);
     }
   }
 
