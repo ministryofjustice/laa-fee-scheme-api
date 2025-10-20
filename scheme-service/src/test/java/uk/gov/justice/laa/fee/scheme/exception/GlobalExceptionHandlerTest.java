@@ -1,6 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRALL1;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.ERROR;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,8 +18,11 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import uk.gov.justice.laa.fee.scheme.controller.FeeCalculationController;
+import uk.gov.justice.laa.fee.scheme.enums.ValidationError;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
 class GlobalExceptionHandlerTest {
@@ -72,17 +78,28 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
-  void handleFeeEntityNotfoundForScheme() {
-    LocalDate date = LocalDate.of(2025, 2, 20);
-    FeeNotFoundException exception = new FeeNotFoundException("FEE123", date);
+  void handleValidationException() {
+    FeeContext feeContext = new FeeContext("FEE123", LocalDate.of(2020, 3, 1), "SchemeOne", "claim_123");
+    ValidationException exception = new ValidationException(ERRALL1, feeContext);
 
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeeCodeNotfound(exception);
+    ResponseEntity<FeeCalculationResponse> response = globalExceptionHandler.handleValidationException(exception);
 
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().getStatus()).isEqualTo(404);
-    assertThat(response.getBody().getMessage())
-        .isEqualTo("Fee not found for feeCode: FEE123 and startDate: 2025-02-20");
+
+    FeeCalculationResponse feeCalculationResponse = response.getBody();
+    assertThat(feeCalculationResponse.getFeeCode()).isEqualTo("FEE123");
+    assertThat(feeCalculationResponse.getSchemeId()).isEqualTo("SchemeOne");
+    assertThat(feeCalculationResponse.getClaimId()).isEqualTo("claim_123");
+
+    ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
+        .code("ERRALL1")
+        .type(ERROR)
+        .message("Enter a valid Fee Code.")
+        .build();
+    assertThat(feeCalculationResponse.getValidationMessages()).containsExactly(validationMessage);
+
+    assertThat(feeCalculationResponse.getFeeCalculation()).isNull();
   }
 
   @Test
