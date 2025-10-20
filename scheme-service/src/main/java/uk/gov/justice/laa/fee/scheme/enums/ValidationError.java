@@ -15,7 +15,9 @@ public enum ValidationError {
   ERRCIV1("Fee Code is not valid for Case Start Date."),
   ERRCIV2("Case Start Date is too far in the past."),
 
-  ERRCRM1("Fee Code is not valid for Case Start Date.");
+  ERRCRM1("Fee Code is not valid for Case Start Date."),
+
+  ERRMED1("Number of Mediation Sessions must be entered for this fee code");
 
   private final String errorMessage;
 }

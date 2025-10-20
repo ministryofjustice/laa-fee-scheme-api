@@ -3,7 +3,6 @@ package uk.gov.justice.laa.fee.scheme.exception;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRALL1;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.ERROR;
-import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +17,6 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import uk.gov.justice.laa.fee.scheme.controller.FeeCalculationController;
-import uk.gov.justice.laa.fee.scheme.enums.ValidationError;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -100,19 +98,6 @@ class GlobalExceptionHandlerTest {
     assertThat(feeCalculationResponse.getValidationMessages()).containsExactly(validationMessage);
 
     assertThat(feeCalculationResponse.getFeeCalculation()).isNull();
-  }
-
-  @Test
-  void handleInvalidMediationSession() {
-    InvalidMediationSessionException exception = new InvalidMediationSessionException("FEE123");
-
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleInvalidMediationSession(exception);
-
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().getStatus()).isEqualTo(400);
-    assertThat(response.getBody().getMessage())
-        .isEqualTo("Invalid mediation session for feeCode: FEE123 numberOfMediationSessions required");
   }
 
   @Test

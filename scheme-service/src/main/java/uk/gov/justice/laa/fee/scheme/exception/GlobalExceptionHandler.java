@@ -86,14 +86,6 @@ public class GlobalExceptionHandler {
   }
 
   /**
-   * Global exception handler for InvalidMediationSessionException exception.
-   */
-  @ExceptionHandler(InvalidMediationSessionException.class)
-  public ResponseEntity<ErrorResponse> handleInvalidMediationSession(InvalidMediationSessionException ex) {
-    return handleException(ex, HttpStatus.BAD_REQUEST);
-  }
-
-  /**
    * Global exception handler for PoliceStationFeeNotFoundException exception.
    */
   @ExceptionHandler(PoliceStationFeeNotFoundException.class)
