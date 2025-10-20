@@ -37,6 +37,13 @@ class NumberUtilTest {
   }
 
   @Test
+  void toDoubleOrNull_givenZero_returnsNull() {
+    Double result = NumberUtil.toDoubleOrNull(BigDecimal.ZERO);
+
+    assertThat(result).isNull();
+  }
+
+  @Test
   void defaultToZeroIfNull_givenNull_returnsZero() {
     BigDecimal result = NumberUtil.defaultToZeroIfNull(null);
 
