@@ -119,8 +119,8 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "validationMessages": [
                 {
                   "type":"ERROR",
-                  "code":"ERRCRM1",
-                  "message":"Fee Code is not valid for Case Start Date."
+                  "code":"ERRCRM6",
+                  "message":"Fee Code is not valid for the Case Start Date."
                 }
               ]
             }

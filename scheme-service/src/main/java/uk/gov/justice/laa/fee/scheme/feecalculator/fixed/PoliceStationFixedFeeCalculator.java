@@ -173,7 +173,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
           .stream()
           .findFirst()
           .orElseThrow(() -> new PoliceStationFeeNotFoundException(feeCalculationRequest.getPoliceStationId(),
-              feeCalculationRequest.getStartDate()));
+              feeCalculationRequest.getStartDate())); // police station id found ERRCRM3
     } else if (StringUtils.isNotBlank(feeCalculationRequest.getPoliceStationSchemeId())) {
 
       log.info("Get police station fees entity using policeStationSchemeId: {} and schemeCode: {}",
@@ -185,6 +185,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
           .stream()
           .findFirst()
           .orElseThrow(() -> new PoliceStationFeeNotFoundException(feeCalculationRequest.getPoliceStationSchemeId()));
+      // scheme id not found ERRCRM4
     } else {
       throw new PoliceStationFeeNotFoundException(feeCalculationRequest.getPoliceStationSchemeId());
     }
