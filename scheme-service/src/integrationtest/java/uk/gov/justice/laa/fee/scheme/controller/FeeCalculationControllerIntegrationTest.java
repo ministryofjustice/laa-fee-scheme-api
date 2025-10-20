@@ -129,6 +129,61 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   }
 
   @Test
+  void shouldGetFeeCalculation_associatedCivil_andEscaped() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "ASMS",
+                  "claimId": "claim_123",
+                  "uniqueFileNumber": "020416/001",
+                  "netProfitCosts": 350.0,
+                  "netTravelCosts": 357.0,
+                  "netWaitingCosts": 90.0,
+                  "netDisbursementAmount": 55.35,
+                  "disbursementVatAmount": 11.07,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "ASMS",
+              "schemeId": "ASSOC_FS2016",
+              "claimId": "claim_123",
+              "escapeCaseFlag": true,
+              "validationMessages": [
+                {
+                    "type": "WARNING",
+                    "message": "123"
+                }],
+              "feeCalculation": {
+                "totalAmount": 161.22,
+                "vatIndicator": true,
+                "vatRateApplied": 20.0,
+                "calculatedVatAmount": 15.8,
+                "disbursementAmount": 55.35,
+                "requestedNetDisbursementAmount": 55.35,
+                "disbursementVatAmount": 11.07,
+                "fixedFeeAmount": 79.0
+                },
+              "escapeCaseCalculation": {
+                "calculatedEscapeCaseValue": 797.0,
+                "escapeCaseThreshold": 237.0,
+                "netProfitCostsAmount": 350.0,
+                "requestedNetProfitCostsAmount": 350.0,
+                "netTravelCostsAmount": 357.0,
+                "netWaitingCostsAmount": 90.0
+                }
+              }
+            """, STRICT));
+  }
+
+  @Test
   void shouldGetFeeCalculation_discrimination() throws Exception {
     mockMvc
         .perform(post(URI)
@@ -694,10 +749,10 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
       "YOUK2, YOUTH_COURT_FS2024, 427.09, 46.51, 232.53",
   })
   void shouldGetFeeCalculation_designatedMagsOrYouthCourt(String feeCode,
-                                                    String schemeId,
-                                                    String expectedTotal,
-                                                    String expectedVatAmount,
-                                                    String fixedFeeAmount) throws Exception {
+                                                          String schemeId,
+                                                          String expectedTotal,
+                                                          String expectedVatAmount,
+                                                          String fixedFeeAmount) throws Exception {
     String expectedJson = """
         {
           "feeCode": "%s",
@@ -751,40 +806,40 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   ) throws Exception {
 
     String expectedJson = """
-      {
-        "feeCode": "%s",
-        "schemeId": "%s",
-        "claimId": "claim_123",
-        "feeCalculation": {
-          "totalAmount": %s,
-          "vatIndicator": true,
-          "vatRateApplied": 20.00,
-          "calculatedVatAmount": %s,
-          "disbursementAmount": 123.38,
-          "requestedNetDisbursementAmount": 123.38,
-          "disbursementVatAmount": 24.67,
-          "netWaitingCostsAmount": %s,
-          "netTravelCostsAmount": %s,
-          "fixedFeeAmount": %s
+        {
+          "feeCode": "%s",
+          "schemeId": "%s",
+          "claimId": "claim_123",
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": %s,
+            "disbursementAmount": 123.38,
+            "requestedNetDisbursementAmount": 123.38,
+            "disbursementVatAmount": 24.67,
+            "netWaitingCostsAmount": %s,
+            "netTravelCostsAmount": %s,
+            "fixedFeeAmount": %s
+          }
         }
-      }
-      """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, netWaitingCosts, netTravelCosts, fixedFeeAmount);
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, netWaitingCosts, netTravelCosts, fixedFeeAmount);
 
     mockMvc.perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
-              {
-                "feeCode": "%s",
-                "claimId": "claim_123",
-                "representationOrderDate": "2025-02-01",
-                "netDisbursementAmount": 123.38,
-                "disbursementVatAmount": 24.67,
-                "vatIndicator": true,
-                "netWaitingCosts": %s,
-                "netTravelCosts": %s
-              }
-              """.formatted(feeCode, netWaitingCosts, netTravelCosts))
+                {
+                  "feeCode": "%s",
+                  "claimId": "claim_123",
+                  "representationOrderDate": "2025-02-01",
+                  "netDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "vatIndicator": true,
+                  "netWaitingCosts": %s,
+                  "netTravelCosts": %s
+                }
+                """.formatted(feeCode, netWaitingCosts, netTravelCosts))
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -798,12 +853,12 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
       "APPB, AAR_FS2022, 354.0, 44.0, 220.0, 120.0, 120.0",
   })
   void shouldGetFeeCalculation_advocacyAppealsReview(String feeCode,
-                                                    String schemeId,
-                                                    String expectedTotal,
-                                                    String expectedVatAmount,
-                                                    String expectedHourlyTotalAmount,
-                                                    String netProfitCostsAmount,
-                                                    String requestedNetProfitCostsAmount
+                                                     String schemeId,
+                                                     String expectedTotal,
+                                                     String expectedVatAmount,
+                                                     String expectedHourlyTotalAmount,
+                                                     String netProfitCostsAmount,
+                                                     String requestedNetProfitCostsAmount
   ) throws Exception {
     String expectedJson = """
         {
