@@ -27,6 +27,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
+import uk.gov.justice.laa.fee.scheme.model.EscapeCaseCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -168,25 +169,27 @@ class PrisonLawFixedFeeCalculatorTest {
 
     public static Stream<Arguments> testDataForPrisonLawEscapeLogic() {
       return Stream.of(
-          argumentsEscape("PRIC2,escape using escape case threshold, above limit", "PRIC2",
+          argumentsEscape("PRIC2, escape using escape case threshold, above limit", "PRIC2",
               "121221/799", true, 200.75, 100.00, 20.00,
               360.9, 200.75, 40.15, 1000.0,
-              500.0, 1454.44, null, "WARCRM6", true),
+              500.0, 1454.44, null, "WARCRM6", true,
+              1500.0, 1454.44),
 
           argumentsEscape("PRID1, escape using fee limit, above limit", "PRID1",
               "121216/899", true, 203.93, 100.00, 20.00,
               364.72, 203.93, 40.79, 250.0,
-              120.0, null, 357.06, "WARCRM5", false),
+              120.0, null, 357.06, "WARCRM5", false,
+              370.0, 357.06),
 
-          argumentsEscape("PRIC2,escape using escape case threshold, below limit", "PRIC2",
+          argumentsEscape("PRIC2, escape using escape case threshold, below limit", "PRIC2",
               "121221/799", true, 200.75, 100.00, 20.00,
               360.9, 200.75, 40.15, 1000.0, 200.0,
-              1454.44, null, null, false),
+              1454.44, null, null, false, null, null ),
 
           argumentsEscape("PRID1, escape using fee limit, below limit", "PRID1",
               "121216/899", true, 203.93, 100.00, 20.00,
               364.72, 203.93, 40.79, 250.0, 60.0,
-              null, 357.06, null, false)
+              null, 357.06, null, false, null, null)
       );
     }
 
@@ -205,11 +208,13 @@ class PrisonLawFixedFeeCalculatorTest {
                                              Double escapeThresholdLimit,
                                              Double feeLimit,
                                              String warningMessage,
-                                             boolean hasEscaped) {
+                                             boolean hasEscaped,
+                                             Double calculatedEscapeCaseValue,
+                                             Double limitToUse) {
       return Arguments.of(testDescription, feeCode, uniqueFileNumber, vatIndicator,
           fixedFeeAmount, disbursementAmount, disbursementVatAmount, expectedTotal, expectedFixedFee,
           expectedCalculatedVat, requestedNetProfitCosts, requestedNetWaitingCosts, escapeThresholdLimit, feeLimit,
-          warningMessage, hasEscaped);
+          warningMessage, hasEscaped, calculatedEscapeCaseValue, limitToUse);
     }
 
     @ParameterizedTest
@@ -230,7 +235,9 @@ class PrisonLawFixedFeeCalculatorTest {
         Double escapeThresholdLimit,
         Double feeLimit,
         String warningMessage,
-        boolean hasEscaped
+        boolean hasEscaped,
+        Double calculatedEscapeCaseValue,
+        Double limitToUse
     ) {
 
       FeeCalculationRequest feeCalculationRequest = buildFeeCalculationRequest(feeCode, uniqueFileNumber, vatIndicator,
@@ -241,6 +248,7 @@ class PrisonLawFixedFeeCalculatorTest {
       FeeCalculationResponse response = prisonLawFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
       List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+      EscapeCaseCalculation escapeCaseCalculation = null;
       if (nonNull(warningMessage)) {
         String expectedMessage = "WARCRM5".equals(warningMessage)
             ? PrisonLawFixedFeeCalculator.WARNING_MESSAGE_WARCRM5
@@ -251,6 +259,14 @@ class PrisonLawFixedFeeCalculatorTest {
             .type(WARNING)
             .build();
         validationMessages.add(validationMessage);
+
+        escapeCaseCalculation = EscapeCaseCalculation.builder()
+            .calculatedEscapeCaseValue(calculatedEscapeCaseValue)
+            .escapeCaseThreshold(limitToUse)
+            .netProfitCostsAmount(requestedNetProfitCosts)
+            .requestedNetProfitCostsAmount(requestedNetProfitCosts)
+            .netWaitingCostsAmount(requestedNetWaitingCosts)
+            .build();
       }
 
       FeeCalculation expectedCalculation = FeeCalculation.builder()
@@ -270,6 +286,7 @@ class PrisonLawFixedFeeCalculatorTest {
           .validationMessages(validationMessages)
           .escapeCaseFlag(hasEscaped)
           .feeCalculation(expectedCalculation)
+          .escapeCaseCalculation(escapeCaseCalculation)
           .build();
 
       assertThat(response)
