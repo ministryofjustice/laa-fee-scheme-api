@@ -233,4 +233,31 @@ class FeeCalculationUtilTest {
             List.of(ValidationMessagesInner.builder().type(WARNING).message("Warning message").build()))
     );
   }
+
+  public static BoltOnFeeDetails filterBoltOnFeeDetails(BoltOnFeeDetails boltOnFeeDetails) {
+    if (boltOnFeeDetails == null || boltOnFeeDetails.getBoltOnTotalFeeAmount() == null) {
+      return null;
+    }
+    return boltOnFeeDetails;
+  }
+
+  @Test
+  void filterBoltOnFeeDetails_andNullForRequest() {
+    BoltOnFeeDetails boltOnFeeDetails = BoltOnFeeDetails.builder()
+        .boltOnTotalFeeAmount(null)
+        .boltOnAdjournedHearingCount(null)
+        .boltOnAdjournedHearingFee(null)
+        .boltOnCmrhOralCount(null)
+        .boltOnCmrhOralFee(null)
+        .boltOnCmrhTelephoneCount(null)
+        .boltOnCmrhTelephoneFee(null)
+        .boltOnHomeOfficeInterviewCount(null)
+        .boltOnHomeOfficeInterviewFee(null)
+        .boltOnSubstantiveHearingFee(null)
+        .build();
+
+    BoltOnFeeDetails boltOnFeeDetailResponse = FeeCalculationUtil.filterBoltOnFeeDetails(boltOnFeeDetails);
+
+    assertThat(boltOnFeeDetailResponse).isNull();
+  }
 }
