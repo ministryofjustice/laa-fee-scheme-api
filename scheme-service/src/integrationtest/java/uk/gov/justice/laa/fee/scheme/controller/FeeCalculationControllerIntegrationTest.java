@@ -865,7 +865,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                 {
                   "feeCode": "ICASD",
                   "claimId": "claim_123",
-                  "startDate": "2019-09-30",
+                  "startDate": "2021-09-30",
                   "netDisbursementAmount": 55.35,
                   "disbursementVatAmount": 11.07
                 }
@@ -876,7 +876,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(content().json("""
             {
               "feeCode": "ICASD",
-              "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2013",
+              "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2020",
               "claimId": "claim_123",
               "feeCalculation": {
                 "totalAmount": 66.42,
