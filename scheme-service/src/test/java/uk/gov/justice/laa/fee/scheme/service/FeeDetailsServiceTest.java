@@ -12,8 +12,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.laa.fee.scheme.entity.AreaOfLawTypeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.CategoryOfLawTypeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeCategoryMappingEntity;
+import uk.gov.justice.laa.fee.scheme.enums.AreaOfLawType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponse;
 import uk.gov.justice.laa.fee.scheme.repository.FeeCategoryMappingRepository;
@@ -30,7 +32,7 @@ class FeeDetailsServiceTest {
   void getFeeDetails_shouldReturnExpectedFeeDetails() {
     String feeCode = "FEE123";
 
-    CategoryOfLawTypeEntity categoryOfLawType  = CategoryOfLawTypeEntity.builder().code("AAP").build();
+    CategoryOfLawTypeEntity categoryOfLawType = CategoryOfLawTypeEntity.builder().code("AAP").build();
     FeeType feeType = FeeType.FIXED;
 
     FeeCategoryMappingEntity feeCategoryMappingEntity = mock(FeeCategoryMappingEntity.class);
@@ -54,6 +56,35 @@ class FeeDetailsServiceTest {
     when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(any())).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> feeDetailsService.getFeeDetails(feeCode))
+        .hasMessageContaining(String.format("Category of law code not found for feeCode: %s", feeCode));
+
+  }
+
+  @Test
+  void getAreaOfLaw_shouldReturnExpectedAreaOfLaw() {
+    String feeCode = "FEE123";
+
+    AreaOfLawTypeEntity areaOfLawTypeEntity = AreaOfLawTypeEntity.builder().code(AreaOfLawType.LEGAL_HELP).build();
+    CategoryOfLawTypeEntity categoryOfLawType = CategoryOfLawTypeEntity.builder()
+        .code("AAP").areaOfLawType(areaOfLawTypeEntity).build();
+
+    FeeCategoryMappingEntity feeCategoryMappingEntity = mock(FeeCategoryMappingEntity.class);
+    when(feeCategoryMappingEntity.getCategoryOfLawType()).thenReturn(categoryOfLawType);
+
+    when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(feeCode)).thenReturn(Optional.of(feeCategoryMappingEntity));
+
+    AreaOfLawType result = feeDetailsService.getAreaOfLaw(feeCode);
+
+    assertThat(result).isEqualTo(AreaOfLawType.LEGAL_HELP);
+  }
+
+  @Test
+  void getAreaOfLaw_shouldReturnExceptionCategoryOfLawNotFound() {
+    String feeCode = "FEE123";
+
+    when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(any())).thenReturn(Optional.empty());
+
+    assertThatThrownBy(() -> feeDetailsService.getAreaOfLaw(feeCode))
         .hasMessageContaining(String.format("Category of law code not found for feeCode: %s", feeCode));
 
   }
