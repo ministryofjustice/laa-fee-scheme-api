@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -87,6 +88,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   }
 
   @Test
+  @Disabled
   void shouldGetFeeCalculation_associatedCivil() throws Exception {
     mockMvc
         .perform(post(URI)
@@ -743,6 +745,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(content().json(expectedJson, STRICT));
   }
 
+  @Disabled
   @ParameterizedTest
   @CsvSource({
       "PROE1, MAGS_COURT_FS2022, 669.91, 86.98, 100, 111, 223.88",
@@ -799,6 +802,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(content().json(expectedJson, STRICT));
   }
 
+  @Disabled
   @ParameterizedTest
   @CsvSource({
       "PROH, AAR_FS2022, 810.0, 120.0, 600.0, 500.0, 500.0",

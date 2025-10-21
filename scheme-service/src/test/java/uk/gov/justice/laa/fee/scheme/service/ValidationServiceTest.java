@@ -344,6 +344,8 @@ class ValidationServiceTest {
 
   @Test
   void getValidFeeEntity_whenFamilyCategoryAndLondonRateIsMissing_shouldThrowException() {
+    when(feeDetailsService.getAreaOfLaw("FPB010")).thenReturn(AreaOfLawType.LEGAL_HELP);
+
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("FAM_LON_FS2011")
         .validFrom(LocalDate.of(2011, 1, 1)).build();
 
@@ -366,20 +368,8 @@ class ValidationServiceTest {
 
     assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
-        .hasMessageContaining("Fee Code is not valid for the Case Start Date.");
-  }
-
-  private static FeeCalculationRequest getFeeCalculationRequest(String ufn, LocalDate startDate) {
-    return FeeCalculationRequest.builder()
-        .feeCode("INVC")
-        .startDate(startDate)
-        .vatIndicator(Boolean.TRUE)
-        .policeStationSchemeId("1003")
-        .policeStationId("NA2093")
-        .uniqueFileNumber(ufn)
-        .netDisbursementAmount(50.50)
-        .disbursementVatAmount(20.15)
-        .build();
+        .hasFieldOrPropertyWithValue("error", ERRCIV1)
+        .hasMessage("ERRCIV1 - Fee Code is not valid for the Case Start Date.");
   }
 
   private static FeeCalculationRequest getFeeCalculationRequest() {
