@@ -24,7 +24,7 @@ DELETE FROM FEE WHERE CATEGORY_TYPE='EDUCATION';
 
 INSERT INTO fee (fee_code, description, fixed_fee, escape_threshold_limit, fee_scheme_code, category_type, fee_type)
 VALUES ('EDUFIN', 'Education Legal Help Fixed Fee', 272.00, 816.00, 'EDU_FS2013','EDUCATION', 'FIXED'),
-       ('EDUDIS', 'Education - Interim Claim for Disbursement', NULL, NULL, 'EDU_FS2013','EDUCATION', 'DISB_ONLY')
+       ('EDUDIS', 'Education - Interim Claim for Disbursement', NULL, NULL, 'EDU_DISB_FS2024','EDUCATION', 'DISB_ONLY')
 ON CONFLICT (fee_code, fee_scheme_code) DO UPDATE
     SET
         fee_type = EXCLUDED.fee_type;
