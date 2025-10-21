@@ -140,3 +140,15 @@ INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('YOUTH_COURT_FS2024', 'Criminal proceedings - Youth court 2022', '2024-12-06', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
+
+-- Fee Scheme for 'Education - Interim Disbursement' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('EDU_DISB_FS2024', 'Education - Disbursement Fee Scheme 2024', '2024-09-01', NULL)
+ON CONFLICT (scheme_code) DO NOTHING;
+
+-- Fee Scheme for 'Mental Health - Interim Disbursement' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('MHL_DISB_FS2020', 'Mental Health - Disbursement Fee Scheme 2020', '2020-10-08', NULL)
+ON CONFLICT (scheme_code) DO NOTHING;

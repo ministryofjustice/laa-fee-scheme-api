@@ -47,7 +47,7 @@ public class MentalHealthFixedFeeCalculator implements FeeCalculator {
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
-    return Set.of(CategoryType.MENTAL_HEALTH);
+    return Set.of();
   }
 
   /**

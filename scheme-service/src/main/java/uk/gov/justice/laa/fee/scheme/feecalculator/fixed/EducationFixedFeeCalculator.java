@@ -1,21 +1,11 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLAIMS_PUBLIC_AUTHORITIES;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLINICAL_NEGLIGENCE;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DEBT;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING_HLPAS;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MISCELLANEOUS;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PUBLIC_LAW;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.WELFARE_BENEFITS;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,25 +18,23 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
-import uk.gov.justice.laa.fee.scheme.model.EscapeCaseCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 /**
- * Calculate the Other Civil fee for a given fee entity and fee data.
+ * Calculate Education fee for a given fee entity and fee data.
  */
 @Slf4j
 @Component
-public class OtherCivilFixedFeeCalculator implements FeeCalculator {
+public class EducationFixedFeeCalculator implements FeeCalculator {
 
   private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
-    return Set.of(CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT,
-        HOUSING, HOUSING_HLPAS, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS);
+    return Set.of();
   }
 
   /**
@@ -96,25 +84,14 @@ public class OtherCivilFixedFeeCalculator implements FeeCalculator {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDoubleOrNull(getVatRateForDate(claimStartDate, vatApplicable)))
+            .vatRateApplied(toDouble(getVatRateForDate(claimStartDate)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+            .disbursementAmount(toDouble(netDisbursementAmount))
+            .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
+            .disbursementVatAmount(toDouble(disbursementVatAmount))
+            .netProfitCostsAmount(toDouble(netProfitCosts))
             .fixedFeeAmount(toDouble(fixedFee))
             .build())
-        .escapeCaseCalculation(isEscaped
-            ? getEscapeCalculation(feeCalculationRequest, feeEntity, netProfitCosts) : null)
-        .build();
-  }
-
-  private static EscapeCaseCalculation getEscapeCalculation(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
-                                                            BigDecimal calculatedEscapeCaseValue) {
-    return EscapeCaseCalculation.builder()
-        .calculatedEscapeCaseValue(toDouble(calculatedEscapeCaseValue))
-        .escapeCaseThreshold(toDouble(feeEntity.getEscapeThresholdLimit()))
-        .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
-        .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
         .build();
   }
 }
