@@ -2,14 +2,14 @@ package uk.gov.justice.laa.fee.scheme.exception;
 
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import uk.gov.justice.laa.fee.scheme.enums.ValidationError;
+import uk.gov.justice.laa.fee.scheme.enums.ErrorCode;
 
 /**
  * Exception for when a validation error occurs.
  */
 @Getter
 public class ValidationException extends RuntimeException  {
-  private final ValidationError error;
+  private final ErrorCode error;
   private final FeeContext context;
 
   /**
@@ -18,7 +18,7 @@ public class ValidationException extends RuntimeException  {
    * @param error the validation error
    * @param context the context
    */
-  public ValidationException(ValidationError error, FeeContext context) {
+  public ValidationException(ErrorCode error, FeeContext context) {
     super(error.getCode() + " - " + error.getMessage());
     this.error = error;
     this.context = context;

@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCRM3;
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCRM4;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCRM3;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCRM4;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;

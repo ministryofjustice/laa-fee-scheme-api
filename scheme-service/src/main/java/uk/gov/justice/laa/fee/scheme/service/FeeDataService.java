@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
 
 /**
@@ -17,27 +16,22 @@ import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
 public class FeeDataService {
 
   private final FeeRepository feeRepository;
-  private final ValidationService validationService;
 
   /**
-   * Returns FeeEntity after making calls to database.
+   * Returns list of fee entities for the given fee code.
    *
-   * @param feeCalculationRequest FeeCalculationRequest
+   * @param feeCode     the fee code
    * @return FeeEntity
    */
-  public FeeEntity getFeeEntity(FeeCalculationRequest feeCalculationRequest) {
+  public List<FeeEntity> getFeeEntities(String feeCode) {
 
-    log.info("Getting fee entity");
-
-    String feeCode = feeCalculationRequest.getFeeCode();
+    log.info("Getting fee entities");
 
     List<FeeEntity> feeEntityList = feeRepository.findByFeeCode(feeCode);
 
-    FeeEntity validFeeEntity = validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest);
+    log.info("Retrieved fee entities for feeCode: {}", feeCode);
 
-    log.info("Retrieved fee entity for feeCode: {}", feeCode);
-
-    return validFeeEntity;
+    return feeEntityList;
   }
 
 }

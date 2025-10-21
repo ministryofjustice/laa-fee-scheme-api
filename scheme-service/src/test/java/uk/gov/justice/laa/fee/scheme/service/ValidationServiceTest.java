@@ -5,12 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGS_COURT_DESIGNATED;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRALL1;
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCIV1;
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCIV2;
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCRM1;
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCRM2;
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCRM6;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRALL1;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCIV1;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCIV2;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCRM1;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCRM2;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCRM6;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

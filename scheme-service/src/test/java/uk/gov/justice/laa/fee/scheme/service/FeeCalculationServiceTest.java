@@ -22,10 +22,12 @@ import java.util.ArrayList;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.provider.Arguments;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
@@ -36,6 +38,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
+@ExtendWith(MockitoExtension.class)
 class FeeCalculationServiceTest {
 
   @Mock
@@ -44,13 +47,11 @@ class FeeCalculationServiceTest {
   @Mock
   FeeDataService feeDataService;
 
+  @Mock
+  ValidationService validationService;
+
   @InjectMocks
   private FeeCalculationService feeCalculationService;
-
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.openMocks(this);
-  }
 
   @Test
   void calculateFee_DelegatesToCalculator() {
@@ -77,8 +78,7 @@ class FeeCalculationServiceTest {
 
     when(feeCalculatorFactory.getCalculator(category)).thenReturn(immigrationCalculator);
 
-    when(feeDataService.getFeeEntity(any())).thenReturn(feeEntity);
-
+    when(validationService.getValidFeeEntity(any(), any())).thenReturn(feeEntity);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(1587.50)

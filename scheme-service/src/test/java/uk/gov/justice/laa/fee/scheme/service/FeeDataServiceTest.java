@@ -25,26 +25,21 @@ class FeeDataServiceTest {
   @Mock
   FeeRepository feeRepository;
 
-  @Mock
-  ValidationService validationService;
-
   @InjectMocks
   private FeeDataService feeDataService;
 
   @Test
-  void getFeeEntity_whenFeeSchemeIdAndFeeCodePresentInDatabase_shouldReturnValidResponse() {
+  void getFeeEntities_shouldReturnValidResponse() {
 
     FeeCalculationRequest feeCalculationRequest = buildFeeCalculationRequest();
 
     FeeEntity feeEntity = buildFeeEntity();
 
     when(feeRepository.findByFeeCode("INVC")).thenReturn(List.of(feeEntity));
-    when(validationService.getValidFeeEntity(any(), any())).thenReturn(feeEntity);
 
-    FeeEntity feeEntityResponse = feeDataService.getFeeEntity(feeCalculationRequest);
+    List<FeeEntity> result = feeDataService.getFeeEntities("INVC");
 
-    assertThat(feeEntityResponse).isNotNull();
-    assertThat(feeEntityResponse.getFeeCode()).isEqualTo("INVC");
+    assertThat(result).containsExactly(feeEntity);
   }
 
   private static FeeEntity buildFeeEntity() {
@@ -75,14 +70,4 @@ class FeeDataServiceTest {
         .build();
   }
 
-  private FeeEntity policeStationFeeEntity(FeeSchemesEntity feeSchemesEntity) {
-    return FeeEntity.builder()
-        .feeCode("INVC")
-        .feeScheme(feeSchemesEntity)
-        .profitCostLimit(new BigDecimal("123.56"))
-        .fixedFee(new BigDecimal("200.56"))
-        .categoryType(POLICE_STATION)
-        .feeType(FeeType.FIXED)
-        .build();
-  }
 }

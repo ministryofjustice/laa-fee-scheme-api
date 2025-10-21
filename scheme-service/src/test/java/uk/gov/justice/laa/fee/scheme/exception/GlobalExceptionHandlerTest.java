@@ -1,9 +1,8 @@
 package uk.gov.justice.laa.fee.scheme.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRALL1;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRALL1;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.ERROR;
-import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +17,6 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import uk.gov.justice.laa.fee.scheme.controller.FeeCalculationController;
-import uk.gov.justice.laa.fee.scheme.enums.ValidationError;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;

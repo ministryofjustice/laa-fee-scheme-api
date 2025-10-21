@@ -1,13 +1,17 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRALL1;
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCIV1;
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCIV2;
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCRM1;
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCRM2;
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCRM6;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRALL1;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCIV1;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCIV2;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCRM1;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCRM2;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCRM6;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARCRM1;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARCRM2;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +21,14 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.AreaOfLawType;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
+import uk.gov.justice.laa.fee.scheme.enums.ErrorCode;
 import uk.gov.justice.laa.fee.scheme.enums.Region;
-import uk.gov.justice.laa.fee.scheme.enums.ValidationError;
+import uk.gov.justice.laa.fee.scheme.enums.WarningCode;
 import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 /**
  * Service for performing validations.
@@ -60,6 +66,29 @@ public class ValidationService {
   }
 
   /**
+   * Checks the fee calculation request and returns any validation warnings.
+   *
+   * @param feeCalculationRequest the fee calculation request
+   * @return the valid Fee entity
+   */
+  public List<ValidationMessagesInner> checkForWarnings(FeeCalculationRequest feeCalculationRequest) {
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+
+    if (isCrime(feeCalculationRequest.getFeeCode())) {
+      if (feeCalculationRequest.getNetTravelCosts() != null) {
+        log.warn("{} - Net travel costs cannot be claimed", WARCRM1.getCode());
+        validationMessages.add(buildValidationMessage(WARCRM1));
+      }
+
+      if (feeCalculationRequest.getNetWaitingCosts() != null) {
+        log.warn("{} - Net waiting costs cannot be claimed", WARCRM2.getCode());
+        validationMessages.add(buildValidationMessage(WARCRM2));
+      }
+    }
+    return validationMessages;
+  }
+
+  /**
    * Check that claim start date is not too far in the past.
    *
    * @param feeEntityList         the fee entity list
@@ -73,15 +102,15 @@ public class ValidationService {
 
     LocalDate earliestFeeSchemeDate = getEarliestFeeSchemeDate(feeEntityList);
     if (claimStartDate.isBefore(earliestFeeSchemeDate)) {
-      ValidationError validationError;
+      ErrorCode errorCode;
 
       if (isCivil(feeCode)) {
-        validationError = ERRCIV2;
+        errorCode = ERRCIV2;
       } else { // otherwise isCrime
         ClaimStartDateType claimStartDateType = FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeCalculationRequest);
-        validationError = (claimStartDateType == ClaimStartDateType.REP_ORDER_DATE) ? ERRCRM2 : ERRCRM1;
+        errorCode = (claimStartDateType == ClaimStartDateType.REP_ORDER_DATE) ? ERRCRM2 : ERRCRM1;
       }
-      throw new ValidationException(validationError, new FeeContext(feeCalculationRequest));
+      throw new ValidationException(errorCode, new FeeContext(feeCalculationRequest));
     }
   }
 
@@ -97,14 +126,20 @@ public class ValidationService {
     return areaOfLaw == AreaOfLawType.LEGAL_HELP || areaOfLaw == AreaOfLawType.MEDIATION;
   }
 
+  private boolean isCrime(String feeCode) {
+    AreaOfLawType areaOfLaw = feeDetailsService.getAreaOfLaw(feeCode);
+
+    return areaOfLaw == AreaOfLawType.CRIME_LOWER;
+  }
+
   private FeeEntity getFeeEntityForStartDate(List<FeeEntity> feeEntityList,
-                                      FeeCalculationRequest feeCalculationRequest, LocalDate claimStartDate) {
+                                             FeeCalculationRequest feeCalculationRequest, LocalDate claimStartDate) {
     return feeEntityList.stream()
         .filter(fee -> filterByRegion(fee, feeCalculationRequest.getLondonRate()))
         .filter(fee -> isValidFee(fee, claimStartDate)) // startDate <= inputDate
         .max(Comparator.comparing(fee -> fee.getFeeScheme().getValidFrom()))
         .orElseThrow(() -> {
-          ValidationError error = isCivil(feeCalculationRequest.getFeeCode()) ? ERRCIV1 : ERRCRM6;
+          ErrorCode error = isCivil(feeCalculationRequest.getFeeCode()) ? ERRCIV1 : ERRCRM6;
           return new ValidationException(error, new FeeContext(feeCalculationRequest));
         });
   }
@@ -122,5 +157,13 @@ public class ValidationService {
     LocalDate validTo = fee.getFeeScheme().getValidTo();
 
     return !validFrom.isAfter(claimStartDate) && (validTo == null || !claimStartDate.isAfter(validTo));
+  }
+
+  private static ValidationMessagesInner buildValidationMessage(WarningCode warningCode) {
+    return ValidationMessagesInner.builder()
+        .type(WARNING)
+        .code(warningCode.getCode())
+        .message(warningCode.getMessage())
+        .build();
   }
 }
