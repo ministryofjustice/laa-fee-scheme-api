@@ -61,7 +61,7 @@ public class MediationFixedFeeCalculator implements FeeCalculator {
     log.info("Check numberOfMediationSessions is valid");
     Integer numberOfMediationSessions = feeCalculationRequest.getNumberOfMediationSessions();
     if (numberOfMediationSessions == null || numberOfMediationSessions <= 0) {
-      log.info("umberOfMediationSessions is invalid");
+      log.info("numberOfMediationSessions is invalid");
       throw new ValidationException(ERRMED1, new FeeContext(feeCalculationRequest));
     }
 
