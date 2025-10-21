@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.enums.LimitType.DISBURSEMENT;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.fromCode;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.checkLimitAndCapIfExceeded;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
@@ -17,9 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.WarningCode;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
-import uk.gov.justice.laa.fee.scheme.feecalculator.util.LimitContext;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.LimitContextNew;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
@@ -44,10 +46,6 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
   private static final Set<String> FEE_CODES_WITH_SUBSTANTIVE_HEARING = Set.of("IACB", "IACC", "IACF", "IMCB", "IMCC", "IMCD");
   private static final Set<String> NO_COUNSEL_FEE_CODES = Set.of("IALB", "IMLB");
   // @TODO: TBC during error and validation work, and likely moved to common util
-  public static final String WARNING_MESSAGE_WARIA1 = "Costs have been capped at £600 without an Immigration Priority"
-      + "Authority Number. Disbursement costs exceed the Disbursement Limit. ";
-  public static final String WARNING_MESSAGE_WARIA2 = "Costs have been capped at £400 without an Immigration Priority"
-      + "Authority Number. Disbursement costs exceed the Disbursement Limit.";
   public static final String WARNING_MESSAGE_WARIA3 = "The claim exceeds the Escape Case Threshold. An Escape Case "
       + "Claim must be submitted for further costs to be paid. ";
 
@@ -78,11 +76,12 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
       netDisbursementAmount = requestedNetDisbursementAmount;
     } else {
       log.info("Check disbursement for fee calculation");
-      String message = ("IALB".equals(feeCalculationRequest.getFeeCode()) || "IMLB".equals(feeCalculationRequest.getFeeCode()))
-          ? WARNING_MESSAGE_WARIA2
-          : WARNING_MESSAGE_WARIA1;
-      LimitContext disbursementLimitContext = new LimitContext(DISBURSEMENT, feeEntity.getDisbursementLimit(),
-          immigrationPriorAuthorityNumber, message);
+
+      WarningCode warning = (("IALB".equals(feeCalculationRequest.getFeeCode()) || "IMLB".equals(feeCalculationRequest.getFeeCode()))
+          ? fromCode("WARIA2")
+          : fromCode("WARIA1"));
+      LimitContextNew disbursementLimitContext = new LimitContextNew(DISBURSEMENT, feeEntity.getDisbursementLimit(),
+          immigrationPriorAuthorityNumber, warning);
 
       netDisbursementAmount = checkLimitAndCapIfExceeded(requestedNetDisbursementAmount, disbursementLimitContext, validationMessages);
     }

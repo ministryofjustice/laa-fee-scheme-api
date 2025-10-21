@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARIA1;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.fromCode;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.fixed.ImmigrationAsylumFixedFeeCalculator.WARNING_MESSAGE_WARIA3;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
@@ -25,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.WarningCode;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -208,12 +211,13 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
 
       FeeCalculationResponse response = immigrationAsylumFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
-      String expectedMessage = "WARIA_1".equals(warningMessage)
-          ? ImmigrationAsylumFixedFeeCalculator.WARNING_MESSAGE_WARIA1
-          : ImmigrationAsylumFixedFeeCalculator.WARNING_MESSAGE_WARIA2;
+      WarningCode warning = "WARIA_1".equals(warningMessage)
+          ? fromCode("WARIA1")
+          : fromCode("WARIA2");
 
       ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
-          .message(expectedMessage)
+          .message(warning.getMessage())
+          .code(warning.getCode())
           .type(WARNING)
           .build();
 

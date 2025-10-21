@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
+import uk.gov.justice.laa.fee.scheme.enums.WarningCode;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -72,6 +73,36 @@ public final class FeeCalculationUtil {
 
       validationMessages.add(ValidationMessagesInner.builder()
           .message(limitContext.warningMessage())
+          .type(WARNING)
+          .build());
+
+      return limit;
+    }
+    return amount;
+  }
+
+  // TODO replace checkLimitAndCapIfExceeded
+  /**
+   * Check if amount exceeds limit without authority and cap to limit if exceeded.
+   *
+   * @param amount          the amount to check
+   * @param limitContext    the limit context containing limit details
+   * @param validationMessages the list to add validation messages to
+   * @return the capped amount if limit exceeded without authority, otherwise the original amount
+   */
+  public static BigDecimal checkLimitAndCapIfExceeded(BigDecimal amount, LimitContextNew limitContext,
+                                                      List<ValidationMessagesInner> validationMessages) {
+    log.info("Check {} is below limit for fee calculation", limitContext.limitType().getDisplayName());
+    BigDecimal limit = limitContext.limit();
+
+    if (isOverLimitWithoutAuthority(amount, limitContext)) {
+      log.warn("{} limit exceeded without prior authority capping to limit: {}",
+          limitContext.limitType().getDisplayName(), limitContext.limit());
+
+      WarningCode warning = limitContext.warning();
+      validationMessages.add(ValidationMessagesInner.builder()
+          .message(warning.getMessage())
+          .code(warning.getCode())
           .type(WARNING)
           .build());
 
@@ -197,5 +228,11 @@ public final class FeeCalculationUtil {
     return limitContext.limit() != null
            && amount.compareTo(limitContext.limit()) > 0
            && StringUtils.isBlank(limitContext.authority());
+  }
+
+  private static boolean isOverLimitWithoutAuthority(BigDecimal amount, LimitContextNew limitContext) {
+    return limitContext.limit() != null
+        && amount.compareTo(limitContext.limit()) > 0
+        && StringUtils.isBlank(limitContext.authority());
   }
 }
