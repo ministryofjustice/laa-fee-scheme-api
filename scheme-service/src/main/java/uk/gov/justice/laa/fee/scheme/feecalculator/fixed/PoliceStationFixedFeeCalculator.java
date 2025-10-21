@@ -128,10 +128,9 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
         .getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
 
     // Apply VAT where applicable
-    LocalDate startDate = feeCalculationRequest.getStartDate();
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
     BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
-    BigDecimal calculatedVatAmount = getVatAmount(fixedFee, startDate, vatApplicable);
+    BigDecimal calculatedVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
 
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee, calculatedVatAmount);
 
@@ -145,9 +144,6 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
             .vatIndicator(vatApplicable)
             .vatRateApplied(toDoubleOrNull(getVatRateForDate(claimStartDate, vatApplicable)))
             .calculatedVatAmount(toDouble(fixedFeeVatAmount))
-            // @TODO: Why are we returning VAT twice here
-            .vatRateApplied(toDoubleOrNull(getVatRateForDate(startDate, vatApplicable)))
-            .calculatedVatAmount(toDouble(calculatedVatAmount))
             .fixedFeeAmount(toDouble(fixedFee))
             .build()).build();
   }
