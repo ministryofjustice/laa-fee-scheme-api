@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
+import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCRM3;
+import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRCRM4;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
@@ -19,7 +21,9 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
 import uk.gov.justice.laa.fee.scheme.exception.PoliceStationFeeNotFoundException;
+import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -172,8 +176,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
               feeEntity.getFeeScheme().getSchemeCode())
           .stream()
           .findFirst()
-          .orElseThrow(() -> new PoliceStationFeeNotFoundException(feeCalculationRequest.getPoliceStationId(),
-              feeCalculationRequest.getStartDate())); // police station id found ERRCRM3
+          .orElseThrow(() -> new ValidationException(ERRCRM3, new FeeContext(feeCalculationRequest))); // police station id found ERRCRM3
     } else if (StringUtils.isNotBlank(feeCalculationRequest.getPoliceStationSchemeId())) {
 
       log.info("Get police station fees entity using policeStationSchemeId: {} and schemeCode: {}",
@@ -184,8 +187,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
               feeEntity.getFeeScheme().getSchemeCode())
           .stream()
           .findFirst()
-          .orElseThrow(() -> new PoliceStationFeeNotFoundException(feeCalculationRequest.getPoliceStationSchemeId()));
-      // scheme id not found ERRCRM4
+          .orElseThrow(() -> new ValidationException(ERRCRM4, new FeeContext(feeCalculationRequest)));
     } else {
       throw new PoliceStationFeeNotFoundException(feeCalculationRequest.getPoliceStationSchemeId());
     }

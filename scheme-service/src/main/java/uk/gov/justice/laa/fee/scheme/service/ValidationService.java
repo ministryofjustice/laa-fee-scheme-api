@@ -38,7 +38,7 @@ public class ValidationService {
    * Validates the fee code and claim start date and returns the valid Fee entity.
    *
    * @param feeCalculationRequest the fee calculation request
-   * @param feeEntityList the fee entity list
+   * @param feeEntityList         the fee entity list
    * @return the valid Fee entity
    */
   public FeeEntity getValidFeeEntity(List<FeeEntity> feeEntityList, FeeCalculationRequest feeCalculationRequest) {
