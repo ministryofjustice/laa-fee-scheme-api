@@ -73,8 +73,8 @@ public class GlobalExceptionHandler {
 
     ValidationMessagesInner validationMessages = ValidationMessagesInner.builder()
         .type(ERROR)
-        .code(error.name())
-        .message(error.getErrorMessage()).build();
+        .code(error.getCode())
+        .message(error.getMessage()).build();
 
     FeeCalculationResponse feeCalculationResponse = FeeCalculationResponse.builder()
         .feeCode(context.feeCode())

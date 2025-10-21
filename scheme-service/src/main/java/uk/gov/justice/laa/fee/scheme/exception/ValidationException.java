@@ -19,7 +19,7 @@ public class ValidationException extends RuntimeException  {
    * @param context the context
    */
   public ValidationException(ValidationError error, FeeContext context) {
-    super(error.name() + " - " + error.getErrorMessage());
+    super(error.getCode() + " - " + error.getMessage());
     this.error = error;
     this.context = context;
   }

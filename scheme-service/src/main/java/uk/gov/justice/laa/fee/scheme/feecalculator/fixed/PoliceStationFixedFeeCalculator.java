@@ -176,7 +176,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
               feeEntity.getFeeScheme().getSchemeCode())
           .stream()
           .findFirst()
-          .orElseThrow(() -> new ValidationException(ERRCRM3, new FeeContext(feeCalculationRequest))); // police station id found ERRCRM3
+          .orElseThrow(() -> new ValidationException(ERRCRM3, new FeeContext(feeCalculationRequest)));
     } else if (StringUtils.isNotBlank(feeCalculationRequest.getPoliceStationSchemeId())) {
 
       log.info("Get police station fees entity using policeStationSchemeId: {} and schemeCode: {}",
