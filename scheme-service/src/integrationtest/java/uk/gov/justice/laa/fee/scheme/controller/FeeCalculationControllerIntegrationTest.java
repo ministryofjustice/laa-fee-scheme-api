@@ -341,11 +341,13 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "validationMessages": [
                   {
                     type: "WARNING",
-                    message: "warning net profit costs"
+                    code: "WARIA6",
+                    message: "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
                   },
                   {
                     type: "WARNING",
-                    message: "warning net disbursements"
+                    code: "WARIA7",
+                    message: "Costs have been capped without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit."
                   }
               ],
               "feeCalculation": {

@@ -73,7 +73,7 @@ public final class FeeCalculationUtil {
     return amount;
   }
 
-  // TODO replace checkLimitAndCapIfExceeded
+  // TODO replace checkLimitAndCapIfExceeded, once warnings are done
   /**
    * Check if amount exceeds limit without authority and cap to limit if exceeded.
    *
@@ -164,6 +164,7 @@ public final class FeeCalculationUtil {
            && StringUtils.isBlank(limitContext.authority());
   }
 
+  // TODO remove once warnings are done, as using temporary LimitContextNew
   private static boolean isOverLimitWithoutAuthority(BigDecimal amount, LimitContextNew limitContext) {
     return limitContext.limit() != null
         && amount.compareTo(limitContext.limit()) > 0

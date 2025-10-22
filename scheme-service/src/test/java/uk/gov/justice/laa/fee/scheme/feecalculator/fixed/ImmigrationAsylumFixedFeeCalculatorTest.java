@@ -5,8 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARIA1;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.fromCode;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_DISB_400_LEGAL_HELP;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_DISB_600_CLR;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.getMessageFromCode;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.fixed.ImmigrationAsylumFixedFeeCalculator.WARNING_MESSAGE_WARIA3;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
@@ -212,8 +213,8 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
       FeeCalculationResponse response = immigrationAsylumFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
       WarningCode warning = "WARIA_1".equals(warningMessage)
-          ? fromCode("WARIA1")
-          : fromCode("WARIA2");
+          ? getMessageFromCode(WARN_IMM_ASYLM_DISB_600_CLR)
+          : getMessageFromCode(WARN_IMM_ASYLM_DISB_400_LEGAL_HELP);
 
       ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
           .message(warning.getMessage())

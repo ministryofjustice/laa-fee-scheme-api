@@ -4,7 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.fromCode;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_DETENTION_TRAVEL;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_DISB_LEGAL_HELP;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_JR_FORM_FILLING;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_PRIOR_AUTH_CLR;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.getMessageFromCode;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -98,9 +105,9 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
         // over profit costs limit "without" prior authority
         Arguments.of("IAXL", NO_VAT, NO_AUTHORITY, 919.16, 123.38, 24.67,
-            948.05, 0, 923.38, 800, 123.38, List.of(fromCode("WARIA6"))),
+            948.05, 0, 923.38, 800, 123.38, List.of(getMessageFromCode(WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP))),
         Arguments.of("IAXL", VAT, NO_AUTHORITY, 919.16, 123.38, 24.67,
-            1108.05, 160, 923.38, 800, 123.38, List.of(fromCode("WARIA6"))),
+            1108.05, 160, 923.38, 800, 123.38, List.of(getMessageFromCode(WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP))),
 
         // over disbursements limit "with" prior authority
         Arguments.of("IAXL", NO_VAT, AUTHORITY, 166.25, 425.17, 85.03,
@@ -110,9 +117,9 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
         // over disbursements limit "without" prior authority
         Arguments.of("IAXL", NO_VAT, NO_AUTHORITY, 166.25, 425.17, 85.03,
-            651.28, 0, 566.25, 166.25, 400, List.of(fromCode("WARIA7"))),
+            651.28, 0, 566.25, 166.25, 400, List.of(getMessageFromCode(WARN_IMM_ASYLM_DISB_LEGAL_HELP))),
         Arguments.of("IAXL", VAT, NO_AUTHORITY, 166.25, 425.17, 85.03,
-            684.53, 33.25, 566.25, 166.25, 400, List.of(fromCode("WARIA7"))),
+            684.53, 33.25, 566.25, 166.25, 400, List.of(getMessageFromCode(WARN_IMM_ASYLM_DISB_LEGAL_HELP))),
 
         // over profit costs and disbursements limits "with" prior authority
         Arguments.of("IAXL", NO_VAT, AUTHORITY, 919.16, 425.17, 85.03,
@@ -122,9 +129,9 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
         // over profit costs and disbursements limits "without" prior authority
         Arguments.of("IAXL", NO_VAT, null, 919.16, 425.17, 85.03,
-            1285.03, 0, 1200, 800, 400, List.of(fromCode("WARIA6"), fromCode("WARIA7"))),
+            1285.03, 0, 1200, 800, 400, List.of(getMessageFromCode(WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP), getMessageFromCode(WARN_IMM_ASYLM_DISB_LEGAL_HELP))),
         Arguments.of("IAXL", VAT, null, 919.16, 425.17, 85.03,
-            1445.03, 160, 1200, 800, 400, List.of(fromCode("WARIA6"), fromCode("WARIA7"))),
+            1445.03, 160, 1200, 800, 400, List.of(getMessageFromCode(WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP), getMessageFromCode(WARN_IMM_ASYLM_DISB_LEGAL_HELP))),
 
         // IMXL
         Arguments.of("IMXL", NO_VAT, NO_AUTHORITY, 166.25, 123.38, 24.67,
@@ -187,10 +194,10 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
         // IA100 over total limit without prior auth (No VAT)
         Arguments.of("IA100", false, null, 65.21, 55.60, 11.12,
-            111.12, 0, 100, List.of(fromCode("WARIA8"))),
+            111.12, 0, 100, List.of(getMessageFromCode(WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP))),
         // IA100 over total limit without prior auth (VAT applied)
         Arguments.of("IA100", true, null, 65.21, 55.60, 11.12,
-            124.16, 13.04, 100, List.of(fromCode("WARIA8")))
+            124.16, 13.04, 100, List.of(getMessageFromCode(WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP)))
     );
   }
 
@@ -220,9 +227,9 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
   static Stream<Arguments> warningTestDataLegalHelp() {
     return Stream.of(
         // Legal Help
-        Arguments.of(314.3, null, List.of(fromCode("WARIA9"))),
-        Arguments.of(null, 55.34, List.of(fromCode("WARIA10"))),
-        Arguments.of(314.3, 55.34, List.of(fromCode("WARIA9"), fromCode("WARIA10")))
+        Arguments.of(314.3, null, List.of(getMessageFromCode(WARN_IMM_ASYLM_DETENTION_TRAVEL))),
+        Arguments.of(null, 55.34, List.of(getMessageFromCode(WARN_IMM_ASYLM_JR_FORM_FILLING))),
+        Arguments.of(314.3, 55.34, List.of(getMessageFromCode(WARN_IMM_ASYLM_DETENTION_TRAVEL), getMessageFromCode(WARN_IMM_ASYLM_JR_FORM_FILLING)))
     );
   }
 
@@ -280,9 +287,9 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
         // over total "without" prior authority
         Arguments.of("IAXC", NO_VAT, NO_AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
-            1630.46, 0, 1600, List.of(fromCode("WARIA4"))),
+            1630.46, 0, 1600, List.of(getMessageFromCode(WARN_IMM_ASYLM_PRIOR_AUTH_CLR))),
         Arguments.of("IAXC", VAT, NO_AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
-            1929.45, 298.99, 1600, List.of(fromCode("WARIA4"))),
+            1929.45, 298.99, 1600, List.of(getMessageFromCode(WARN_IMM_ASYLM_PRIOR_AUTH_CLR))),
 
         // IMXC
         Arguments.of("IMXC", NO_VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
@@ -320,17 +327,17 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
   static Stream<Arguments> warningTestDataClr() {
     return Stream.of(
-        Arguments.of("IAXC", 314.3, null, List.of(fromCode("WARIA9"))),
-        Arguments.of("IAXC", null, 55.34, List.of(fromCode("WARIA10"))),
-        Arguments.of("IAXC", 314.3, 55.34, List.of(fromCode("WARIA9"), fromCode("WARIA10")))
+        Arguments.of("IAXC", 314.3, null, List.of(getMessageFromCode(WARN_IMM_ASYLM_DETENTION_TRAVEL))),
+        Arguments.of("IAXC", null, 55.34, List.of(getMessageFromCode(WARN_IMM_ASYLM_JR_FORM_FILLING))),
+        Arguments.of("IAXC", 314.3, 55.34, List.of(getMessageFromCode(WARN_IMM_ASYLM_DETENTION_TRAVEL), getMessageFromCode(WARN_IMM_ASYLM_JR_FORM_FILLING)))
     );
   }
 
   static Stream<Arguments> warningTestDataClrInterim() {
     return Stream.of(
-        Arguments.of("IACD", 314.3, null, List.of(fromCode("WARIA9"))),
-        Arguments.of("IACD", null, 55.34, List.of(fromCode("WARIA10"))),
-        Arguments.of("IACD", 314.3, 55.34, List.of(fromCode("WARIA9"), fromCode("WARIA10")))
+        Arguments.of("IACD", 314.3, null, List.of(getMessageFromCode(WARN_IMM_ASYLM_DETENTION_TRAVEL))),
+        Arguments.of("IACD", null, 55.34, List.of(getMessageFromCode(WARN_IMM_ASYLM_JR_FORM_FILLING))),
+        Arguments.of("IACD", 314.3, 55.34, List.of(getMessageFromCode(WARN_IMM_ASYLM_DETENTION_TRAVEL), getMessageFromCode(WARN_IMM_ASYLM_JR_FORM_FILLING)))
     );
   }
 
@@ -396,9 +403,9 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
         // over total limit "without" prior authority
         Arguments.of("IACD", NO_VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 1008.17, 152.34, 30.46,
-            2404.46, 0, 2374, List.of(fromCode("WARIA5"))),
+            2404.46, 0, 2374, List.of(getMessageFromCode(WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM))),
         Arguments.of("IACD", VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 1008.17, 152.34, 30.46,
-            2858.25, 453.79, 2374, List.of(fromCode("WARIA5"))),
+            2858.25, 453.79, 2374, List.of(getMessageFromCode(WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM))),
 
         // substantive hearing bolt on = false
         Arguments.of("IACD", NO_VAT, NO_AUTHORITY, buildBoltOn(false), 486.78, 611.25, 152.34, 30.46,
