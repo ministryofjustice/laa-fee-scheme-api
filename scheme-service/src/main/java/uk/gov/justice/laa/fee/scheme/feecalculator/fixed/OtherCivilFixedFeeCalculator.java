@@ -68,9 +68,6 @@ public class OtherCivilFixedFeeCalculator implements FeeCalculator {
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee,
-        calculatedVatAmount, netDisbursementAmount, disbursementVatAmount);
-
     // Escape case logic
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
 
@@ -78,13 +75,13 @@ public class OtherCivilFixedFeeCalculator implements FeeCalculator {
 
     boolean isEscaped = FeeCalculationUtil.isEscapedCase(netProfitCosts, feeEntity.getEscapeThresholdLimit());
 
-    List<WarningCode> warningCodes = WarningCode.getByCategory(feeEntity.getCategoryType());
-
-    if (warningCodes.isEmpty()) {
-      throw new IllegalStateException("No error codes found for category: " + feeEntity.getCategoryType());
-    }
-
     if (isEscaped) {
+
+      List<WarningCode> warningCodes = WarningCode.getByCategory(feeEntity.getCategoryType());
+
+      if (warningCodes.isEmpty()) {
+        throw new IllegalStateException("No error codes found for category: " + feeEntity.getCategoryType());
+      }
       log.warn("Fee total exceeds escape threshold limit");
       validationMessages.add(ValidationMessagesInner.builder()
           .message(warningCodes.getFirst().getMessage())
@@ -92,6 +89,9 @@ public class OtherCivilFixedFeeCalculator implements FeeCalculator {
           .type(WARNING)
           .build());
     }
+
+    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee,
+        calculatedVatAmount, netDisbursementAmount, disbursementVatAmount);
 
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
