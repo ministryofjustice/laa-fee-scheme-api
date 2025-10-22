@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.model.EscapeCaseCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -63,8 +62,6 @@ class DiscriminationHourlyRateCalculatorTest {
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel, expectedVat,
         expectedHourlyTotal, true);
-
-    assertFeeCalculation(result, netProfitCosts, costOfCounsel);
 
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
         .message("123")
@@ -128,13 +125,4 @@ class DiscriminationHourlyRateCalculatorTest {
     assertThat(calculation.getHourlyTotalAmount()).isEqualTo(expectedHourlyTotal);
   }
 
-  private void assertFeeCalculation(FeeCalculationResponse response, double netProfitCosts, double costOfCounsel) {
-    EscapeCaseCalculation escapeCaseCalculation = response.getEscapeCaseCalculation();
-    assertThat(escapeCaseCalculation).isNotNull();
-    assertThat(escapeCaseCalculation.getCalculatedEscapeCaseValue()).isEqualTo(801.0);
-    assertThat(escapeCaseCalculation.getEscapeCaseThreshold()).isEqualTo(700.0);
-    assertThat(escapeCaseCalculation.getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
-    assertThat(escapeCaseCalculation.getRequestedNetProfitCostsAmount()).isEqualTo(netProfitCosts);
-    assertThat(escapeCaseCalculation.getNetCostOfCounselAmount()).isEqualTo(costOfCounsel);
-  }
 }

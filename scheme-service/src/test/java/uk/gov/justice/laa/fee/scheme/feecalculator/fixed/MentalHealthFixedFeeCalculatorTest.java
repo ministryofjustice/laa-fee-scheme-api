@@ -22,7 +22,6 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
-import uk.gov.justice.laa.fee.scheme.model.EscapeCaseCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -36,8 +35,7 @@ class MentalHealthFixedFeeCalculatorTest {
 
   private static FeeCalculationResponse buildExpectedResponse(String feeCode, FeeCalculation expectedCalculation,
                                                               boolean hasEscaped,
-                                                              List<ValidationMessagesInner> validationMessages,
-                                                              EscapeCaseCalculation escapeCaseCalculation) {
+                                                              List<ValidationMessagesInner> validationMessages) {
     return FeeCalculationResponse.builder()
         .feeCode(feeCode)
         .schemeId("MHL_FS2013")
@@ -45,7 +43,6 @@ class MentalHealthFixedFeeCalculatorTest {
         .validationMessages(validationMessages)
         .escapeCaseFlag(hasEscaped)
         .feeCalculation(expectedCalculation)
-        .escapeCaseCalculation(hasEscaped ? escapeCaseCalculation : null)
         .build();
   }
 
@@ -143,7 +140,7 @@ class MentalHealthFixedFeeCalculatorTest {
       FeeCalculation expectedCalculation = buildFeeCalculation(fixedFee, vatIndicator, calculatedVat, boltOnNumber,
           boltOnTotalFeeAmount, boltOnAdjournedHearingFee, expectedTotal);
       FeeCalculationResponse expectedResponse = buildExpectedResponse(feeCode, expectedCalculation,
-          false, new ArrayList<>(), null);
+          false, new ArrayList<>());
 
       assertThat(response)
           .usingRecursiveComparison()
@@ -157,34 +154,30 @@ class MentalHealthFixedFeeCalculatorTest {
     public static Stream<Arguments> testDataEscapeCase() {
       return Stream.of(
           argumentsEscapeCase("MHL01, with Vat, no bolt ons, escaped", "MHL01", 263.0,
-              1000.0, true, 52.6, null, 0.0,
-              null, 386.25, true, 759.0,
-              1000.0, 759.0),
+              1000.0, true, 52.6, null,
+              0.0, null, 386.25, true, 759.0),
 
           argumentsEscapeCase("MHL05, with Vat, has bolt ons, escaped", "MHL05", 321.0,
               1020.0, true, 124.2, 3,
-              300.0, 300.0, 815.85, true,
-              321.0, 1020.0, 621.0),
+              300.0, 300.0, 815.85, true, 321.0),
 
           argumentsEscapeCase("MHL05, with Vat, has bolt ons, not escaped", "MHL05", 321.0,
               111.0, true, 124.2, 3,
-              300.0, 300.0, 815.85, false,
-              321.0, null, 621.0),
+              300.0, 300.0, 815.85, false, 321.0),
 
           argumentsEscapeCase("MHL10, with Vat, has bolt ons, cannot escape", "MHL05", 129.0,
               1010.0, true, 85.8, 3,
-              300.0, 300.0, 585.45, false,
-              null, null, null)
+              300.0, 300.0, 585.45, false, null)
       );
     }
 
     private static Arguments argumentsEscapeCase(String scenario, String feeCode, double fixedFee, double requestedNetProfitCosts,
                                                  boolean vat, Double calculatedVat, Integer boltOnNumber, Double boltOnTotalFeeAmount,
                                                  Double boltOnAdjournedHearingFee, double expectedTotal, boolean hasWarning,
-                                                 Double escapeThresholdLimit, Double calculatedEscapeCaseValue, Double escapeCaseThreshold) {
+                                                 Double escapeThresholdLimit) {
 
       return Arguments.of(scenario, feeCode, fixedFee, requestedNetProfitCosts, vat, calculatedVat, boltOnNumber,
-          boltOnTotalFeeAmount, boltOnAdjournedHearingFee, expectedTotal, hasWarning, escapeThresholdLimit, calculatedEscapeCaseValue, escapeCaseThreshold);
+          boltOnTotalFeeAmount, boltOnAdjournedHearingFee, expectedTotal, hasWarning, escapeThresholdLimit);
     }
 
     @ParameterizedTest
@@ -201,9 +194,7 @@ class MentalHealthFixedFeeCalculatorTest {
         Double boltOnAdjournedHearingFee,
         double expectedTotal,
         boolean hasWarning,
-        Double escapeThresholdLimit,
-        Double calculatedEscapeCaseValue,
-        Double escapeCaseThreshold
+        Double escapeThresholdLimit
     ) {
 
       FeeCalculationRequest feeData = buildFeeCalculationRequest(feeCode, vatIndicator, boltOnNumber, requestedNetProfitCosts);
@@ -214,30 +205,23 @@ class MentalHealthFixedFeeCalculatorTest {
       List<ValidationMessagesInner> validationMessages = new ArrayList<>();
       boolean hasEscaped = false;
       if (hasWarning) {
-        validationMessages.add(ValidationMessagesInner.builder()
+        ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
             .message(WARNING_MESSAGE_WARMH1)
             .type(WARNING)
-            .build());
+            .build();
+        validationMessages.add(validationMessage);
         hasEscaped = true;
       }
 
       FeeCalculation expectedCalculation = buildFeeCalculation(fixedFee, vatIndicator, calculatedVat, boltOnNumber,
           boltOnTotalFeeAmount, boltOnAdjournedHearingFee, expectedTotal);
-
-      EscapeCaseCalculation escapeCaseCalculation = EscapeCaseCalculation.builder()
-          .calculatedEscapeCaseValue(calculatedEscapeCaseValue)
-          .escapeCaseThreshold(escapeCaseThreshold)
-          .netCostOfCounselAmount(null)
-          .netProfitCostsAmount(requestedNetProfitCosts)
-          .requestedNetProfitCostsAmount(requestedNetProfitCosts)
-          .build();
-
-      FeeCalculationResponse expectedResponse = buildExpectedResponse(feeCode, expectedCalculation, hasEscaped, validationMessages,
-          escapeCaseCalculation);
+      FeeCalculationResponse expectedResponse = buildExpectedResponse(feeCode, expectedCalculation, hasEscaped, validationMessages);
 
       assertThat(response)
           .usingRecursiveComparison()
           .isEqualTo(expectedResponse);
     }
+
   }
+
 }

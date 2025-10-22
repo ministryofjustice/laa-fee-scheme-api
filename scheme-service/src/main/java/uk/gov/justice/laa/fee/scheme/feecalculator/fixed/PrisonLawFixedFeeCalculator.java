@@ -20,7 +20,6 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
-import uk.gov.justice.laa.fee.scheme.model.EscapeCaseCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -41,8 +40,6 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
       + "Standard Fee Limit. An escape fee may be payable.";
   public static final String WARNING_MESSAGE_WARCRM6 = "The claim exceeds the Escape Case Threshold. An Escape Case Claim "
       + "must be submitted for further costs to be paid.";
-
-  private record EscapeResult(boolean escapeCaseFlag, boolean pastEscapeOrFeeLimit, EscapeCaseCalculation escapeCaseCalculation) {}
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -67,24 +64,21 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
     FeeCalculation feeCalculation = mapFeeCalculation(feeCalculationRequest, feeEntity.getFixedFee());
-
-    EscapeResult escapeResult = isEscapedOrPastFeeLimit(feeCalculationRequest, feeEntity, validationMessages);
+    boolean escapeCaseFlag = isEscapedOrPastFeeLimit(feeCalculationRequest, feeEntity, validationMessages);
 
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeScheme().getSchemeCode())
-        .escapeCaseFlag(escapeResult.escapeCaseFlag())
+        .escapeCaseFlag(escapeCaseFlag)
         .validationMessages(validationMessages)
-        .feeCalculation(feeCalculation)
-        .escapeCaseCalculation(escapeResult.pastEscapeOrFeeLimit() ? escapeResult.escapeCaseCalculation() : null)
-        .build();
+        .feeCalculation(feeCalculation).build();
   }
 
   /**
    * Calculate if case has escaped.
    */
-  private EscapeResult isEscapedOrPastFeeLimit(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
+  private boolean isEscapedOrPastFeeLimit(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
                                           List<ValidationMessagesInner> validationMessages) {
 
     BigDecimal requestedNetProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
@@ -92,20 +86,20 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
     BigDecimal totalAmount = requestedNetProfitCosts.add(requestedNetWaitingCosts);
 
     if (FEE_CODES_ESCAPE_USING_ESCAPE_THRESHOLD.contains(feeCalculationRequest.getFeeCode())) {
-      return escapeCaseValidation(feeEntity, validationMessages, totalAmount, feeCalculationRequest);
+      return escapeCaseValidation(feeEntity, validationMessages, totalAmount);
+    } else if (FEE_CODES_ESCAPE_USING_FEE_LIMIT.contains(feeCalculationRequest.getFeeCode())) {
+      feeLimitValidation(feeEntity, validationMessages, totalAmount);
+      return false;
     }
-    if (FEE_CODES_ESCAPE_USING_FEE_LIMIT.contains(feeCalculationRequest.getFeeCode())) {
-      return feeLimitValidation(feeEntity, validationMessages, totalAmount, feeCalculationRequest);
-    }
-    return new EscapeResult(false, false, null);
+    return false;
   }
 
   /**
    * Calculate if the  case may have escaped using fee limit,
    * escape flag will always be false.
    */
-  private EscapeResult feeLimitValidation(FeeEntity feeEntity, List<ValidationMessagesInner> validationMessages,
-                                  BigDecimal totalAmount, FeeCalculationRequest feeCalculationRequest) {
+  private void feeLimitValidation(FeeEntity feeEntity, List<ValidationMessagesInner> validationMessages,
+                                     BigDecimal totalAmount) {
 
     BigDecimal feeLimit = feeEntity.getTotalLimit();
     if (isEscapedCase(totalAmount, feeLimit)) {
@@ -114,19 +108,8 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
           .message(WARNING_MESSAGE_WARCRM5)
           .type(WARNING)
           .build());
-
-      EscapeCaseCalculation escapeCaseValidation = EscapeCaseCalculation.builder()
-          .calculatedEscapeCaseValue(toDouble(totalAmount))
-          .escapeCaseThreshold(toDouble(feeLimit))
-          .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
-          .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
-          .netWaitingCostsAmount(feeCalculationRequest.getNetWaitingCosts())
-          .build();
-
-      return new EscapeResult(false, true, escapeCaseValidation);
     } else {
       log.warn("Case has not exceeded fee limit");
-      return new EscapeResult(false, false, null);
     }
   }
 
@@ -134,8 +117,8 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
    * Calculate if the has escaped using EscapeThresholdLimit,
    * escape flag will be true when it has.
    */
-  private EscapeResult escapeCaseValidation(FeeEntity feeEntity, List<ValidationMessagesInner> validationMessages,
-                                       BigDecimal totalAmount, FeeCalculationRequest feeCalculationRequest) {
+  private boolean escapeCaseValidation(FeeEntity feeEntity, List<ValidationMessagesInner> validationMessages,
+                                       BigDecimal totalAmount) {
 
     BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
     if (isEscapedCase(totalAmount, escapeThresholdLimit)) {
@@ -144,19 +127,10 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
           .message(WARNING_MESSAGE_WARCRM6)
           .type(WARNING)
           .build());
-
-      EscapeCaseCalculation escapeCaseValidation = EscapeCaseCalculation.builder()
-          .calculatedEscapeCaseValue(toDouble(totalAmount))
-          .escapeCaseThreshold(toDouble(escapeThresholdLimit))
-          .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
-          .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
-          .netWaitingCostsAmount(feeCalculationRequest.getNetWaitingCosts())
-          .build();
-
-      return new EscapeResult(true, true, escapeCaseValidation);
+      return true;
     }
     log.warn("Case has not escaped");
-    return new EscapeResult(false, false, null);
+    return false;
   }
 
   /**

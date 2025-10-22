@@ -129,61 +129,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   }
 
   @Test
-  void shouldGetFeeCalculation_associatedCivil_andEscaped() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "ASMS",
-                  "claimId": "claim_123",
-                  "uniqueFileNumber": "020416/001",
-                  "netProfitCosts": 350.0,
-                  "netTravelCosts": 357.0,
-                  "netWaitingCosts": 90.0,
-                  "netDisbursementAmount": 55.35,
-                  "disbursementVatAmount": 11.07,
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "ASMS",
-              "schemeId": "ASSOC_FS2016",
-              "claimId": "claim_123",
-              "escapeCaseFlag": true,
-              "validationMessages": [
-                {
-                    "type": "WARNING",
-                    "message": "123"
-                }],
-              "feeCalculation": {
-                "totalAmount": 161.22,
-                "vatIndicator": true,
-                "vatRateApplied": 20.0,
-                "calculatedVatAmount": 15.8,
-                "disbursementAmount": 55.35,
-                "requestedNetDisbursementAmount": 55.35,
-                "disbursementVatAmount": 11.07,
-                "fixedFeeAmount": 79.0
-                },
-              "escapeCaseCalculation": {
-                "calculatedEscapeCaseValue": 797.0,
-                "escapeCaseThreshold": 237.0,
-                "netProfitCostsAmount": 350.0,
-                "requestedNetProfitCostsAmount": 350.0,
-                "netTravelCostsAmount": 357.0,
-                "netWaitingCostsAmount": 90.0
-                }
-              }
-            """, STRICT));
-  }
-
-  @Test
   void shouldGetFeeCalculation_discrimination() throws Exception {
     mockMvc
         .perform(post(URI)

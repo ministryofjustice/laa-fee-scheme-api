@@ -27,7 +27,6 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
-import uk.gov.justice.laa.fee.scheme.model.EscapeCaseCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -262,22 +261,6 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
           .build();
     }
 
-    private void assertEscapeCaseCalculation(FeeCalculationResponse response, double calculatedEscapeCaseValue,
-                                             double requestedNetProfitCosts, Double requestedNetCounselCosts,
-                                             double escapeThresholdLimit) {
-      EscapeCaseCalculation escapeCaseCalculation = response.getEscapeCaseCalculation();
-      assertThat(escapeCaseCalculation).isNotNull();
-      assertThat(escapeCaseCalculation.getCalculatedEscapeCaseValue()).isEqualTo(calculatedEscapeCaseValue);
-      assertThat(escapeCaseCalculation.getEscapeCaseThreshold()).isEqualTo(escapeThresholdLimit);
-      assertThat(escapeCaseCalculation.getNetProfitCostsAmount()).isEqualTo(requestedNetProfitCosts);
-      assertThat(escapeCaseCalculation.getRequestedNetProfitCostsAmount()).isEqualTo(requestedNetProfitCosts);
-      if (requestedNetCounselCosts == null) {
-        assertThat(escapeCaseCalculation.getNetCostOfCounselAmount()).isNull();
-      } else {
-        assertThat(escapeCaseCalculation.getNetCostOfCounselAmount()).isEqualTo(requestedNetCounselCosts);
-      }
-    }
-
     @ParameterizedTest
     @CsvSource({
         "IDAS1, IDAS2"
@@ -293,32 +276,25 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
     public static Stream<Arguments> escapeCaseData() {
       return Stream.of(
           arguments("IACE, past escape threshold, counsel cost eligible, no substantive bolt on", "IACE",
-              1000.0, 1199.0, null, 1338.0,
-              true, 1535.0),
+              1000.0, 1199.0, null, 1338.0, true),
           arguments("IACE, not past escape threshold, counsel cost eligible, no substantive bolt on", "IACE",
-              1000.0, 199.0, null, 1338.0,
-              false, null),
+              1000.0, 199.0, null, 1338.0, false),
           arguments("IMLB, past escape threshold, counsel cost not eligible, no substantive bolt on", "IMLB",
-              1500.0, null, null, 468.0,
-              true, 836.0),
+              1500.0, null, null, 468.0, true),
           arguments("IMLB, not past escape threshold, counsel cost not eligible, no substantive bolt on", "IMLB",
-              100.0, null, null, 468.0,
-              false, null),
+              100.0, null, null, 468.0, false),
           arguments("IMCF, past escape threshold, has substantive bolt on", "IMCF",
-              1500.0, 1000.0, 237.0, 1710.0,
-              true, 1836.0),
+              1500.0, 1000.0, 237.0, 1710.0, true),
           arguments("IMCF, not past escape threshold, has substantive bolt on", "IMCF",
-              1000.0, 500.0, 237.0, 1710.0,
-              false, null)
+              1000.0, 500.0, 237.0, 1710.0, false)
       );
     }
 
     private static Arguments arguments(String scenario, String feeCode, double requestedNetProfitCosts, Double requestedNetCounselCosts,
-                                       Double substantiveBoltOnCost, double escapeThresholdLimit, boolean hasWarning,
-                                       Double calculatedEscapeCaseValue) {
+                                       Double substantiveBoltOnCost, double escapeThresholdLimit, boolean hasWarning) {
 
       return Arguments.of(scenario, feeCode, requestedNetProfitCosts, requestedNetCounselCosts, substantiveBoltOnCost,
-          escapeThresholdLimit, hasWarning, calculatedEscapeCaseValue);
+          escapeThresholdLimit, hasWarning);
     }
 
     @ParameterizedTest
@@ -330,9 +306,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         Double requestedNetCounselCosts,
         Double substantiveBoltOnCost,
         double escapeThresholdLimit,
-        boolean hasWarning,
-        Double calculatedEscapeCaseValue)
-    {
+        boolean hasWarning) {
 
       FeeCalculationRequest feeCalculationRequest = buildRequest(feeCode, null,
           requestedNetProfitCosts, requestedNetCounselCosts);
@@ -349,7 +323,6 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
             .build();
         assertThat(response.getValidationMessages()).containsExactly(validationMessage);
         assertThat(response.getEscapeCaseFlag()).isTrue();
-        assertEscapeCaseCalculation(response, calculatedEscapeCaseValue, requestedNetProfitCosts, requestedNetCounselCosts, escapeThresholdLimit);
       } else  {
         assertThat(response.getValidationMessages()).isEmpty();
         assertThat(response.getEscapeCaseFlag()).isFalse();
