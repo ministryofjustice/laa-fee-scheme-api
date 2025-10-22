@@ -107,6 +107,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(policeStationFeesEntity.getFeeSchemeCode())
+        .claimId(feeCalculationRequest.getClaimId())
         .escapeCaseFlag(isEscapeCase)
         .validationMessages(validationMessages)
         .feeCalculation(FeeCalculation.builder()
@@ -143,6 +144,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeScheme().getSchemeCode())
+        .claimId(feeCalculationRequest.getClaimId())
         .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))

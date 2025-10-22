@@ -169,8 +169,8 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                 {
                   "feeCode": "INVC",
                   "claimId": "claim_123",
-                  "startDate": "2023-12-12",
-                  "uniqueFileNumber": "121219/242",
+                  "startDate": "2021-12-12",
+                  "uniqueFileNumber": "121221/242",
                   "policeStationSchemeId": "BLAH",
                   "vatIndicator": false
                 }
@@ -220,6 +220,88 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                   "message":"Enter a UFN."
                 }
               ]
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationWarning_whenCrimeFeeCodeAndNetTravelCosts() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "INVB1",
+                  "claimId": "claim_123",
+                  "startDate": "2021-12-12",
+                  "uniqueFileNumber": "121221/242",
+                  "netTravelCosts": 100.0,
+                  "vatIndicator": false
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json("""
+            {
+              "feeCode": "INVB1",
+              "claimId": "claim_123",
+              "schemeId": "POL_FS2016",
+              "validationMessages": [
+                {
+                  "type":"WARNING",
+                  "code":"WARCRM1",
+                  "message":"Cost not included. Travel costs cannot be claimed with Fee Code used."
+                }
+              ],
+              "escapeCaseFlag": false,
+              "feeCalculation": {
+                "totalAmount": 28.7,
+                "vatIndicator": false,
+                "vatRateApplied": 20.00,
+                "calculatedVatAmount": 0,
+                "fixedFeeAmount": 28.7
+              }
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationWarning_whenCrimeFeeCodeAndNetWaitingCosts() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "INVB1",
+                  "claimId": "claim_123",
+                  "startDate": "2021-12-12",
+                  "uniqueFileNumber": "121221/242",
+                  "netWaitingCosts": 100.0,
+                  "vatIndicator": false
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json("""
+            {
+              "feeCode": "INVB1",
+              "claimId": "claim_123",
+              "schemeId": "POL_FS2016",
+              "validationMessages": [
+                {
+                  "type":"WARNING",
+                  "code":"WARCRM2",
+                  "message":"Cost not included. Waiting costs cannot be claimed with Fee Code used."
+                }
+              ],
+              "escapeCaseFlag": false,
+              "feeCalculation": {
+                "totalAmount": 28.7,
+                "vatIndicator": false,
+                "vatRateApplied": 20.00,
+                "calculatedVatAmount": 0,
+                "fixedFeeAmount": 28.7
+              }
             }
             """, STRICT));
   }
