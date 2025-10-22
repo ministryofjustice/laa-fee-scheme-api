@@ -5,12 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGS_COURT_DESIGNATED;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_ALL_FEE_CODE;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CIVIL_START_DATE;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CIVIL_START_DATE_TOO_OLD;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_REP_ORDER_DATE;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_UFN_DATE;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_UFN_MISSING;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE_TOO_OLD;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_REP_ORDER_DATE;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_DATE;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_MISSING;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -409,26 +409,45 @@ class ValidationServiceTest {
   }
 
   @Test
-  public void checkForWarnings_whenGivenCrimeFeeCodeAndTravelCostsAndNetWaitingCosts_returnsWarnings() {
-    when(feeDetailsService.getAreaOfLaw("INVB1")).thenReturn(AreaOfLawType.CRIME_LOWER);
+  public void checkForWarnings_whenGivenCrimeFeeCodeAndTravelCosts_returnsNoWarnings() {
+    when(feeDetailsService.getAreaOfLaw("INVC")).thenReturn(AreaOfLawType.CRIME_LOWER);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode("INVB1")
+        .feeCode("INVC")
         .netWaitingCosts(100.0)
+        .build();
+
+    List<ValidationMessagesInner> result = validationService.checkForWarnings(feeCalculationRequest);
+
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  public void checkForWarnings_whenGivenCrimeFeeCodeAndNetWaitingCosts_returnsNoWarnings() {
+    when(feeDetailsService.getAreaOfLaw("INVC")).thenReturn(AreaOfLawType.CRIME_LOWER);
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("INVC")
         .netTravelCosts(100.0)
         .build();
 
     List<ValidationMessagesInner> result = validationService.checkForWarnings(feeCalculationRequest);
 
-    assertThat(result).containsExactlyInAnyOrder(ValidationMessagesInner.builder()
-        .type(WARNING)
-        .code("WARCRM1")
-        .message("Cost not included. Travel costs cannot be claimed with Fee Code used.")
-        .build(), ValidationMessagesInner.builder()
-        .type(WARNING)
-        .code("WARCRM2")
-        .message("Cost not included. Waiting costs cannot be claimed with Fee Code used.")
-        .build());
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  public void checkForWarnings_whenGivenCivilFeeCode_returnsNoWarnings() {
+    when(feeDetailsService.getAreaOfLaw("INVC")).thenReturn(AreaOfLawType.CRIME_LOWER);
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("INVC")
+        .netTravelCosts(100.0)
+        .build();
+
+    List<ValidationMessagesInner> result = validationService.checkForWarnings(feeCalculationRequest);
+
+    assertThat(result).isEmpty();
   }
 
   private static FeeCalculationRequest getFeeCalculationRequest() {

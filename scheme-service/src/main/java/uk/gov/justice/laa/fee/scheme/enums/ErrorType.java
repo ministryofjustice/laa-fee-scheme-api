@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum ErrorCode {
+public enum ErrorType {
   ERR_ALL_FEE_CODE("ERRALL1", "Enter a valid Fee Code."),
 
   ERR_CIVIL_START_DATE("ERRCIV1", "Fee Code is not valid for the Case Start Date."),

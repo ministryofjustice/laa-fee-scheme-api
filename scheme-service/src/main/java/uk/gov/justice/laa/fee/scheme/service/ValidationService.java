@@ -1,13 +1,13 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_ALL_FEE_CODE;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CIVIL_START_DATE;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CIVIL_START_DATE_TOO_OLD;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_REP_ORDER_DATE;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_UFN_DATE;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_UFN_MISSING;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_CRIME_TRAVEL_COSTS;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_CRIME_WAITING_COSTS;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE_TOO_OLD;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_REP_ORDER_DATE;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_DATE;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_MISSING;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_CRIME_TRAVEL_COSTS;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_CRIME_WAITING_COSTS;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import io.micrometer.common.util.StringUtils;
@@ -22,9 +22,9 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.AreaOfLawType;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
-import uk.gov.justice.laa.fee.scheme.enums.ErrorCode;
+import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
 import uk.gov.justice.laa.fee.scheme.enums.Region;
-import uk.gov.justice.laa.fee.scheme.enums.WarningCode;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
@@ -138,15 +138,15 @@ public class ValidationService {
         .filter(fee -> isValidFee(fee, claimStartDate)) // startDate <= inputDate
         .max(Comparator.comparing(fee -> fee.getFeeScheme().getValidFrom()))
         .orElseThrow(() -> {
-          ErrorCode errorCode;
+          ErrorType error;
           if (isCivil(feeCalculationRequest.getFeeCode())) {
-            errorCode = ERR_CIVIL_START_DATE;
+            error = ERR_CIVIL_START_DATE;
           } else {
             CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
             ClaimStartDateType claimStartDateType = FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeCalculationRequest);
-            errorCode = (claimStartDateType == ClaimStartDateType.REP_ORDER_DATE) ? ERR_CRIME_REP_ORDER_DATE : ERR_CRIME_UFN_DATE;
+            error = (claimStartDateType == ClaimStartDateType.REP_ORDER_DATE) ? ERR_CRIME_REP_ORDER_DATE : ERR_CRIME_UFN_DATE;
           }
-          return new ValidationException(errorCode, new FeeContext(feeCalculationRequest));
+          return new ValidationException(error, new FeeContext(feeCalculationRequest));
         });
   }
 
@@ -165,11 +165,11 @@ public class ValidationService {
     return !validFrom.isAfter(claimStartDate) && (validTo == null || !claimStartDate.isAfter(validTo));
   }
 
-  private static ValidationMessagesInner buildValidationMessage(WarningCode warningCode) {
+  private static ValidationMessagesInner buildValidationMessage(WarningType warning) {
     return ValidationMessagesInner.builder()
         .type(WARNING)
-        .code(warningCode.getCode())
-        .message(warningCode.getMessage())
+        .code(warning.getCode())
+        .message(warning.getMessage())
         .build();
   }
 }

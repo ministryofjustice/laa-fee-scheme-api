@@ -10,14 +10,14 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public enum WarningCode {
+public enum WarningType {
   WARN_CRIME_TRAVEL_COSTS("WARCRM1", "Cost not included. Travel costs cannot be claimed with Fee Code used.",
       List.of("INVB1", "INVB2", "PROT", "PROU", "PROW", "PRIA", "PRIB1", "PRIB2", "PRIC1", "PRIC2",
           "PRID1", "PRID2", "PRID1", "PRID2", "PRIE1", "PRIE2")),
   WARN_CRIME_WAITING_COSTS("WARCRM2", "Cost not included. Waiting costs cannot be claimed with Fee Code used.",
       List.of("INVB1", "INVB2", "PROT", "PROU", "PROW"));
 
-  WarningCode(String code, String message) {
+  WarningType(String code, String message) {
     this.code = code;
     this.message = message;
     this.feeCodes = List.of();

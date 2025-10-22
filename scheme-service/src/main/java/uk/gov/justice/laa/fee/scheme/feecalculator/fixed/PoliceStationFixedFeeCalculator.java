@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_POLICE_SCHEME_ID;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_POLICE_STATION_ID;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_POLICE_SCHEME_ID;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_POLICE_STATION_ID;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.enums.ErrorCode;
+import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
 import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
 import uk.gov.justice.laa.fee.scheme.exception.PoliceStationFeeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
@@ -200,8 +200,8 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     return policeStationFeesEntity;
   }
 
-  private static Supplier<ValidationException> throwException(ErrorCode errorCode, FeeCalculationRequest feeCalculationRequest) {
-    return () -> new ValidationException(errorCode, new FeeContext(feeCalculationRequest));
+  private static Supplier<ValidationException> throwException(ErrorType error, FeeCalculationRequest feeCalculationRequest) {
+    return () -> new ValidationException(error, new FeeContext(feeCalculationRequest));
   }
 
 }

@@ -3,7 +3,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MEDIATION;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_MEDIATION_SESSIONS;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_MEDIATION_SESSIONS;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
