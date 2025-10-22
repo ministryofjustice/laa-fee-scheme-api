@@ -21,74 +21,14 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.LimitType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
-import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 class FeeCalculationUtilTest {
-
-  @CsvSource(value = {
-      "false, 94.96", // false VAT indicator
-      "true, 106.88", // true VAT indicator
-  }, nullValues = {"null"})
-  @ParameterizedTest
-  void calculate_givenFeeEntity_returnsFeeCalculationResponse(Boolean vatIndicator, double expectedTotal) {
-    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode("FEE1")
-        .startDate(LocalDate.of(2025, 1, 1))
-        .vatIndicator(vatIndicator)
-        .netDisbursementAmount(29.45)
-        .disbursementVatAmount(5.89)
-        .build();
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("FEE1")
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
-        .categoryType(MENTAL_HEALTH)
-        .fixedFee(new BigDecimal("59.62"))
-        .build();
-
-    FeeCalculationResponse response = FeeCalculationUtil.calculate(feeCalculationRequest, feeEntity);
-
-    assertThat(response).isNotNull();
-    assertThat(response.getFeeCode()).isEqualTo("FEE1");
-
-    FeeCalculation calculation = response.getFeeCalculation();
-    assertThat(calculation).isNotNull();
-    assertThat(calculation.getTotalAmount()).isEqualTo(expectedTotal);
-  }
-
-  @Test
-  void calculate_givenFixedFee_returnsFeeCalculationResponse() {
-    BigDecimal fixedFee = new BigDecimal("59.62");
-    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode("FEE1")
-        .startDate(LocalDate.of(2025, 1, 1))
-        .vatIndicator(true)
-        .netDisbursementAmount(29.45)
-        .disbursementVatAmount(5.89)
-        .build();
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
-        .categoryType(COMMUNITY_CARE)
-        .build();
-
-    FeeCalculationResponse response = FeeCalculationUtil.calculate(fixedFee, feeCalculationRequest, feeEntity);
-
-    assertThat(response).isNotNull();
-    assertThat(response.getFeeCode()).isEqualTo("FEE1");
-
-    FeeCalculation calculation = response.getFeeCalculation();
-    assertThat(calculation).isNotNull();
-    assertThat(calculation.getTotalAmount()).isEqualTo(106.88);
-  }
 
   @ParameterizedTest
   @CsvSource(value = {

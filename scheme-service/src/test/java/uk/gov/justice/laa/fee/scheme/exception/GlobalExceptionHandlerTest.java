@@ -101,19 +101,6 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
-  void handleInvalidMediationSession() {
-    InvalidMediationSessionException exception = new InvalidMediationSessionException("FEE123");
-
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleInvalidMediationSession(exception);
-
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().getStatus()).isEqualTo(400);
-    assertThat(response.getBody().getMessage())
-        .isEqualTo("Invalid mediation session for feeCode: FEE123 numberOfMediationSessions required");
-  }
-
-  @Test
   void handlePoliceStationFeeEntityNotfoundForPoliceStationId() {
     LocalDate date = LocalDate.of(2025, 2, 20);
     PoliceStationFeeNotFoundException exception = new PoliceStationFeeNotFoundException("NE021", date);
