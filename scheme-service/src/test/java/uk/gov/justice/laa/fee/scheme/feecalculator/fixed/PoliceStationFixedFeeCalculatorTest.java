@@ -5,9 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCRM3;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCRM4;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCRM6;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_POLICE_SCHEME_ID;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_POLICE_STATION_ID;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -436,7 +435,7 @@ class PoliceStationFixedFeeCalculatorTest {
 
     assertThatThrownBy(() -> policeStationFixedFeeCalculator.calculate(feeData, feeEntity))
         .isInstanceOf(ValidationException.class)
-        .hasFieldOrPropertyWithValue("error", ERRCRM3)
+        .hasFieldOrPropertyWithValue("error", ERR_CRIME_POLICE_STATION_ID)
         .hasMessageContaining("ERRCRM3 - Enter a valid Police station ID, Court ID, or Prison ID.");
   }
 
@@ -471,7 +470,7 @@ class PoliceStationFixedFeeCalculatorTest {
 
     assertThatThrownBy(() -> policeStationFixedFeeCalculator.calculate(feeData, feeEntity))
         .isInstanceOf(ValidationException.class)
-        .hasFieldOrPropertyWithValue("error", ERRCRM4)
+        .hasFieldOrPropertyWithValue("error", ERR_CRIME_POLICE_SCHEME_ID)
         .hasMessageContaining("ERRCRM4 - Enter a valid Scheme ID.");
   }
 

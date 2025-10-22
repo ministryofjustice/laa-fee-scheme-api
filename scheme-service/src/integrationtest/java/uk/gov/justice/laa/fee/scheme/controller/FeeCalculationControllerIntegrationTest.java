@@ -88,7 +88,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   }
 
   @Test
-  @Disabled
   void shouldGetFeeCalculation_associatedCivil() throws Exception {
     mockMvc
         .perform(post(URI)
@@ -733,6 +732,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                 {
                   "feeCode": "%s",
                   "claimId": "claim_123",
+                  "uniqueFileNumber": "121219/242",
                   "representationOrderDate": "2025-02-01",
                   "netDisbursementAmount": 123.38,
                   "disbursementVatAmount": 24.67,
@@ -745,7 +745,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(content().json(expectedJson, STRICT));
   }
 
-  @Disabled
   @ParameterizedTest
   @CsvSource({
       "PROE1, MAGS_COURT_FS2022, 669.91, 86.98, 100, 111, 223.88",
@@ -788,6 +787,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               {
                 "feeCode": "%s",
                 "claimId": "claim_123",
+                "uniqueFileNumber": "121219/242",
                 "representationOrderDate": "2025-02-01",
                 "netDisbursementAmount": 123.38,
                 "disbursementVatAmount": 24.67,
@@ -802,7 +802,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(content().json(expectedJson, STRICT));
   }
 
-  @Disabled
   @ParameterizedTest
   @CsvSource({
       "PROH, AAR_FS2022, 810.0, 120.0, 600.0, 500.0, 500.0",

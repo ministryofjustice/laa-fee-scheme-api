@@ -101,10 +101,107 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
+                  "feeCode": "INVC",
+                  "claimId": "claim_123",
+                  "startDate": "2023-12-12",
+                  "uniqueFileNumber": "121223/242",
+                  "policeStationId": "NE001",
+                  "policeStationSchemeId": "1001",
+                  "vatIndicator": false
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json("""
+            {
+              "feeCode": "INVC",
+              "claimId": "claim_123",
+              "validationMessages": [
+                {
+                  "type":"ERROR",
+                  "code":"ERRCRM1",
+                  "message":"Fee Code is not valid for the Case Start Date."
+                }
+              ]
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationError_whenCrimeFeeCodeAndPoliceStationIdIsInvalid() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "INVC",
+                  "claimId": "claim_123",
+                  "startDate": "2023-12-12",
+                  "uniqueFileNumber": "121219/242",
+                  "policeStationId": "BLAH",
+                  "policeStationSchemeId": "1001",
+                  "vatIndicator": false
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json("""
+            {
+              "feeCode": "INVC",
+              "claimId": "claim_123",
+              "validationMessages": [
+                {
+                  "type":"ERROR",
+                  "code":"ERRCRM3",
+                  "message":"Enter a valid Police station ID, Court ID, or Prison ID."
+                }
+              ]
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationError_whenCrimeFeeCodeAndPoliceSchemeIdIsInvalid() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "INVC",
+                  "claimId": "claim_123",
+                  "startDate": "2023-12-12",
+                  "uniqueFileNumber": "121219/242",
+                  "policeStationSchemeId": "BLAH",
+                  "vatIndicator": false
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json("""
+            {
+              "feeCode": "INVC",
+              "claimId": "claim_123",
+              "validationMessages": [
+                {
+                  "type":"ERROR",
+                  "code":"ERRCRM4",
+                  "message":"Enter a valid Scheme ID."
+                }
+              ]
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationError_whenCrimeFeeCodeAndUfnIsMissing() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
                   "feeCode": "INVK",
                   "claimId": "claim_123",
                   "startDate": "2023-12-12",
-                  "uniqueFileNumber": "121223/2423",
                   "policeStationId": "NE001",
                   "policeStationSchemeId": "1001",
                   "vatIndicator": false
@@ -119,8 +216,8 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "validationMessages": [
                 {
                   "type":"ERROR",
-                  "code":"ERRCRM6",
-                  "message":"Fee Code is not valid for the Case Start Date."
+                  "code":"ERRCRM7",
+                  "message":"Enter a UFN."
                 }
               ]
             }

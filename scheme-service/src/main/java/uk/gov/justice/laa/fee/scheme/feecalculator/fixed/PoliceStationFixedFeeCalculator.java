@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCRM3;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCRM4;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_POLICE_SCHEME_ID;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_POLICE_STATION_ID;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.ErrorCode;
 import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
 import uk.gov.justice.laa.fee.scheme.exception.PoliceStationFeeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
@@ -176,7 +178,8 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
               feeEntity.getFeeScheme().getSchemeCode())
           .stream()
           .findFirst()
-          .orElseThrow(() -> new ValidationException(ERRCRM3, new FeeContext(feeCalculationRequest)));
+          .orElseThrow(throwException(ERR_CRIME_POLICE_STATION_ID, feeCalculationRequest));
+
     } else if (StringUtils.isNotBlank(feeCalculationRequest.getPoliceStationSchemeId())) {
 
       log.info("Get police station fees entity using policeStationSchemeId: {} and schemeCode: {}",
@@ -187,7 +190,8 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
               feeEntity.getFeeScheme().getSchemeCode())
           .stream()
           .findFirst()
-          .orElseThrow(() -> new ValidationException(ERRCRM4, new FeeContext(feeCalculationRequest)));
+          .orElseThrow(throwException(ERR_CRIME_POLICE_SCHEME_ID, feeCalculationRequest));
+
     } else {
       throw new PoliceStationFeeNotFoundException(feeCalculationRequest.getPoliceStationSchemeId());
     }
@@ -195,6 +199,10 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     log.info("Retrieved police station fees entity with policeStationFeesId: {}", policeStationFeesEntity.getPoliceStationFeesId());
 
     return policeStationFeesEntity;
+  }
+
+  private static Supplier<ValidationException> throwException(ErrorCode errorCode, FeeCalculationRequest feeCalculationRequest) {
+    return () -> new ValidationException(errorCode, new FeeContext(feeCalculationRequest));
   }
 
 }

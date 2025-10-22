@@ -12,9 +12,9 @@ class ValidationExceptionTest {
   public void testToString() {
     FeeContext feeContext = new FeeContext("FEE1", LocalDate.of(2015,1,1), "FeeScheme", "claim_123");
 
-    ValidationException validationException = new ValidationException(ErrorCode.ERRALL1, feeContext);
+    ValidationException validationException = new ValidationException(ErrorCode.ERR_ALL_FEE_CODE, feeContext);
 
     assertThat(validationException.toString())
-        .contains("[error=ERRALL1,context=FeeContext[feeCode=FEE1, startDate=2015-01-01, schemeId=FeeScheme, claimId=claim_123]]");
+        .contains("[error=ERR_ALL_FEE_CODE,context=FeeContext[feeCode=FEE1, startDate=2015-01-01, schemeId=FeeScheme, claimId=claim_123]]");
   }
 }

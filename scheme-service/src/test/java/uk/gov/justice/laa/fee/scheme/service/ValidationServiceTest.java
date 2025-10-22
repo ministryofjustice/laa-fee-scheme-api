@@ -5,12 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGS_COURT_DESIGNATED;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRALL1;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCIV1;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCIV2;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCRM1;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCRM2;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERRCRM6;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_ALL_FEE_CODE;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CIVIL_START_DATE;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CIVIL_START_DATE_TOO_OLD;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_REP_ORDER_DATE;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_UFN_DATE;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_UFN_MISSING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -156,7 +156,7 @@ class ValidationServiceTest {
 
     assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
-        .hasFieldOrPropertyWithValue("error", ERRALL1)
+        .hasFieldOrPropertyWithValue("error", ERR_ALL_FEE_CODE)
         .hasMessage("ERRALL1 - Enter a valid Fee Code.");
 
   }
@@ -189,7 +189,7 @@ class ValidationServiceTest {
 
     assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
-        .hasFieldOrPropertyWithValue("error", ERRCIV1)
+        .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE)
         .hasMessage("ERRCIV1 - Fee Code is not valid for the Case Start Date.");
   }
 
@@ -219,7 +219,7 @@ class ValidationServiceTest {
 
     assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
-        .hasFieldOrPropertyWithValue("error", ERRCIV2)
+        .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE_TOO_OLD)
         .hasMessage("ERRCIV2 - Case Start Date is too far in the past.");
   }
 
@@ -238,8 +238,35 @@ class ValidationServiceTest {
 
     assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
-        .hasFieldOrPropertyWithValue("error", ERRCRM1)
+        .hasFieldOrPropertyWithValue("error", ERR_CRIME_UFN_DATE)
         .hasMessage("ERRCRM1 - Fee Code is not valid for the Case Start Date.");
+  }
+
+  @Test
+  void getValidFeeEntity_whenCrimeFeeCodeAndUfnIsMissing_shouldThrowException() {
+    when(feeDetailsService.getAreaOfLaw("INVC")).thenReturn(AreaOfLawType.CRIME_LOWER);
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("INVC")
+        .startDate(LocalDate.of(2022, 1, 1))
+        .vatIndicator(Boolean.TRUE)
+        .policeStationSchemeId("1003")
+        .policeStationId("NA2093")
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2025")
+        .validFrom(LocalDate.of(2025, 10, 1)).build();
+
+    FeeEntity feeEntity = policeStationFeeEntity(feeSchemesEntity);
+
+    List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+    assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERR_CRIME_UFN_MISSING)
+        .hasMessage("ERRCRM7 - Enter a UFN.");
   }
 
   @Test
@@ -249,6 +276,7 @@ class ValidationServiceTest {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("PROJ5")
         .representationOrderDate(LocalDate.of(2022, 1, 1))
+        .uniqueFileNumber("010525/456")
         .vatIndicator(Boolean.TRUE)
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
@@ -268,39 +296,8 @@ class ValidationServiceTest {
 
     assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
-        .hasFieldOrPropertyWithValue("error", ERRCRM2)
-        .hasMessage("ERRCRM2 - Representation Order Date is too far in the past. " +
-                    "For cases opened before April 2016, use the paper process.");
-  }
-
-  @Test
-  void getValidFeeEntity_whenCrimeFeeCodeAndStartDateIsInvalid_shouldThrowException() {
-    when(feeDetailsService.getAreaOfLaw("INVC")).thenReturn(AreaOfLawType.CRIME_LOWER);
-
-    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode("INVC")
-        .startDate(LocalDate.of(2025, 5, 1))
-        .vatIndicator(Boolean.TRUE)
-        .policeStationSchemeId("1003")
-        .policeStationId("NA2093")
-        .uniqueFileNumber("010525/456")
-        .netDisbursementAmount(50.50)
-        .disbursementVatAmount(20.15)
-        .build();
-
-    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2025")
-        .validFrom(LocalDate.of(2025, 3, 1))
-        .validTo(LocalDate.of(2025, 4, 1))
-        .build();
-
-    FeeEntity feeEntity = policeStationFeeEntity(feeSchemesEntity);
-
-    List<FeeEntity> feeEntityList = List.of(feeEntity);
-
-    assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
-        .isInstanceOf(ValidationException.class)
-        .hasFieldOrPropertyWithValue("error", ERRCRM6)
-        .hasMessage("ERRCRM6 - Fee Code is not valid for the Case Start Date.");
+        .hasFieldOrPropertyWithValue("error", ERR_CRIME_REP_ORDER_DATE)
+        .hasMessage("ERRCRM12 - Fee Code is not valid for the Case Start Date.");
   }
 
   @ParameterizedTest()
@@ -368,7 +365,7 @@ class ValidationServiceTest {
 
     assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
-        .hasFieldOrPropertyWithValue("error", ERRCIV1)
+        .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE)
         .hasMessage("ERRCIV1 - Fee Code is not valid for the Case Start Date.");
   }
 
