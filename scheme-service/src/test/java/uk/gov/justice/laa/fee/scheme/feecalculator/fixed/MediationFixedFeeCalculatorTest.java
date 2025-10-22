@@ -1,8 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MEDIATION;
+import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRMED1;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,7 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.exception.InvalidMediationSessionException;
+import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -122,7 +123,7 @@ class MediationFixedFeeCalculatorTest {
 
   @Test
   void getFee_whenMediationSessionIsNull_thenThrowsException() {
-    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("MDAS2B")
         .claimId("claim_123")
         .startDate(LocalDate.of(2025, 7, 29))
@@ -141,7 +142,10 @@ class MediationFixedFeeCalculatorTest {
         .categoryType(MEDIATION)
         .build();
 
-    assertThrows(InvalidMediationSessionException.class, () -> mediationFeeCalculator.calculate(feeData, feeEntity));
+    assertThatThrownBy(() -> mediationFeeCalculator.calculate(feeCalculationRequest, feeEntity))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERRMED1)
+        .hasMessage("Number of Mediation Sessions must be entered for this fee code");
   }
 
   @Test
