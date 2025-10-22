@@ -22,6 +22,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.LimitType;
+import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
@@ -166,13 +167,6 @@ class FeeCalculationUtilTest {
         arguments(new BigDecimal("200"), null, new BigDecimal("100"),
             List.of(ValidationMessagesInner.builder().type(WARNING).message("Warning message").build()))
     );
-  }
-
-  public static BoltOnFeeDetails filterBoltOnFeeDetails(BoltOnFeeDetails boltOnFeeDetails) {
-    if (boltOnFeeDetails == null || boltOnFeeDetails.getBoltOnTotalFeeAmount() == null) {
-      return null;
-    }
-    return boltOnFeeDetails;
   }
 
   @Test

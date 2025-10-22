@@ -7,6 +7,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmo
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -97,7 +98,7 @@ public class MediationFixedFeeCalculator implements FeeCalculator {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(finalTotal))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(claimStartDate)))
+            .vatRateApplied(toDoubleOrNull(getVatRateForDate(claimStartDate, vatApplicable)))
             .calculatedVatAmount(toDouble(fixedFeeVatAmount))
             .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
