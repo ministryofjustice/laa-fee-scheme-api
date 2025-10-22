@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.WarningCode;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -74,12 +75,20 @@ public class OtherCivilFixedFeeCalculator implements FeeCalculator {
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+
     boolean isEscaped = FeeCalculationUtil.isEscapedCase(netProfitCosts, feeEntity.getEscapeThresholdLimit());
+
+    List<WarningCode> warningCodes = WarningCode.getByCategory(feeEntity.getCategoryType());
+
+    if (warningCodes.isEmpty()) {
+      throw new IllegalStateException("No error codes found for category: " + feeEntity.getCategoryType());
+    }
 
     if (isEscaped) {
       log.warn("Fee total exceeds escape threshold limit");
       validationMessages.add(ValidationMessagesInner.builder()
-          .message(WARNING_CODE_DESCRIPTION)
+          .message(warningCodes.getFirst().getMessage())
+          .code(warningCodes.getFirst().getCode())
           .type(WARNING)
           .build());
     }
