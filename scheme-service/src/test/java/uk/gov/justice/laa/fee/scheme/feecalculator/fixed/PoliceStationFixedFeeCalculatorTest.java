@@ -99,14 +99,12 @@ class PoliceStationFixedFeeCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode("INVC")
         .schemeId("POL_FS2022")
-        .validationMessages(null)
+        .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();
 
-    assertThat(response)
-        .usingRecursiveComparison()
-        .isEqualTo(expectedResponse);
+    assertThat(response).isEqualTo(expectedResponse);
 
   }
 
@@ -163,14 +161,12 @@ class PoliceStationFixedFeeCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode("INVC")
         .schemeId("POL_FS2022")
-        .validationMessages(null)
+        .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();
 
-    assertThat(response)
-        .usingRecursiveComparison()
-        .isEqualTo(expectedResponse);
+    assertThat(response).isEqualTo(expectedResponse);
 
   }
 
@@ -244,14 +240,12 @@ class PoliceStationFixedFeeCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode(feeCode)
         .schemeId(feeSchemeCode)
-        .validationMessages(null)
+        .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();
 
-    assertThat(response)
-        .usingRecursiveComparison()
-        .isEqualTo(expectedResponse);
+    assertThat(response).isEqualTo(expectedResponse);
   }
 
   @ParameterizedTest
@@ -315,9 +309,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .feeCalculation(expectedCalculation)
         .build();
 
-    assertThat(response)
-        .usingRecursiveComparison()
-        .isEqualTo(expectedResponse);
+    assertThat(response).isEqualTo(expectedResponse);
   }
 
 

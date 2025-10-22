@@ -6,8 +6,8 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CIVIL_START_DATE
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_REP_ORDER_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_UFN_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_UFN_MISSING;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARCRM1;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARCRM2;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_CRIME_TRAVEL_COSTS;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_CRIME_WAITING_COSTS;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import io.micrometer.common.util.StringUtils;
@@ -76,17 +76,21 @@ public class ValidationService {
    * @return the valid Fee entity
    */
   public List<ValidationMessagesInner> checkForWarnings(FeeCalculationRequest feeCalculationRequest) {
-    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
-    if (isCrime(feeCalculationRequest.getFeeCode())) {
-      if (feeCalculationRequest.getNetTravelCosts() != null) {
-        log.warn("{} - Net travel costs cannot be claimed", WARCRM1.getCode());
-        validationMessages.add(buildValidationMessage(WARCRM1));
+    log.info("Checking for warnings");
+
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+    String feeCode = feeCalculationRequest.getFeeCode();
+
+    if (isCrime(feeCode)) {
+      if (WARN_CRIME_TRAVEL_COSTS.containsFeeCode(feeCode) && feeCalculationRequest.getNetTravelCosts() != null) {
+        log.warn("{} - Net travel costs cannot be claimed", WARN_CRIME_TRAVEL_COSTS.getCode());
+        validationMessages.add(buildValidationMessage(WARN_CRIME_TRAVEL_COSTS));
       }
 
-      if (feeCalculationRequest.getNetWaitingCosts() != null) {
-        log.warn("{} - Net waiting costs cannot be claimed", WARCRM2.getCode());
-        validationMessages.add(buildValidationMessage(WARCRM2));
+      if (WARN_CRIME_WAITING_COSTS.containsFeeCode(feeCode) && feeCalculationRequest.getNetWaitingCosts() != null) {
+        log.warn("{} - Net waiting costs cannot be claimed", WARN_CRIME_WAITING_COSTS.getCode());
+        validationMessages.add(buildValidationMessage(WARN_CRIME_WAITING_COSTS));
       }
     }
     return validationMessages;

@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
 import java.util.List;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -46,11 +47,9 @@ public class FeeCalculationService {
     List<ValidationMessagesInner> warnings = validationService.checkForWarnings(request);
 
     // Add any warnings to response
-    List<ValidationMessagesInner> validationMessages = response.getValidationMessages();
-    if (validationMessages != null) {
-      //response.setValidationMessages(Stream.concat(validationMessages.stream(), warnings.stream()).toList());
-    } else {
-     //response.setValidationMessages(warnings);
+    if (!warnings.isEmpty()) {
+      List<ValidationMessagesInner> validationMessages = response.getValidationMessages();
+      response.setValidationMessages(Stream.concat(validationMessages.stream(), warnings.stream()).toList());
     }
 
     log.info("Finished calculating fee");

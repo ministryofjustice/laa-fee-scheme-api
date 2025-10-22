@@ -92,10 +92,9 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
 
     Boolean isEscapeCase = Boolean.FALSE;
 
-    List<ValidationMessagesInner> validationMessages = null;
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
     if (isEscapedCase(totalAmount, policeStationFeesEntity.getEscapeThreshold())) {
-      validationMessages = new ArrayList<>();
       isEscapeCase = Boolean.TRUE;
       log.warn("Fee total exceeds escape threshold limit");
       validationMessages.add(ValidationMessagesInner.builder()

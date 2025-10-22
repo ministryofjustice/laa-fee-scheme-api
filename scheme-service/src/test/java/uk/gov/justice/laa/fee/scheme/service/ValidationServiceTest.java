@@ -11,6 +11,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CIVIL_START_DATE
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_REP_ORDER_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_UFN_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorCode.ERR_CRIME_UFN_MISSING;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -30,6 +31,7 @@ import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.Region;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
 class ValidationServiceTest {
@@ -167,7 +169,7 @@ class ValidationServiceTest {
       "ASSA, MEDIATION, MEDIATION",
   })
   void getValidFeeEntity_whenCivilFeeCodeAndStartDateIsInvalid_shouldThrowException(String feeCode, CategoryType categoryType,
-                                                                               AreaOfLawType areaOfLawType) {
+                                                                                    AreaOfLawType areaOfLawType) {
 
     when(feeDetailsService.getAreaOfLaw(feeCode)).thenReturn(areaOfLawType);
 
@@ -199,7 +201,7 @@ class ValidationServiceTest {
       "ASSA, MEDIATION, MEDIATION",
   })
   void getValidFeeEntity_whenCivilFeeCodeAndDateTooFarInPast_shouldThrowException(String feeCode, CategoryType categoryType,
-                                                                             AreaOfLawType areaOfLawType) {
+                                                                                  AreaOfLawType areaOfLawType) {
     when(feeDetailsService.getAreaOfLaw(feeCode)).thenReturn(areaOfLawType);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
@@ -306,8 +308,8 @@ class ValidationServiceTest {
       "false, NON_LONDON, FAM_NON_FS2011"
   })
   void getValidFeeEntity_whenFamilyCategoryAndGivenLondonRate_shouldReturnCorrectFeeEntity(Boolean isLondonRate,
-                                                                                      Region expectedRegion,
-                                                                                      String expectedFeeScheme) {
+                                                                                           Region expectedRegion,
+                                                                                           String expectedFeeScheme) {
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("FAM_LON_FS2011")
         .validFrom(LocalDate.of(2011, 1, 1)).build();
@@ -369,6 +371,66 @@ class ValidationServiceTest {
         .hasMessage("ERRCIV1 - Fee Code is not valid for the Case Start Date.");
   }
 
+
+  @Test
+  public void checkForWarnings_whenGivenCrimeFeeCodeAndNetTravelCosts_returnsWarnings() {
+    when(feeDetailsService.getAreaOfLaw("INVB1")).thenReturn(AreaOfLawType.CRIME_LOWER);
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("INVB1")
+        .netTravelCosts(100.0)
+        .build();
+
+    List<ValidationMessagesInner> result = validationService.checkForWarnings(feeCalculationRequest);
+
+    assertThat(result).containsExactly(ValidationMessagesInner.builder()
+        .type(WARNING)
+        .code("WARCRM1")
+        .message("Cost not included. Travel costs cannot be claimed with Fee Code used.")
+        .build());
+  }
+
+  @Test
+  public void checkForWarnings_whenGivenCrimeFeeCodeAndNetWaitingCosts_returnsWarnings() {
+    when(feeDetailsService.getAreaOfLaw("INVB1")).thenReturn(AreaOfLawType.CRIME_LOWER);
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("INVB1")
+        .netWaitingCosts(100.0)
+        .build();
+
+    List<ValidationMessagesInner> result = validationService.checkForWarnings(feeCalculationRequest);
+
+    assertThat(result).containsExactly(ValidationMessagesInner.builder()
+        .type(WARNING)
+        .code("WARCRM2")
+        .message("Cost not included. Waiting costs cannot be claimed with Fee Code used.")
+        .build());
+  }
+
+  @Test
+  public void checkForWarnings_whenGivenCrimeFeeCodeAndTravelCostsAndNetWaitingCosts_returnsWarnings() {
+    when(feeDetailsService.getAreaOfLaw("INVB1")).thenReturn(AreaOfLawType.CRIME_LOWER);
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("INVB1")
+        .netWaitingCosts(100.0)
+        .netTravelCosts(100.0)
+        .build();
+
+    List<ValidationMessagesInner> result = validationService.checkForWarnings(feeCalculationRequest);
+
+    assertThat(result).containsExactlyInAnyOrder(ValidationMessagesInner.builder()
+        .type(WARNING)
+        .code("WARCRM1")
+        .message("Cost not included. Travel costs cannot be claimed with Fee Code used.")
+        .build(), ValidationMessagesInner.builder()
+        .type(WARNING)
+        .code("WARCRM2")
+        .message("Cost not included. Waiting costs cannot be claimed with Fee Code used.")
+        .build());
+  }
+
   private static FeeCalculationRequest getFeeCalculationRequest() {
     return FeeCalculationRequest.builder()
         .feeCode("INVC")
@@ -394,7 +456,7 @@ class ValidationServiceTest {
   }
 
   private FeeEntity fixedFeeEntity(String feeCode, CategoryType categoryType, FeeSchemesEntity feeSchemesEntity) {
-    return  FeeEntity.builder()
+    return FeeEntity.builder()
         .feeCode(feeCode)
         .feeScheme(feeSchemesEntity)
         .categoryType(categoryType)
