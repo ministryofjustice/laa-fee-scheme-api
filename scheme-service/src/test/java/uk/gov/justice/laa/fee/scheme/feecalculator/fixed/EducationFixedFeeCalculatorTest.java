@@ -100,7 +100,7 @@ class EducationFixedFeeCalculatorTest {
     assertThat(feeCalculation).isNotNull();
     assertThat(feeCalculation.getTotalAmount()).isEqualTo(total);
     assertThat(feeCalculation.getVatIndicator()).isEqualTo(vatIndicator);
-    assertThat(feeCalculation.getVatRateApplied()).isEqualTo(vatIndicator? 20.0 : null);
+    assertThat(feeCalculation.getVatRateApplied()).isEqualTo(vatIndicator ? 20.0 : null);
     assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(vat);
     assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(100.11);
     assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(100.11);
