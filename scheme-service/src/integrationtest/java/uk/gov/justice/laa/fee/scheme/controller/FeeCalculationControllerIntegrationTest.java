@@ -635,6 +635,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(content().json("""
             {
               "feeCode": "INVC",
+              "claimId": "claim_123",
               "schemeId": "POL_FS2016",
               "escapeCaseFlag": false,
               "feeCalculation": {
@@ -678,6 +679,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(content().json("""
             {
               "feeCode": "INVH",
+              "claimId": "claim_123",
               "schemeId": "POL_FS2022",
               "feeCalculation": {
                 "totalAmount": 187.66,
@@ -731,6 +733,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                 {
                   "feeCode": "%s",
                   "claimId": "claim_123",
+                  "uniqueFileNumber": "121219/242",
                   "representationOrderDate": "2025-02-01",
                   "netDisbursementAmount": 123.38,
                   "disbursementVatAmount": 24.67,
@@ -785,6 +788,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               {
                 "feeCode": "%s",
                 "claimId": "claim_123",
+                "uniqueFileNumber": "121219/242",
                 "representationOrderDate": "2025-02-01",
                 "netDisbursementAmount": 123.38,
                 "disbursementVatAmount": 24.67,

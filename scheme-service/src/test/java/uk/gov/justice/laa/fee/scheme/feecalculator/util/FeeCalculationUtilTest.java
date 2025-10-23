@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.FAMILY;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MENTAL_HEALTH;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGS_COURT_DESIGNATED;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -22,96 +22,69 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.LimitType;
-import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
-import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
-import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
-import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 class FeeCalculationUtilTest {
-
-  @CsvSource(value = {
-      "false, 94.96", // false VAT indicator
-      "true, 106.88", // true VAT indicator
-  }, nullValues = {"null"})
-  @ParameterizedTest
-  void calculate_givenFeeEntity_returnsFeeCalculationResponse(Boolean vatIndicator, double expectedTotal) {
-    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode("FEE1")
-        .startDate(LocalDate.of(2025, 1, 1))
-        .vatIndicator(vatIndicator)
-        .netDisbursementAmount(29.45)
-        .disbursementVatAmount(5.89)
-        .build();
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("FEE1")
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
-        .categoryType(MENTAL_HEALTH)
-        .fixedFee(new BigDecimal("59.62"))
-        .build();
-
-    FeeCalculationResponse response = FeeCalculationUtil.calculate(feeCalculationRequest, feeEntity);
-
-    assertThat(response).isNotNull();
-    assertThat(response.getFeeCode()).isEqualTo("FEE1");
-
-    FeeCalculation calculation = response.getFeeCalculation();
-    assertThat(calculation).isNotNull();
-    assertThat(calculation.getTotalAmount()).isEqualTo(expectedTotal);
-  }
-
-  @Test
-  void calculate_givenFixedFee_returnsFeeCalculationResponse() {
-    BigDecimal fixedFee = new BigDecimal("59.62");
-    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode("FEE1")
-        .startDate(LocalDate.of(2025, 1, 1))
-        .vatIndicator(true)
-        .netDisbursementAmount(29.45)
-        .disbursementVatAmount(5.89)
-        .build();
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_CODE").build())
-        .categoryType(COMMUNITY_CARE)
-        .build();
-
-    FeeCalculationResponse response = FeeCalculationUtil.calculate(fixedFee, feeCalculationRequest, feeEntity);
-
-    assertThat(response).isNotNull();
-    assertThat(response.getFeeCode()).isEqualTo("FEE1");
-
-    FeeCalculation calculation = response.getFeeCalculation();
-    assertThat(calculation).isNotNull();
-    assertThat(calculation.getTotalAmount()).isEqualTo(106.88);
-  }
 
   @ParameterizedTest
   @CsvSource(value = {
       "FIXED, true",
       "HOURLY, false",
       "null, false"
-  }, nullValues = {"null"})
+  }, nullValues = {"null" })
   void testIsFixedFee(FeeType feeType, boolean expected) {
     Assertions.assertEquals(expected, FeeCalculationUtil.isFixedFee(feeType));
   }
 
-  @ParameterizedTest
-  @EnumSource(value = CategoryType.class, names = {
-      "ASSOCIATED_CIVIL", "POLICE_STATION", "PRISON_LAW"
-  })
-  void calculate_ReturnDateFromUniqueFileNumber_forAssociatedCivilAndPoliceAndPrisonLaw(CategoryType categoryType) {
-    FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
-    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeDataRequest);
+  @Test
+  void getFeeClaimStartDate_returnsStartDate() {
+    FeeCalculationRequest feeDataRequest = FeeCalculationRequest.builder()
+        .startDate(LocalDate.of(2022, 12, 1))
+        .build();
 
-    assertEquals(LocalDate.of(2022, 12, 1), result);
+    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(COMMUNITY_CARE, feeDataRequest);
+
+    assertThat(result).isEqualTo(LocalDate.of(2022, 12, 1));
+  }
+
+  @Test
+  void getFeeClaimStartDate_returnsUfnDate() {
+    FeeCalculationRequest feeDataRequest = FeeCalculationRequest.builder()
+        .uniqueFileNumber("011222/456")
+        .build();
+
+    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(POLICE_STATION, feeDataRequest);
+
+    assertThat(result).isEqualTo(LocalDate.of(2022, 12, 1));
+  }
+
+  @Test
+  void getFeeClaimStartDate_returnsRepOrder() {
+    FeeCalculationRequest feeDataRequest = FeeCalculationRequest.builder()
+        .representationOrderDate(LocalDate.of(2022, 12, 1))
+        .build();
+
+    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(MAGS_COURT_DESIGNATED, feeDataRequest);
+
+    assertThat(result).isEqualTo(LocalDate.of(2022, 12, 1));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "COMMUNITY_CARE, CASE_START_DATE",
+      "POLICE_STATION, UFN",
+      "MAGS_COURT_DESIGNATED, REP_ORDER_DATE",
+  })
+  void getFeeClaimStartDateType_givenCategoryType_returnsClaimStartType(CategoryType categoryType, ClaimStartDateType expectedResult) {
+    FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
+    ClaimStartDateType result = FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeDataRequest);
+
+    assertThat(result).isEqualTo(expectedResult);
   }
 
   @ParameterizedTest
@@ -160,7 +133,7 @@ class FeeCalculationUtilTest {
     request.setUniqueFileNumber(null);
 
     assertThrows(NullPointerException.class, () ->
-        FeeCalculationUtil.getFeeClaimStartDate(CategoryType.POLICE_STATION, request)
+        FeeCalculationUtil.getFeeClaimStartDate(POLICE_STATION, request)
     );
   }
 
@@ -203,7 +176,7 @@ class FeeCalculationUtilTest {
       "100, 100, false",
       "101, null, false",
       "101, 100, true",
-  }, nullValues = {"null"})
+  }, nullValues = {"null" })
   void isEscapedCase_returnsResult(BigDecimal amount, BigDecimal limit, boolean expected) {
     boolean result = FeeCalculationUtil.isEscapedCase(amount, limit);
 

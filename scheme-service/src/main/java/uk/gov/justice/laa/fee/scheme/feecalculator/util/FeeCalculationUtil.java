@@ -1,12 +1,10 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
 import static java.util.Objects.nonNull;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
+import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.CASE_START_DATE;
+import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.REP_ORDER_DATE;
+import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.UFN;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,12 +12,10 @@ import java.util.List;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
-import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
-import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.util.DateUtil;
 
@@ -56,8 +52,8 @@ public final class FeeCalculationUtil {
   /**
    * Check if amount exceeds limit without authority and cap to limit if exceeded.
    *
-   * @param amount          the amount to check
-   * @param limitContext    the limit context containing limit details
+   * @param amount             the amount to check
+   * @param limitContext       the limit context containing limit details
    * @param validationMessages the list to add validation messages to
    * @return the capped amount if limit exceeded without authority, otherwise the original amount
    */
@@ -81,61 +77,20 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Calculate fee using Fixed Fee from FeeEntity.
+   * Return appropriate date based on Category Type of the claim request.
+   *
+   * @param categoryType          CategoryType
+   * @param feeCalculationRequest FeeCalculationRequest
+   * @return LocalDate
    */
-  public static FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
-    BigDecimal fixedFee = defaultToZeroIfNull(feeEntity.getFixedFee());
-    return calculateAndBuildResponse(fixedFee, feeCalculationRequest, feeEntity);
-  }
-
-  /**
-   * Calculate fee using given Fixed Fee value.
-   */
-  public static FeeCalculationResponse calculate(BigDecimal fixedFee, FeeCalculationRequest feeCalculationRequest,
-                                                 FeeEntity feeEntity) {
-    return calculateAndBuildResponse(fixedFee, feeCalculationRequest, feeEntity);
-  }
-
-  /**
-   * Fixed fee + netDisbursementAmount = subtotal.
-   * If Applicable add VAT to subtotal.
-   * subtotalWithVat + netDisbursementAmount + netDisbursementVatAmount = finalTotal.
-   */
-  private static FeeCalculationResponse calculateAndBuildResponse(BigDecimal fixedFee,
-                                                                  FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
-
-    log.info("Get fields from fee calculation request");
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    LocalDate claimStartDate = getFeeClaimStartDate(feeEntity.getCategoryType(), feeCalculationRequest);
-
-    BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
-    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
-
-    log.info("Calculate total fee amount with any disbursements, bolt ons and VAT where applicable");
-    BigDecimal finalTotal = fixedFee
-        .add(fixedFeeVatAmount)
-        .add(netDisbursementAmount)
-        .add(disbursementVatAmount);
-
-    log.info("Build fee calculation response");
-    return FeeCalculationResponse.builder()
-        .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(feeEntity.getFeeScheme().getSchemeCode())
-        .claimId(feeCalculationRequest.getClaimId())
-        .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
-        .feeCalculation(FeeCalculation.builder()
-            .totalAmount(toDouble(finalTotal))
-            .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(claimStartDate)))
-            .calculatedVatAmount(toDouble(fixedFeeVatAmount))
-            .disbursementAmount(toDouble(netDisbursementAmount))
-            // disbursement not capped, so requested and calculated will be same
-            .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
-            .disbursementVatAmount(toDouble(disbursementVatAmount))
-            .fixedFeeAmount(toDouble(fixedFee))
-            .build())
-        .build();
+  public static ClaimStartDateType getFeeClaimStartDateType(CategoryType categoryType, FeeCalculationRequest feeCalculationRequest) {
+    return switch (categoryType) {
+      case ASSOCIATED_CIVIL, POLICE_STATION, PRISON_LAW -> UFN;
+      case MAGS_COURT_DESIGNATED, MAGS_COURT_UNDESIGNATED, YOUTH_COURT_DESIGNATED, YOUTH_COURT_UNDESIGNATED ->
+          REP_ORDER_DATE;
+      case ADVOCACY_APPEALS_REVIEWS -> getFeeClaimStartDateAdvocacyAppealsReviews(feeCalculationRequest);
+      default -> CASE_START_DATE;
+    };
   }
 
   /**
@@ -146,12 +101,11 @@ public final class FeeCalculationUtil {
    * @return LocalDate
    */
   public static LocalDate getFeeClaimStartDate(CategoryType categoryType, FeeCalculationRequest feeCalculationRequest) {
-    return switch (categoryType) {
-      case ASSOCIATED_CIVIL, POLICE_STATION, PRISON_LAW ->
-          DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
-      case MAGS_COURT_DESIGNATED, MAGS_COURT_UNDESIGNATED, YOUTH_COURT_DESIGNATED, YOUTH_COURT_UNDESIGNATED ->
-          feeCalculationRequest.getRepresentationOrderDate();
-      case ADVOCACY_APPEALS_REVIEWS -> getFeeClaimStartDateAdvocacyAppealsReviews(feeCalculationRequest);
+    ClaimStartDateType claimStartDateType = getFeeClaimStartDateType(categoryType, feeCalculationRequest);
+
+    return switch (claimStartDateType) {
+      case REP_ORDER_DATE -> feeCalculationRequest.getRepresentationOrderDate();
+      case UFN -> DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
       default -> feeCalculationRequest.getStartDate();
     };
   }
@@ -160,13 +114,13 @@ public final class FeeCalculationUtil {
    * Calculate start date to use for Advocacy Assistance in the Crown Court or Appeals & Reviews,
    * PROH will use representation order date if present, falls back to UFN if not.
    */
-  public static LocalDate getFeeClaimStartDateAdvocacyAppealsReviews(FeeCalculationRequest feeCalculationRequest) {
+  private static ClaimStartDateType getFeeClaimStartDateAdvocacyAppealsReviews(FeeCalculationRequest feeCalculationRequest) {
     if (feeCalculationRequest.getFeeCode().equals("PROH") && nonNull(feeCalculationRequest.getRepresentationOrderDate())) {
       log.info("Determining fee start date for PROH, using Representation Order Date");
-      return feeCalculationRequest.getRepresentationOrderDate();
+      return REP_ORDER_DATE;
     } else {
       log.info("Determining fee start date, using Unique File Number");
-      return DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
+      return UFN;
     }
   }
 

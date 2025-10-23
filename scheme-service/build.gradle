@@ -75,7 +75,7 @@ dependencies {
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
 
-    implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.11'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.13'
 
     implementation 'org.apache.commons:commons-lang3:3.19.0'
 
@@ -84,10 +84,10 @@ dependencies {
     implementation 'org.postgresql:postgresql:42.7.8'
 
 // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
-    implementation 'org.flywaydb:flyway-core:11.13.2'
-    implementation 'org.flywaydb:flyway-database-postgresql:11.13.2'
+    implementation 'org.flywaydb:flyway-core:11.14.1'
+    implementation 'org.flywaydb:flyway-database-postgresql:11.14.1'
 
-    implementation 'io.micrometer:micrometer-registry-prometheus:1.15.4'
+    implementation 'io.micrometer:micrometer-registry-prometheus:1.15.5'
 
     runtimeOnly 'com.h2database:h2'
 

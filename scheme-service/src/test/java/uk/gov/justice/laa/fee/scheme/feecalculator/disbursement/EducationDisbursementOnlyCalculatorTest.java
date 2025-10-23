@@ -2,7 +2,6 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.disbursement;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.EDUCATION;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MENTAL_HEALTH;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.DISB_ONLY;
 
 import java.time.LocalDate;
