@@ -51,9 +51,9 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "claimId": "claim_123",
               "validationMessages": [
                 {
-                  "type":"ERROR",
-                  "code":"ERRALL1",
-                  "message":"Enter a valid Fee Code."
+                  "type": "ERROR",
+                  "code": "ERRALL1",
+                  "message": "Enter a valid Fee Code."
                 }
               ]
             }
@@ -85,9 +85,9 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "claimId": "claim_123",
               "validationMessages": [
                 {
-                  "type":"ERROR",
-                  "code":"ERRCIV2",
-                  "message":"Case Start Date is too far in the past."
+                  "type": "ERROR",
+                  "code": "ERRCIV2",
+                  "message": "Case Start Date is too far in the past."
                 }
               ]
             }
@@ -118,9 +118,9 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "claimId": "claim_123",
               "validationMessages": [
                 {
-                  "type":"ERROR",
-                  "code":"ERRCRM1",
-                  "message":"Fee Code is not valid for the Case Start Date."
+                  "type": "ERROR",
+                  "code": "ERRCRM1",
+                  "message": "Fee Code is not valid for the Case Start Date."
                 }
               ]
             }
@@ -151,9 +151,9 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "claimId": "claim_123",
               "validationMessages": [
                 {
-                  "type":"ERROR",
-                  "code":"ERRCRM3",
-                  "message":"Enter a valid Police station ID, Court ID, or Prison ID."
+                  "type": "ERROR",
+                  "code": "ERRCRM3",
+                  "message": "Enter a valid Police station ID, Court ID, or Prison ID."
                 }
               ]
             }
@@ -183,9 +183,9 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "claimId": "claim_123",
               "validationMessages": [
                 {
-                  "type":"ERROR",
-                  "code":"ERRCRM4",
-                  "message":"Enter a valid Scheme ID."
+                  "type": "ERROR",
+                  "code": "ERRCRM4",
+                  "message": "Enter a valid Scheme ID."
                 }
               ]
             }
@@ -215,9 +215,9 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "claimId": "claim_123",
               "validationMessages": [
                 {
-                  "type":"ERROR",
-                  "code":"ERRCRM7",
-                  "message":"Enter a UFN."
+                  "type": "ERROR",
+                  "code": "ERRCRM7",
+                  "message": "Enter a UFN."
                 }
               ]
             }
@@ -248,9 +248,9 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "claimId": "claim_123",
               "validationMessages": [
                 {
-                  "type":"ERROR",
-                  "code":"ERRCRM12",
-                  "message":"Fee Code is not valid for the Case Start Date."
+                  "type": "ERROR",
+                  "code": "ERRCRM12",
+                  "message": "Fee Code is not valid for the Case Start Date."
                 }
               ]
             }
@@ -281,9 +281,9 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "schemeId": "POL_FS2016",
               "validationMessages": [
                 {
-                  "type":"WARNING",
-                  "code":"WARCRM1",
-                  "message":"Cost not included. Travel costs cannot be claimed with Fee Code used."
+                  "type": "WARNING",
+                  "code": "WARCRM1",
+                  "message": "Cost not included. Travel costs cannot be claimed with Fee Code used."
                 }
               ],
               "escapeCaseFlag": false,
@@ -322,9 +322,9 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "schemeId": "POL_FS2016",
               "validationMessages": [
                 {
-                  "type":"WARNING",
-                  "code":"WARCRM2",
-                  "message":"Cost not included. Waiting costs cannot be claimed with Fee Code used."
+                  "type": "WARNING",
+                  "code": "WARCRM2",
+                  "message": "Cost not included. Waiting costs cannot be claimed with Fee Code used."
                 }
               ],
               "escapeCaseFlag": false,
@@ -335,6 +335,40 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                 "calculatedVatAmount": 0,
                 "fixedFeeAmount": 28.7
               }
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationError_whenFamilyAndLondonRateIsMissing() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "FPB010",
+                  "claimId": "claim_123",
+                  "startDate": "2022-02-01",
+                  "netDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "FPB010",
+              "claimId": "claim_123",
+              "validationMessages": [
+                {
+                  "type": "ERROR",
+                  "code": "ERRFAM1",
+                  "message": "London/Non-London rate must be entered for the Fee Code used."
+                }
+              ]
             }
             """, STRICT));
   }
