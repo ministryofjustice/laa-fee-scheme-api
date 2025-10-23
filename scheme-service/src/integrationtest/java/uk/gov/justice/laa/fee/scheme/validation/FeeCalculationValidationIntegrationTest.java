@@ -372,4 +372,51 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
             }
             """, STRICT));
   }
+
+  @Test
+  void shouldReturnValidationWarning_whenEscapeThresholdExceeded() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "FPB010",
+                  "claimId": "claim_123",
+                  "startDate": "2022-02-01",
+                  "netDisbursementAmount": 2123.38,
+                  "disbursementVatAmount": 24.67,
+                  "londonRate": true,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "FPB010",
+              "schemeId": "FAM_LON_FS2011",
+              "claimId": "claim_123",
+              "validationMessages": [
+                {
+                  "type": "WARNING",
+                  "code": "WARFAM1",
+                  "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
+                }
+              ],
+              "escapeCaseFlag": true,
+              "feeCalculation": {
+                "totalAmount": 2306.45,
+                "vatIndicator": true,
+                "vatRateApplied": 20.0,
+                "calculatedVatAmount": 26.4,
+                "disbursementAmount": 2123.38,
+                "requestedNetDisbursementAmount": 2123.38,
+                "disbursementVatAmount": 24.67,
+                "fixedFeeAmount": 132.0
+              }
+            }
+            """, STRICT));
+  }
 }
