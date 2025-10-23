@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -335,6 +337,206 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                 "calculatedVatAmount": 0,
                 "fixedFeeAmount": 28.7
               }
+            }
+            """, STRICT));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "IMCF, WARIA1, Costs have been capped at £600 without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit., "
+          + "2173.72, 250.6, 650.0, 600.0, 1092.0",
+      "IALB, WARIA2, Costs have been capped at £400 without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit., "
+          + "1158.92, 114.8, 450.0, 400.0, 413.0"
+  })
+  void shouldReturnValidationWarning_immigrationAndAsylumFixedFee(
+      String feeCode,
+      String warningType,
+      String warningMessage,
+      double totalAmount,
+      double calculatedVatAmount,
+      double requestedDisbursementAmount,
+      double disbursementAmount,
+      double fixedFeeAmount
+  ) throws Exception {
+
+    String expectedJson = """
+        {
+            "feeCode": "%s",
+            "schemeId": "IMM_ASYLM_FS2023",
+            "claimId": "claim_123",
+            "validationMessages": [
+                {
+                    "type": "WARNING",
+                    "code": "%s",
+                    "message": "%s"
+                }
+            ],
+            "escapeCaseFlag": false,
+            "feeCalculation": {
+                "totalAmount": %s,
+                "vatIndicator": true,
+                "vatRateApplied": 20.0,
+                "calculatedVatAmount": %s,
+                "requestedNetDisbursementAmount": %s,
+                "disbursementAmount": %s,
+                "disbursementVatAmount": 70.12,
+                "fixedFeeAmount": %s,
+                "detentionTravelAndWaitingCostsAmount": 111.0,
+                "jrFormFillingAmount": 50.0,
+                "boltOnFeeDetails": {
+                    "boltOnTotalFeeAmount": 0.0
+                }
+            }
+        }
+        """.formatted(feeCode, warningType, warningMessage, totalAmount, calculatedVatAmount, requestedDisbursementAmount, disbursementAmount, fixedFeeAmount);
+
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "%s",
+                  "claimId": "claim_123",
+                  "startDate": "2024-09-30",
+                  "netDisbursementAmount": %s,
+                  "disbursementVatAmount": 70.12,
+                  "vatIndicator": true,
+                  "detentionTravelAndWaitingCosts": 111.00,
+                  "jrFormFilling": 50.00
+                }
+                """.formatted(feeCode, requestedDisbursementAmount))
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json(expectedJson, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationWarning_immigrationAndAsylumHourlyRate_legalHelp() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "IMXL",
+                  "claimId": "claim_123",
+                  "startDate": "2015-02-11",
+                  "netProfitCosts": 1160.89,
+                  "netDisbursementAmount": 825.70,
+                  "disbursementVatAmount": 25.14,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+                "feeCode": "IMXL",
+                "schemeId": "IMM_ASYLM_FS2013",
+                "claimId": "claim_123",
+                "validationMessages": [
+                    {
+                        "type": "WARNING",
+                        "code": "WARIA6",
+                        "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
+                    },
+                    {
+                        "type": "WARNING",
+                        "code": "WARIA7",
+                        "message": "Costs have been capped without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit."
+                    }
+                ],
+                "feeCalculation": {
+                    "totalAmount": 1025.14,
+                    "vatIndicator": true,
+                    "vatRateApplied": 20.0,
+                    "calculatedVatAmount": 100.0,
+                    "disbursementAmount": 400.0,
+                    "requestedNetDisbursementAmount": 825.7,
+                    "disbursementVatAmount": 25.14,
+                    "hourlyTotalAmount": 900.0,
+                    "netProfitCostsAmount": 500.0,
+                    "requestedNetProfitCostsAmount": 1160.89
+                }
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationWarning_immigrationAndAsylumHourlyRate_clrInterim() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "IACD",
+                  "claimId": "claim_123",
+                  "startDate": "2021-02-11",
+                  "netProfitCosts": 1116.89,
+                   "netCostOfCounsel": 706.90,
+                  "netDisbursementAmount": 125.70,
+                  "disbursementVatAmount": 25.14,
+                  "boltOns": {
+                      "boltOnAdjournedHearing": 1,
+                      "boltOnCmrhOral": 2,
+                      "boltOnCmrhTelephone": 1,
+                      "boltOnSubstantiveHearing": true
+                  },
+                  "vatIndicator": true,
+                  "detentionTravelAndWaitingCosts": 111.00,
+                  "jrFormFilling": 50.00
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+                "feeCode": "IACD",
+                "schemeId": "IMM_ASYLM_FS2020",
+                "claimId": "claim_123",
+                "validationMessages": [
+                    {
+                        "type": "WARNING",
+                        "code": "WARIA5",
+                        "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
+                    },
+                    {
+                        "type": "WARNING",
+                        "code": "WARIA9",
+                        "message": "Costs not included. Detention Travel and Waiting costs on hourly rates cases should be reported as Profit Costs."
+                    },
+                    {
+                        "type": "WARNING",
+                        "code": "WARIA10",
+                        "message": "Costs have been included. JR/ form filling costs should only be completed for standard fee cases. Hourly rates costs should be reported in the Profit Costs."
+                    }
+                ],
+                "feeCalculation": {
+                    "totalAmount": 3051.9,
+                    "vatIndicator": true,
+                    "vatRateApplied": 20.0,
+                    "calculatedVatAmount": 541.76,
+                    "disbursementAmount": 125.7,
+                    "requestedNetDisbursementAmount": 125.7,
+                    "disbursementVatAmount": 25.14,
+                    "hourlyTotalAmount": 2485.0,
+                    "netProfitCostsAmount": 1116.89,
+                    "requestedNetProfitCostsAmount": 1116.89,
+                    "netCostOfCounselAmount": 706.9,
+                    "boltOnFeeDetails": {
+                        "boltOnTotalFeeAmount": 885.0,
+                        "boltOnAdjournedHearingCount": 1,
+                        "boltOnAdjournedHearingFee": 161.0,
+                        "boltOnCmrhTelephoneCount": 1,
+                        "boltOnCmrhTelephoneFee": 90.0,
+                        "boltOnCmrhOralCount": 2,
+                        "boltOnCmrhOralFee": 332.0,
+                        "boltOnSubstantiveHearingFee": 302.0
+                    }
+                }
             }
             """, STRICT));
   }

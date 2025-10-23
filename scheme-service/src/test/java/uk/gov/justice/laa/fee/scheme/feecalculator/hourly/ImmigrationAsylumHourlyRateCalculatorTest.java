@@ -4,6 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DETENTION_TRAVEL;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_LEGAL_HELP;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_JR_FORM_FILLING;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_CLR;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -21,6 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -45,7 +53,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
                                                                      double netProfitCosts, double netDisbursement, double disbursementVat,
                                                                      double expectedTotal, double expectedCalculatedVat,
                                                                      double expectedHourlyTotal, double expectedNetProfitCosts,
-                                                                     double expectedNetDisbursement, List<String> expectedWarnings) {
+                                                                     double expectedNetDisbursement, List<WarningType> expectedWarnings) {
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -96,9 +104,9 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
         // over profit costs limit "without" prior authority
         Arguments.of("IAXL", NO_VAT, NO_AUTHORITY, 919.16, 123.38, 24.67,
-            948.05, 0, 923.38, 800, 123.38, List.of("warning net profit costs")),
+            948.05, 0, 923.38, 800, 123.38, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP)),
         Arguments.of("IAXL", VAT, NO_AUTHORITY, 919.16, 123.38, 24.67,
-            1108.05, 160, 923.38, 800, 123.38, List.of("warning net profit costs")),
+            1108.05, 160, 923.38, 800, 123.38, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP)),
 
         // over disbursements limit "with" prior authority
         Arguments.of("IAXL", NO_VAT, AUTHORITY, 166.25, 425.17, 85.03,
@@ -108,9 +116,9 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
         // over disbursements limit "without" prior authority
         Arguments.of("IAXL", NO_VAT, NO_AUTHORITY, 166.25, 425.17, 85.03,
-            651.28, 0, 566.25, 166.25, 400, List.of("warning net disbursements")),
+            651.28, 0, 566.25, 166.25, 400, List.of(WARN_IMM_ASYLM_DISB_LEGAL_HELP)),
         Arguments.of("IAXL", VAT, NO_AUTHORITY, 166.25, 425.17, 85.03,
-            684.53, 33.25, 566.25, 166.25, 400, List.of("warning net disbursements")),
+            684.53, 33.25, 566.25, 166.25, 400, List.of(WARN_IMM_ASYLM_DISB_LEGAL_HELP)),
 
         // over profit costs and disbursements limits "with" prior authority
         Arguments.of("IAXL", NO_VAT, AUTHORITY, 919.16, 425.17, 85.03,
@@ -120,9 +128,9 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
         // over profit costs and disbursements limits "without" prior authority
         Arguments.of("IAXL", NO_VAT, null, 919.16, 425.17, 85.03,
-            1285.03, 0, 1200, 800, 400, List.of("warning net profit costs", "warning net disbursements")),
+            1285.03, 0, 1200, 800, 400, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP, WARN_IMM_ASYLM_DISB_LEGAL_HELP)),
         Arguments.of("IAXL", VAT, null, 919.16, 425.17, 85.03,
-            1445.03, 160, 1200, 800, 400, List.of("warning net profit costs", "warning net disbursements")),
+            1445.03, 160, 1200, 800, 400, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP, WARN_IMM_ASYLM_DISB_LEGAL_HELP)),
 
         // IMXL
         Arguments.of("IMXL", NO_VAT, NO_AUTHORITY, 166.25, 123.38, 24.67,
@@ -135,7 +143,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
   void calculateFee_whenLegalHelpIA100_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority,
                                                                           double netProfitCosts, double netDisbursement, double disbursementVat,
                                                                           double expectedTotal, double expectedCalculatedVat,
-                                                                          double expectedHourlyTotal, List<String> expectedWarnings) {
+                                                                          double expectedHourlyTotal, List<WarningType> expectedWarnings) {
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -185,16 +193,17 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
         // IA100 over total limit without prior auth (No VAT)
         Arguments.of("IA100", false, null, 65.21, 55.60, 11.12,
-            111.12, 0, 100, List.of("warning total limit")),
+            111.12, 0, 100, List.of(WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP)),
         // IA100 over total limit without prior auth (VAT applied)
         Arguments.of("IA100", true, null, 65.21, 55.60, 11.12,
-            124.16, 13.04, 100, List.of("warning total limit"))
+            124.16, 13.04, 100, List.of(WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP))
     );
   }
 
   @ParameterizedTest
   @MethodSource("warningTestDataLegalHelp")
-  void calculateFee_whenLegalHelpFeeCodeAndGivenUnexpectedField_shouldReturnWarning(Double detentionTravelAndWaitingCosts, Double jrFormFilling, List<String> expectedWarnings) {
+  void calculateFee_whenLegalHelpFeeCodeAndGivenUnexpectedField_shouldReturnWarning(Double detentionTravelAndWaitingCosts,
+                                                                                    Double jrFormFilling, List<WarningType> expectedWarnings) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("IAXL")
         .startDate(LocalDate.of(2025, 5, 11))
@@ -217,9 +226,9 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
   static Stream<Arguments> warningTestDataLegalHelp() {
     return Stream.of(
         // Legal Help
-        Arguments.of(314.3, null, List.of("warning detention travel and waiting costs")),
-        Arguments.of(null, 55.34, List.of("warning jr form filling")),
-        Arguments.of(314.3, 55.34, List.of("warning detention travel and waiting costs", "warning jr form filling"))
+        Arguments.of(314.3, null, List.of(WARN_IMM_ASYLM_DETENTION_TRAVEL)),
+        Arguments.of(null, 55.34, List.of(WARN_IMM_ASYLM_JR_FORM_FILLING)),
+        Arguments.of(314.3, 55.34, List.of(WARN_IMM_ASYLM_DETENTION_TRAVEL, WARN_IMM_ASYLM_JR_FORM_FILLING))
     );
   }
 
@@ -228,7 +237,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
   void calculateFee_whenClr_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority,
                                                                double netProfitCosts, double netCostOfCounsel, double netDisbursement,
                                                                double disbursementVat, double expectedTotal, double expectedCalculatedVat,
-                                                               double expectedHourlyTotal, List<String> expectedWarnings) {
+                                                               double expectedHourlyTotal, List<WarningType> expectedWarnings) {
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -277,9 +286,9 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
         // over total "without" prior authority
         Arguments.of("IAXC", NO_VAT, NO_AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
-            1630.46, 0, 1600, List.of("warning total limit")),
+            1630.46, 0, 1600, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_CLR)),
         Arguments.of("IAXC", VAT, NO_AUTHORITY, 486.78, 1008.17, 152.34, 30.46,
-            1929.45, 298.99, 1600, List.of("warning total limit")),
+            1929.45, 298.99, 1600, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_CLR)),
 
         // IMXC
         Arguments.of("IMXC", NO_VAT, NO_AUTHORITY, 486.78, 611.25, 152.34, 30.46,
@@ -293,7 +302,8 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
   @ParameterizedTest
   @MethodSource(value = {"warningTestDataClr", "warningTestDataClrInterim"})
-  void calculateFee_whenClrAndGivenUnexpectedField_shouldReturnWarning(String feeCode, Double detentionTravelAndWaitingCosts, Double jrFormFilling, List<String> expectedWarnings) {
+  void calculateFee_whenClrAndGivenUnexpectedField_shouldReturnWarning(String feeCode, Double detentionTravelAndWaitingCosts,
+                                                                       Double jrFormFilling, List<WarningType> expectedWarnings) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .startDate(LocalDate.of(2025, 5, 11))
@@ -316,17 +326,17 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
   static Stream<Arguments> warningTestDataClr() {
     return Stream.of(
-        Arguments.of("IAXC", 314.3, null, List.of("warning detention travel and waiting costs")),
-        Arguments.of("IAXC", null, 55.34, List.of("warning jr form filling")),
-        Arguments.of("IAXC", 314.3, 55.34, List.of("warning detention travel and waiting costs", "warning jr form filling"))
+        Arguments.of("IAXC", 314.3, null, List.of(WARN_IMM_ASYLM_DETENTION_TRAVEL)),
+        Arguments.of("IAXC", null, 55.34, List.of(WARN_IMM_ASYLM_JR_FORM_FILLING)),
+        Arguments.of("IAXC", 314.3, 55.34, List.of(WARN_IMM_ASYLM_DETENTION_TRAVEL, WARN_IMM_ASYLM_JR_FORM_FILLING))
     );
   }
 
   static Stream<Arguments> warningTestDataClrInterim() {
     return Stream.of(
-        Arguments.of("IACD", 314.3, null, List.of("warning detention travel and waiting costs")),
-        Arguments.of("IACD", null, 55.34, List.of("warning jr form filling")),
-        Arguments.of("IACD", 314.3, 55.34, List.of("warning detention travel and waiting costs", "warning jr form filling"))
+        Arguments.of("IACD", 314.3, null, List.of(WARN_IMM_ASYLM_DETENTION_TRAVEL)),
+        Arguments.of("IACD", null, 55.34, List.of(WARN_IMM_ASYLM_JR_FORM_FILLING)),
+        Arguments.of("IACD", 314.3, 55.34, List.of(WARN_IMM_ASYLM_DETENTION_TRAVEL, WARN_IMM_ASYLM_JR_FORM_FILLING))
     );
   }
 
@@ -335,7 +345,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
   void calculateFee_whenClrInterim_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority, BoltOnType requestedBoltOns,
                                                                       double netProfitCosts, double netCostOfCounsel, double netDisbursement,
                                                                       double disbursementVat, double expectedTotal, double expectedCalculatedVat,
-                                                                      double expectedHourlyTotal, List<String> expectedWarnings) {
+                                                                      double expectedHourlyTotal, List<WarningType> expectedWarnings) {
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -392,9 +402,9 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
         // over total limit "without" prior authority
         Arguments.of("IACD", NO_VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 1008.17, 152.34, 30.46,
-            2404.46, 0, 2374, List.of("warning total limit")),
+            2404.46, 0, 2374, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM)),
         Arguments.of("IACD", VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 1008.17, 152.34, 30.46,
-            2858.25, 453.79, 2374, List.of("warning total limit")),
+            2858.25, 453.79, 2374, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM)),
 
         // substantive hearing bolt on = false
         Arguments.of("IACD", NO_VAT, NO_AUTHORITY, buildBoltOn(false), 486.78, 611.25, 152.34, 30.46,
@@ -458,10 +468,11 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     assertThat(feeCalculation.getBoltOnFeeDetails()).isEqualTo(boltOnFeeDetails);
   }
 
-  private void assertWarnings(List<ValidationMessagesInner> resultMessages, List<String> expectedWarnings) {
+  private void assertWarnings(List<ValidationMessagesInner> resultMessages, List<WarningType> expectedWarnings) {
     List<ValidationMessagesInner> validationMessages = expectedWarnings.stream()
         .map(i -> ValidationMessagesInner.builder()
-            .message(i)
+            .message(i.getMessage())
+            .code(i.getCode())
             .type(WARNING)
             .build())
         .toList();

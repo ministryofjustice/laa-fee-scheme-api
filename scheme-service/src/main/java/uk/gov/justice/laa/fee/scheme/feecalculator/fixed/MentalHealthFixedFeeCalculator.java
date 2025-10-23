@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.enums.WarningCode;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
@@ -116,8 +116,8 @@ public class MentalHealthFixedFeeCalculator implements FeeCalculator {
     if (isEscapedCase(totalA, totalB)) {
       log.warn("Case has escaped");
       validationMessages.add(ValidationMessagesInner.builder()
-          .message(WarningCode.WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD.getMessage())
-          .code(WarningCode.WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD.getCode())
+          .message(WarningType.WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD.getMessage())
+          .code(WarningType.WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD.getCode())
           .type(WARNING)
           .build());
       return true;

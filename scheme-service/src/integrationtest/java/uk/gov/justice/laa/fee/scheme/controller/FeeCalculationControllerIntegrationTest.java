@@ -314,57 +314,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   }
 
   @Test
-  void shouldGetFeeCalculationWithWarnings_immigrationAndAsylumHourlyRate_legalHelp() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "IMXL",
-                  "claimId": "claim_123",
-                  "startDate": "2015-02-11",
-                  "netProfitCosts": 766.89,
-                  "netDisbursementAmount": 410.70,
-                  "disbursementVatAmount": 82.14,
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "IMXL",
-              "schemeId": "IMM_ASYLM_FS2013",
-              "claimId": "claim_123",
-              "validationMessages": [
-                  {
-                    type: "WARNING",
-                    message: "warning net profit costs"
-                  },
-                  {
-                    type: "WARNING",
-                    message: "warning net disbursements"
-                  }
-              ],
-              "feeCalculation": {
-                "totalAmount": 1082.14,
-                "vatIndicator": true,
-                "vatRateApplied": 20.00,
-                "calculatedVatAmount": 100.00,
-                "disbursementAmount": 400.00,
-                "requestedNetDisbursementAmount": 410.70,
-                "disbursementVatAmount": 82.14,
-                "hourlyTotalAmount": 900.00,
-                "netProfitCostsAmount": 500.00,
-                "requestedNetProfitCostsAmount": 766.89
-              }
-            }
-            """, STRICT));
-  }
-
-  @Test
   void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate_clr() throws Exception {
     mockMvc
         .perform(post(URI)

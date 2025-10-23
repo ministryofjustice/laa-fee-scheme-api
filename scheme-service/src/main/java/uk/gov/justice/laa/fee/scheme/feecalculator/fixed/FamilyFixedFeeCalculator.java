@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.enums.WarningCode;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -72,8 +72,8 @@ public class FamilyFixedFeeCalculator implements FeeCalculator {
     if (isClaimEscaped) {
       log.warn("Fee total exceeds escape threshold limit");
       validationMessages.add(ValidationMessagesInner.builder()
-          .message(WarningCode.WARN_FAMILY_ESCAPE_THRESHOLD.getMessage())
-          .code(WarningCode.WARN_FAMILY_ESCAPE_THRESHOLD.getCode())
+          .message(WarningType.WARN_FAMILY_ESCAPE_THRESHOLD.getMessage())
+          .code(WarningType.WARN_FAMILY_ESCAPE_THRESHOLD.getCode())
           .type(WARNING)
           .build());
     }
