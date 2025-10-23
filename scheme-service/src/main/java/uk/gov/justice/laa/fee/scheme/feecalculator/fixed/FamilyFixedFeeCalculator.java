@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.FAMILY;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_FAMILY_NET_PROFIT_COST;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
@@ -29,8 +30,6 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @Slf4j
 @Component
 public class FamilyFixedFeeCalculator implements FeeCalculator {
-
-  private static final String ESCAPE_CASE_WARNING_CODE_DESCRIPTION = "123warning";
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -71,7 +70,8 @@ public class FamilyFixedFeeCalculator implements FeeCalculator {
     if (isClaimEscaped) {
       log.warn("Fee total exceeds escape threshold limit");
       validationMessages.add(ValidationMessagesInner.builder()
-          .message(ESCAPE_CASE_WARNING_CODE_DESCRIPTION)
+          .code(WARN_FAMILY_NET_PROFIT_COST.getCode())
+          .message(WARN_FAMILY_NET_PROFIT_COST.getMessage())
           .type(WARNING)
           .build());
     }

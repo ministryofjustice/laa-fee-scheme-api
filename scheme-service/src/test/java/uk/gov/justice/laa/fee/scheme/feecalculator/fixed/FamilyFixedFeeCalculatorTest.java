@@ -108,7 +108,8 @@ class FamilyFixedFeeCalculatorTest {
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
     validationMessages.add(ValidationMessagesInner.builder()
-        .message("123warning")
+        .code("WARFAM1")
+        .message("The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid.")
         .type(WARNING)
         .build());
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
