@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -372,12 +373,14 @@ class ValidationServiceTest {
   }
 
 
-  @Test
-  public void checkForWarnings_whenGivenCrimeFeeCodeAndNetTravelCosts_returnsWarnings() {
-    when(feeDetailsService.getAreaOfLaw("INVB1")).thenReturn(AreaOfLawType.CRIME_LOWER);
+  @ParameterizedTest
+  @ValueSource(strings = {"INVB1", "INVB2", "PROT", "PROU", "PROW", "PRIA", "PRIB1", "PRIB2", "PRIC1", "PRIC2",
+      "PRID1", "PRID2", "PRID1", "PRID2", "PRIE1", "PRIE2" })
+  public void checkForWarnings_whenGivenCrimeFeeCodeAndNetTravelCosts_returnsWarnings(String feeCode) {
+    when(feeDetailsService.getAreaOfLaw(feeCode)).thenReturn(AreaOfLawType.CRIME_LOWER);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode("INVB1")
+        .feeCode(feeCode)
         .netTravelCosts(100.0)
         .build();
 
@@ -390,12 +393,13 @@ class ValidationServiceTest {
         .build());
   }
 
-  @Test
-  public void checkForWarnings_whenGivenCrimeFeeCodeAndNetWaitingCosts_returnsWarnings() {
-    when(feeDetailsService.getAreaOfLaw("INVB1")).thenReturn(AreaOfLawType.CRIME_LOWER);
+  @ParameterizedTest
+  @ValueSource(strings = {"INVB1", "INVB2", "PROT", "PROU", "PROW" })
+  public void checkForWarnings_whenGivenCrimeFeeCodeAndNetWaitingCosts_returnsWarnings(String feeCode) {
+    when(feeDetailsService.getAreaOfLaw(feeCode)).thenReturn(AreaOfLawType.CRIME_LOWER);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode("INVB1")
+        .feeCode(feeCode)
         .netWaitingCosts(100.0)
         .build();
 
