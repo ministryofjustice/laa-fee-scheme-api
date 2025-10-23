@@ -26,7 +26,7 @@ public enum WarningCode {
       + " threshold", CategoryType.CLINICAL_NEGLIGENCE),
   WARN_COMMUNITY_CARE_ESCAPE_THRESHOLD("WAROTH4", "Other Civil - Community Care escape case threshold",
       CategoryType.COMMUNITY_CARE),
-  WARN_CIVIL_ESCAPE_THRESHOLD("WAROTH5", "Other Civil - Debt escape case threshold", CategoryType.DEBT),
+  WARN_DEBT_ESCAPE_THRESHOLD("WAROTH5", "Other Civil - Debt escape case threshold", CategoryType.DEBT),
   WARN_HOUSING_HLPAS_ESCAPE_THRESHOLD("WAROTH6", "Other Civil - Early Legal Advice (Housing - HLPAS) "
       + "escape case threshold", CategoryType.HOUSING_HLPAS),
   WARN_EDUCATION_ESCAPE_THRESHOLD("WAROTH7", "Other Civil - Education escape case threshold",
