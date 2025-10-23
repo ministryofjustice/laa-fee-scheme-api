@@ -1,9 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.enums.LimitType.DISBURSEMENT;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_DISB_400_LEGAL_HELP;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_DISB_600_CLR;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.getMessageFromCode;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_400_LEGAL_HELP;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_600_CLR;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.getMessageFromCode;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.checkLimitAndCapIfExceeded;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.enums.WarningCode;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.LimitContextNew;
@@ -79,7 +79,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     } else {
       log.info("Check disbursement for fee calculation");
 
-      WarningCode warning = (("IALB".equals(feeCalculationRequest.getFeeCode()) || "IMLB".equals(feeCalculationRequest.getFeeCode()))
+      WarningType warning = (("IALB".equals(feeCalculationRequest.getFeeCode()) || "IMLB".equals(feeCalculationRequest.getFeeCode()))
           ? getMessageFromCode(WARN_IMM_ASYLM_DISB_400_LEGAL_HELP)
           : getMessageFromCode(WARN_IMM_ASYLM_DISB_600_CLR));
       LimitContextNew disbursementLimitContext = new LimitContextNew(DISBURSEMENT, feeEntity.getDisbursementLimit(),

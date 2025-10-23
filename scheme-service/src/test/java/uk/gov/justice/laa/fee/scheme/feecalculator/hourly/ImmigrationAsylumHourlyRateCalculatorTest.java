@@ -4,14 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_DETENTION_TRAVEL;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_DISB_LEGAL_HELP;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_JR_FORM_FILLING;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_PRIOR_AUTH_CLR;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.getMessageFromCode;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DETENTION_TRAVEL;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_LEGAL_HELP;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_JR_FORM_FILLING;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_CLR;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.getMessageFromCode;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -29,7 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.enums.WarningCode;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -54,7 +54,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
                                                                      double netProfitCosts, double netDisbursement, double disbursementVat,
                                                                      double expectedTotal, double expectedCalculatedVat,
                                                                      double expectedHourlyTotal, double expectedNetProfitCosts,
-                                                                     double expectedNetDisbursement, List<WarningCode> expectedWarnings) {
+                                                                     double expectedNetDisbursement, List<WarningType> expectedWarnings) {
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -144,7 +144,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
   void calculateFee_whenLegalHelpIA100_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority,
                                                                           double netProfitCosts, double netDisbursement, double disbursementVat,
                                                                           double expectedTotal, double expectedCalculatedVat,
-                                                                          double expectedHourlyTotal, List<WarningCode> expectedWarnings) {
+                                                                          double expectedHourlyTotal, List<WarningType> expectedWarnings) {
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -204,7 +204,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
   @ParameterizedTest
   @MethodSource("warningTestDataLegalHelp")
   void calculateFee_whenLegalHelpFeeCodeAndGivenUnexpectedField_shouldReturnWarning(Double detentionTravelAndWaitingCosts,
-                                                                                    Double jrFormFilling, List<WarningCode> expectedWarnings) {
+                                                                                    Double jrFormFilling, List<WarningType> expectedWarnings) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("IAXL")
         .startDate(LocalDate.of(2025, 5, 11))
@@ -238,7 +238,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
   void calculateFee_whenClr_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority,
                                                                double netProfitCosts, double netCostOfCounsel, double netDisbursement,
                                                                double disbursementVat, double expectedTotal, double expectedCalculatedVat,
-                                                               double expectedHourlyTotal, List<WarningCode> expectedWarnings) {
+                                                               double expectedHourlyTotal, List<WarningType> expectedWarnings) {
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -304,7 +304,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
   @ParameterizedTest
   @MethodSource(value = {"warningTestDataClr", "warningTestDataClrInterim"})
   void calculateFee_whenClrAndGivenUnexpectedField_shouldReturnWarning(String feeCode, Double detentionTravelAndWaitingCosts,
-                                                                       Double jrFormFilling, List<WarningCode> expectedWarnings) {
+                                                                       Double jrFormFilling, List<WarningType> expectedWarnings) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .startDate(LocalDate.of(2025, 5, 11))
@@ -346,7 +346,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
   void calculateFee_whenClrInterim_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority, BoltOnType requestedBoltOns,
                                                                       double netProfitCosts, double netCostOfCounsel, double netDisbursement,
                                                                       double disbursementVat, double expectedTotal, double expectedCalculatedVat,
-                                                                      double expectedHourlyTotal, List<WarningCode> expectedWarnings) {
+                                                                      double expectedHourlyTotal, List<WarningType> expectedWarnings) {
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -469,7 +469,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
     assertThat(feeCalculation.getBoltOnFeeDetails()).isEqualTo(boltOnFeeDetails);
   }
 
-  private void assertWarnings(List<ValidationMessagesInner> resultMessages, List<WarningCode> expectedWarnings) {
+  private void assertWarnings(List<ValidationMessagesInner> resultMessages, List<WarningType> expectedWarnings) {
     List<ValidationMessagesInner> validationMessages = expectedWarnings.stream()
         .map(i -> ValidationMessagesInner.builder()
             .message(i.getMessage())

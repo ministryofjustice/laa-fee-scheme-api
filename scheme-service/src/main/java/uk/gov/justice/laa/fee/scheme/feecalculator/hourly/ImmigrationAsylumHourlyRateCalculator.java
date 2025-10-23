@@ -3,14 +3,14 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 import static uk.gov.justice.laa.fee.scheme.enums.LimitType.DISBURSEMENT;
 import static uk.gov.justice.laa.fee.scheme.enums.LimitType.PROFIT_COST;
 import static uk.gov.justice.laa.fee.scheme.enums.LimitType.TOTAL;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_DETENTION_TRAVEL;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_DISB_LEGAL_HELP;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_JR_FORM_FILLING;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_PRIOR_AUTH_CLR;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningCode.getMessageFromCode;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DETENTION_TRAVEL;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_LEGAL_HELP;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_JR_FORM_FILLING;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_CLR;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.getMessageFromCode;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.checkLimitAndCapIfExceeded;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.enums.WarningCode;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.LimitContextNew;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
@@ -254,7 +254,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
   }
 
   private static void checkFieldIsEmpty(Double value, List<ValidationMessagesInner> validationMessages,
-                                        WarningCode warning, String logMessage) {
+                                        WarningType warning, String logMessage) {
     if (value != null) {
       log.warn(logMessage);
       validationMessages.add(ValidationMessagesInner.builder()

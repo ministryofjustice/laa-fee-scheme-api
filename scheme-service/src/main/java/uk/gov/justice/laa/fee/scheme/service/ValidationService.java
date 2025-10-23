@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE_TOO_OLD;
@@ -39,7 +40,31 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @Service
 public class ValidationService {
 
+  private static final LocalDate CIVIL_START_DATE = LocalDate.of(2013, 4, 1);
   private final FeeDetailsService feeDetailsService;
+
+  private static boolean filterByRegion(FeeEntity fee, Boolean isLondonRate) {
+    if (fee.getCategoryType() != CategoryType.FAMILY) {
+      return true;
+    }
+
+    return isLondonRate != null && fee.getRegion() == (isLondonRate ? Region.LONDON : Region.NON_LONDON);
+  }
+
+  private static boolean isValidFee(FeeEntity fee, LocalDate claimStartDate) {
+    LocalDate validFrom = fee.getFeeScheme().getValidFrom();
+    LocalDate validTo = fee.getFeeScheme().getValidTo();
+
+    return !validFrom.isAfter(claimStartDate) && (validTo == null || !claimStartDate.isAfter(validTo));
+  }
+
+  private static ValidationMessagesInner buildValidationMessage(WarningType warning) {
+    return ValidationMessagesInner.builder()
+        .type(WARNING)
+        .code(warning.getCode())
+        .message(warning.getMessage())
+        .build();
+  }
 
   /**
    * Validates the fee code and claim start date and returns the valid Fee entity.
@@ -103,13 +128,21 @@ public class ValidationService {
    * @param feeCalculationRequest the fee calculation request
    */
   private void checkValidStartDate(List<FeeEntity> feeEntityList, FeeCalculationRequest feeCalculationRequest) {
-    if (isCivil(feeCalculationRequest.getFeeCode())) {
-      CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
-      LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeCalculationRequest);
-      LocalDate earliestFeeSchemeDate = getEarliestFeeSchemeDate(feeEntityList);
-      if (claimStartDate.isBefore(earliestFeeSchemeDate)) {
-        throw new ValidationException(ERR_CIVIL_START_DATE_TOO_OLD, new FeeContext(feeCalculationRequest));
-      }
+    CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
+    LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeCalculationRequest);
+    LocalDate earliestFeeSchemeDate = getEarliestFeeSchemeDate(feeEntityList);
+
+    if (isCivil(feeCalculationRequest.getFeeCode()) && !categoryType.equals(IMMIGRATION_ASYLUM)
+        && claimStartDate.isBefore(earliestFeeSchemeDate)) {
+      throw new ValidationException(ERR_CIVIL_START_DATE_TOO_OLD, new FeeContext(feeCalculationRequest));
+    }
+
+    if (categoryType.equals(IMMIGRATION_ASYLUM) && claimStartDate.isBefore(earliestFeeSchemeDate)) {
+      // find by fee code or default to generic civil error
+      ErrorType error = ErrorType.findByFeeCode(feeCalculationRequest.getFeeCode())
+          .filter(e -> !claimStartDate.isBefore(CIVIL_START_DATE))
+          .orElse(ErrorType.ERR_CIVIL_START_DATE_TOO_OLD);
+      throw new ValidationException(error, new FeeContext(feeCalculationRequest));
     }
   }
 
@@ -133,6 +166,7 @@ public class ValidationService {
 
   private FeeEntity getFeeEntityForStartDate(List<FeeEntity> feeEntityList,
                                              FeeCalculationRequest feeCalculationRequest, LocalDate claimStartDate) {
+    CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
     return feeEntityList.stream()
         .filter(fee -> filterByRegion(fee, feeCalculationRequest.getLondonRate()))
         .filter(fee -> isValidFee(fee, claimStartDate)) // startDate <= inputDate
@@ -140,36 +174,17 @@ public class ValidationService {
         .orElseThrow(() -> {
           ErrorType error;
           if (isCivil(feeCalculationRequest.getFeeCode())) {
-            error = ERR_CIVIL_START_DATE;
+            if (categoryType.equals(IMMIGRATION_ASYLUM)) {
+              // find by fee code or default to generic civil error
+              error = ErrorType.findByFeeCode(feeCalculationRequest.getFeeCode()).orElse(ErrorType.ERR_CIVIL_START_DATE);
+            } else {
+              error = ERR_CIVIL_START_DATE;
+            }
           } else {
-            CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
             ClaimStartDateType claimStartDateType = FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeCalculationRequest);
             error = (claimStartDateType == ClaimStartDateType.REP_ORDER_DATE) ? ERR_CRIME_REP_ORDER_DATE : ERR_CRIME_UFN_DATE;
           }
           return new ValidationException(error, new FeeContext(feeCalculationRequest));
         });
-  }
-
-  private static boolean filterByRegion(FeeEntity fee, Boolean isLondonRate) {
-    if (fee.getCategoryType() != CategoryType.FAMILY) {
-      return true;
-    }
-
-    return isLondonRate != null && fee.getRegion() == (isLondonRate ? Region.LONDON : Region.NON_LONDON);
-  }
-
-  private static boolean isValidFee(FeeEntity fee, LocalDate claimStartDate) {
-    LocalDate validFrom = fee.getFeeScheme().getValidFrom();
-    LocalDate validTo = fee.getFeeScheme().getValidTo();
-
-    return !validFrom.isAfter(claimStartDate) && (validTo == null || !claimStartDate.isAfter(validTo));
-  }
-
-  private static ValidationMessagesInner buildValidationMessage(WarningType warning) {
-    return ValidationMessagesInner.builder()
-        .type(WARNING)
-        .code(warning.getCode())
-        .message(warning.getMessage())
-        .build();
   }
 }

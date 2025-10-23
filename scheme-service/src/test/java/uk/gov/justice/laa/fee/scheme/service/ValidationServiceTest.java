@@ -28,6 +28,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.AreaOfLawType;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.Region;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
@@ -224,6 +225,75 @@ class ValidationServiceTest {
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE_TOO_OLD)
         .hasMessage("ERRCIV2 - Case Start Date is too far in the past.");
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "IACC, IMMIGRATION_ASYLUM, LEGAL_HELP, IMM_ASYLM_FS2020, 2020-04-01, 2013-04-29, ERRIA1_IMM_ASYLUM_BETWEEN_DATE",
+      "IACE, IMMIGRATION_ASYLUM, LEGAL_HELP, IMM_ASYLM_FS2023, 2023-04-01, 2020-04-29, ERRIA3_IMM_ASYLUM_AFTER_DATE",
+
+      "IACC, IMMIGRATION_ASYLUM, LEGAL_HELP, IMM_ASYLM_FS2020, 2020-04-01, 2011-04-29, ERR_CIVIL_START_DATE_TOO_OLD",
+      "IACA, IMMIGRATION_ASYLUM, LEGAL_HELP, IMM_ASYLM_FS2013, 2013-04-01, 2011-04-29, ERR_CIVIL_START_DATE_TOO_OLD",
+      "IACE, IMMIGRATION_ASYLUM, LEGAL_HELP, IMM_ASYLM_FS2023, 2023-04-01, 2011-04-29, ERR_CIVIL_START_DATE_TOO_OLD",
+      "IDAS2, IMMIGRATION_ASYLUM, LEGAL_HELP, IMM_ASYLM_FS2013, 2013-04-01, 2011-04-29, ERR_CIVIL_START_DATE_TOO_OLD",
+  })
+  void getValidFeeEntity_whenCivilImmigrationAsylumFeeCodeAndDateTooFarInPast_shouldThrowException(String feeCode, CategoryType categoryType,
+                                                                                                   AreaOfLawType areaOfLawType,
+                                                                                                   String feeScheme, LocalDate feeSchemeDate,
+                                                                                                   LocalDate claimStartDate, ErrorType expectedError) {
+    when(feeDetailsService.getAreaOfLaw(feeCode)).thenReturn(areaOfLawType);
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode(feeCode)
+        .startDate(claimStartDate)
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeScheme)
+        .validFrom(feeSchemeDate).build();
+
+    FeeEntity feeEntity = fixedFeeEntity(feeCode, categoryType, feeSchemesEntity);
+
+    List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+    assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", expectedError)
+        .hasMessageContaining(expectedError.getMessage());
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "IACC, IMMIGRATION_ASYLUM, LEGAL_HELP, IMM_ASYLM_FS2020, 2020-04-01, 2023-04-29, 2024-04-29, ERRIA1_IMM_ASYLUM_BETWEEN_DATE",
+      "IACA, IMMIGRATION_ASYLUM, LEGAL_HELP, IMM_ASYLM_FS2020, 2020-04-01, 2023-04-29, 2024-04-29, ERRIA2_IMM_ASYLUM_BEFORE_DATE",
+  })
+  void getValidFeeEntity_whenCivilImmigrationAsylumFeeCodeAndStartDateIsInvalid_shouldThrowException(String feeCode, CategoryType categoryType,
+                                                                                                   AreaOfLawType areaOfLawType,
+                                                                                                   String feeScheme, LocalDate feeSchemeStartDate,
+                                                                                                   LocalDate feeSchemeEndDate,
+                                                                                                   LocalDate claimStartDate, ErrorType expectedError) {
+    when(feeDetailsService.getAreaOfLaw(feeCode)).thenReturn(areaOfLawType);
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode(feeCode)
+        .startDate(claimStartDate)
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeScheme)
+        .validFrom(feeSchemeStartDate)
+        .validTo(feeSchemeEndDate).build();
+
+    FeeEntity feeEntity = fixedFeeEntity(feeCode, categoryType, feeSchemesEntity);
+
+    List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+    assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", expectedError)
+        .hasMessageContaining(expectedError.getMessage());
   }
 
   @Test
