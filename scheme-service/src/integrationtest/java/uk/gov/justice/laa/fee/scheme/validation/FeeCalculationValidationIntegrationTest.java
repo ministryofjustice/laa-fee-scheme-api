@@ -101,10 +101,107 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
+                  "feeCode": "INVC",
+                  "claimId": "claim_123",
+                  "startDate": "2023-12-12",
+                  "uniqueFileNumber": "121223/242",
+                  "policeStationId": "NE001",
+                  "policeStationSchemeId": "1001",
+                  "vatIndicator": false
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json("""
+            {
+              "feeCode": "INVC",
+              "claimId": "claim_123",
+              "validationMessages": [
+                {
+                  "type":"ERROR",
+                  "code":"ERRCRM1",
+                  "message":"Fee Code is not valid for the Case Start Date."
+                }
+              ]
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationError_whenCrimeFeeCodeAndPoliceStationIdIsInvalid() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "INVC",
+                  "claimId": "claim_123",
+                  "startDate": "2023-12-12",
+                  "uniqueFileNumber": "121219/242",
+                  "policeStationId": "BLAH",
+                  "policeStationSchemeId": "1001",
+                  "vatIndicator": false
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json("""
+            {
+              "feeCode": "INVC",
+              "claimId": "claim_123",
+              "validationMessages": [
+                {
+                  "type":"ERROR",
+                  "code":"ERRCRM3",
+                  "message":"Enter a valid Police station ID, Court ID, or Prison ID."
+                }
+              ]
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationError_whenCrimeFeeCodeAndPoliceSchemeIdIsInvalid() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "INVC",
+                  "claimId": "claim_123",
+                  "startDate": "2021-12-12",
+                  "uniqueFileNumber": "121221/242",
+                  "policeStationSchemeId": "BLAH",
+                  "vatIndicator": false
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json("""
+            {
+              "feeCode": "INVC",
+              "claimId": "claim_123",
+              "validationMessages": [
+                {
+                  "type":"ERROR",
+                  "code":"ERRCRM4",
+                  "message":"Enter a valid Scheme ID."
+                }
+              ]
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationError_whenCrimeFeeCodeAndUfnIsMissing() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
                   "feeCode": "INVK",
                   "claimId": "claim_123",
                   "startDate": "2023-12-12",
-                  "uniqueFileNumber": "121223/2423",
                   "policeStationId": "NE001",
                   "policeStationSchemeId": "1001",
                   "vatIndicator": false
@@ -119,10 +216,125 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "validationMessages": [
                 {
                   "type":"ERROR",
-                  "code":"ERRCRM1",
-                  "message":"Fee Code is not valid for Case Start Date."
+                  "code":"ERRCRM7",
+                  "message":"Enter a UFN."
                 }
               ]
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationError_whenCrimeFeeCodeAndRepOrderDateIsInvalid() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "PROJ5",
+                  "claimId": "claim_123",
+                  "uniqueFileNumber": "010215/242",
+                  "representationOrderDate": "2015-02-01",
+                  "netDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json("""
+            {
+              "feeCode": "PROJ5",
+              "claimId": "claim_123",
+              "validationMessages": [
+                {
+                  "type":"ERROR",
+                  "code":"ERRCRM12",
+                  "message":"Fee Code is not valid for the Case Start Date."
+                }
+              ]
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationWarning_whenCrimeFeeCodeAndNetTravelCosts() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "INVB1",
+                  "claimId": "claim_123",
+                  "startDate": "2021-12-12",
+                  "uniqueFileNumber": "121221/242",
+                  "netTravelCosts": 100.0,
+                  "vatIndicator": false
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json("""
+            {
+              "feeCode": "INVB1",
+              "claimId": "claim_123",
+              "schemeId": "POL_FS2016",
+              "validationMessages": [
+                {
+                  "type":"WARNING",
+                  "code":"WARCRM1",
+                  "message":"Cost not included. Travel costs cannot be claimed with Fee Code used."
+                }
+              ],
+              "escapeCaseFlag": false,
+              "feeCalculation": {
+                "totalAmount": 28.7,
+                "vatIndicator": false,
+                "vatRateApplied": 20.00,
+                "calculatedVatAmount": 0,
+                "fixedFeeAmount": 28.7
+              }
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationWarning_whenCrimeFeeCodeAndNetWaitingCosts() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "INVB1",
+                  "claimId": "claim_123",
+                  "startDate": "2021-12-12",
+                  "uniqueFileNumber": "121221/242",
+                  "netWaitingCosts": 100.0,
+                  "vatIndicator": false
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json("""
+            {
+              "feeCode": "INVB1",
+              "claimId": "claim_123",
+              "schemeId": "POL_FS2016",
+              "validationMessages": [
+                {
+                  "type":"WARNING",
+                  "code":"WARCRM2",
+                  "message":"Cost not included. Waiting costs cannot be claimed with Fee Code used."
+                }
+              ],
+              "escapeCaseFlag": false,
+              "feeCalculation": {
+                "totalAmount": 28.7,
+                "vatIndicator": false,
+                "vatRateApplied": 20.00,
+                "calculatedVatAmount": 0,
+                "fixedFeeAmount": 28.7
+              }
             }
             """, STRICT));
   }
