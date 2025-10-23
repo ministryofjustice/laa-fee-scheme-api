@@ -62,9 +62,6 @@ class OtherCivilFixedFeeCalculatorTest {
 
     List<WarningCode> warningCodes = WarningCode.getByCategory(feeEntity.getCategoryType());
 
-    if (warningCodes.isEmpty()) {
-      throw new IllegalStateException("No error codes found for category: " + feeEntity.getCategoryType());
-    }
 
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
         .message(warningCodes.getFirst().getMessage())
