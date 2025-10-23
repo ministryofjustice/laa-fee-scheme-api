@@ -66,10 +66,9 @@ public class FamilyFixedFeeCalculator implements FeeCalculator {
 
     boolean isClaimEscaped = FeeCalculationUtil.isEscapedCase(finalTotal, feeEntity.getEscapeThresholdLimit());
 
-    List<ValidationMessagesInner> validationMessages = null;
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
     if (isClaimEscaped) {
-      validationMessages = new ArrayList<>();
       log.warn("Fee total exceeds escape threshold limit");
       validationMessages.add(ValidationMessagesInner.builder()
           .message(ESCAPE_CASE_WARNING_CODE_DESCRIPTION)

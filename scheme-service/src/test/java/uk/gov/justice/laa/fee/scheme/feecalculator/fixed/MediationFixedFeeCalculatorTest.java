@@ -3,7 +3,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MEDIATION;
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRMED1;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_MEDIATION_SESSIONS;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -144,8 +144,8 @@ class MediationFixedFeeCalculatorTest {
 
     assertThatThrownBy(() -> mediationFeeCalculator.calculate(feeCalculationRequest, feeEntity))
         .isInstanceOf(ValidationException.class)
-        .hasFieldOrPropertyWithValue("error", ERRMED1)
-        .hasMessage("Number of Mediation Sessions must be entered for this fee code");
+        .hasFieldOrPropertyWithValue("error", ERR_MEDIATION_SESSIONS)
+        .hasMessage("ERRMED1 - Number of Mediation Sessions must be entered for this fee code");
   }
 
   @Test
