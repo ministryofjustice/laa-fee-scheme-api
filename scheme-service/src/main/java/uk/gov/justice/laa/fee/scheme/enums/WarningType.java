@@ -17,8 +17,8 @@ public enum WarningType {
   WARN_CRIME_WAITING_COSTS("WARCRM2", "Cost not included. Waiting costs cannot be claimed with Fee Code used.",
       List.of("INVB1", "INVB2", "PROT", "PROU", "PROW")),
 
-  WARN_FAMILY_NET_PROFIT_COST("WARFAM1", "The claim exceeds the Escape Case Threshold." +
-                                         " An Escape Case Claim must be submitted for further costs to be paid.");
+  WARN_FAMILY_NET_PROFIT_COST("WARFAM1", "The claim exceeds the Escape Case Threshold."
+                                         + " An Escape Case Claim must be submitted for further costs to be paid.");
 
   WarningType(String code, String message) {
     this.code = code;
