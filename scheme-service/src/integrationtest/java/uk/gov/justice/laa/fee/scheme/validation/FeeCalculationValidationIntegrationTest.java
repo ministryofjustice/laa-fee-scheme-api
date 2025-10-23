@@ -350,7 +350,7 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
   })
   void shouldReturnValidationWarning_immigrationAndAsylumFixedFee(
       String feeCode,
-      String warningCode,
+      String warningType,
       String warningMessage,
       double totalAmount,
       double calculatedVatAmount,
@@ -388,7 +388,7 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                 }
             }
         }
-        """.formatted(feeCode, warningCode, warningMessage, totalAmount, calculatedVatAmount, requestedDisbursementAmount, disbursementAmount, fixedFeeAmount);
+        """.formatted(feeCode, warningType, warningMessage, totalAmount, calculatedVatAmount, requestedDisbursementAmount, disbursementAmount, fixedFeeAmount);
 
     mockMvc.perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)

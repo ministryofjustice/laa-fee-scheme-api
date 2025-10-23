@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.enums.WarningCode;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -60,12 +60,12 @@ class OtherCivilFixedFeeCalculatorTest {
     assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, true);
 
 
-    List<WarningCode> warningCodes = WarningCode.getByCategory(feeEntity.getCategoryType());
+    List<WarningType> warningTypes = WarningType.getByCategory(feeEntity.getCategoryType());
 
 
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
-        .message(warningCodes.getFirst().getMessage())
-        .code(warningCodes.getFirst().getCode())
+        .message(warningTypes.getFirst().getMessage())
+        .code(warningTypes.getFirst().getCode())
         .type(WARNING)
         .build();
 

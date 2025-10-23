@@ -24,11 +24,11 @@ public enum ErrorType {
   ERR_CRIME_UFN_MISSING("ERRCRM7", "Enter a UFN."),
   ERR_CRIME_UFN_DATE("ERRCRM1", "Fee Code is not valid for the Case Start Date."),
 
-  ERRIA1_IMM_ASYLUM_BETWEEN_DATE("ERRIA1", "For the Fee Code used, Case Start Date must be between 8 "
+  ERR_IMM_ASYLUM_BETWEEN_DATE("ERRIA1", "For the Fee Code used, Case Start Date must be between 8 "
       + "June 2020 and 31 Mar 2023.", Set.of("IACC", "IACD", "IMCC", "IMCD")),
-  ERRIA2_IMM_ASYLUM_BEFORE_DATE("ERRIA2", "For the Fee Code used, Case Start Date must be before  to "
+  ERR_IMM_ASYLUM_BEFORE_DATE("ERRIA2", "For the Fee Code used, Case Start Date must be before  to "
       + "1st April 2023", Set.of("IACA", "IACB", "IMCA", "IMCB")),
-  ERRIA3_IMM_ASYLUM_AFTER_DATE("ERRIA3", "For the Fee Code used, Case Start Date must be on or after "
+  ERR_IMM_ASYLUM_AFTER_DATE("ERRIA3", "For the Fee Code used, Case Start Date must be on or after "
       + "1st April 2023", Set.of("IACE", "IACF", "IMCE", "IMCF")),
 
   ERR_MEDIATION_SESSIONS("ERRMED1", "Number of Mediation Sessions must be entered for this fee code");

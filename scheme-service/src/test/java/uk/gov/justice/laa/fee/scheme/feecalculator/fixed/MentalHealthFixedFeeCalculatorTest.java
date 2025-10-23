@@ -20,7 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
-import uk.gov.justice.laa.fee.scheme.enums.WarningCode;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -208,8 +208,8 @@ class MentalHealthFixedFeeCalculatorTest {
       boolean hasEscaped = false;
       if (hasWarning) {
         ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
-            .message(WarningCode.WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD.getMessage())
-            .code(WarningCode.WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD.getCode())
+            .message(WarningType.WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD.getMessage())
+            .code(WarningType.WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD.getCode())
             .type(WARNING)
             .build();
         validationMessages.add(validationMessage);
