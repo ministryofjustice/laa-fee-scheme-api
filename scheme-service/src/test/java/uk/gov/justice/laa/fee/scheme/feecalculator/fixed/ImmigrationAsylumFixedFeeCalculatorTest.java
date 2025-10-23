@@ -7,7 +7,6 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLU
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_400_LEGAL_HELP;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_600_CLR;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningType.getMessageFromCode;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.fixed.ImmigrationAsylumFixedFeeCalculator.WARNING_MESSAGE_WARIA3;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
@@ -213,8 +212,8 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
       FeeCalculationResponse response = immigrationAsylumFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
       WarningType warning = "WARIA_1".equals(warningMessage)
-          ? getMessageFromCode(WARN_IMM_ASYLM_DISB_600_CLR)
-          : getMessageFromCode(WARN_IMM_ASYLM_DISB_400_LEGAL_HELP);
+          ? WARN_IMM_ASYLM_DISB_600_CLR
+          : WARN_IMM_ASYLM_DISB_400_LEGAL_HELP;
 
       ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
           .message(warning.getMessage())

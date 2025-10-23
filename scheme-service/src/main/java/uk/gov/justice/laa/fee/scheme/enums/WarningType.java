@@ -88,19 +88,6 @@ public enum WarningType {
   private final Set<String> feeCodes;
   private final CategoryType categoryType;
 
-
-  /**
-   * Helper to get enum by code safely.
-   */
-  public static WarningType getMessageFromCode(WarningType warning) {
-    for (WarningType e : values()) {
-      if (e.code.equalsIgnoreCase(warning.getCode())) {
-        return e;
-      }
-    }
-    throw new IllegalArgumentException("Unknown Escape Case Threshold code: " + warning.getCode());
-  }
-
   /**
    *  Helper to get all error codes for a given CategoryType.
    */
