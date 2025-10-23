@@ -1,6 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
 import static java.util.Objects.nonNull;
+import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.CASE_START_DATE;
+import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.REP_ORDER_DATE;
+import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.UFN;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -82,11 +85,11 @@ public final class FeeCalculationUtil {
    */
   public static ClaimStartDateType getFeeClaimStartDateType(CategoryType categoryType, FeeCalculationRequest feeCalculationRequest) {
     return switch (categoryType) {
-      case ASSOCIATED_CIVIL, POLICE_STATION, PRISON_LAW -> ClaimStartDateType.UFN;
+      case ASSOCIATED_CIVIL, POLICE_STATION, PRISON_LAW -> UFN;
       case MAGS_COURT_DESIGNATED, MAGS_COURT_UNDESIGNATED, YOUTH_COURT_DESIGNATED, YOUTH_COURT_UNDESIGNATED ->
-          ClaimStartDateType.REP_ORDER_DATE;
+          REP_ORDER_DATE;
       case ADVOCACY_APPEALS_REVIEWS -> getFeeClaimStartDateAdvocacyAppealsReviews(feeCalculationRequest);
-      default -> ClaimStartDateType.CASE_START_DATE;
+      default -> CASE_START_DATE;
     };
   }
 
@@ -114,10 +117,10 @@ public final class FeeCalculationUtil {
   private static ClaimStartDateType getFeeClaimStartDateAdvocacyAppealsReviews(FeeCalculationRequest feeCalculationRequest) {
     if (feeCalculationRequest.getFeeCode().equals("PROH") && nonNull(feeCalculationRequest.getRepresentationOrderDate())) {
       log.info("Determining fee start date for PROH, using Representation Order Date");
-      return ClaimStartDateType.REP_ORDER_DATE;
+      return REP_ORDER_DATE;
     } else {
       log.info("Determining fee start date, using Unique File Number");
-      return ClaimStartDateType.UFN;
+      return UFN;
     }
   }
 

@@ -48,15 +48,7 @@ class PoliceStationFixedFeeCalculatorTest {
   void test_whenPoliceStationClaimForInvoiceSubmitted_shouldReturnValidResponse() {
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("INVC")
-        .feeScheme(feeSchemesEntity)
-        .profitCostLimit(new BigDecimal("123.56"))
-        .fixedFee(new BigDecimal("200.56"))
-        .categoryType(POLICE_STATION)
-        .feeType(FeeType.FIXED)
-        .build();
+    FeeEntity feeEntity = buildFixedFeeEntity("INVC", feeSchemesEntity, new BigDecimal("200.56"),  new BigDecimal("123.56"));
 
     PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder()
         .psSchemeId("1004")
@@ -80,9 +72,7 @@ class PoliceStationFixedFeeCalculatorTest {
     when(policeStationFeesRepository.findPoliceStationFeeByPoliceStationIdAndFeeSchemeCode("NE001",
         "POL_FS2022")).thenReturn(List.of(policeStationFeesEntity));
 
-
     FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);
-
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(311.32)
@@ -105,22 +95,13 @@ class PoliceStationFixedFeeCalculatorTest {
         .build();
 
     assertThat(response).isEqualTo(expectedResponse);
-
   }
 
   @Test
   void test_whenPoliceStationClaimForInvoiceSubmitted_PoliceStationId_NotSupplied_shouldReturnValidResponse() {
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("INVC")
-        .feeScheme(feeSchemesEntity)
-        .profitCostLimit(new BigDecimal("123.56"))
-        .fixedFee(new BigDecimal("200.56"))
-        .categoryType(POLICE_STATION)
-        .feeType(FeeType.FIXED)
-        .build();
+    FeeEntity feeEntity = buildFixedFeeEntity("INVC", feeSchemesEntity, new BigDecimal("200.56"), new BigDecimal("123.56"));
 
     PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder()
         .psSchemeId("1004")
@@ -205,15 +186,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode(feeCode)
-        .feeScheme(feeSchemesEntity)
-        .profitCostLimit(profitCostLimit)
-        .fixedFee(fixedFee)
-        .categoryType(POLICE_STATION)
-        .feeType(FeeType.FIXED)
-        .build();
+    FeeEntity feeEntity = buildFixedFeeEntity(feeCode, feeSchemesEntity, new BigDecimal("200.56"), null);
 
     PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder()
         .psSchemeId(policeStationSchemeId)
@@ -281,15 +254,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode(feeCode)
-        .feeScheme(feeSchemesEntity)
-        .profitCostLimit(profitCostLimit)
-        .fixedFee(fixedFee)
-        .categoryType(POLICE_STATION)
-        .feeType(FeeType.FIXED)
-        .build();
+    FeeEntity feeEntity = buildFixedFeeEntity(feeCode, feeSchemesEntity, fixedFee, profitCostLimit);
 
     FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);
 
@@ -311,7 +276,6 @@ class PoliceStationFixedFeeCalculatorTest {
 
     assertThat(response).isEqualTo(expectedResponse);
   }
-
 
   @ParameterizedTest
   @MethodSource("testPoliceStationAttendanceClaimsForEscapeCases")
@@ -345,14 +309,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode(feeCode)
-        .feeScheme(feeSchemesEntity)
-        .fixedFee(new BigDecimal("999.99"))
-        .categoryType(POLICE_STATION)
-        .feeType(FeeType.FIXED)
-        .build();
+    FeeEntity feeEntity = buildFixedFeeEntity(feeCode, feeSchemesEntity, new BigDecimal("999.99"), null);
 
     PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder()
         .psSchemeId(policeStationSchemeId)
@@ -400,15 +357,7 @@ class PoliceStationFixedFeeCalculatorTest {
   void getPoliceStationFeesEntity_whenGivenInvalidPoliceStationId_shouldThrowException() {
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("INVC")
-        .feeScheme(feeSchemesEntity)
-        .profitCostLimit(new BigDecimal("123.56"))
-        .fixedFee(new BigDecimal("200.56"))
-        .categoryType(POLICE_STATION)
-        .feeType(FeeType.FIXED)
-        .build();
+    FeeEntity feeEntity = buildFixedFeeEntity("INVC", feeSchemesEntity, new BigDecimal("200.56"), new BigDecimal("123.56"));
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode("INVC")
@@ -435,15 +384,7 @@ class PoliceStationFixedFeeCalculatorTest {
   void getPoliceStationFeesEntity_whenGivenInvalidPoliceSchemeId_shouldThrowException() {
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("INVC")
-        .feeScheme(feeSchemesEntity)
-        .profitCostLimit(new BigDecimal("123.56"))
-        .fixedFee(new BigDecimal("200.56"))
-        .categoryType(POLICE_STATION)
-        .feeType(FeeType.FIXED)
-        .build();
+    FeeEntity feeEntity = buildFixedFeeEntity("INVC", feeSchemesEntity, new BigDecimal("200.56"), new BigDecimal("123.56"));
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode("INVC")
@@ -551,6 +492,17 @@ class PoliceStationFixedFeeCalculatorTest {
     return Arguments.of(testDescription, feeCode, policeStationId, policeStationSchemeId, uniqueFileNumber, vatIndicator,
         expectedTotal, fixedFee, profitCostLimit, feeSchemeCode, expectedCalculatedVat, disbursementAmount,
         disbursementVatAmount, fixedFeeAmount, travelAndWaitingCostAmount, netProfitCostsAmount);
+  }
+
+  private FeeEntity buildFixedFeeEntity(String feeCode, FeeSchemesEntity feeSchemesEntity, BigDecimal fixedFee, BigDecimal profitCostLimit) {
+    return FeeEntity.builder()
+        .feeCode(feeCode)
+        .feeScheme(feeSchemesEntity)
+        .fixedFee(fixedFee)
+        .profitCostLimit(profitCostLimit)
+        .categoryType(POLICE_STATION)
+        .feeType(FeeType.FIXED)
+        .build();
   }
 
 }

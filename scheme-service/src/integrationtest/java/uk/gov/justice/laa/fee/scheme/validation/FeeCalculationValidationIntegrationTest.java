@@ -225,6 +225,39 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
   }
 
   @Test
+  void shouldReturnValidationError_whenCrimeFeeCodeAndRepOrderDateIsInvalid() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "PROJ5",
+                  "claimId": "claim_123",
+                  "uniqueFileNumber": "010215/242",
+                  "representationOrderDate": "2015-02-01",
+                  "netDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json("""
+            {
+              "feeCode": "PROJ5",
+              "claimId": "claim_123",
+              "validationMessages": [
+                {
+                  "type":"ERROR",
+                  "code":"ERRCRM12",
+                  "message":"Fee Code is not valid for the Case Start Date."
+                }
+              ]
+            }
+            """, STRICT));
+  }
+
+  @Test
   void shouldReturnValidationWarning_whenCrimeFeeCodeAndNetTravelCosts() throws Exception {
     mockMvc.perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
