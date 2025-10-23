@@ -340,7 +340,7 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
   }
 
   @Test
-  void shouldReturnValidationError_whenFamilyAndLondonRateIsMissing() throws Exception {
+  void shouldReturnValidationError_whenFamilyFeeCodeAndLondonRateIsMissing() throws Exception {
     mockMvc
         .perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
