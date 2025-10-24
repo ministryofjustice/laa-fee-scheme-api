@@ -63,6 +63,9 @@ public enum WarningType {
   WARN_IMM_ASYLM_JR_FORM_FILLING("WARIA10", "Costs have been included. JR/ form filling costs should only"
                                      + " be completed for standard fee cases. Hourly rates costs should be reported in the Profit Costs."),
 
+  WARN_IMM_ASYLM_DISB_ONLY("WARIA11", "Costs have been included. JR/ form filling costs should only be completed "
+                                      + " for standard fee cases. Hourly rates costs should be reported in the Profit Costs."),
+
   WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD("WARMH1", "Mental Health escape case threshold", CategoryType.MENTAL_HEALTH),
 
   WARN_MISCELLANEOUS_ESCAPE_THRESHOLD("WAROTH9", "Other Civil - Miscellaneous escape case threshold", CategoryType.MISCELLANEOUS),
