@@ -123,8 +123,8 @@ VALUES ('MDPS2B', 'Property & Finance Sole -  2 parties eligible, no agreement',
        ('MDCC1S', 'Child only Co - 1 party eligible, with agreed proposal', 'FIXED', 4, 6)
  ON CONFLICT (fee_code) DO NOTHING;
  
- INSERT INTO fee_category_mapping (fee_code, fee_description, fee_type, fee_scheme_category_type_id, category_of_law_type_id)      
-       ('COM', 'Community Care Legal Help Fixed Fee', 'FIXED', 5, 18),
+INSERT INTO fee_category_mapping (fee_code, fee_description, fee_type, fee_scheme_category_type_id, category_of_law_type_id)
+VALUES ('COM', 'Community Care Legal Help Fixed Fee', 'FIXED', 5, 18),
        ('CAPA', 'Claims Against Public Authorities Legal Help Fixed Fee', 'FIXED', 6, 15),
        ('CLIN', 'Clinical Negligence Legal Help Fixed Fee', 'FIXED', 7, 10),
        ('DEBT', 'Debt Legal Help Fixed Fee', 'FIXED', 8, 19),
@@ -137,7 +137,7 @@ VALUES ('MDPS2B', 'Property & Finance Sole -  2 parties eligible, no agreement',
        ('MISCCON', 'Miscellaneous (Consumer) Legal Help Fixed Fee', 'FIXED', 13, 23),
        ('MISCPI', 'Miscellaneous (Personal Injury) Legal Help Fixed Fee', 'FIXED', 13, 23),
        ('MISCASBI', 'Miscellaneous (ASBI) Legal Help Fixed Fee', 'FIXED', 13, 23),
-       ('MISCEMP', 'Miscellaneous (Employment) Legal Help Fixed Fee', 'FIXED', 13, 23)
+       ('MISCEMP', 'Miscellaneous (Employment) Legal Help Fixed Fee', 'FIXED', 13, 23),
        ('PUB', 'Public Law Legal Help Fixed Fee', 'FIXED', 14, 9),
        ('WFB1', 'Welfare Benefits Controlled Work fee', 'FIXED', 15, 16)
 ON CONFLICT (fee_code) DO NOTHING;
@@ -184,7 +184,7 @@ ON CONFLICT (fee_code) DO NOTHING;
 
 INSERT INTO fee_category_mapping (fee_code, fee_description, fee_type, fee_scheme_category_type_id, category_of_law_type_id)
 VALUES ('PROL1', 'Representation in the Magistrates Court - category 1A -  higher standard fee - designated area', 'FIXED', 18, 3),
-       ('PROL2', 'Representation in the Magistrates Court - category 1B -  higher standard fee - designated area', 'FIXED', 18, 3)
+       ('PROL2', 'Representation in the Magistrates Court - category 1B -  higher standard fee - designated area', 'FIXED', 18, 3),
        ('PROL3', 'Representation in the Magistrates Court - category 2 -  higher standard fee - designated area',
               'FIXED', 18, 3),
        ('PROV1', 'Breach of part 1 injunctions under ASBCP Act - uncontested - lower standard fee', 'FIXED', 18, 3),

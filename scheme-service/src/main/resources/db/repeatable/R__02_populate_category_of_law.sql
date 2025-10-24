@@ -1,8 +1,8 @@
 INSERT INTO area_of_law_type
-(area_of_law_type_id, code, description)
-VALUES (1,'LEGAL_HELP', 'Legal Help'),
-       (2,'CRIME_LOWER', 'Crime Lower'),
-       (3,'MEDIATION', 'Mediation')
+(area_of_law_type_id, code, description, case_type)
+VALUES (1,'LEGAL_HELP', 'Legal Help', 'CIVIL'),
+       (2,'CRIME_LOWER', 'Crime Lower', 'CRIME'),
+       (3,'MEDIATION', 'Mediation', 'CIVIL')
 ON CONFLICT (code) DO NOTHING;
 
 INSERT INTO category_of_law_type (category_of_law_type_id, code, description, area_of_law_type_id)
