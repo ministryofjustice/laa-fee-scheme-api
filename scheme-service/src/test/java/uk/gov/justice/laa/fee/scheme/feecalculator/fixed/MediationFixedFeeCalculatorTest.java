@@ -99,7 +99,7 @@ class MediationFixedFeeCalculatorTest {
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(expectedTotal)
         .vatIndicator(vatIndicator)
-        .vatRateApplied(20.0)
+        .vatRateApplied(vatIndicator ? 20.0 : null)
         .disbursementAmount(expectedDisbursementAmount)
         .requestedNetDisbursementAmount(expectedDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)

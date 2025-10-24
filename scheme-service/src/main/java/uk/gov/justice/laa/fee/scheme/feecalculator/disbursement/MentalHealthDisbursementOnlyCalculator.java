@@ -55,14 +55,12 @@ public class MentalHealthDisbursementOnlyCalculator implements FeeCalculator {
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeScheme().getSchemeCode())
-        .escapeCaseFlag(Boolean.FALSE)
         .claimId(feeCalculationRequest.getClaimId())
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
-            .vatIndicator(Boolean.TRUE)
-            .disbursementAmount(toDouble(requestNetDisbursementAmount))
-            .requestedNetDisbursementAmount(toDouble(requestNetDisbursementAmount))
-            .disbursementVatAmount(toDouble(requestedDisbursementVatAmount))
+            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
             .build())
         .build();
   }

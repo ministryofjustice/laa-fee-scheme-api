@@ -8,6 +8,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmo
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -66,11 +67,11 @@ public class MagsYouthCourtFixedFeeCalculator implements FeeCalculator {
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
         .vatIndicator(vatApplicable)
-        .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+        .vatRateApplied(toDoubleOrNull(getVatRateForDate(startDate, vatApplicable)))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
-        .disbursementAmount(toDouble(requestedNetDisbursementAmount))
-        .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
-        .disbursementVatAmount(toDouble(requestedDisbursementVatAmount))
+        .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+        .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .build();
 
@@ -99,14 +100,14 @@ public class MagsYouthCourtFixedFeeCalculator implements FeeCalculator {
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
         .vatIndicator(vatApplicable)
-        .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+        .vatRateApplied(toDoubleOrNull(getVatRateForDate(startDate, vatApplicable)))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(toDouble(requestedNetDisbursementAmount))
         .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
         .disbursementVatAmount(toDouble(requestedDisbursementVatAmount))
         .fixedFeeAmount(toDouble(fixedFeeAmount))
-        .netWaitingCostsAmount(toDouble(requestedWaitingCosts))
-        .netTravelCostsAmount(toDouble(requestedTravelCosts))
+        .netWaitingCostsAmount(feeCalculationRequest.getNetWaitingCosts())
+        .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())
         .build();
 
     return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation);

@@ -116,7 +116,7 @@ class DiscriminationHourlyRateCalculatorTest {
     assertThat(calculation).isNotNull();
     assertThat(calculation.getTotalAmount()).isEqualTo(total);
     assertThat(calculation.getVatIndicator()).isEqualTo(vatIndicator);
-    assertThat(calculation.getVatRateApplied()).isEqualTo(20);
+    assertThat(calculation.getVatRateApplied()).isEqualTo(vatIndicator ? 20.0 : null);
     assertThat(calculation.getCalculatedVatAmount()).isEqualTo(expectedVat);
     assertThat(calculation.getNetProfitCostsAmount()).isEqualTo(netProfitCosts);
     assertThat(calculation.getRequestedNetProfitCostsAmount()).isEqualTo(netProfitCosts);
@@ -126,4 +126,5 @@ class DiscriminationHourlyRateCalculatorTest {
     assertThat(calculation.getDisbursementVatAmount()).isEqualTo(13.04);
     assertThat(calculation.getHourlyTotalAmount()).isEqualTo(expectedHourlyTotal);
   }
+
 }

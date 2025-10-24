@@ -292,7 +292,6 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "feeCalculation": {
                 "totalAmount": 28.7,
                 "vatIndicator": false,
-                "vatRateApplied": 20.00,
                 "calculatedVatAmount": 0,
                 "fixedFeeAmount": 28.7
               }
@@ -333,7 +332,6 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "feeCalculation": {
                 "totalAmount": 28.7,
                 "vatIndicator": false,
-                "vatRateApplied": 20.00,
                 "calculatedVatAmount": 0,
                 "fixedFeeAmount": 28.7
               }
@@ -382,10 +380,7 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                 "disbursementVatAmount": 70.12,
                 "fixedFeeAmount": %s,
                 "detentionTravelAndWaitingCostsAmount": 111.0,
-                "jrFormFillingAmount": 50.0,
-                "boltOnFeeDetails": {
-                    "boltOnTotalFeeAmount": 0.0
-                }
+                "jrFormFillingAmount": 50.0
             }
         }
         """.formatted(feeCode, warningType, warningMessage, totalAmount, calculatedVatAmount, requestedDisbursementAmount, disbursementAmount, fixedFeeAmount);

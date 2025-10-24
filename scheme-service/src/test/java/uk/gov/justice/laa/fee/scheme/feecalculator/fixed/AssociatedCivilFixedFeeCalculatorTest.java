@@ -39,7 +39,7 @@ class AssociatedCivilFixedFeeCalculatorTest {
 
     FeeCalculationResponse result = associatedCivilFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
-    assertFeeCalculation(result, expectedTotal, vatIndicator, netTravelCosts, netWaitingCosts, expectedVat, false);
+    assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, false);
   }
 
   @ParameterizedTest
@@ -56,7 +56,7 @@ class AssociatedCivilFixedFeeCalculatorTest {
 
     FeeCalculationResponse result = associatedCivilFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
-    assertFeeCalculation(result, expectedTotal, vatIndicator, netTravelCosts, netWaitingCosts, expectedVat, true);
+    assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, true);
 
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
         .message("123")
@@ -92,8 +92,8 @@ class AssociatedCivilFixedFeeCalculatorTest {
         .build();
   }
 
-  private void assertFeeCalculation(FeeCalculationResponse response, double total, boolean vatIndicator,
-                                    double netTravelCosts, double netWaitingCosts, double vat, boolean escapeFlag) {
+  private void assertFeeCalculation(FeeCalculationResponse response, double total, boolean vatIndicator, double vat,
+                                    boolean escapeFlag) {
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("ASMS");
     assertThat(response.getClaimId()).isEqualTo("claim_123");
@@ -104,13 +104,11 @@ class AssociatedCivilFixedFeeCalculatorTest {
     assertThat(feeCalculation).isNotNull();
     assertThat(feeCalculation.getTotalAmount()).isEqualTo(total);
     assertThat(feeCalculation.getVatIndicator()).isEqualTo(vatIndicator);
-    assertThat(feeCalculation.getVatRateApplied()).isEqualTo(20.0);
+    assertThat(feeCalculation.getVatRateApplied()).isEqualTo(vatIndicator ? 20.0 : null);
     assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(vat);
     assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(100.11);
     assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(100.11);
     assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.22);
-    assertThat(feeCalculation.getNetTravelCostsAmount()).isEqualTo(netTravelCosts);
-    assertThat(feeCalculation.getNetWaitingCostsAmount()).isEqualTo(netWaitingCosts);
     assertThat(feeCalculation.getFixedFeeAmount()).isEqualTo(50);
   }
 }

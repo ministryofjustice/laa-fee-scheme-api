@@ -8,6 +8,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRat
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -112,11 +113,11 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(claimStartDate)))
+            .vatRateApplied(toDoubleOrNull(getVatRateForDate(claimStartDate, vatApplicable)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(toDouble(requestedNetDisbursementAmount))
-            .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
-            .disbursementVatAmount(toDouble(disbursementVatAmount))
+            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
             .fixedFeeAmount(toDouble(fixedFee)).build())
         .build();
   }
@@ -132,10 +133,9 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
         .getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
 
     // Apply VAT where applicable
-    LocalDate startDate = feeCalculationRequest.getStartDate();
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
     BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
-    BigDecimal calculatedVatAmount = getVatAmount(fixedFee, startDate, vatApplicable);
+    BigDecimal calculatedVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
 
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee, calculatedVatAmount);
 
@@ -148,10 +148,8 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(claimStartDate)))
+            .vatRateApplied(toDoubleOrNull(getVatRateForDate(claimStartDate, vatApplicable)))
             .calculatedVatAmount(toDouble(fixedFeeVatAmount))
-            .vatRateApplied(toDouble(getVatRateForDate(startDate)))
-            .calculatedVatAmount(toDouble(calculatedVatAmount))
             .fixedFeeAmount(toDouble(fixedFee))
             .build()).build();
   }

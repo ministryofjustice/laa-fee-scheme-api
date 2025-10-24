@@ -122,10 +122,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                 "disbursementAmount": 55.35,
                 "requestedNetDisbursementAmount": 55.35,
                 "disbursementVatAmount": 11.07,
-                "fixedFeeAmount": 79.0,
-                "netProfitCostsAmount": 27.8,
-                "netTravelCostsAmount": 10.0,
-                "netWaitingCostsAmount": 11.5
+                "fixedFeeAmount": 79.0
                 }
               }
             """, STRICT));
@@ -535,7 +532,6 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
             "disbursementVatAmount": 24.67,
-            "netProfitCostsAmount": 239.06,
             "fixedFeeAmount": %s
           }
         }
@@ -590,11 +586,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
               "feeCalculation": {
                 "totalAmount": 131.40,
                 "vatIndicator": false,
-                "vatRateApplied": 20.00,
                 "calculatedVatAmount": 0,
-                "disbursementAmount": 0,
-                "requestedNetDisbursementAmount" : 0,
-                "disbursementVatAmount": 0,
                 "fixedFeeAmount": 131.40
               }
             }
@@ -653,10 +645,10 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
       "YOUK2, YOUTH_COURT_FS2024, 427.09, 46.51, 232.53",
   })
   void shouldGetFeeCalculation_designatedMagsOrYouthCourt(String feeCode,
-                                                    String schemeId,
-                                                    String expectedTotal,
-                                                    String expectedVatAmount,
-                                                    String fixedFeeAmount) throws Exception {
+                                                          String schemeId,
+                                                          String expectedTotal,
+                                                          String expectedVatAmount,
+                                                          String fixedFeeAmount) throws Exception {
     String expectedJson = """
         {
           "feeCode": "%s",
@@ -711,24 +703,24 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   ) throws Exception {
 
     String expectedJson = """
-      {
-        "feeCode": "%s",
-        "schemeId": "%s",
-        "claimId": "claim_123",
-        "feeCalculation": {
-          "totalAmount": %s,
-          "vatIndicator": true,
-          "vatRateApplied": 20.00,
-          "calculatedVatAmount": %s,
-          "disbursementAmount": 123.38,
-          "requestedNetDisbursementAmount": 123.38,
-          "disbursementVatAmount": 24.67,
-          "netWaitingCostsAmount": %s,
-          "netTravelCostsAmount": %s,
-          "fixedFeeAmount": %s
+        {
+          "feeCode": "%s",
+          "schemeId": "%s",
+          "claimId": "claim_123",
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": %s,
+            "disbursementAmount": 123.38,
+            "requestedNetDisbursementAmount": 123.38,
+            "disbursementVatAmount": 24.67,
+            "netWaitingCostsAmount": %s,
+            "netTravelCostsAmount": %s,
+            "fixedFeeAmount": %s
+          }
         }
-      }
-      """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, netWaitingCosts, netTravelCosts, fixedFeeAmount);
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, netWaitingCosts, netTravelCosts, fixedFeeAmount);
 
     mockMvc.perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
@@ -759,12 +751,12 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
       "APPB, AAR_FS2022, 354.0, 44.0, 220.0, 120.0, 120.0",
   })
   void shouldGetFeeCalculation_advocacyAppealsReview(String feeCode,
-                                                    String schemeId,
-                                                    String expectedTotal,
-                                                    String expectedVatAmount,
-                                                    String expectedHourlyTotalAmount,
-                                                    String netProfitCostsAmount,
-                                                    String requestedNetProfitCostsAmount
+                                                     String schemeId,
+                                                     String expectedTotal,
+                                                     String expectedVatAmount,
+                                                     String expectedHourlyTotalAmount,
+                                                     String netProfitCostsAmount,
+                                                     String requestedNetProfitCostsAmount
   ) throws Exception {
     String expectedJson = """
         {

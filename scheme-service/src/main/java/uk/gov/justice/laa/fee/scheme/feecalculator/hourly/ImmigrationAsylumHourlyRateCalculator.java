@@ -11,10 +11,12 @@ import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRI
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.checkLimitAndCapIfExceeded;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.filterBoltOnFeeDetails;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -131,7 +133,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     BigDecimal totalAmount = feeTotal.add(calculatedVatAmount).add(disbursementVatAmount);
 
     FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, calculatedVatAmount,
-        netDisbursementAmount, disbursementVatAmount, feeTotal, netProfitCosts, false, null);
+        netDisbursementAmount, feeTotal, netProfitCosts, false, null);
 
     return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, validationMessages, feeCalculation);
   }
@@ -171,7 +173,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     BigDecimal totalAmount = feeTotal.add(calculatedVatAmount).add(disbursementVatAmount);
 
     FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, calculatedVatAmount,
-        netDisbursementAmount, disbursementVatAmount, feeTotal, netProfitCosts, true, null);
+        netDisbursementAmount, feeTotal, netProfitCosts, true, null);
 
     return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, validationMessages, feeCalculation);
   }
@@ -224,7 +226,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     BigDecimal totalAmount = feeTotalWithBoltsOn.add(calculatedVatAmount).add(disbursementVatAmount);
 
     FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, calculatedVatAmount,
-        netDisbursementAmount, disbursementVatAmount, feeTotalWithBoltsOn, netProfitCosts, true, boltOnFeeDetails);
+        netDisbursementAmount, feeTotalWithBoltsOn, netProfitCosts, true, boltOnFeeDetails);
 
     return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, validationMessages, feeCalculation);
   }
@@ -281,7 +283,6 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
                                                     BigDecimal totalAmount,
                                                     BigDecimal calculatedVatAmount,
                                                     BigDecimal disbursementAmount,
-                                                    BigDecimal disbursementVatAmount,
                                                     BigDecimal hourlyTotalAmount,
                                                     BigDecimal netProfitCostsAmount,
                                                     boolean includeCostOfCounsel,
@@ -290,16 +291,17 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     return FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
         .vatIndicator(feeCalculationRequest.getVatIndicator())
-        .vatRateApplied(toDouble(VatUtil.getVatRateForDate(feeCalculationRequest.getStartDate())))
+        .vatRateApplied(toDoubleOrNull(VatUtil
+            .getVatRateForDate(feeCalculationRequest.getStartDate(), feeCalculationRequest.getVatIndicator())))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(toDouble(disbursementAmount))
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        .disbursementVatAmount(toDouble(disbursementVatAmount))
+        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .hourlyTotalAmount(toDouble(hourlyTotalAmount))
         .netProfitCostsAmount(toDouble(netProfitCostsAmount))
         .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
         .netCostOfCounselAmount(includeCostOfCounsel ? feeCalculationRequest.getNetCostOfCounsel() : null)
-        .boltOnFeeDetails(boltOnFeeDetails)
+        .boltOnFeeDetails(filterBoltOnFeeDetails(boltOnFeeDetails))
         .build();
   }
 }

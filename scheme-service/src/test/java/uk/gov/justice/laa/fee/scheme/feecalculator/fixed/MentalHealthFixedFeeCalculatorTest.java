@@ -3,7 +3,6 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MENTAL_HEALTH;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.fixed.MentalHealthFixedFeeCalculator.WARNING_MESSAGE_WARMH1;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -53,7 +52,7 @@ class MentalHealthFixedFeeCalculatorTest {
     return FeeCalculation.builder()
         .totalAmount(expectedTotal)
         .vatIndicator(vatIndicator)
-        .vatRateApplied(20.0)
+        .vatRateApplied(vatIndicator ? 20.0 : null)
         .disbursementAmount(50.50)
         .requestedNetDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
@@ -147,7 +146,6 @@ class MentalHealthFixedFeeCalculatorTest {
           .usingRecursiveComparison()
           .isEqualTo(expectedResponse);
     }
-
   }
 
   @Nested
