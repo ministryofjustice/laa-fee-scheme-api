@@ -10,24 +10,21 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 
 /**
  *  Entity to hold values returned from fee_category_mapping table.
  */
-
-@Entity
-@Table(name = "fee_category_mapping")
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Entity
 @Immutable
+@Table(name = "fee_category_mapping")
 public class FeeCategoryMappingEntity {
 
   @Id

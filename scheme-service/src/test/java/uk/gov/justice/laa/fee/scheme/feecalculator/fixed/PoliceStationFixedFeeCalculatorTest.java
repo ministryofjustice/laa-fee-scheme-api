@@ -377,7 +377,7 @@ class PoliceStationFixedFeeCalculatorTest {
     assertThatThrownBy(() -> policeStationFixedFeeCalculator.calculate(feeData, feeEntity))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CRIME_POLICE_STATION_ID)
-        .hasMessageContaining("ERRCRM3 - Enter a valid Police station ID, Court ID, or Prison ID.");
+        .hasMessage("ERRCRM3 - Enter a valid Police station ID, Court ID, or Prison ID.");
   }
 
   @Test
@@ -404,7 +404,7 @@ class PoliceStationFixedFeeCalculatorTest {
     assertThatThrownBy(() -> policeStationFixedFeeCalculator.calculate(feeData, feeEntity))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CRIME_POLICE_SCHEME_ID)
-        .hasMessageContaining("ERRCRM4 - Enter a valid Scheme ID.");
+        .hasMessage("ERRCRM4 - Enter a valid Scheme ID.");
   }
 
   @Test

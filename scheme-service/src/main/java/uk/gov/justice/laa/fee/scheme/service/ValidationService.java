@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.enums.AreaOfLawType;
+import uk.gov.justice.laa.fee.scheme.enums.CaseType;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
 import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
@@ -153,15 +153,15 @@ public class ValidationService {
   }
 
   private boolean isCivil(String feeCode) {
-    AreaOfLawType areaOfLaw = feeDetailsService.getAreaOfLaw(feeCode);
+    CaseType caseType = feeDetailsService.getCaseType(feeCode);
 
-    return areaOfLaw == AreaOfLawType.LEGAL_HELP || areaOfLaw == AreaOfLawType.MEDIATION;
+    return caseType == CaseType.CIVIL;
   }
 
   private boolean isCrime(String feeCode) {
-    AreaOfLawType areaOfLaw = feeDetailsService.getAreaOfLaw(feeCode);
+    CaseType caseType  = feeDetailsService.getCaseType(feeCode);
 
-    return areaOfLaw == AreaOfLawType.CRIME_LOWER;
+    return caseType == CaseType.CRIME;
   }
 
   private FeeEntity getFeeEntityForStartDate(List<FeeEntity> feeEntityList,

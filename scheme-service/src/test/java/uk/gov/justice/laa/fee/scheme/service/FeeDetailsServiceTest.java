@@ -16,7 +16,9 @@ import uk.gov.justice.laa.fee.scheme.entity.AreaOfLawTypeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.CategoryOfLawTypeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeCategoryMappingEntity;
 import uk.gov.justice.laa.fee.scheme.enums.AreaOfLawType;
+import uk.gov.justice.laa.fee.scheme.enums.CaseType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
+import uk.gov.justice.laa.fee.scheme.exception.CategoryCodeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponse;
 import uk.gov.justice.laa.fee.scheme.repository.FeeCategoryMappingRepository;
 
@@ -56,15 +58,17 @@ class FeeDetailsServiceTest {
     when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(any())).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> feeDetailsService.getFeeDetails(feeCode))
-        .hasMessageContaining(String.format("Category of law code not found for feeCode: %s", feeCode));
+        .isInstanceOf(CategoryCodeNotFoundException.class)
+        .hasMessage(String.format("Category of law code not found for feeCode: %s", feeCode));
 
   }
 
   @Test
-  void getAreaOfLaw_shouldReturnExpectedAreaOfLaw() {
+  void getCaseType_shouldReturnExpectedCaseType() {
     String feeCode = "FEE123";
 
-    AreaOfLawTypeEntity areaOfLawTypeEntity = AreaOfLawTypeEntity.builder().code(AreaOfLawType.LEGAL_HELP).build();
+    AreaOfLawTypeEntity areaOfLawTypeEntity = AreaOfLawTypeEntity.builder()
+        .code(AreaOfLawType.LEGAL_HELP).caseType(CaseType.CIVIL).build();
     CategoryOfLawTypeEntity categoryOfLawType = CategoryOfLawTypeEntity.builder()
         .code("AAP").areaOfLawType(areaOfLawTypeEntity).build();
 
@@ -73,19 +77,20 @@ class FeeDetailsServiceTest {
 
     when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(feeCode)).thenReturn(Optional.of(feeCategoryMappingEntity));
 
-    AreaOfLawType result = feeDetailsService.getAreaOfLaw(feeCode);
+    CaseType result = feeDetailsService.getCaseType(feeCode);
 
-    assertThat(result).isEqualTo(AreaOfLawType.LEGAL_HELP);
+    assertThat(result).isEqualTo(CaseType.CIVIL);
   }
 
   @Test
-  void getAreaOfLaw_shouldReturnExceptionCategoryOfLawNotFound() {
+  void getCaseType_shouldThrowExceptionCategoryOfLawNotFound() {
     String feeCode = "FEE123";
 
     when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(any())).thenReturn(Optional.empty());
 
-    assertThatThrownBy(() -> feeDetailsService.getAreaOfLaw(feeCode))
-        .hasMessageContaining(String.format("Category of law code not found for feeCode: %s", feeCode));
+    assertThatThrownBy(() -> feeDetailsService.getCaseType(feeCode))
+        .isInstanceOf(CategoryCodeNotFoundException.class)
+        .hasMessage(String.format("Category of law code not found for feeCode: %s", feeCode));
 
   }
 }
