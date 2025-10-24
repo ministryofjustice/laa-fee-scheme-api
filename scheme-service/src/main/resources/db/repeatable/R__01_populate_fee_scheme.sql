@@ -117,6 +117,12 @@ VALUES ('POL_FS2016', 'Police Station Work 2016', '2016-04-01', NULL),
 ON CONFLICT (scheme_code) DO NOTHING;
 /** '2028-08-04' set temporarily, Valid from date needs to be updated once it is confirmed **/
 
+-- Fee Scheme for 'Pre Order Cover' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('POC_FS2016', 'Pre Order Cover Fee Scheme 2016', '2016-04-01', '2022-09-29'),
+    ('POC_FS2022', 'Pre Order Cover Fee Scheme 2022', '2022-09-30', NULL)
+ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Prison Law' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
