@@ -8,7 +8,6 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGS_COURT_DESIGNATED;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_ONLY;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -199,37 +198,12 @@ class FeeCalculationUtilTest {
     assertThat(validationMessages).isEqualTo(expectedMessages);
   }
 
-  @ParameterizedTest
-  @MethodSource("limitTestData2")
-  void checkLimitAndCapIfExceeded_returnsResult2(BigDecimal amount, String authority, BigDecimal expectedAmount,
-                                                List<ValidationMessagesInner> expectedMessages) {
-
-    LimitContextNew limitContext = new LimitContextNew(LimitType.TOTAL, new BigDecimal("100"), authority, WARN_IMM_ASYLM_DISB_ONLY);
-    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-
-    BigDecimal result = FeeCalculationUtil.checkLimitAndCapIfExceeded(amount, limitContext, validationMessages);
-
-    assertThat(result).isEqualTo(expectedAmount);
-
-    assertThat(validationMessages).isEqualTo(expectedMessages);
-  }
-
   public static Stream<Arguments> limitTestData() {
     return Stream.of(
         arguments(new BigDecimal("90"), null, new BigDecimal("90"), List.of()),
         arguments(new BigDecimal("200"), "priorAuth", new BigDecimal("200"), List.of()),
         arguments(new BigDecimal("200"), null, new BigDecimal("100"),
             List.of(ValidationMessagesInner.builder().type(WARNING).message("Warning message").build()))
-    );
-  }
-
-  public static Stream<Arguments> limitTestData2() {
-    return Stream.of(
-        arguments(new BigDecimal("90"), null, new BigDecimal("90"), List.of()),
-        arguments(new BigDecimal("200"), "priorAuth", new BigDecimal("200"), List.of()),
-        arguments(new BigDecimal("200"), null, new BigDecimal("100"),
-            List.of(ValidationMessagesInner.builder()
-                .type(WARNING).code(WARN_IMM_ASYLM_DISB_ONLY.getCode()).message(WARN_IMM_ASYLM_DISB_ONLY.getMessage()).build()))
     );
   }
 }
