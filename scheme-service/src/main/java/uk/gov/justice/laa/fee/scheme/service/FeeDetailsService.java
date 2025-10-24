@@ -44,7 +44,7 @@ public class FeeDetailsService {
    * Get case type based on given fee code.
    *
    * @param feeCode the fee code
-   * @return the case ty[e
+   * @return the case type
    * @throws CategoryCodeNotFoundException category law not found
    */
   public CaseType getCaseType(String feeCode) {
