@@ -33,7 +33,6 @@ VALUES (1,'CRIME', 'Crime', 2),
        (25,'RESIDUAL', 'Residual List', 1)
 ON CONFLICT (code) DO NOTHING;
 
-
 INSERT INTO fee_scheme_category_type (fee_scheme_category_type_id, fee_scheme_category_name)
 VALUES (1,'Immigration & Asylum'),
        (2,'Mental Health'),

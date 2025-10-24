@@ -9,23 +9,21 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 
 /**
  *  Entity to hold values returned from category_of_law_type table.
  */
 
-@Entity
-@Table(name = "category_of_law_type")
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Entity
 @Immutable
+@Table(name = "category_of_law_type")
 public class CategoryOfLawTypeEntity {
 
   @Id
