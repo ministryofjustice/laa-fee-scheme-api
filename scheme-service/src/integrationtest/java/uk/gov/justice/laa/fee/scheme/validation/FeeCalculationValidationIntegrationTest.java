@@ -105,8 +105,8 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                 {
                   "feeCode": "INVC",
                   "claimId": "claim_123",
-                  "startDate": "2023-12-12",
-                  "uniqueFileNumber": "121223/242",
+                  "startDate": "2012-12-12",
+                  "uniqueFileNumber": "121212/242",
                   "policeStationId": "NE001",
                   "policeStationSchemeId": "1001",
                   "vatIndicator": false
