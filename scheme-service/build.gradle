@@ -46,14 +46,34 @@ jacocoTestCoverageVerification {
     }
 }
 
-integrationTest {
+sourceSets {
+    integrationTest {
+        java.srcDir file('src/integrationtest/java')
+        resources.srcDir file('src/integrationtest/resources')
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+        runtimeClasspath += output + compileClasspath
+    }
+}
+
+tasks.named('processIntegrationTestResources', Copy) {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+tasks.named('integrationTest', Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
     shouldRunAfter test
 }
 
 check.dependsOn integrationTest
-
 check.dependsOn jacocoTestCoverageVerification
-
 
 dependencyManagement {
     dependencies {
@@ -63,7 +83,6 @@ dependencyManagement {
         }
     }
 }
-
 
 dependencies {
     implementation project(':scheme-api')

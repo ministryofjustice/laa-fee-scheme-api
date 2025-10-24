@@ -90,7 +90,7 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(feeCalculationRequest.getVatIndicator())
-            .vatRateApplied(toDoubleOrNull(VatUtil.getVatRateForDate(feeCalculationRequest.getStartDate(), vatApplicable)))
+            .vatRateApplied(toDoubleOrNull(VatUtil.getVatRateForDate(claimStartDate, vatApplicable)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             // disbursement not capped, so requested and calculated will be same
