@@ -6,6 +6,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRat
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -83,16 +84,16 @@ public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+            .vatRateApplied(toDoubleOrNull(getVatRateForDate(startDate, vatApplicable)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(toDouble(requestedNetDisbursementAmount))
-            .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
-            .disbursementVatAmount(toDouble(requestedNetDisbursementVatAmount))
+            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
             .hourlyTotalAmount(toDouble(profitAndAdditionalCosts))
-            .netProfitCostsAmount(toDouble(requestedNetProfitCosts))
-            .requestedNetProfitCostsAmount(toDouble(requestedNetProfitCosts))
-            .netWaitingCostsAmount(toDouble(requestedWaitingCosts))
-            .netTravelCostsAmount(toDouble(requestedTravelCosts))
+            .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+            .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+            .netWaitingCostsAmount(feeCalculationRequest.getNetWaitingCosts())
+            .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())
             .build())
         .build();
   }

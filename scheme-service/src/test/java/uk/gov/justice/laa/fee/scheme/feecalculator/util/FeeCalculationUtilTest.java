@@ -26,6 +26,7 @@ import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.LimitType;
+import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
@@ -205,5 +206,25 @@ class FeeCalculationUtilTest {
         arguments(new BigDecimal("200"), null, new BigDecimal("100"),
             List.of(ValidationMessagesInner.builder().type(WARNING).message("Warning message").build()))
     );
+  }
+
+  @Test
+  void filterBoltOnFeeDetails_andNullForRequest() {
+    BoltOnFeeDetails boltOnFeeDetails = BoltOnFeeDetails.builder()
+        .boltOnTotalFeeAmount(null)
+        .boltOnAdjournedHearingCount(null)
+        .boltOnAdjournedHearingFee(null)
+        .boltOnCmrhOralCount(null)
+        .boltOnCmrhOralFee(null)
+        .boltOnCmrhTelephoneCount(null)
+        .boltOnCmrhTelephoneFee(null)
+        .boltOnHomeOfficeInterviewCount(null)
+        .boltOnHomeOfficeInterviewFee(null)
+        .boltOnSubstantiveHearingFee(null)
+        .build();
+
+    BoltOnFeeDetails boltOnFeeDetailResponse = FeeCalculationUtil.filterBoltOnFeeDetails(boltOnFeeDetails);
+
+    assertThat(boltOnFeeDetailResponse).isNull();
   }
 }

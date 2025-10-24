@@ -4,11 +4,13 @@ import static uk.gov.justice.laa.fee.scheme.enums.LimitType.DISBURSEMENT;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_400_LEGAL_HELP;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_600_CLR;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.checkLimitAndCapIfExceeded;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.filterBoltOnFeeDetails;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -38,17 +40,17 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @Component
 public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator {
 
-  @Override
-  public Set<CategoryType> getSupportedCategories() {
-    return Set.of(); // Only used by ImmigrationAsylumFeeCalculator and not available via FeeCalculatorFactory
-  }
-
   private static final Set<String> FEE_CODES_NO_DISBURSEMENT_LIMIT_AND_NO_ESCAPE = Set.of("IDAS1", "IDAS2");
   private static final Set<String> FEE_CODES_WITH_SUBSTANTIVE_HEARING = Set.of("IACB", "IACC", "IACF", "IMCB", "IMCC", "IMCD");
   private static final Set<String> NO_COUNSEL_FEE_CODES = Set.of("IALB", "IMLB");
   // @TODO: TBC during error and validation work, and likely moved to common util
   public static final String WARNING_MESSAGE_WARIA3 = "The claim exceeds the Escape Case Threshold. An Escape Case "
       + "Claim must be submitted for further costs to be paid. ";
+
+  @Override
+  public Set<CategoryType> getSupportedCategories() {
+    return Set.of(); // Only used by ImmigrationAsylumFeeCalculator and not available via FeeCalculatorFactory
+  }
 
   /**
    * Calculated fee for Immigration and asylum fee based on the provided fee entity and fee calculation request.
@@ -118,15 +120,15 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+            .vatRateApplied(toDoubleOrNull(getVatRateForDate(startDate, vatApplicable)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
-            .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
-            .disbursementVatAmount(toDouble(requestedDisbursementVatAmount))
+            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
             .fixedFeeAmount(toDouble(fixedFeeAmount))
-            .detentionTravelAndWaitingCostsAmount(toDouble(requestedDetentionTravelAndWaitingCosts))
-            .jrFormFillingAmount(toDouble(requestedJrFormFillingCosts))
-            .boltOnFeeDetails(boltOnFeeDetails)
+            .detentionTravelAndWaitingCostsAmount(feeCalculationRequest.getDetentionTravelAndWaitingCosts())
+            .jrFormFillingAmount(feeCalculationRequest.getJrFormFilling())
+            .boltOnFeeDetails(filterBoltOnFeeDetails(boltOnFeeDetails))
             .build())
         .build();
   }
@@ -162,7 +164,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
           .type(WARNING)
           .build());
       return true;
-    } else  {
+    } else {
       log.warn("Case has not escaped");
       return false;
     }

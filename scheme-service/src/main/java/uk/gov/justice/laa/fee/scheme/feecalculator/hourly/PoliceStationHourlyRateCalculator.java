@@ -3,6 +3,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -89,17 +90,17 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(feeCalculationRequest.getVatIndicator())
-            .vatRateApplied(toDouble(VatUtil.getVatRateForDate(feeCalculationRequest.getStartDate())))
+            .vatRateApplied(toDoubleOrNull(VatUtil.getVatRateForDate(feeCalculationRequest.getStartDate(), vatApplicable)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(toDouble(netDisbursementAmount))
+            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             // disbursement not capped, so requested and calculated will be same
-            .requestedNetDisbursementAmount(toDouble(netDisbursementAmount))
-            .disbursementVatAmount(toDouble(disbursementVatAmount))
+            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
             .hourlyTotalAmount(toDouble(feeTotal))
-            .travelAndWaitingCostAmount(toDouble(travelAndWaitingExpenses))
-            .netProfitCostsAmount(toDouble(netProfitCosts))
+            .travelAndWaitingCostAmount(feeCalculationRequest.getTravelAndWaitingCosts())
+            .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
             // net profit cost not capped, so requested and calculated will be same
-            .requestedNetProfitCostsAmount(toDouble(netProfitCosts))
+            .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
             .build())
         .build();
   }

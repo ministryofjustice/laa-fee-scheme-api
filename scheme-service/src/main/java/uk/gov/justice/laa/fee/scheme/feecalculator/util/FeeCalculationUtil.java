@@ -16,6 +16,7 @@ import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
+import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.util.DateUtil;
@@ -189,5 +190,15 @@ public final class FeeCalculationUtil {
     return limitContext.limit() != null
         && amount.compareTo(limitContext.limit()) > 0
         && StringUtils.isBlank(limitContext.authority());
+  }
+
+  /**
+   * If bolts ons are null, return null for request.
+   */
+  public static BoltOnFeeDetails filterBoltOnFeeDetails(BoltOnFeeDetails boltOnFeeDetails) {
+    if (boltOnFeeDetails == null || boltOnFeeDetails.getBoltOnTotalFeeAmount() == null) {
+      return null;
+    }
+    return boltOnFeeDetails;
   }
 }

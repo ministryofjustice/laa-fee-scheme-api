@@ -46,14 +46,12 @@ class EducationDisbursementOnlyCalculatorTest {
         .disbursementAmount(1200.0)
         .requestedNetDisbursementAmount(1200.0)
         .disbursementVatAmount(150.0)
-        .vatIndicator(Boolean.TRUE)
         .build();
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode("EDUDIS")
         .schemeId("EDU_FS2013")
         .claimId("claim_123")
-        .escapeCaseFlag(Boolean.FALSE)
         .feeCalculation(expectedCalculation)
         .build();
 

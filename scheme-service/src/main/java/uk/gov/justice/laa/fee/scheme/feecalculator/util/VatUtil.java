@@ -34,18 +34,20 @@ public final class VatUtil {
       return BigDecimal.ZERO;
     }
 
-    BigDecimal rate = getVatRateForDate(startDate);
+    BigDecimal rate = getVatRateForDate(startDate, vatIndicator);
     return calculateVatAmount(value, rate);
   }
 
   /**
    * Retrieves the VAT rate for the date.
    */
-  public static BigDecimal getVatRateForDate(LocalDate startDate) {
+  public static BigDecimal getVatRateForDate(LocalDate startDate, boolean vatIndicator) {
+    if (!vatIndicator) {
+      return BigDecimal.ZERO;
+    }
+
     BigDecimal vatRate = VAT_RATES.floorEntry(startDate).getValue();
-
     log.info("Retrieved VAT Rate: {}", vatRate);
-
     return vatRate;
   }
 
