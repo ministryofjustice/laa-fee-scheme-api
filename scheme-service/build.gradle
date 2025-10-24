@@ -5,7 +5,7 @@ plugins {
 }
 
 def versions = [
-        sentry: '8.23.0'
+        sentry 						: '8.23.0'
 ]
 
 test {
@@ -16,11 +16,7 @@ test {
 jacocoTestReport {
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: [
-                    '**/FeeSchemeApplication.class',
-                    '**/config/**',
-                    '**/enums/**'
-            ])
+            fileTree(dir: it, exclude: ['**/FeeSchemeApplication.class', '**/config/**', '**/enums/**'])
         }))
     }
 }
@@ -29,11 +25,7 @@ jacocoTestCoverageVerification {
     dependsOn jacocoTestReport
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: [
-                    '**/FeeSchemeApplication.class',
-                    '**/config/**',
-                    '**/enums/**'
-            ])
+            fileTree(dir: it, exclude: ['**/FeeSchemeApplication.class', '**/config/**', '**/enums/**'])
         }))
     }
 
@@ -103,12 +95,14 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
 
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.13'
+
     implementation 'org.apache.commons:commons-lang3:3.19.0'
 
     implementation 'uk.gov.laa.springboot:laa-spring-boot-starter-auth'
 
     implementation 'org.postgresql:postgresql:42.7.8'
 
+// https://mvnrepository.com/artifact/org.flywaydb/flyway-core
     implementation 'org.flywaydb:flyway-core:11.14.1'
     implementation 'org.flywaydb:flyway-database-postgresql:11.14.1'
 
@@ -117,6 +111,7 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
     testImplementation 'org.testcontainers:junit-jupiter:1.21.3'
     testImplementation 'org.testcontainers:postgresql:1.21.3'
     // CVE-2024-25710
