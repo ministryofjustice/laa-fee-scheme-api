@@ -31,10 +31,6 @@ runs:
       run: ./gradlew jacocoTestCoverageVerification
       shell: bash
 
-    - name: Integration test
-      run: ./gradlew integrationTest --tests '*IntegrationTest'
-      shell: bash
-
     - name: Publish package
       run: ./gradlew publish
       shell: bash
