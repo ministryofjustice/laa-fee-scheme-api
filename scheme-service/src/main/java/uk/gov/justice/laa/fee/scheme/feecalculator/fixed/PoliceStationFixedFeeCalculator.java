@@ -81,7 +81,6 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
     // Apply VAT where applicable
-    LocalDate startDate = feeCalculationRequest.getStartDate();
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
     LocalDate claimStartDate = FeeCalculationUtil
         .getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
@@ -113,7 +112,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDouble(getVatRateForDate(startDate)))
+            .vatRateApplied(toDouble(getVatRateForDate(claimStartDate)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDouble(requestedNetDisbursementAmount))
             .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
