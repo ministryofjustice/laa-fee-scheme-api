@@ -113,8 +113,10 @@ VALUES ('POL_FS2016', 'Police Station Work 2016', '2016-04-01', NULL),
        ('POL_FS2021', 'Police Station Work 2021', '2021-06-07', NULL),
        ('POL_FS2022', 'Police Station Work 2022', '2022-09-30', NULL),
        ('POL_FS2024', 'Police Station Work 2024', '2024-12-06', NULL),
-       ('TBD', 'Police Station Work -TBD', '2025-08-04', NULL)
+       ('TBD', 'Police Station Work -TBD', '2028-08-04', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
+/** '2028-08-04' set temporarily, Valid from date needs to be updated once it is confirmed **/
+
 
 -- Fee Scheme for 'Prison Law' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
