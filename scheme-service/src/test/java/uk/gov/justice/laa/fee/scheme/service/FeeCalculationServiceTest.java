@@ -9,7 +9,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLU
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,6 +23,7 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.ImmigrationAsylumFeeCalculato
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
 class FeeCalculationServiceTest {

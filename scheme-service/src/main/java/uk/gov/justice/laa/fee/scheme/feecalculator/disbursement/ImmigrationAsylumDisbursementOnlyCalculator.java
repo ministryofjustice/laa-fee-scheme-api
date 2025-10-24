@@ -53,8 +53,8 @@ public class ImmigrationAsylumDisbursementOnlyCalculator {
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .disbursementAmount(toDouble(netDisbursementAmount))
-            .requestedNetDisbursementAmount(toDouble(requestedNetDisbursementAmount))
-            .disbursementVatAmount(toDouble(requestedNetDisbursementVatAmount))
+            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
             .build())
         .build();
   }
