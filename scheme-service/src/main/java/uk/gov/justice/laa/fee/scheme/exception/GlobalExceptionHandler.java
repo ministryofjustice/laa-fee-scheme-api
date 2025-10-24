@@ -14,7 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import uk.gov.justice.laa.fee.scheme.enums.ValidationError;
+import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
@@ -65,16 +65,16 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(ValidationException.class)
   public ResponseEntity<FeeCalculationResponse> handleValidationException(ValidationException ex) {
-    ValidationError error = ex.getError();
+    ErrorType error = ex.getError();
     FeeContext context = ex.getContext();
 
-    log.error("Validation error with code: {} and message: {} :: {feeCode={}, startDate={}}",
-        ex.getError().name(), ex.getMessage(), context.feeCode(), context.startDate(), ex);
+    log.error("Validation error with message: {} :: {feeCode={}, startDate={}}",
+        ex.getMessage(), context.feeCode(), context.startDate(), ex);
 
     ValidationMessagesInner validationMessages = ValidationMessagesInner.builder()
         .type(ERROR)
-        .code(error.name())
-        .message(error.getErrorMessage()).build();
+        .code(error.getCode())
+        .message(error.getMessage()).build();
 
     FeeCalculationResponse feeCalculationResponse = FeeCalculationResponse.builder()
         .feeCode(context.feeCode())

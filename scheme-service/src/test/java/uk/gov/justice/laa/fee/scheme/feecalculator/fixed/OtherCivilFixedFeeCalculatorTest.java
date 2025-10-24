@@ -5,6 +5,7 @@ import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEn
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -13,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -57,8 +59,13 @@ class OtherCivilFixedFeeCalculatorTest {
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, true);
 
+
+    List<WarningType> warningTypes = WarningType.getByCategory(feeEntity.getCategoryType());
+
+
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
-        .message("123")
+        .message(warningTypes.getFirst().getMessage())
+        .code(warningTypes.getFirst().getCode())
         .type(WARNING)
         .build();
 
