@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MEDIATION;
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRMED1;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
@@ -16,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
 import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
@@ -64,7 +64,7 @@ public class MediationFixedFeeCalculator implements FeeCalculator {
     Integer numberOfMediationSessions = feeCalculationRequest.getNumberOfMediationSessions();
     if (numberOfMediationSessions == null || numberOfMediationSessions <= 0) {
       log.info("numberOfMediationSessions is invalid");
-      throw new ValidationException(ERRMED1, new FeeContext(feeCalculationRequest));
+      throw new ValidationException(ErrorType.ERR_MEDIATION_SESSIONS, new FeeContext(feeCalculationRequest));
     }
 
     BigDecimal baseFee = (numberOfMediationSessions == 1) ? feeEntity.getMediationFeeLower() : feeEntity.getMediationFeeHigher();

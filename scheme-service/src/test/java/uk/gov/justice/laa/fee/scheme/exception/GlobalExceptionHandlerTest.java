@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.justice.laa.fee.scheme.enums.ValidationError.ERRALL1;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.ERROR;
 
 import java.time.LocalDate;
@@ -78,7 +78,7 @@ class GlobalExceptionHandlerTest {
   @Test
   void handleValidationException() {
     FeeContext feeContext = new FeeContext("FEE123", LocalDate.of(2020, 3, 1), "SchemeOne", "claim_123");
-    ValidationException exception = new ValidationException(ERRALL1, feeContext);
+    ValidationException exception = new ValidationException(ERR_ALL_FEE_CODE, feeContext);
 
     ResponseEntity<FeeCalculationResponse> response = globalExceptionHandler.handleValidationException(exception);
 

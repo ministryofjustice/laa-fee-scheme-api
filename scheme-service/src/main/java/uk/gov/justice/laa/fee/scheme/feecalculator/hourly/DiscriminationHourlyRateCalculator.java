@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
@@ -63,7 +64,8 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
     if (isEscaped) {
       log.warn("Fee total exceeds escape threshold limit");
       validationMessages.add(ValidationMessagesInner.builder()
-          .message(WARNING_CODE_DESCRIPTION)
+          .message(WarningType.WARN_DISCRIMINATION_ESCAPE_THRESHOLD.getMessage())
+          .code(WarningType.WARN_DISCRIMINATION_ESCAPE_THRESHOLD.getCode())
           .type(WARNING)
           .build());
       feeTotal = escapeThresholdLimit;

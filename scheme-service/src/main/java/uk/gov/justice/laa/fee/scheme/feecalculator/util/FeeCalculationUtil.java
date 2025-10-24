@@ -1,6 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
 import static java.util.Objects.nonNull;
+import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.CASE_START_DATE;
+import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.REP_ORDER_DATE;
+import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.UFN;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -10,7 +13,9 @@ import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
@@ -49,8 +54,8 @@ public final class FeeCalculationUtil {
   /**
    * Check if amount exceeds limit without authority and cap to limit if exceeded.
    *
-   * @param amount          the amount to check
-   * @param limitContext    the limit context containing limit details
+   * @param amount             the amount to check
+   * @param limitContext       the limit context containing limit details
    * @param validationMessages the list to add validation messages to
    * @return the capped amount if limit exceeded without authority, otherwise the original amount
    */
@@ -73,6 +78,53 @@ public final class FeeCalculationUtil {
     return amount;
   }
 
+  // TODO replace checkLimitAndCapIfExceeded, once warnings are done
+  /**
+   * Check if amount exceeds limit without authority and cap to limit if exceeded.
+   *
+   * @param amount          the amount to check
+   * @param limitContext    the limit context containing limit details
+   * @param validationMessages the list to add validation messages to
+   * @return the capped amount if limit exceeded without authority, otherwise the original amount
+   */
+  public static BigDecimal checkLimitAndCapIfExceeded(BigDecimal amount, LimitContextNew limitContext,
+                                                      List<ValidationMessagesInner> validationMessages) {
+    log.info("Check {} is below limit for fee calculation", limitContext.limitType().getDisplayName());
+    BigDecimal limit = limitContext.limit();
+
+    if (isOverLimitWithoutAuthority(amount, limitContext)) {
+      log.warn("{} limit exceeded without prior authority capping to limit: {}",
+          limitContext.limitType().getDisplayName(), limitContext.limit());
+
+      WarningType warning = limitContext.warning();
+      validationMessages.add(ValidationMessagesInner.builder()
+          .message(warning.getMessage())
+          .code(warning.getCode())
+          .type(WARNING)
+          .build());
+
+      return limit;
+    }
+    return amount;
+  }
+
+  /**
+   * Return appropriate date based on Category Type of the claim request.
+   *
+   * @param categoryType          CategoryType
+   * @param feeCalculationRequest FeeCalculationRequest
+   * @return LocalDate
+   */
+  public static ClaimStartDateType getFeeClaimStartDateType(CategoryType categoryType, FeeCalculationRequest feeCalculationRequest) {
+    return switch (categoryType) {
+      case ASSOCIATED_CIVIL, POLICE_STATION, PRISON_LAW -> UFN;
+      case MAGS_COURT_DESIGNATED, MAGS_COURT_UNDESIGNATED, YOUTH_COURT_DESIGNATED, YOUTH_COURT_UNDESIGNATED ->
+          REP_ORDER_DATE;
+      case ADVOCACY_APPEALS_REVIEWS -> getFeeClaimStartDateAdvocacyAppealsReviews(feeCalculationRequest);
+      default -> CASE_START_DATE;
+    };
+  }
+
   /**
    * Return appropriate date based on Category Type of the claim request.
    *
@@ -81,12 +133,11 @@ public final class FeeCalculationUtil {
    * @return LocalDate
    */
   public static LocalDate getFeeClaimStartDate(CategoryType categoryType, FeeCalculationRequest feeCalculationRequest) {
-    return switch (categoryType) {
-      case ASSOCIATED_CIVIL, POLICE_STATION, PRISON_LAW ->
-          DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
-      case MAGS_COURT_DESIGNATED, MAGS_COURT_UNDESIGNATED, YOUTH_COURT_DESIGNATED, YOUTH_COURT_UNDESIGNATED ->
-          feeCalculationRequest.getRepresentationOrderDate();
-      case ADVOCACY_APPEALS_REVIEWS -> getFeeClaimStartDateAdvocacyAppealsReviews(feeCalculationRequest);
+    ClaimStartDateType claimStartDateType = getFeeClaimStartDateType(categoryType, feeCalculationRequest);
+
+    return switch (claimStartDateType) {
+      case REP_ORDER_DATE -> feeCalculationRequest.getRepresentationOrderDate();
+      case UFN -> DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
       default -> feeCalculationRequest.getStartDate();
     };
   }
@@ -95,13 +146,13 @@ public final class FeeCalculationUtil {
    * Calculate start date to use for Advocacy Assistance in the Crown Court or Appeals & Reviews,
    * PROH will use representation order date if present, falls back to UFN if not.
    */
-  public static LocalDate getFeeClaimStartDateAdvocacyAppealsReviews(FeeCalculationRequest feeCalculationRequest) {
+  private static ClaimStartDateType getFeeClaimStartDateAdvocacyAppealsReviews(FeeCalculationRequest feeCalculationRequest) {
     if (feeCalculationRequest.getFeeCode().equals("PROH") && nonNull(feeCalculationRequest.getRepresentationOrderDate())) {
       log.info("Determining fee start date for PROH, using Representation Order Date");
-      return feeCalculationRequest.getRepresentationOrderDate();
+      return REP_ORDER_DATE;
     } else {
       log.info("Determining fee start date, using Unique File Number");
-      return DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
+      return UFN;
     }
   }
 
@@ -132,6 +183,13 @@ public final class FeeCalculationUtil {
     return limitContext.limit() != null
            && amount.compareTo(limitContext.limit()) > 0
            && StringUtils.isBlank(limitContext.authority());
+  }
+
+  // TODO remove once warnings are done, as using temporary LimitContextNew
+  private static boolean isOverLimitWithoutAuthority(BigDecimal amount, LimitContextNew limitContext) {
+    return limitContext.limit() != null
+        && amount.compareTo(limitContext.limit()) > 0
+        && StringUtils.isBlank(limitContext.authority());
   }
 
   /**

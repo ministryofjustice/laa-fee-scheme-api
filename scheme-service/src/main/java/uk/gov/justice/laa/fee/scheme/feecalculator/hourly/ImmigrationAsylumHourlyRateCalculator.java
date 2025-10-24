@@ -3,6 +3,13 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 import static uk.gov.justice.laa.fee.scheme.enums.LimitType.DISBURSEMENT;
 import static uk.gov.justice.laa.fee.scheme.enums.LimitType.PROFIT_COST;
 import static uk.gov.justice.laa.fee.scheme.enums.LimitType.TOTAL;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DETENTION_TRAVEL;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_LEGAL_HELP;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_JR_FORM_FILLING;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_CLR;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.checkLimitAndCapIfExceeded;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.filterBoltOnFeeDetails;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
@@ -19,8 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
-import uk.gov.justice.laa.fee.scheme.feecalculator.util.LimitContext;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.LimitContextNew;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
@@ -58,14 +66,6 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
   private static final String IACD = "IACD";
   private static final String IMCD = "IMCD";
 
-  private static final String WARIA4_TOTAL_LIMIT = "warning total limit"; // @TODO: TBC
-  private static final String WARIA5_TOTAL_LIMIT = "warning total limit"; // @TODO: TBC
-  private static final String WARIA6_NET_PROFIT_COSTS = "warning net profit costs"; // @TODO: TBC
-  private static final String WARIA7_NET_DISBURSEMENTS = "warning net disbursements"; // @TODO: TBC
-  private static final String WARIA8_TOTAL_LIMIT = "warning total limit"; // @TODO: TBC
-  private static final String WARIA9_DETENTION_TRAVEL_WAITING_COSTS = "warning detention travel and waiting costs"; // @TODO: TBC
-  private static final String WARIA10_JR_FORM_FILLING = "warning jr form filling"; // @TODO: TBC
-
   /**
    * Calculate fee based on the provided fee calculation request and fee entity.
    *
@@ -102,13 +102,13 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     String feeCode = feeEntity.getFeeCode();
     if (IAXL.equals(feeCode) || IMXL.equals(feeCode)) {
       // Check profit costs limit
-      LimitContext profitCostsLimitContext = new LimitContext(PROFIT_COST, feeEntity.getProfitCostLimit(),
-          immigrationPriorAuthorityNumber, WARIA6_NET_PROFIT_COSTS);
+      LimitContextNew profitCostsLimitContext = new LimitContextNew(PROFIT_COST, feeEntity.getProfitCostLimit(),
+          immigrationPriorAuthorityNumber, WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP);
       netProfitCosts = checkLimitAndCapIfExceeded(netProfitCosts, profitCostsLimitContext, validationMessages);
 
       // Check disbursement limit
-      LimitContext disbursementLimitContext = new LimitContext(DISBURSEMENT, feeEntity.getDisbursementLimit(),
-          immigrationPriorAuthorityNumber, WARIA7_NET_DISBURSEMENTS);
+      LimitContextNew disbursementLimitContext = new LimitContextNew(DISBURSEMENT, feeEntity.getDisbursementLimit(),
+          immigrationPriorAuthorityNumber, WARN_IMM_ASYLM_DISB_LEGAL_HELP);
       netDisbursementAmount = checkLimitAndCapIfExceeded(netDisbursementAmount, disbursementLimitContext, validationMessages);
     }
 
@@ -117,8 +117,8 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
 
     if (IA100.equals(feeCode)) {
       // Check total limit
-      LimitContext totalLimitContext = new LimitContext(TOTAL, feeEntity.getTotalLimit(),
-          immigrationPriorAuthorityNumber, WARIA8_TOTAL_LIMIT);
+      LimitContextNew totalLimitContext = new LimitContextNew(TOTAL, feeEntity.getTotalLimit(),
+          immigrationPriorAuthorityNumber, WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP);
       feeTotal = checkLimitAndCapIfExceeded(feeTotal, totalLimitContext, validationMessages);
     }
 
@@ -156,8 +156,8 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     String feeCode = feeEntity.getFeeCode();
     if (IAXC.equals(feeCode) || IMXC.equals(feeCode)) {
       // Check total limit
-      LimitContext totalLimitContext = new LimitContext(TOTAL, feeEntity.getTotalLimit(),
-          feeCalculationRequest.getImmigrationPriorAuthorityNumber(), WARIA4_TOTAL_LIMIT);
+      LimitContextNew totalLimitContext = new LimitContextNew(TOTAL, feeEntity.getTotalLimit(),
+          feeCalculationRequest.getImmigrationPriorAuthorityNumber(), WARN_IMM_ASYLM_PRIOR_AUTH_CLR);
       feeTotal = checkLimitAndCapIfExceeded(feeTotal, totalLimitContext, validationMessages);
     }
 
@@ -194,8 +194,8 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     BigDecimal feeTotal = netProfitCosts.add(netCostOfCounsel).add(netDisbursementAmount);
 
     // Check total limit
-    LimitContext totalLimitContext = new LimitContext(TOTAL, feeEntity.getTotalLimit(),
-        feeCalculationRequest.getImmigrationPriorAuthorityNumber(), WARIA5_TOTAL_LIMIT);
+    LimitContextNew totalLimitContext = new LimitContextNew(TOTAL, feeEntity.getTotalLimit(),
+        feeCalculationRequest.getImmigrationPriorAuthorityNumber(), WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM);
     feeTotal = checkLimitAndCapIfExceeded(feeTotal, totalLimitContext, validationMessages);
 
     checkFieldsAreEmpty(feeCalculationRequest, validationMessages);
@@ -247,19 +247,20 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
                                           List<ValidationMessagesInner> validationMessages) {
     log.info("Check detention travel waiting and costs field is empty for fee calculation");
     checkFieldIsEmpty(feeCalculationRequest.getDetentionTravelAndWaitingCosts(), validationMessages,
-        WARIA9_DETENTION_TRAVEL_WAITING_COSTS, "Detention travel and waiting costs not applicable for legal help");
+        WARN_IMM_ASYLM_DETENTION_TRAVEL, "Detention travel and waiting costs not applicable for legal help");
 
     log.info("Check JR form filling field is empty for fee calculation");
     checkFieldIsEmpty(feeCalculationRequest.getJrFormFilling(), validationMessages,
-        WARIA10_JR_FORM_FILLING, "JR form filling not applicable for legal help");
+        WARN_IMM_ASYLM_JR_FORM_FILLING, "JR form filling not applicable for legal help");
   }
 
   private static void checkFieldIsEmpty(Double value, List<ValidationMessagesInner> validationMessages,
-                                        String warningMessage, String logMessage) {
+                                        WarningType warning, String logMessage) {
     if (value != null) {
       log.warn(logMessage);
       validationMessages.add(ValidationMessagesInner.builder()
-          .message(warningMessage)
+          .message(warning.getMessage())
+          .code(warning.getCode())
           .type(WARNING)
           .build());
     }
