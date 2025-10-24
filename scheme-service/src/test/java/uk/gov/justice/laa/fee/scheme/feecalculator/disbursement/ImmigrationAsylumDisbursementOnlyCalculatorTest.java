@@ -3,7 +3,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.disbursement;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.DISB_ONLY;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.disbursement.ImmigrationAsylumDisbursementOnlyCalculator.WARNING_MESSAGE_WARIA11;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_ONLY;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -90,7 +90,8 @@ class ImmigrationAsylumDisbursementOnlyCalculatorTest {
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     if (hasWarning) {
       ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
-          .message(WARNING_MESSAGE_WARIA11)
+          .code(WARN_IMM_ASYLM_DISB_ONLY.getCode())
+          .message(WARN_IMM_ASYLM_DISB_ONLY.getMessage())
           .type(WARNING)
           .build();
       validationMessages.add(validationMessage);
