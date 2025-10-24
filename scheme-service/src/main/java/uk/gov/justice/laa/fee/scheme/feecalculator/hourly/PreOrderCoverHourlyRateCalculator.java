@@ -1,9 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVOCACY_APPEALS_REVIEWS;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PRE_ORDER_COVER;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
-import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
+import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
@@ -26,18 +28,19 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 /**
- * Calculate the Advocacy Assistance in the Crown Court or Appeals & Reviews hourly rate fee,
+ * Calculate the Pre Order Cover hourly rate fee,
  * for a given fee entity and fee calculation request.
  */
 @Slf4j
 @Component
 public class PreOrderCoverHourlyRateCalculator implements FeeCalculator {
 
-  public static final String WARNING_CODE_DESCRIPTION = "test warning message, limit exceeded";
+  // todo will be ERRCRM10 "Net Cost is more than the Upper Cost Limitation."
+  public static final String ERROR_CODE_DESCRIPTION = "Net Cost is more than the Upper Cost Limitation.";
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
-    return Set.of(ADVOCACY_APPEALS_REVIEWS);
+    return Set.of(PRE_ORDER_COVER);
   }
 
   /**
@@ -46,7 +49,7 @@ public class PreOrderCoverHourlyRateCalculator implements FeeCalculator {
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    log.info("Calculate Advocacy Assistance in the Crown Court or Appeals & Reviews hourly rate fee");
+    log.info("Calculate Pre Order Cover hourly rate fee");
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     BigDecimal upperCostLimit = feeEntity.getTotalLimit();
@@ -62,15 +65,13 @@ public class PreOrderCoverHourlyRateCalculator implements FeeCalculator {
         .add(requestedWaitingCosts);
 
     if (profitAndAdditionalCosts.add(requestedNetDisbursementAmount).compareTo(upperCostLimit) >= 0) {
-      log.info("profit and Additional Costs have exceeded upper cost limit");
-      validationMessages.add(ValidationMessagesInner.builder()
-          .message(WARNING_CODE_DESCRIPTION)
-          .type(WARNING)
-          .build());
+      log.info("profit and Additional Costs have exceeded upper cost limit, reject claim.");
+      // todo will be ERRCRM10 "Net Cost is more than the Upper Cost Limitation."
+      throw new ValidationException(ERR_ALL_FEE_CODE, new FeeContext(feeCalculationRequest));
     }
 
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    LocalDate startDate = getFeeClaimStartDate(ADVOCACY_APPEALS_REVIEWS, feeCalculationRequest);
+    LocalDate startDate = getFeeClaimStartDate(PRE_ORDER_COVER, feeCalculationRequest);
     BigDecimal calculatedVatAmount = VatUtil.getVatAmount(profitAndAdditionalCosts, startDate, vatApplicable);
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(profitAndAdditionalCosts,
         calculatedVatAmount, requestedNetDisbursementAmount, requestedNetDisbursementVatAmount);

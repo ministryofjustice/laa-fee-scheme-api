@@ -1,6 +1,6 @@
 -- Fee Scheme for 2016 'Advocacy Assistance in the Crown Court or Appeals & Reviews' category
 
-DELETE FROM fee WHERE fee_type  ='IMM_ASYLM_DISBURSEMENT_FS2013' AND category_type = 'ADVOCACY_APPEALS_REVIEWS';
+DELETE FROM fee WHERE fee_type  ='FIXED' AND category_type = 'ADVOCACY_APPEALS_REVIEWS';
 
 INSERT INTO fee
 (fee_code, description, total_limit, category_type, fee_type, fee_scheme_code)

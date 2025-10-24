@@ -30,6 +30,7 @@ public enum FeeSchemeCategoryType {
   POLICE_OTHER("Police Other"),
   POLICE_STATION("Police Station"),
   PRISON_LAW("Prison Law"),
+  PRE_ORDER_COVER("Pre Order Cover"),
   PUBLIC_LAW("Public Law"),
   WELFARE_BENEFITS("Welfare Benefits");
 
