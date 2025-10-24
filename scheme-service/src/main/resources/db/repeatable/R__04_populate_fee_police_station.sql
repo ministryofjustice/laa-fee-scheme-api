@@ -64,3 +64,15 @@ VALUES ('INVB1', 'POL_FS2022', 33.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 
 ON CONFLICT (fee_code, fee_scheme_code) DO UPDATE
 SET
    fee_type = EXCLUDED.fee_type;
+
+INSERT INTO fee (fee_code, fee_scheme_code, fixed_fee, profit_cost_limit, disbursement_limit, escape_threshold_limit,
+                 prior_authority_applicable, schedule_reference, ho_interview_bolt_on, oral_cmrh_bolt_on,
+                 telephone_cmrh_bolt_on, substantive_hearing_bolt_on, adjorn_hearing_bolt_on, mediation_fee_lower,
+                 mediation_fee_higher, region, description, category_type, fee_type)
+VALUES  ('INVC', 'POL_FS2024', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+        'Police station: attendance','POLICE_STATION', 'FIXED'),
+        ('INVC', 'TBD', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+         'Police station: attendance','POLICE_STATION', 'FIXED')
+ON CONFLICT (fee_code, fee_scheme_code) DO UPDATE
+    SET
+        fee_type = EXCLUDED.fee_type;
