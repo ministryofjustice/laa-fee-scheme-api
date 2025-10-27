@@ -75,7 +75,7 @@ jobs:
           echo "Application ready"
 
       - name: Run ZAP Full Scan
-        uses: zaproxy/action-full-scan@75ee1686750ab1511a73b26b77a2aedd295053ed
+        uses: zaproxy/action-full-scan@3c58388149901b9a03b7718852c5ba889646c27c
         with:
           target: 'http://laa-fee-scheme-api:8085'
           fail_action: false
@@ -98,7 +98,7 @@ jobs:
           fi
 
       - name: Upload ZAP Json Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: ${{ github.event_name == 'pull_request' && format('zap-pr-{0}-json-report', github.event.pull_request.number) || format('zap-{0}-json-report', github.event_name) }}
@@ -106,7 +106,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload ZAP Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: ${{ github.event_name == 'pull_request' && format('zap-pr-{0}-report', github.event.pull_request.number) || format('zap-{0}-report', github.event_name) }}
