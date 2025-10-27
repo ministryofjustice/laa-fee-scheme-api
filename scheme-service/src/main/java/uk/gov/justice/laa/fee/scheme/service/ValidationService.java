@@ -7,6 +7,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_REP_ORDER_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_MISSING;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_FAMILY_LONDON_RATE;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_CRIME_TRAVEL_COSTS;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_CRIME_WAITING_COSTS;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
@@ -86,6 +87,10 @@ public class ValidationService {
     }
 
     CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
+
+    if (categoryType.equals(CategoryType.FAMILY) && feeCalculationRequest.getLondonRate() == null) {
+      throw new ValidationException(ERR_FAMILY_LONDON_RATE, new FeeContext(feeCalculationRequest));
+    }
 
     LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeCalculationRequest);
 

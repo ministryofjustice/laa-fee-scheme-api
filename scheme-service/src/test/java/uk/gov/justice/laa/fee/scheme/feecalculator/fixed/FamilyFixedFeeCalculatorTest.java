@@ -82,6 +82,7 @@ class FamilyFixedFeeCalculatorTest {
         .vatIndicator(true)
         .netDisbursementAmount(29.45)
         .disbursementVatAmount(1005.89)
+        .netProfitCosts(30.00)
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
