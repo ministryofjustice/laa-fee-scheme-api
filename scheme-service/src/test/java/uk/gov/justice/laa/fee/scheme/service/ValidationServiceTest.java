@@ -11,6 +11,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_REP_ORDER_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_MISSING;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_FAMILY_LONDON_RATE;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -438,8 +439,8 @@ class ValidationServiceTest {
 
     assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
-        .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE)
-        .hasMessage("ERRCIV1 - Fee Code is not valid for the Case Start Date.");
+        .hasFieldOrPropertyWithValue("error", ERR_FAMILY_LONDON_RATE)
+        .hasMessage("ERRFAM1 - London/non-London rate must be entered for the Fee Code used.");
   }
 
 
