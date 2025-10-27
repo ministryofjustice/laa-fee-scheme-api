@@ -32,8 +32,6 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @Component
 public class FamilyFixedFeeCalculator implements FeeCalculator {
 
-  private static final String ESCAPE_CASE_WARNING_CODE_DESCRIPTION = "123warning";
-
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of(FAMILY);
