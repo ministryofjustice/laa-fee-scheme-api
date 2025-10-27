@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.entity.FeeCategoryMappingEntity;
-import uk.gov.justice.laa.fee.scheme.enums.AreaOfLawType;
+import uk.gov.justice.laa.fee.scheme.enums.CaseType;
 import uk.gov.justice.laa.fee.scheme.exception.CategoryCodeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponse;
 import uk.gov.justice.laa.fee.scheme.repository.FeeCategoryMappingRepository;
@@ -41,16 +41,16 @@ public class FeeDetailsService {
   }
 
   /**
-   * Get area of law based on given fee code.
+   * Get case type based on given fee code.
    *
    * @param feeCode the fee code
-   * @return area of law
+   * @return the case type
    * @throws CategoryCodeNotFoundException category law not found
    */
-  public AreaOfLawType getAreaOfLaw(String feeCode) {
+  public CaseType getCaseType(String feeCode) {
     FeeCategoryMappingEntity feeCategoryMapping = getFeeCategoryMapping(feeCode);
 
-    return feeCategoryMapping.getCategoryOfLawType().getAreaOfLawType().getCode();
+    return feeCategoryMapping.getCategoryOfLawType().getAreaOfLawType().getCaseType();
   }
 
   private FeeCategoryMappingEntity getFeeCategoryMapping(String feeCode) {
