@@ -70,6 +70,8 @@ public enum WarningType {
 
   WARN_MISCELLANEOUS_ESCAPE_THRESHOLD("WAROTH9", "Other Civil - Miscellaneous escape case threshold", CategoryType.MISCELLANEOUS),
 
+  WARN_POLICE_STATIONS_ESCAPE_THRESHOLD("WARCRM8", "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."),
+
   WARN_PUBLIC_LAW_ESCAPE_THRESHOLD("WAROTH10", "Other Civil - Public Law (Non-Family) escape case threshold", CategoryType.PUBLIC_LAW),
 
   WARN_WELFARE_BENEFITS_ESCAPE_THRESHOLD("WAROTH11", "Other Civil - Welfare Benefits escape case threshold", CategoryType.WELFARE_BENEFITS);

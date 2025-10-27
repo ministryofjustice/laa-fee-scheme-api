@@ -48,7 +48,7 @@ class PoliceStationFixedFeeCalculatorTest {
   void test_whenPoliceStationClaimForInvoiceSubmitted_shouldReturnValidResponse() {
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
-    FeeEntity feeEntity = buildFixedFeeEntity("INVC", feeSchemesEntity, new BigDecimal("200.56"),  new BigDecimal("123.56"));
+    FeeEntity feeEntity = buildFixedFeeEntity("INVC", feeSchemesEntity, new BigDecimal("200.56"));
 
     PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder()
         .psSchemeId("1004")
@@ -101,7 +101,7 @@ class PoliceStationFixedFeeCalculatorTest {
   void test_whenPoliceStationClaimForInvoiceSubmitted_PoliceStationId_NotSupplied_shouldReturnValidResponse() {
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
-    FeeEntity feeEntity = buildFixedFeeEntity("INVC", feeSchemesEntity, new BigDecimal("200.56"), new BigDecimal("123.56"));
+    FeeEntity feeEntity = buildFixedFeeEntity("INVC", feeSchemesEntity, new BigDecimal("200.56"));
 
     PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder()
         .psSchemeId("1004")
@@ -162,7 +162,6 @@ class PoliceStationFixedFeeCalculatorTest {
       boolean vatIndicator,
       double expectedTotal,
       BigDecimal fixedFee,
-      BigDecimal profitCostLimit,
       String feeSchemeCode,
       double expectedCalculatedVat,
       double expectedDisbursementAmount,
@@ -186,7 +185,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
-    FeeEntity feeEntity = buildFixedFeeEntity(feeCode, feeSchemesEntity, new BigDecimal("200.56"), null);
+    FeeEntity feeEntity = buildFixedFeeEntity(feeCode, feeSchemesEntity, new BigDecimal("200.56"));
 
     PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder()
         .psSchemeId(policeStationSchemeId)
@@ -232,7 +231,6 @@ class PoliceStationFixedFeeCalculatorTest {
       boolean vatIndicator,
       double expectedTotal,
       BigDecimal fixedFee,
-      BigDecimal profitCostLimit,
       String feeSchemeCode,
       double expectedCalculatedVat,
       double expectedDisbursementAmount,
@@ -254,7 +252,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
-    FeeEntity feeEntity = buildFixedFeeEntity(feeCode, feeSchemesEntity, fixedFee, profitCostLimit);
+    FeeEntity feeEntity = buildFixedFeeEntity(feeCode, feeSchemesEntity, fixedFee);
 
     FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);
 
@@ -288,7 +286,6 @@ class PoliceStationFixedFeeCalculatorTest {
       boolean vatIndicator,
       double expectedTotal,
       BigDecimal fixedFee,
-      BigDecimal profitCostLimit,
       String feeSchemeCode,
       double expectedCalculatedVat,
       double expectedDisbursementAmount,
@@ -309,7 +306,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
-    FeeEntity feeEntity = buildFixedFeeEntity(feeCode, feeSchemesEntity, new BigDecimal("999.99"), null);
+    FeeEntity feeEntity = buildFixedFeeEntity(feeCode, feeSchemesEntity, new BigDecimal("999.99"));
 
     PoliceStationFeesEntity policeStationFeesEntity = PoliceStationFeesEntity.builder()
         .psSchemeId(policeStationSchemeId)
@@ -335,7 +332,8 @@ class PoliceStationFixedFeeCalculatorTest {
         .build();
 
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
-        .message("123")
+        .code("WARCRM8")
+        .message("The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid.")
         .type(WARNING)
         .build();
 
@@ -357,7 +355,7 @@ class PoliceStationFixedFeeCalculatorTest {
   void getPoliceStationFeesEntity_whenGivenInvalidPoliceStationId_shouldThrowException() {
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
-    FeeEntity feeEntity = buildFixedFeeEntity("INVC", feeSchemesEntity, new BigDecimal("200.56"), new BigDecimal("123.56"));
+    FeeEntity feeEntity = buildFixedFeeEntity("INVC", feeSchemesEntity, new BigDecimal("200.56"));
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode("INVC")
@@ -384,7 +382,7 @@ class PoliceStationFixedFeeCalculatorTest {
   void getPoliceStationFeesEntity_whenGivenInvalidPoliceSchemeId_shouldThrowException() {
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
-    FeeEntity feeEntity = buildFixedFeeEntity("INVC", feeSchemesEntity, new BigDecimal("200.56"), new BigDecimal("123.56"));
+    FeeEntity feeEntity = buildFixedFeeEntity("INVC", feeSchemesEntity, new BigDecimal("200.56"));
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode("INVC")
@@ -418,12 +416,12 @@ class PoliceStationFixedFeeCalculatorTest {
     return Stream.of(
         arguments("INVC Police Fee Code, VAT applied", "INVC", "NE001",
             "1001", "121221/7899", true, 87.93,
-            new BigDecimal("14.4"), null, "POL_2016", 2.88,
+            new BigDecimal("14.4"), "POL_2016", 2.88,
             50.5, 20.15, 14.4, 0.0, 0.0),
 
         arguments("INVC Police Fee Code, VAT not applied", "INVC", "NE013",
             "1004", "121223/6655", false, 85.05,
-            new BigDecimal("14.4"), null, "POL_2023", 0,
+            new BigDecimal("14.4"), "POL_2023", 0,
             50.5, 20.15, 14.4, 0.0, 0.0)
     );
   }
@@ -433,7 +431,7 @@ class PoliceStationFixedFeeCalculatorTest {
     return Stream.of(
         arguments("INVC Police Fee Code, VAT applied", "INVC", "NE001",
             "1001", "121222/7899", true, 1199.99,
-            new BigDecimal("14.4"), null, "POL_FS2022", 200.00,
+            new BigDecimal("14.4"), "POL_FS2022", 200.00,
             50.5, 20.15, 999.99, 0.0, 0.0)
     );
   }
@@ -442,32 +440,32 @@ class PoliceStationFixedFeeCalculatorTest {
     return Stream.of(
         arguments("INVB1 Police Fee Code, VAT applied", "INVB1", "NE001",
             "1001", "121221/7899", true, 17.28,
-            new BigDecimal("14.4"), null, "POL_2016", 2.88,
+            new BigDecimal("14.4"), "POL_2016", 2.88,
             50.5, 20.15, 14.4, 0.0, 0.0),
 
         arguments("INVB1 Police Fee Code, VAT not applied", "INVB1", "NE013",
             "1004", "121223/6655", false, 14.4,
-            new BigDecimal("14.4"), null, "POL_2023", 0,
+            new BigDecimal("14.4"), "POL_2023", 0,
             50.5, 20.15, 14.4, 0.0, 0.0),
 
         arguments("INVB2 Police Fee Code, VAT applied", "INVB2", "NE001",
             "1001", "121221/7899", true, 17.28,
-            new BigDecimal("14.4"), null, "POL_2016", 2.88,
+            new BigDecimal("14.4"),  "POL_2016", 2.88,
             50.5, 20.15, 14.4, 0.0, 0.0),
 
         arguments("INVB2 Police Fee Code, VAT not applied", "INVB2", "NE013",
             "1004", "121223/6655", false, 14.4,
-            new BigDecimal("14.4"), null, "POL_2023", 0,
+            new BigDecimal("14.4"), "POL_2023", 0,
             50.5, 20.15, 14.4, 0.0, 0.0),
 
         arguments("INVB1 Police Fee Code, Police Station Id Not Provided ", "INVB1", null,
             "1004", "121223/6655", true, 20.74,
-            new BigDecimal("17.28"), null, "POL_2023", 3.46,
+            new BigDecimal("17.28"),  "POL_2023", 3.46,
             50.5, 20.15, 17.28, 0.0, 0.0),
 
         arguments("INVB2 Police Fee Code, Police Station Scheme Id Not Provided", "INVB2", "NE001",
             null, "121221/7899", true, 17.28,
-            new BigDecimal("14.4"), null, "POL_2016", 2.88,
+            new BigDecimal("14.4"), "POL_2016", 2.88,
             50.5, 20.15, 14.4, 0.0, 0.0)
     );
   }
@@ -481,7 +479,6 @@ class PoliceStationFixedFeeCalculatorTest {
                                      boolean vatIndicator,
                                      double expectedTotal,
                                      BigDecimal fixedFee,
-                                     BigDecimal profitCostLimit,
                                      String feeSchemeCode,
                                      double expectedCalculatedVat,
                                      double disbursementAmount,
@@ -490,16 +487,15 @@ class PoliceStationFixedFeeCalculatorTest {
                                      double travelAndWaitingCostAmount,
                                      double netProfitCostsAmount) {
     return Arguments.of(testDescription, feeCode, policeStationId, policeStationSchemeId, uniqueFileNumber, vatIndicator,
-        expectedTotal, fixedFee, profitCostLimit, feeSchemeCode, expectedCalculatedVat, disbursementAmount,
+        expectedTotal, fixedFee, feeSchemeCode, expectedCalculatedVat, disbursementAmount,
         disbursementVatAmount, fixedFeeAmount, travelAndWaitingCostAmount, netProfitCostsAmount);
   }
 
-  private FeeEntity buildFixedFeeEntity(String feeCode, FeeSchemesEntity feeSchemesEntity, BigDecimal fixedFee, BigDecimal profitCostLimit) {
+  private FeeEntity buildFixedFeeEntity(String feeCode, FeeSchemesEntity feeSchemesEntity, BigDecimal fixedFee) {
     return FeeEntity.builder()
         .feeCode(feeCode)
         .feeScheme(feeSchemesEntity)
         .fixedFee(fixedFee)
-        .profitCostLimit(profitCostLimit)
         .categoryType(POLICE_STATION)
         .feeType(FeeType.FIXED)
         .build();

@@ -2,6 +2,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_POLICE_SCHEME_ID;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_POLICE_STATION_ID;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_POLICE_STATIONS_ESCAPE_THRESHOLD;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
@@ -42,8 +43,6 @@ import uk.gov.justice.laa.fee.scheme.repository.PoliceStationFeesRepository;
 @Component
 @RequiredArgsConstructor
 public class PoliceStationFixedFeeCalculator implements FeeCalculator {
-
-  private static final String ESCAPE_CASE_WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -90,17 +89,16 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee, calculatedVatAmount,
         requestedNetDisbursementAmount, disbursementVatAmount);
 
-    Boolean isEscapeCase = Boolean.FALSE;
-
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+    boolean isEscaped = isEscapedCase(totalAmount, policeStationFeesEntity.getEscapeThreshold());
 
-    if (isEscapedCase(totalAmount, policeStationFeesEntity.getEscapeThreshold())) {
-      isEscapeCase = Boolean.TRUE;
+    if (isEscaped) {
       log.warn("Fee total exceeds escape threshold limit");
       validationMessages.add(ValidationMessagesInner.builder()
-            .message(ESCAPE_CASE_WARNING_CODE_DESCRIPTION)
-            .type(WARNING)
-            .build());
+          .code(WARN_POLICE_STATIONS_ESCAPE_THRESHOLD.getCode())
+          .message(WARN_POLICE_STATIONS_ESCAPE_THRESHOLD.getMessage())
+          .type(WARNING)
+          .build());
     }
 
     log.info("Build fee calculation response");
@@ -108,7 +106,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(policeStationFeesEntity.getFeeSchemeCode())
         .claimId(feeCalculationRequest.getClaimId())
-        .escapeCaseFlag(isEscapeCase)
+        .escapeCaseFlag(isEscaped)
         .validationMessages(validationMessages)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
@@ -121,7 +119,6 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
             .fixedFeeAmount(toDouble(fixedFee)).build())
         .build();
   }
-
 
   private FeeCalculationResponse calculateFeesUsingFeeCode(FeeEntity feeEntity,
                                                            FeeCalculationRequest feeCalculationRequest) {
