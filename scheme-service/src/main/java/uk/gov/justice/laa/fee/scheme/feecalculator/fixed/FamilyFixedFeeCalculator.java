@@ -53,8 +53,7 @@ public class FamilyFixedFeeCalculator implements FeeCalculator {
     LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(feeEntity.getCategoryType(), feeCalculationRequest);
 
     BigDecimal fixedFee = feeEntity.getFixedFee();
-
-    BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
+    BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, claimStartDate, Boolean.TRUE.equals(vatApplicable));
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
@@ -64,17 +63,33 @@ public class FamilyFixedFeeCalculator implements FeeCalculator {
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
 
-    boolean isClaimEscaped = FeeCalculationUtil.isEscapedCase(finalTotal, feeEntity.getEscapeThresholdLimit());
+    boolean isClaimEscaped = Boolean.FALSE;
 
-    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+    List<ValidationMessagesInner> validationMessages = null;
 
-    if (isClaimEscaped) {
-      log.warn("Fee total exceeds escape threshold limit");
-      validationMessages.add(ValidationMessagesInner.builder()
-          .message(WarningType.WARN_FAMILY_ESCAPE_THRESHOLD.getMessage())
-          .code(WarningType.WARN_FAMILY_ESCAPE_THRESHOLD.getCode())
-          .type(WARNING)
-          .build());
+    BigDecimal netProfitCosts = null;
+
+    // For five Fee Codes FVP012, FVP010, FVP190, FVP200 & FVP210, Escape threshold limit will be empty.
+    // Hence, No escape threshold check for these fee codes.
+
+    BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
+
+    if (escapeThresholdLimit != null) {
+
+      netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
+
+      isClaimEscaped = FeeCalculationUtil.isEscapedCase(finalTotal.add(netProfitCosts), escapeThresholdLimit);
+
+      validationMessages = new ArrayList<>();
+
+      if (isClaimEscaped) {
+        log.warn("Fee total exceeds escape threshold limit");
+        validationMessages.add(ValidationMessagesInner.builder()
+            .message(WarningType.WARN_FAMILY_ESCAPE_THRESHOLD.getMessage())
+            .code(WarningType.WARN_FAMILY_ESCAPE_THRESHOLD.getCode())
+            .type(WARNING)
+            .build());
+      }
     }
 
     return FeeCalculationResponse.builder()

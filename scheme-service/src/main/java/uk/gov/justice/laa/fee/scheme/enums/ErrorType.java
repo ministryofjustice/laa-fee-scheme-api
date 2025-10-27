@@ -24,6 +24,8 @@ public enum ErrorType {
   ERR_CRIME_UFN_MISSING("ERRCRM7", "Enter a UFN."),
   ERR_CRIME_UFN_DATE("ERRCRM1", "Fee Code is not valid for the Case Start Date."),
 
+  ERR_FAMILY_LONDON_RATE("ERRFAM1", "London/non-London rate must be entered for the Fee Code used."),
+
   ERR_IMM_ASYLUM_BETWEEN_DATE("ERRIA1", "For the Fee Code used, Case Start Date must be between 8 "
       + "June 2020 and 31 Mar 2023.", Set.of("IACC", "IACD", "IMCC", "IMCD")),
   ERR_IMM_ASYLUM_BEFORE_DATE("ERRIA2", "For the Fee Code used, Case Start Date must be before  to "
