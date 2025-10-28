@@ -575,4 +575,53 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
             }
             """, STRICT));
   }
+
+  @Test
+  void shouldReturnValidationWarning_policeStationFixedFee() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                      {
+                          "feeCode": "INVC",
+                          "claimId": "claim_123",
+                          "startDate": "2019-12-12",
+                          "uniqueFileNumber": "12122019/2423",
+                          "policeStationId": "NE001",
+                          "policeStationSchemeId": "1001",
+                          "netDisbursementAmount": 600,
+                          "disbursementVatAmount": 120,
+                          "vatIndicator": true
+                      }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "INVC",
+              "schemeId": "POL_FS2016",
+              "claimId": "claim_123",
+              "validationMessages": [
+                  {
+                      "type": "WARNING",
+                      "code": "WARCRM8",
+                      "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
+                  }
+              ],
+              "escapeCaseFlag": true,
+              "feeCalculation": {
+                  "totalAmount": 877.68,
+                  "vatIndicator": true,
+                  "vatRateApplied": 20.0,
+                  "calculatedVatAmount": 26.28,
+                  "disbursementAmount": 600.0,
+                  "requestedNetDisbursementAmount": 600.0,
+                  "disbursementVatAmount": 120.0,
+                  "fixedFeeAmount": 131.4
+              }
+            }
+            """, STRICT));
+  }
 }
