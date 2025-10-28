@@ -34,6 +34,9 @@ public class SendingHearingFixedFeeCalculator implements FeeCalculator {
 
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+
+    log.info("Calculate Sending Hearing fixed fee");
+
     // Fixed fee calculation
     BigDecimal fixedFee = defaultToZeroIfNull(feeEntity.getFixedFee());
     LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(CategoryType.SENDING_HEARING, feeCalculationRequest);
