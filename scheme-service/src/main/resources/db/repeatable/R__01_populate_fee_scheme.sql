@@ -136,6 +136,13 @@ VALUES
     ('PUB_FS2013', 'Public Law Fee Scheme 2013', '2013-04-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
+-- Fee Scheme for 'Sending Hearing' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('SEND_HEAR_FS2020', 'Sending Hearing 2020', '2020-10-19', '2022-09-29'),
+    ('SEND_HEAR_FS2022', 'Sending Hearing 2022', '2022-09-30', NULL)
+    ON CONFLICT (scheme_code) DO NOTHING;
+
 -- Fee Scheme for 'Welfare Benefits' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES

@@ -535,4 +535,44 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
             }
             """, STRICT));
   }
+
+  @Test
+  void shouldReturnValidationWarning_immigrationAndAsylumDisbursementOnly() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "ICASD",
+                  "claimId": "claim_123",
+                  "startDate": "2021-09-30",
+                  "netDisbursementAmount": 2000,
+                  "disbursementVatAmount": 400
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+                "feeCode": "ICASD",
+                "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2020",
+                "claimId": "claim_123",
+                "validationMessages": [
+                    {
+                        "type": "WARNING",
+                        "code": "WARIA11",
+                        "message": "Costs have been capped without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit."
+                    }
+                ],
+                "feeCalculation": {
+                    "totalAmount": 2000.0,
+                    "disbursementAmount": 1600.0,
+                    "requestedNetDisbursementAmount": 2000.0,
+                    "disbursementVatAmount": 400.0
+                }
+            }
+            """, STRICT));
+  }
 }

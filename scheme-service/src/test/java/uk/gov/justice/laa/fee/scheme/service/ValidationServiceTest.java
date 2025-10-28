@@ -3,6 +3,9 @@ package uk.gov.justice.laa.fee.scheme.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CIVIL;
+import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CRIME;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGS_COURT_DESIGNATED;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
@@ -11,6 +14,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_REP_ORDER_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_MISSING;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_FAMILY_LONDON_RATE;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -27,6 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.AreaOfLawType;
+import uk.gov.justice.laa.fee.scheme.enums.CaseType;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
@@ -165,18 +170,13 @@ class ValidationServiceTest {
 
   }
 
-  @ParameterizedTest
-  @CsvSource({
-      "DISC, DISCRIMINATION, LEGAL_HELP",
-      "ASSA, MEDIATION, MEDIATION",
-  })
-  void getValidFeeEntity_whenCivilFeeCodeAndStartDateIsInvalid_shouldThrowException(String feeCode, CategoryType categoryType,
-                                                                                    AreaOfLawType areaOfLawType) {
+  @Test
+  void getValidFeeEntity_whenCivilFeeCodeAndStartDateIsInvalid_shouldThrowException() {
 
-    when(feeDetailsService.getAreaOfLaw(feeCode)).thenReturn(areaOfLawType);
+    when(feeDetailsService.getCaseType("DISC")).thenReturn(CIVIL);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode(feeCode)
+        .feeCode("DISC")
         .startDate(LocalDate.of(2025, 5, 1))
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
@@ -187,7 +187,7 @@ class ValidationServiceTest {
         .validTo(LocalDate.of(2025, 4, 1))
         .build();
 
-    FeeEntity feeEntity = fixedFeeEntity(feeCode, categoryType, feeSchemesEntity);
+    FeeEntity feeEntity = fixedFeeEntity("DISC", DISCRIMINATION, feeSchemesEntity);
 
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
@@ -197,17 +197,13 @@ class ValidationServiceTest {
         .hasMessage("ERRCIV1 - Fee Code is not valid for the Case Start Date.");
   }
 
-  @ParameterizedTest
-  @CsvSource({
-      "DISC, DISCRIMINATION, LEGAL_HELP",
-      "ASSA, MEDIATION, MEDIATION",
-  })
-  void getValidFeeEntity_whenCivilFeeCodeAndDateTooFarInPast_shouldThrowException(String feeCode, CategoryType categoryType,
-                                                                                  AreaOfLawType areaOfLawType) {
-    when(feeDetailsService.getAreaOfLaw(feeCode)).thenReturn(areaOfLawType);
+
+  @Test
+  void getValidFeeEntity_whenCivilFeeCodeAndDateTooFarInPast_shouldThrowException() {
+    when(feeDetailsService.getCaseType("DISC")).thenReturn(CIVIL);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode(feeCode)
+        .feeCode("DISC")
         .startDate(LocalDate.of(2025, 5, 1))
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
@@ -216,7 +212,7 @@ class ValidationServiceTest {
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("FEE_SCHEME_2025")
         .validFrom(LocalDate.of(2025, 10, 1)).build();
 
-    FeeEntity feeEntity = fixedFeeEntity(feeCode, categoryType, feeSchemesEntity);
+    FeeEntity feeEntity = fixedFeeEntity("DISC", DISCRIMINATION, feeSchemesEntity);
 
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
@@ -229,19 +225,18 @@ class ValidationServiceTest {
 
   @ParameterizedTest
   @CsvSource({
-      "IACC, IMMIGRATION_ASYLUM, LEGAL_HELP, IMM_ASYLM_FS2020, 2020-04-01, 2013-04-29, ERR_IMM_ASYLUM_BETWEEN_DATE",
-      "IACE, IMMIGRATION_ASYLUM, LEGAL_HELP, IMM_ASYLM_FS2023, 2023-04-01, 2020-04-29, ERR_IMM_ASYLUM_AFTER_DATE",
+      "IACC, IMMIGRATION_ASYLUM, IMM_ASYLM_FS2020, 2020-04-01, 2013-04-29, ERR_IMM_ASYLUM_BETWEEN_DATE",
+      "IACE, IMMIGRATION_ASYLUM, IMM_ASYLM_FS2023, 2023-04-01, 2020-04-29, ERR_IMM_ASYLUM_AFTER_DATE",
 
-      "IACC, IMMIGRATION_ASYLUM, LEGAL_HELP, IMM_ASYLM_FS2020, 2020-04-01, 2011-04-29, ERR_CIVIL_START_DATE_TOO_OLD",
-      "IACA, IMMIGRATION_ASYLUM, LEGAL_HELP, IMM_ASYLM_FS2013, 2013-04-01, 2011-04-29, ERR_CIVIL_START_DATE_TOO_OLD",
-      "IACE, IMMIGRATION_ASYLUM, LEGAL_HELP, IMM_ASYLM_FS2023, 2023-04-01, 2011-04-29, ERR_CIVIL_START_DATE_TOO_OLD",
-      "IDAS2, IMMIGRATION_ASYLUM, LEGAL_HELP, IMM_ASYLM_FS2013, 2013-04-01, 2011-04-29, ERR_CIVIL_START_DATE_TOO_OLD",
+      "IACC, IMMIGRATION_ASYLUM, IMM_ASYLM_FS2020, 2020-04-01, 2011-04-29, ERR_CIVIL_START_DATE_TOO_OLD",
+      "IACA, IMMIGRATION_ASYLUM, IMM_ASYLM_FS2013, 2013-04-01, 2011-04-29, ERR_CIVIL_START_DATE_TOO_OLD",
+      "IACE, IMMIGRATION_ASYLUM, IMM_ASYLM_FS2023, 2023-04-01, 2011-04-29, ERR_CIVIL_START_DATE_TOO_OLD",
+      "IDAS2, IMMIGRATION_ASYLUM, IMM_ASYLM_FS2013, 2013-04-01, 2011-04-29, ERR_CIVIL_START_DATE_TOO_OLD",
   })
   void getValidFeeEntity_whenCivilImmigrationAsylumFeeCodeAndDateTooFarInPast_shouldThrowException(String feeCode, CategoryType categoryType,
-                                                                                                   AreaOfLawType areaOfLawType,
                                                                                                    String feeScheme, LocalDate feeSchemeDate,
                                                                                                    LocalDate claimStartDate, ErrorType expectedError) {
-    when(feeDetailsService.getAreaOfLaw(feeCode)).thenReturn(areaOfLawType);
+    when(feeDetailsService.getCaseType(feeCode)).thenReturn(CIVIL);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -265,15 +260,14 @@ class ValidationServiceTest {
 
   @ParameterizedTest
   @CsvSource({
-      "IACC, IMMIGRATION_ASYLUM, LEGAL_HELP, IMM_ASYLM_FS2020, 2020-04-01, 2023-04-29, 2024-04-29, ERR_IMM_ASYLUM_BETWEEN_DATE",
-      "IACA, IMMIGRATION_ASYLUM, LEGAL_HELP, IMM_ASYLM_FS2020, 2020-04-01, 2023-04-29, 2024-04-29, ERR_IMM_ASYLUM_BEFORE_DATE",
+      "IACC, IMMIGRATION_ASYLUM, IMM_ASYLM_FS2020, 2020-04-01, 2023-04-29, 2024-04-29, ERR_IMM_ASYLUM_BETWEEN_DATE",
+      "IACA, IMMIGRATION_ASYLUM, IMM_ASYLM_FS2020, 2020-04-01, 2023-04-29, 2024-04-29, ERR_IMM_ASYLUM_BEFORE_DATE",
   })
   void getValidFeeEntity_whenCivilImmigrationAsylumFeeCodeAndStartDateIsInvalid_shouldThrowException(String feeCode, CategoryType categoryType,
-                                                                                                   AreaOfLawType areaOfLawType,
                                                                                                    String feeScheme, LocalDate feeSchemeStartDate,
                                                                                                    LocalDate feeSchemeEndDate,
                                                                                                    LocalDate claimStartDate, ErrorType expectedError) {
-    when(feeDetailsService.getAreaOfLaw(feeCode)).thenReturn(areaOfLawType);
+    when(feeDetailsService.getCaseType(feeCode)).thenReturn(CIVIL);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -298,7 +292,7 @@ class ValidationServiceTest {
 
   @Test
   void getValidFeeEntity_whenCrimeFeeCodeAndUfnStartDateIsInvalid_shouldThrowException() {
-    when(feeDetailsService.getAreaOfLaw("INVC")).thenReturn(AreaOfLawType.CRIME_LOWER);
+    when(feeDetailsService.getCaseType("INVC")).thenReturn(CRIME);
 
     FeeCalculationRequest feeCalculationRequest = getFeeCalculationRequest();
 
@@ -317,7 +311,7 @@ class ValidationServiceTest {
 
   @Test
   void getValidFeeEntity_whenCrimeFeeCodeAndUfnIsMissing_shouldThrowException() {
-    when(feeDetailsService.getAreaOfLaw("INVC")).thenReturn(AreaOfLawType.CRIME_LOWER);
+    when(feeDetailsService.getCaseType("INVC")).thenReturn(CRIME);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("INVC")
@@ -344,7 +338,7 @@ class ValidationServiceTest {
 
   @Test
   void getValidFeeEntity_whenCrimeFeeCodeAndRepOrderDateIsInvalid_shouldThrowException() {
-    when(feeDetailsService.getAreaOfLaw("PROJ5")).thenReturn(AreaOfLawType.CRIME_LOWER);
+    when(feeDetailsService.getCaseType("PROJ5")).thenReturn(CRIME);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("PROJ5")
@@ -414,7 +408,7 @@ class ValidationServiceTest {
 
   @Test
   void getValidFeeEntity_whenFamilyCategoryAndLondonRateIsMissing_shouldThrowException() {
-    when(feeDetailsService.getAreaOfLaw("FPB010")).thenReturn(AreaOfLawType.LEGAL_HELP);
+    when(feeDetailsService.getCaseType("FPB010")).thenReturn(CIVIL);
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("FAM_LON_FS2011")
         .validFrom(LocalDate.of(2011, 1, 1)).build();
@@ -438,8 +432,8 @@ class ValidationServiceTest {
 
     assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
-        .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE)
-        .hasMessage("ERRCIV1 - Fee Code is not valid for the Case Start Date.");
+        .hasFieldOrPropertyWithValue("error", ERR_FAMILY_LONDON_RATE)
+        .hasMessage("ERRFAM1 - London/non-London rate must be entered for the Fee Code used.");
   }
 
 
@@ -447,7 +441,7 @@ class ValidationServiceTest {
   @ValueSource(strings = {"INVB1", "INVB2", "PROT", "PROU", "PROW", "PRIA", "PRIB1", "PRIB2", "PRIC1", "PRIC2",
       "PRID1", "PRID2", "PRID1", "PRID2", "PRIE1", "PRIE2" })
   public void checkForWarnings_whenGivenCrimeFeeCodeAndNetTravelCosts_returnsWarnings(String feeCode) {
-    when(feeDetailsService.getAreaOfLaw(feeCode)).thenReturn(AreaOfLawType.CRIME_LOWER);
+    when(feeDetailsService.getCaseType(feeCode)).thenReturn(CRIME);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -466,7 +460,7 @@ class ValidationServiceTest {
   @ParameterizedTest
   @ValueSource(strings = {"INVB1", "INVB2", "PROT", "PROU", "PROW" })
   public void checkForWarnings_whenGivenCrimeFeeCodeAndNetWaitingCosts_returnsWarnings(String feeCode) {
-    when(feeDetailsService.getAreaOfLaw(feeCode)).thenReturn(AreaOfLawType.CRIME_LOWER);
+    when(feeDetailsService.getCaseType(feeCode)).thenReturn(CRIME);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -484,7 +478,7 @@ class ValidationServiceTest {
 
   @Test
   public void checkForWarnings_whenGivenCrimeFeeCodeAndTravelCosts_returnsNoWarnings() {
-    when(feeDetailsService.getAreaOfLaw("INVC")).thenReturn(AreaOfLawType.CRIME_LOWER);
+    when(feeDetailsService.getCaseType("INVC")).thenReturn(CRIME);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("INVC")
@@ -498,7 +492,7 @@ class ValidationServiceTest {
 
   @Test
   public void checkForWarnings_whenGivenCrimeFeeCodeAndNetWaitingCosts_returnsNoWarnings() {
-    when(feeDetailsService.getAreaOfLaw("INVC")).thenReturn(AreaOfLawType.CRIME_LOWER);
+    when(feeDetailsService.getCaseType("INVC")).thenReturn(CRIME);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("INVC")
@@ -512,7 +506,7 @@ class ValidationServiceTest {
 
   @Test
   public void checkForWarnings_whenGivenCivilFeeCode_returnsNoWarnings() {
-    when(feeDetailsService.getAreaOfLaw("INVC")).thenReturn(AreaOfLawType.CRIME_LOWER);
+    when(feeDetailsService.getCaseType("INVC")).thenReturn(CRIME);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("INVC")
