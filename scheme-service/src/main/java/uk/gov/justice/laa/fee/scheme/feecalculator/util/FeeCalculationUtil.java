@@ -126,7 +126,7 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Return appropriate date based on Category Type of the claim request.
+   * Return the appropriate date based on Category Type of the claim request.
    *
    * @param categoryType          CategoryType
    * @param feeCalculationRequest FeeCalculationRequest
@@ -140,6 +140,22 @@ public final class FeeCalculationUtil {
       case UFN -> DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
       default -> feeCalculationRequest.getStartDate();
     };
+  }
+
+  /**
+   * Builds a validation warning message based on the provided warning type and log message.
+   *
+   * @param warning    the warning type containing the code and message for validation
+   * @param logMessage the log message associated with the warning
+   * @return the ValidationMessagesInner object containing warning details
+   */
+  public static ValidationMessagesInner buildValidationWarning(WarningType warning, String logMessage) {
+    log.warn("{} - {}", warning.getCode(), logMessage);
+    return ValidationMessagesInner.builder()
+        .code(warning.getCode())
+        .message(warning.getMessage())
+        .type(WARNING)
+        .build();
   }
 
   /**

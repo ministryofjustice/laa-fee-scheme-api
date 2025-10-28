@@ -1,9 +1,10 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.FAMILY;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_FAMILY_ESCAPE_THRESHOLD;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
-import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
@@ -17,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -31,8 +31,6 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @Slf4j
 @Component
 public class FamilyFixedFeeCalculator implements FeeCalculator {
-
-  private static final String ESCAPE_CASE_WARNING_CODE_DESCRIPTION = "123warning";
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -65,11 +63,9 @@ public class FamilyFixedFeeCalculator implements FeeCalculator {
         .add(netDisbursementAmount)
         .add(disbursementVatAmount);
 
-    boolean isClaimEscaped = Boolean.FALSE;
+    boolean isClaimEscaped = false;
 
-    List<ValidationMessagesInner> validationMessages = null;
-
-    BigDecimal netProfitCosts = null;
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
     // For five Fee Codes FVP012, FVP010, FVP190, FVP200 & FVP210, Escape threshold limit will be empty.
     // Hence, No escape threshold check for these fee codes.
@@ -78,19 +74,13 @@ public class FamilyFixedFeeCalculator implements FeeCalculator {
 
     if (escapeThresholdLimit != null) {
 
-      netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
+      BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
 
       isClaimEscaped = FeeCalculationUtil.isEscapedCase(finalTotal.add(netProfitCosts), escapeThresholdLimit);
 
-      validationMessages = new ArrayList<>();
-
       if (isClaimEscaped) {
-        log.warn("Fee total exceeds escape threshold limit");
-        validationMessages.add(ValidationMessagesInner.builder()
-            .message(WarningType.WARN_FAMILY_ESCAPE_THRESHOLD.getMessage())
-            .code(WarningType.WARN_FAMILY_ESCAPE_THRESHOLD.getCode())
-            .type(WARNING)
-            .build());
+        validationMessages.add(buildValidationWarning(WARN_FAMILY_ESCAPE_THRESHOLD,
+            "Fee total exceeds escape threshold limit"));
       }
     }
 

@@ -2,7 +2,9 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_POLICE_SCHEME_ID;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_POLICE_STATION_ID;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_POLICE_STATIONS_DISBURSEMENTS;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_POLICE_STATIONS_ESCAPE_THRESHOLD;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
@@ -93,12 +95,8 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     boolean isEscaped = isEscapedCase(totalAmount, policeStationFeesEntity.getEscapeThreshold());
 
     if (isEscaped) {
-      log.warn("Fee total exceeds escape threshold limit");
-      validationMessages.add(ValidationMessagesInner.builder()
-          .code(WARN_POLICE_STATIONS_ESCAPE_THRESHOLD.getCode())
-          .message(WARN_POLICE_STATIONS_ESCAPE_THRESHOLD.getMessage())
-          .type(WARNING)
-          .build());
+      validationMessages.add(buildValidationWarning(WARN_POLICE_STATIONS_ESCAPE_THRESHOLD,
+          "Fee total exceeds escape threshold limit"));
     }
 
     log.info("Build fee calculation response");
@@ -136,12 +134,26 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
 
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee, calculatedVatAmount);
 
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+
+    Double netDisbursementAmount = feeCalculationRequest.getNetDisbursementAmount();
+    if (netDisbursementAmount != null && netDisbursementAmount > 0.0) {
+      log.warn("{} - Disbursements cannot be claimed", WARN_POLICE_STATIONS_DISBURSEMENTS.getCode());
+
+      validationMessages.add(ValidationMessagesInner.builder()
+          .code(WARN_POLICE_STATIONS_DISBURSEMENTS.getCode())
+          .message(String.format("%s %s.", WARN_POLICE_STATIONS_DISBURSEMENTS.getMessage(), feeCalculationRequest.getFeeCode()))
+          .type(WARNING)
+          .build());
+    }
+
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .claimId(feeCalculationRequest.getClaimId())
-        .escapeCaseFlag(false) // temp hard coded, till escape logic implemented
+        .escapeCaseFlag(false)
+        .validationMessages(validationMessages)// temp hard coded, till escape logic implemented
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)

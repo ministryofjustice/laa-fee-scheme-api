@@ -2,6 +2,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_POLICE_OTHER_UPPER_LIMIT;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -29,92 +30,63 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @ExtendWith(MockitoExtension.class)
 class PoliceStationHourlyRateCalculatorTest {
 
+  private static final String FEE_CODE = "INVM";
+  private static final String FEE_SCHEME_CODE = "POL_2023";
+  private static final String POLICE_STATION_ID = "NE024";
+  private static final String POLICE_STATION_SCHEME_ID = "1007";
+  private static final String UFN = "041223/665";
+
   @InjectMocks
   PoliceStationHourlyRateCalculator policeStationHourlyRateCalculator;
 
   public static Stream<Arguments> testPoliceOtherData() {
     return Stream.of(
-        arguments("INVM Police Fee Code, VAT applied", "INVM", "NE024",
-            "1007", "041223/6655", true, 187.66,
-            null, new BigDecimal("25.0"), "POL_2023", 19.5,
-            50.5, 20.15, 12.45,
-            34.56, 97.51),
-        arguments("INVM Police Fee Code, VAT applied, Profit Cost Limit exceeded", "INVM", "NE024",
-            "1007", "041223/6655", true, 1372.06,
-            null, new BigDecimal("5.0"), "POL_2023",  216.9,
-            50.5, 20.15, 999.45,
-            34.56, 1084.51),
-        arguments("INVM Police Fee Code, VAT applied", "INVM", "NE024",
-            "1007", "041223/6655", false, 168.16,
-            null, new BigDecimal("25.0"), "POL_2023", 0,
-            50.5, 20.15, 12.45,
-            34.56, 97.51)
+        arguments("INVM Police Fee Code, VAT applied", true, 232.72,
+            27.01,  135.06),
+        arguments("INVM Police Fee Code, VAT applied", false, 205.71,
+            0, 135.06)
     );
   }
 
-
   private static Arguments arguments(String testDescription,
-                                     String feeCode,
-                                     String policeStationId,
-                                     String policeStationSchemeId,
-                                     String uniqueFileNumber,
                                      boolean vatIndicator,
                                      double expectedTotal,
-                                     BigDecimal fixedFee,
-                                     BigDecimal profitCostLimit,
-                                     String feeSchemeCode,
                                      double expectedCalculatedVat,
-                                     double disbursementAmount,
-                                     double disbursementVatAmount,
-                                     double travelAndWaitingCostAmount,
-                                     double netProfitCostsAmount,
-                                     double hourlyTotalAmount) {
-    return Arguments.of(testDescription, feeCode, policeStationId, policeStationSchemeId, uniqueFileNumber, vatIndicator,
-        expectedTotal, fixedFee, profitCostLimit, feeSchemeCode, expectedCalculatedVat, disbursementAmount,
-        disbursementVatAmount, travelAndWaitingCostAmount, netProfitCostsAmount, hourlyTotalAmount);
+                                     double expectedHourlyTotalAmount) {
+    return Arguments.of(testDescription, vatIndicator,
+        expectedTotal, expectedCalculatedVat, expectedHourlyTotalAmount);
   }
 
   @ParameterizedTest
   @MethodSource("testPoliceOtherData")
   void test_whenPoliceStation_shouldReturnFee(
       String description,
-      String feeCode,
-      String policeStationId,
-      String policeStationSchemeId,
-      String uniqueFileNumber,
       boolean vatIndicator,
       double expectedTotal,
-      BigDecimal fixedFee,
-      BigDecimal profitCostLimit,
-      String feeSchemeCode,
       double expectedCalculatedVat,
-      double expectedDisbursementAmount,
-      double disbursementVatAmount,
-      double travelAndWaitingCostAmount,
-      double netProfitCostsAmount,
-      double hourlyTotalAmount
+      double expectedHourlyTotalAmount
   ) {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
-        .feeCode(feeCode)
+        .feeCode(FEE_CODE)
         .startDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(vatIndicator)
-        .policeStationSchemeId(policeStationSchemeId)
-        .policeStationId(policeStationId)
+        .policeStationSchemeId(POLICE_STATION_SCHEME_ID)
+        .policeStationId(POLICE_STATION_ID)
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
-        .uniqueFileNumber(uniqueFileNumber)
-        .travelAndWaitingCosts(travelAndWaitingCostAmount)
-        .netProfitCosts(netProfitCostsAmount)
+        .netTravelCosts(30.00)
+        .netWaitingCosts(20.00)
+        .uniqueFileNumber(UFN)
+        .netProfitCosts(34.56)
         .build();
 
-    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(FEE_SCHEME_CODE).build();
 
     FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode(feeCode)
+        .feeCode(FEE_CODE)
         .feeScheme(feeSchemesEntity)
-        .profitCostLimit(profitCostLimit)
-        .fixedFee(fixedFee)
+        .profitCostLimit(BigDecimal.valueOf(100000.00))
         .categoryType(POLICE_STATION)
         .feeType(FeeType.HOURLY)
         .build();
@@ -125,24 +97,84 @@ class PoliceStationHourlyRateCalculatorTest {
         .totalAmount(expectedTotal)
         .vatIndicator(vatIndicator)
         .vatRateApplied(vatIndicator ? 20.0 : null)
-        .disbursementAmount(expectedDisbursementAmount)
-        .requestedNetDisbursementAmount(expectedDisbursementAmount)
-        .disbursementVatAmount(disbursementVatAmount)
+        .disbursementAmount(50.5)
+        .requestedNetDisbursementAmount(50.5)
+        .disbursementVatAmount(20.15)
         .calculatedVatAmount(expectedCalculatedVat)
-        .netProfitCostsAmount(netProfitCostsAmount)
-        .requestedNetProfitCostsAmount(netProfitCostsAmount)
-        .hourlyTotalAmount(hourlyTotalAmount)
-        .travelAndWaitingCostAmount(travelAndWaitingCostAmount)
+        .netProfitCostsAmount(34.56)
+        .requestedNetProfitCostsAmount(34.56)
+        .hourlyTotalAmount(expectedHourlyTotalAmount)
         .build();
 
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
+        .feeCode(FEE_CODE)
+        .schemeId(FEE_SCHEME_CODE)
+        .validationMessages(new ArrayList<>())
+        .feeCalculation(expectedCalculation)
+        .build();
+
+    assertThat(response)
+        .usingRecursiveComparison()
+        .isEqualTo(expectedResponse);
+  }
+
+  @ParameterizedTest
+  @MethodSource("testPoliceOtherData")
+  void test_whenPoliceStation_shouldReturnFeeWithWarning(
+      String description,
+      boolean vatIndicator,
+      double expectedTotal,
+      double expectedCalculatedVat,
+      double expectedHourlyTotalAmount
+  ) {
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode(FEE_CODE)
+        .startDate(LocalDate.of(2017, 7, 29))
+        .vatIndicator(vatIndicator)
+        .policeStationSchemeId(POLICE_STATION_SCHEME_ID)
+        .policeStationId(POLICE_STATION_ID)
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .netTravelCosts(30.00)
+        .netWaitingCosts(20.00)
+        .uniqueFileNumber(UFN)
+        .netProfitCosts(34.56)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(FEE_SCHEME_CODE).build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode(FEE_CODE)
+        .feeScheme(feeSchemesEntity)
+        .profitCostLimit(new BigDecimal("25.0"))
+        .categoryType(POLICE_STATION)
+        .feeType(FeeType.HOURLY)
+        .build();
+
+    FeeCalculationResponse response = policeStationHourlyRateCalculator.calculate(feeData, feeEntity);
+
+    FeeCalculation expectedCalculation = FeeCalculation.builder()
+        .totalAmount(expectedTotal)
+        .vatIndicator(vatIndicator)
+        .vatRateApplied(vatIndicator ? 20.0 : null)
+        .disbursementAmount(50.5)
+        .requestedNetDisbursementAmount(50.5)
+        .disbursementVatAmount(20.15)
+        .calculatedVatAmount(expectedCalculatedVat)
+        .netProfitCostsAmount(34.56)
+        .requestedNetProfitCostsAmount(34.56)
+        .hourlyTotalAmount(expectedHourlyTotalAmount)
+        .build();
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
-        .message("warning net profit costs")
+        .code(WARN_POLICE_OTHER_UPPER_LIMIT.getCode())
+        .message(WARN_POLICE_OTHER_UPPER_LIMIT.getMessage())
         .type(WARNING)
         .build();
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
-        .feeCode(feeCode)
-        .schemeId(feeSchemeCode)
+        .feeCode(FEE_CODE)
+        .schemeId(FEE_SCHEME_CODE)
         .validationMessages(List.of(validationMessage))
         .feeCalculation(expectedCalculation)
         .build();
@@ -152,79 +184,6 @@ class PoliceStationHourlyRateCalculatorTest {
         .isEqualTo(expectedResponse);
   }
 
-
-  @ParameterizedTest
-  @MethodSource("testPoliceOtherData")
-  void test_whenPoliceStation_shouldReturnFeeWithoutWarning(
-      String description,
-      String feeCode,
-      String policeStationId,
-      String policeStationSchemeId,
-      String uniqueFileNumber,
-      boolean vatIndicator,
-      double expectedTotal,
-      BigDecimal fixedFee,
-      BigDecimal profitCostLimit,
-      String feeSchemeCode,
-      double expectedCalculatedVat,
-      double expectedDisbursementAmount,
-      double disbursementVatAmount,
-      double travelAndWaitingCostAmount,
-      double netProfitCostsAmount,
-      double hourlyTotalAmount
-  ) {
-
-    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
-        .feeCode(feeCode)
-        .startDate(LocalDate.of(2017, 7, 29))
-        .vatIndicator(vatIndicator)
-        .policeStationSchemeId(policeStationSchemeId)
-        .policeStationId(policeStationId)
-        .netDisbursementAmount(50.50)
-        .disbursementVatAmount(20.15)
-        .uniqueFileNumber(uniqueFileNumber)
-        .travelAndWaitingCosts(travelAndWaitingCostAmount)
-        .netProfitCosts(netProfitCostsAmount)
-        .build();
-
-    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode(feeCode)
-        .feeScheme(feeSchemesEntity)
-        .profitCostLimit(BigDecimal.valueOf(100000.00))
-        .fixedFee(fixedFee)
-        .categoryType(POLICE_STATION)
-        .feeType(FeeType.HOURLY)
-        .build();
-
-    FeeCalculationResponse response = policeStationHourlyRateCalculator.calculate(feeData, feeEntity);
-
-    FeeCalculation expectedCalculation = FeeCalculation.builder()
-        .totalAmount(expectedTotal)
-        .vatIndicator(vatIndicator)
-        .vatRateApplied(vatIndicator ? 20.0 : null)
-        .disbursementAmount(expectedDisbursementAmount)
-        .requestedNetDisbursementAmount(expectedDisbursementAmount)
-        .disbursementVatAmount(disbursementVatAmount)
-        .calculatedVatAmount(expectedCalculatedVat)
-        .netProfitCostsAmount(netProfitCostsAmount)
-        .requestedNetProfitCostsAmount(netProfitCostsAmount)
-        .hourlyTotalAmount(hourlyTotalAmount)
-        .travelAndWaitingCostAmount(travelAndWaitingCostAmount)
-        .build();
-
-    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
-        .feeCode(feeCode)
-        .schemeId(feeSchemeCode)
-        .validationMessages(new ArrayList<>())
-        .feeCalculation(expectedCalculation)
-        .build();
-
-    assertThat(response)
-        .usingRecursiveComparison()
-        .isEqualTo(expectedResponse);
-  }
 
   @Test
   void getSupportedCategories_shouldReturnEmptySet() {

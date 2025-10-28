@@ -610,7 +610,8 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "netProfitCosts": 34.56,
                   "netDisbursementAmount": 50.5,
                   "disbursementVatAmount": 20.15,
-                  "travelAndWaitingCosts": 12.45,
+                  "netTravelCosts": 20.0,
+                  "netWaitingCosts": 10.0,
                   "vatIndicator": true
                 }
                 """)
@@ -620,20 +621,19 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(content().json("""
             {
               "feeCode": "INVH",
-              "claimId": "claim_123",
               "schemeId": "POL_FS2022",
+              "claimId": "claim_123",
               "feeCalculation": {
-                "totalAmount": 187.66,
-                "vatIndicator": true,
-                "vatRateApplied": 20.0,
-                "calculatedVatAmount": 19.5,
-                "disbursementAmount": 50.5,
-                "requestedNetDisbursementAmount": 50.5,
-                "disbursementVatAmount": 20.15,
-                "hourlyTotalAmount": 97.51,
-                "netProfitCostsAmount": 34.56,
-                "requestedNetProfitCostsAmount": 34.56,
-                "travelAndWaitingCostAmount": 12.45
+                  "totalAmount": 208.72,
+                  "vatIndicator": true,
+                  "vatRateApplied": 20.0,
+                  "calculatedVatAmount": 23.01,
+                  "disbursementAmount": 50.5,
+                  "requestedNetDisbursementAmount": 50.5,
+                  "disbursementVatAmount": 20.15,
+                  "hourlyTotalAmount": 115.06,
+                  "netProfitCostsAmount": 34.56,
+                  "requestedNetProfitCostsAmount": 34.56
               }
             }
             """, STRICT));
