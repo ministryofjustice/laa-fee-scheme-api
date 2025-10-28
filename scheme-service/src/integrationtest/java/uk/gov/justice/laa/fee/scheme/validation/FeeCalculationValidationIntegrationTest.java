@@ -577,7 +577,7 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
   }
 
   @Test
-  void shouldReturnValidationWarning_policeStationFixedFee() throws Exception {
+  void shouldReturnValidationWarningForEscapeCase_policeStations() throws Exception {
     mockMvc
         .perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
@@ -624,4 +624,102 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
             }
             """, STRICT));
   }
+
+  @Test
+  void shouldReturnValidationWarning_policeOther() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                      {
+                          "feeCode": "INVA",
+                          "claimId": "claim_123",
+                          "startDate": "2019-12-12",
+                          "uniqueFileNumber": "12122019/2423",
+                          "netProfitCosts": 50,
+                          "netTravelCosts": 20,
+                          "netWaitingCosts": 10,
+                          "netDisbursementAmount": 600,
+                          "disbursementVatAmount": 120,
+                          "vatIndicator": true
+                      }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "INVA",
+              "schemeId": "POL_FS2016",
+              "claimId": "claim_123",
+              "validationMessages": [
+                  {
+                      "type": "WARNING",
+                      "code": "WARCRM7",
+                      "message": "Costs have been included. Net Costs exceed the Upper Cost Limitation."
+                  }
+              ],
+              "feeCalculation": {
+                  "totalAmount": 1536.0,
+                  "vatIndicator": true,
+                  "vatRateApplied": 20.0,
+                  "calculatedVatAmount": 136.0,
+                  "disbursementAmount": 600.0,
+                  "requestedNetDisbursementAmount": 600.0,
+                  "disbursementVatAmount": 120.0,
+                  "hourlyTotalAmount": 680.0,
+                  "netProfitCostsAmount": 50.0,
+                  "requestedNetProfitCostsAmount": 50.0
+              }
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationWarningForDisbursements_policeStations() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                      {
+                        "feeCode": "INVB1",
+                        "claimId": "claim_123",
+                        "startDate": "2019-12-12",
+                        "uniqueFileNumber": "12122019/2423",
+                        "policeStationId": "NE001",
+                        "policeStationSchemeId": "1001",
+                        "netDisbursementAmount": 600,
+                        "disbursementVatAmount": 120,
+                        "vatIndicator": true
+                      }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "INVB1",
+              "schemeId": "POL_FS2016",
+              "claimId": "claim_123",
+              "validationMessages": [
+                  {
+                    "type": "WARNING",
+                    "code": "WARCRM9",
+                    "message": "Costs have not been included. Disbursements cannot be claimed using fee code INVB1."
+                  }
+              ],
+              "escapeCaseFlag": false,
+              "feeCalculation": {
+                  "totalAmount": 34.44,
+                  "vatIndicator": true,
+                  "vatRateApplied": 20.0,
+                  "calculatedVatAmount": 5.74,
+                  "fixedFeeAmount": 28.7
+              }
+            }
+            """, STRICT));
+  }
+
 }
