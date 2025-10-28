@@ -35,9 +35,6 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @Component
 public class PreOrderCoverHourlyRateCalculator implements FeeCalculator {
 
-  // todo will be ERRCRM10 "Net Cost is more than the Upper Cost Limitation."
-  public static final String ERROR_CODE_DESCRIPTION = "Net Cost is more than the Upper Cost Limitation.";
-
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of(PRE_ORDER_COVER);

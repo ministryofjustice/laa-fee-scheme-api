@@ -5,11 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PRE_ORDER_COVER;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
-import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,7 +21,6 @@ import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
 class PreOrderCoverHourlyRateCalculatorTest {
@@ -36,12 +33,12 @@ class PreOrderCoverHourlyRateCalculatorTest {
     return Stream.of(
         arguments("PROP1, no error", "PROP1", true, 10.0, 2.0, 10,
             10, 10, 55.14, 6.0, 30.0, 48.0, false),
-//        arguments("PROP2, no error", "PROP2", true, 40, 5, 100,
-//            50, 50, 314.81, 40, 200, 285, false),
-//        arguments("PROP1, has error", "PROP1", true, 50, 10, 210,
-//            50, 50, 524, 62, 310, 432, true),
-        arguments("PROP1, no error", "PROP1", true, 10.0, 2.0, 60,
-            10, 10, 55.14, 6.0, 30.0, 48.0, true)
+        arguments("PROP2, no error", "PROP1", true, 10.0, 2.0, 10,
+            10, 10, 52.14, 6.0, 30.0, 48.0, false),
+        arguments("PROP1, has error", "PROP1", true, 10.0, 2.0, 60,
+            10, 10, 55.14, 6.0, 30.0, 48.0, true),
+        arguments("PROP1, has error", "PROP1", true, 10.0, 2.0, 60,
+            10, 10, 52.14, 6.0, 40.0, 58.0, true)
     );
   }
 
@@ -108,6 +105,7 @@ class PreOrderCoverHourlyRateCalculatorTest {
         .build();
 
     if (hasError) {
+      // todo will be ERRCRM10 "Net Cost is more than the Upper Cost Limitation."
       assertThatThrownBy(() -> preOrderCoverHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity))
           .isInstanceOf(ValidationException.class)
           .hasFieldOrPropertyWithValue("error", ERR_ALL_FEE_CODE)
@@ -126,8 +124,5 @@ class PreOrderCoverHourlyRateCalculatorTest {
           .usingRecursiveComparison()
           .isEqualTo(expectedResponse);
     }
-
-
   }
-
 }
