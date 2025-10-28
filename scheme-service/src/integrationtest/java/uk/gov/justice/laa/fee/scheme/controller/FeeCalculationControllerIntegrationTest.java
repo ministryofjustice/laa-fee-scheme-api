@@ -866,4 +866,43 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             """, STRICT));
   }
 
+  @Test
+  void shouldGetFeeCalculation_sendingHearing() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "PROW",
+                  "claimId": "claim_123",
+                  "representationOrderDate": "2025-02-01",
+                  "uniqueFileNumber": "010225/001",
+                  "netDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "PROW",
+              "schemeId": "SEND_HEAR_FS2022",
+              "claimId": "claim_123",
+              "feeCalculation": {
+                  "totalAmount": 398.38,
+                  "vatIndicator": true,
+                  "vatRateApplied": 20.0,
+                  "calculatedVatAmount": 41.72,
+                  "disbursementAmount": 123.38,
+                  "requestedNetDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "fixedFeeAmount": 208.61
+              }
+              }
+            """, STRICT));
+  }
+
 }
