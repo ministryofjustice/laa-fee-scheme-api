@@ -34,8 +34,6 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @Component
 public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator {
 
-  public static final String WARNING_CODE_DESCRIPTION = "test warning message, limit exceeded";
-
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of(ADVOCACY_APPEALS_REVIEWS);
