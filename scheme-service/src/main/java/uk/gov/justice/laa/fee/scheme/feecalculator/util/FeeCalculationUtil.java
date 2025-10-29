@@ -41,11 +41,11 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Determine if escaped case when amount exceeds the escape threshold limit.
+   * Determine if escaped case when the amount exceeds the escape threshold limit.
    *
    * @param amount               the amount to compare
    * @param escapeThresholdLimit the escape threshold limit
-   * @return true if amount exceeds the escape threshold limit, false otherwise
+   * @return true if the amount exceeds the escape threshold limit, false otherwise
    */
   public static boolean isEscapedCase(BigDecimal amount, BigDecimal escapeThresholdLimit) {
     return escapeThresholdLimit != null && amount.compareTo(escapeThresholdLimit) > 0;
@@ -54,40 +54,12 @@ public final class FeeCalculationUtil {
   /**
    * Check if amount exceeds limit without authority and cap to limit if exceeded.
    *
-   * @param amount             the amount to check
-   * @param limitContext       the limit context containing limit details
-   * @param validationMessages the list to add validation messages to
-   * @return the capped amount if limit exceeded without authority, otherwise the original amount
-   */
-  public static BigDecimal checkLimitAndCapIfExceeded(BigDecimal amount, LimitContext limitContext,
-                                                      List<ValidationMessagesInner> validationMessages) {
-    log.info("Check {} is below limit for fee calculation", limitContext.limitType().getDisplayName());
-    BigDecimal limit = limitContext.limit();
-
-    if (isOverLimitWithoutAuthority(amount, limitContext)) {
-      log.warn("{} limit exceeded without prior authority capping to limit: {}",
-          limitContext.limitType().getDisplayName(), limitContext.limit());
-
-      validationMessages.add(ValidationMessagesInner.builder()
-          .message(limitContext.warningMessage())
-          .type(WARNING)
-          .build());
-
-      return limit;
-    }
-    return amount;
-  }
-
-  // TODO replace checkLimitAndCapIfExceeded, once warnings are done
-  /**
-   * Check if amount exceeds limit without authority and cap to limit if exceeded.
-   *
    * @param amount          the amount to check
    * @param limitContext    the limit context containing limit details
    * @param validationMessages the list to add validation messages to
    * @return the capped amount if limit exceeded without authority, otherwise the original amount
    */
-  public static BigDecimal checkLimitAndCapIfExceeded(BigDecimal amount, LimitContextNew limitContext,
+  public static BigDecimal checkLimitAndCapIfExceeded(BigDecimal amount, LimitContext limitContext,
                                                       List<ValidationMessagesInner> validationMessages) {
     log.info("Check {} is below limit for fee calculation", limitContext.limitType().getDisplayName());
     BigDecimal limit = limitContext.limit();
@@ -109,7 +81,7 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Return appropriate date based on Category Type of the claim request.
+   * Return the appropriate date based on Category Type of the claim request.
    *
    * @param categoryType          CategoryType
    * @param feeCalculationRequest FeeCalculationRequest
@@ -117,7 +89,7 @@ public final class FeeCalculationUtil {
    */
   public static ClaimStartDateType getFeeClaimStartDateType(CategoryType categoryType, FeeCalculationRequest feeCalculationRequest) {
     return switch (categoryType) {
-      case ASSOCIATED_CIVIL, POLICE_STATION, PRISON_LAW, PRE_ORDER_COVER -> UFN;
+      case ASSOCIATED_CIVIL, POLICE_STATION, PRISON_LAW, PRE_ORDER_COVER, EARLY_COVER, REFUSED_MEANS_TEST -> UFN;
       case MAGS_COURT_DESIGNATED, MAGS_COURT_UNDESIGNATED, YOUTH_COURT_DESIGNATED, YOUTH_COURT_UNDESIGNATED,
            SENDING_HEARING -> REP_ORDER_DATE;
       case ADVOCACY_APPEALS_REVIEWS -> getFeeClaimStartDateAdvocacyAppealsReviews(feeCalculationRequest);
@@ -126,7 +98,7 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Return appropriate date based on Category Type of the claim request.
+   * Return the appropriate date based on Category Type of the claim request.
    *
    * @param categoryType          CategoryType
    * @param feeCalculationRequest FeeCalculationRequest
@@ -140,6 +112,22 @@ public final class FeeCalculationUtil {
       case UFN -> DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
       default -> feeCalculationRequest.getStartDate();
     };
+  }
+
+  /**
+   * Builds a validation warning message based on the provided warning type and log message.
+   *
+   * @param warning    the warning type containing the code and message for validation
+   * @param logMessage the log message associated with the warning
+   * @return the ValidationMessagesInner object containing warning details
+   */
+  public static ValidationMessagesInner buildValidationWarning(WarningType warning, String logMessage) {
+    log.warn("{} - {}", warning.getCode(), logMessage);
+    return ValidationMessagesInner.builder()
+        .code(warning.getCode())
+        .message(warning.getMessage())
+        .type(WARNING)
+        .build();
   }
 
   /**
@@ -167,7 +155,7 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Calculate total amount when fees, disbursements and VAT are applicable.
+   * Calculate the total amount when fees, disbursements and VAT are applicable.
    */
   public static BigDecimal calculateTotalAmount(BigDecimal feeTotal, BigDecimal calculatedVatAmount,
                                                 BigDecimal netDisbursementAmount, BigDecimal disbursementVatAmount) {
@@ -180,13 +168,6 @@ public final class FeeCalculationUtil {
   }
 
   private static boolean isOverLimitWithoutAuthority(BigDecimal amount, LimitContext limitContext) {
-    return limitContext.limit() != null
-           && amount.compareTo(limitContext.limit()) > 0
-           && StringUtils.isBlank(limitContext.authority());
-  }
-
-  // TODO remove once warnings are done, as using temporary LimitContextNew
-  private static boolean isOverLimitWithoutAuthority(BigDecimal amount, LimitContextNew limitContext) {
     return limitContext.limit() != null
         && amount.compareTo(limitContext.limit()) > 0
         && StringUtils.isBlank(limitContext.authority());

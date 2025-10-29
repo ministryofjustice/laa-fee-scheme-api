@@ -167,3 +167,10 @@ INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('MHL_DISB_FS2020', 'Mental Health - Disbursement Fee Scheme 2020', '2020-10-08', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
+
+-- Fee Scheme for 'Early Cover or Refused Means Test' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('EC_RMT_FS2016', 'Early Cover or Refused Means Test Fee Scheme 2016', '2016-04-01', '2022-09-29'),
+    ('EC_RMT_FS2022', 'Early Cover or Refused Means Test Fee Scheme 2022', '2022-09-30', NULL)
+ON CONFLICT (scheme_code) DO NOTHING;
