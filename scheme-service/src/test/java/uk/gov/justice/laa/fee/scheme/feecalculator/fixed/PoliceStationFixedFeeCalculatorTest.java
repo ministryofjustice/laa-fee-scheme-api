@@ -3,6 +3,8 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_POLICE_SCHEME_ID;
@@ -384,6 +386,32 @@ class PoliceStationFixedFeeCalculatorTest {
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CRIME_POLICE_SCHEME_ID)
         .hasMessage("ERRCRM4 - Enter a valid Scheme ID.");
+  }
+
+  @Test
+  void getPoliceStationFeesEntity_whenPoliceStationAndPoliceSchemeIdIsMissing_shouldThrowException() {
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
+    FeeEntity feeEntity = buildFixedFeeEntity("INVC", feeSchemesEntity, new BigDecimal("200.56"));
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode("INVC")
+        .startDate(LocalDate.of(2017, 7, 29))
+        .vatIndicator(true)
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .uniqueFileNumber("121222/4523")
+        .netTravelCosts(35.00)
+        .netWaitingCosts(10.00)
+        .netProfitCosts(676.0)
+        .build();
+
+    assertThatThrownBy(() -> policeStationFixedFeeCalculator.calculate(feeData, feeEntity))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERR_CRIME_POLICE_SCHEME_ID)
+        .hasMessage("ERRCRM4 - Enter a valid Scheme ID.");
+
+    verify(policeStationFeesRepository, never()).findPoliceStationFeeByPoliceStationIdAndFeeSchemeCode(any(), any());
   }
 
   @Test
