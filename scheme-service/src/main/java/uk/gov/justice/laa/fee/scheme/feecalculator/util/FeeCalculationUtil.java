@@ -51,7 +51,6 @@ public final class FeeCalculationUtil {
     return escapeThresholdLimit != null && amount.compareTo(escapeThresholdLimit) > 0;
   }
 
-  // TODO replace checkLimitAndCapIfExceeded, once warnings are done
   /**
    * Check if amount exceeds limit without authority and cap to limit if exceeded.
    *
