@@ -818,4 +818,56 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
             }
             """, STRICT));
   }
+
+  @Test
+  void shouldReturnValidationWarning_advocacyAppealsReviews() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                      {
+                          "feeCode": "PROH",
+                          "claimId": "claim_123",
+                          "uniqueFileNumber": "020416/001",
+                          "netProfitCosts": 1200.0,
+                          "netTravelCosts": 57.0,
+                          "netWaitingCosts": 70.0,
+                          "netDisbursementAmount": 55.35,
+                          "disbursementVatAmount": 11.07,
+                          "vatIndicator": true
+                      }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+                "feeCode": "PROH",
+                "schemeId": "AAR_FS2016",
+                "claimId": "claim_123",
+                "validationMessages": [
+                    {
+                      "type": "WARNING",
+                      "code": "WARCRM3",
+                      "message": "Costs are included. The Net Costs exceeds the Upper Costs Limitation."
+                    }
+                ],
+                "feeCalculation": {
+                    "totalAmount": 1658.82,
+                    "vatIndicator": true,
+                    "vatRateApplied": 20.0,
+                    "calculatedVatAmount": 265.4,
+                    "disbursementAmount": 55.35,
+                    "requestedNetDisbursementAmount": 55.35,
+                    "disbursementVatAmount": 11.07,
+                    "hourlyTotalAmount": 1327.0,
+                    "netProfitCostsAmount": 1200.0,
+                    "requestedNetProfitCostsAmount": 1200.0,
+                    "netTravelCostsAmount": 57.0,
+                    "netWaitingCostsAmount": 70.0
+                }
+            }
+            """, STRICT));
+  }
 }
