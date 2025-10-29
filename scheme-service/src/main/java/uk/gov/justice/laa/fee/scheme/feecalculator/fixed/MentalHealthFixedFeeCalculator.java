@@ -1,11 +1,12 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static java.util.Objects.nonNull;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.filterBoltOnFeeDetails;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
-import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
@@ -19,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
@@ -116,12 +116,8 @@ public class MentalHealthFixedFeeCalculator implements FeeCalculator {
     BigDecimal totalB = escapeCaseThreshold.add(requestedBoltOnTotalAmount);
 
     if (isEscapedCase(totalA, totalB)) {
-      log.warn("Case has escaped");
-      validationMessages.add(ValidationMessagesInner.builder()
-          .message(WarningType.WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD.getMessage())
-          .code(WarningType.WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD.getCode())
-          .type(WARNING)
-          .build());
+      validationMessages.add(buildValidationWarning(WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD,
+          "Case has escaped"));
       return true;
     } else {
       log.warn("Case has not escaped");

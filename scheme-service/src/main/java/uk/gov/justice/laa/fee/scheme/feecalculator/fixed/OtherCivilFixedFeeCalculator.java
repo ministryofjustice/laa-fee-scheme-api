@@ -9,9 +9,9 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING_HLPAS;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MISCELLANEOUS;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PUBLIC_LAW;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.WELFARE_BENEFITS;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
-import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -78,17 +78,14 @@ public class OtherCivilFixedFeeCalculator implements FeeCalculator {
 
     if (isEscaped) {
 
-      List<WarningType> warningtypes = WarningType.getByCategory(feeEntity.getCategoryType());
+      List<WarningType> warningTypes = WarningType.getByCategory(feeEntity.getCategoryType());
 
-      if (warningtypes.isEmpty()) {
+      if (warningTypes.isEmpty()) {
         throw new IllegalStateException("No error codes found for category: " + feeEntity.getCategoryType());
       }
-      log.warn("Fee total exceeds escape threshold limit");
-      validationMessages.add(ValidationMessagesInner.builder()
-          .message(warningtypes.getFirst().getMessage())
-          .code(warningtypes.getFirst().getCode())
-          .type(WARNING)
-          .build());
+
+      validationMessages.add(buildValidationWarning(warningTypes.getFirst(),
+          "Fee total exceeds escape threshold limit"));
     }
 
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee,

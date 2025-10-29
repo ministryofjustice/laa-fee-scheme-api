@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
-import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_POLICE_OTHER_UPPER_LIMIT;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
@@ -49,23 +50,23 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
-    BigDecimal profitCostLimit = feeEntity.getProfitCostLimit();
+    // upper cost limit stored in profit cost list db column
+    BigDecimal upperCostLimit = feeEntity.getProfitCostLimit();
 
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
 
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
 
-    BigDecimal travelAndWaitingExpenses = toBigDecimal(feeCalculationRequest.getTravelAndWaitingCosts());
+    BigDecimal travelCosts = toBigDecimal(feeCalculationRequest.getNetTravelCosts());
+
+    BigDecimal waitingCosts = toBigDecimal(feeCalculationRequest.getNetWaitingCosts());
 
     log.info("Calculate hourly rate and costs");
-    BigDecimal feeTotal = netProfitCosts.add(netDisbursementAmount).add(travelAndWaitingExpenses);
+    BigDecimal feeTotal = netProfitCosts.add(netDisbursementAmount).add(travelCosts).add(waitingCosts);
 
-    if (feeTotal.compareTo(profitCostLimit) > 0) {
-      log.warn("Fee total exceeds profit cost limit");
-      validationMessages.add(ValidationMessagesInner.builder()
-          .message(WARNING_NET_PROFIT_COSTS)
-          .type(WARNING)
-          .build());
+    if (feeTotal.compareTo(upperCostLimit) > 0) {
+      validationMessages.add(buildValidationWarning(WARN_POLICE_OTHER_UPPER_LIMIT,
+          "Fee total exceeds upper cost limit"));
     }
 
     // Apply VAT where applicable
@@ -97,7 +98,8 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
             .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
             .hourlyTotalAmount(toDouble(feeTotal))
-            .travelAndWaitingCostAmount(feeCalculationRequest.getTravelAndWaitingCosts())
+            .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())
+            .netWaitingCostsAmount(feeCalculationRequest.getNetWaitingCosts())
             .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
             // net profit cost not capped, so requested and calculated will be same
             .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())

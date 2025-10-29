@@ -86,14 +86,6 @@ public class GlobalExceptionHandler {
   }
 
   /**
-   * Global exception handler for PoliceStationFeeNotFoundException exception.
-   */
-  @ExceptionHandler(PoliceStationFeeNotFoundException.class)
-  public ResponseEntity<ErrorResponse> handlePoliceStationFeeNotfound(PoliceStationFeeNotFoundException ex) {
-    return handleException(ex, HttpStatus.NOT_FOUND);
-  }
-
-  /**
    * Global exception handler for all other exceptions.
    */
   @ExceptionHandler(Exception.class)

@@ -3,6 +3,8 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_POLICE_SCHEME_ID;
@@ -82,7 +84,6 @@ class PoliceStationFixedFeeCalculatorTest {
         .requestedNetDisbursementAmount(50.5)
         .disbursementVatAmount(20.15)
         .fixedFeeAmount(200.56)
-        .calculatedVatAmount(40.11)
         .build();
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
@@ -110,6 +111,7 @@ class PoliceStationFixedFeeCalculatorTest {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode("INVC")
+        .claimId("claim_123")
         .startDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(true)
         .policeStationSchemeId("1001")
@@ -134,11 +136,11 @@ class PoliceStationFixedFeeCalculatorTest {
         .requestedNetDisbursementAmount(50.5)
         .disbursementVatAmount(20.15)
         .fixedFeeAmount(200.56)
-        .calculatedVatAmount(40.11)
         .build();
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode("INVC")
+        .claimId("claim_123")
         .schemeId("POL_FS2022")
         .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false)
@@ -164,12 +166,12 @@ class PoliceStationFixedFeeCalculatorTest {
       double expectedCalculatedVat,
       double expectedDisbursementAmount,
       double disbursementVatAmount,
-      double expectedFixedFee,
-      double netProfitCostsAmount
+      double expectedFixedFee
   ) {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
+        .claimId("claim_123")
         .startDate(LocalDate.of(2021, 7, 29))
         .vatIndicator(vatIndicator)
         .policeStationSchemeId(policeStationSchemeId)
@@ -177,7 +179,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
         .uniqueFileNumber(uniqueFileNumber)
-        .netProfitCosts(netProfitCostsAmount)
+        .netProfitCosts(0.00)
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
@@ -207,6 +209,7 @@ class PoliceStationFixedFeeCalculatorTest {
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode(feeCode)
+        .claimId("claim_123")
         .schemeId(feeSchemeCode)
         .validationMessages(new ArrayList<>())
         .escapeCaseFlag(false)
@@ -231,9 +234,7 @@ class PoliceStationFixedFeeCalculatorTest {
       double expectedCalculatedVat,
       double expectedDisbursementAmount,
       double disbursementVatAmount,
-      double expectedFixedFee,
-      double travelAndWaitingCostAmount,
-      double netProfitCostsAmount
+      double expectedFixedFee
   ) {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
@@ -243,8 +244,9 @@ class PoliceStationFixedFeeCalculatorTest {
         .policeStationSchemeId(policeStationSchemeId)
         .policeStationId(policeStationId)
         .uniqueFileNumber(uniqueFileNumber)
-        .travelAndWaitingCosts(travelAndWaitingCostAmount)
-        .netProfitCosts(netProfitCostsAmount)
+        .netTravelCosts(0.00)
+        .netWaitingCosts(0.00)
+        .netProfitCosts(0.00)
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
@@ -344,7 +346,8 @@ class PoliceStationFixedFeeCalculatorTest {
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
         .uniqueFileNumber("121222/4523")
-        .travelAndWaitingCosts(45.0)
+        .netTravelCosts(35.00)
+        .netWaitingCosts(10.00)
         .netProfitCosts(676.0)
         .build();
 
@@ -371,7 +374,8 @@ class PoliceStationFixedFeeCalculatorTest {
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
         .uniqueFileNumber("121222/4523")
-        .travelAndWaitingCosts(45.0)
+        .netTravelCosts(35.00)
+        .netWaitingCosts(10.00)
         .netProfitCosts(676.0)
         .build();
 
@@ -382,6 +386,79 @@ class PoliceStationFixedFeeCalculatorTest {
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CRIME_POLICE_SCHEME_ID)
         .hasMessage("ERRCRM4 - Enter a valid Scheme ID.");
+  }
+
+  @Test
+  void getPoliceStationFeesEntity_whenPoliceStationAndPoliceSchemeIdIsMissing_shouldThrowException() {
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
+    FeeEntity feeEntity = buildFixedFeeEntity("INVC", feeSchemesEntity, new BigDecimal("200.56"));
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode("INVC")
+        .startDate(LocalDate.of(2017, 7, 29))
+        .vatIndicator(true)
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .uniqueFileNumber("121222/4523")
+        .netTravelCosts(35.00)
+        .netWaitingCosts(10.00)
+        .netProfitCosts(676.0)
+        .build();
+
+    assertThatThrownBy(() -> policeStationFixedFeeCalculator.calculate(feeData, feeEntity))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERR_CRIME_POLICE_SCHEME_ID)
+        .hasMessage("ERRCRM4 - Enter a valid Scheme ID.");
+
+    verify(policeStationFeesRepository, never()).findPoliceStationFeeByPoliceStationIdAndFeeSchemeCode(any(), any());
+  }
+
+  @Test
+  void calculate_whenGivenFeeCodeAndNetDisbursementAmount_shouldReturnWarning() {
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
+    FeeEntity feeEntity = buildFixedFeeEntity("INVB1", feeSchemesEntity, new BigDecimal("200.56"));
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode("INVB1")
+        .claimId("claim_123")
+        .startDate(LocalDate.of(2017, 7, 29))
+        .vatIndicator(true)
+        .policeStationSchemeId("1001")
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .uniqueFileNumber("121222/4523")
+        .netTravelCosts(20.00)
+        .netWaitingCosts(10.00)
+        .netProfitCosts(50.00)
+        .build();
+
+    FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);
+
+    FeeCalculation expectedCalculation = FeeCalculation.builder()
+        .totalAmount(240.67)
+        .vatIndicator(Boolean.TRUE)
+        .vatRateApplied(20.0)
+        .calculatedVatAmount(40.11)
+        .fixedFeeAmount(200.56)
+        .build();
+
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
+        .feeCode("INVB1")
+        .schemeId("POL_FS2022")
+        .claimId("claim_123")
+        .validationMessages(List.of(ValidationMessagesInner.builder()
+                .code("WARCRM9")
+                .type(WARNING)
+                .message("Costs have not been included. Disbursements cannot be claimed using fee code INVB1.")
+            .build()))
+        .escapeCaseFlag(false)
+        .feeCalculation(expectedCalculation)
+        .build();
+
+    assertThat(response).isEqualTo(expectedResponse);
+
   }
 
   @Test
@@ -447,7 +524,7 @@ class PoliceStationFixedFeeCalculatorTest {
                                      double fixedFeeAmount) {
 
     return Arguments.of(testDescription, feeCode, policeStationId, policeStationSchemeId, uniqueFileNumber, vatIndicator,
-        expectedTotal, fixedFee, feeSchemeCode, expectedCalculatedVat, 50.5, 20.15, fixedFeeAmount, 0.0, 0.0);
+        expectedTotal, fixedFee, feeSchemeCode, expectedCalculatedVat, 50.5, 20.15, fixedFeeAmount);
   }
 
   private FeeEntity buildFixedFeeEntity(String feeCode, FeeSchemesEntity feeSchemesEntity, BigDecimal fixedFee) {

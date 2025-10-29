@@ -74,6 +74,10 @@ public enum WarningType {
 
   WARN_MISCELLANEOUS_ESCAPE_THRESHOLD("WAROTH9", "Other Civil - Miscellaneous escape case threshold", CategoryType.MISCELLANEOUS),
 
+  WARN_POLICE_OTHER_UPPER_LIMIT("WARCRM7", "Costs have been included. Net Costs exceed the Upper Cost Limitation."),
+
+  WARN_POLICE_STATIONS_DISBURSEMENTS("WARCRM9", "Costs have not been included. Disbursements cannot be claimed using fee code"),
+
   WARN_POLICE_STATIONS_ESCAPE_THRESHOLD("WARCRM8", "The claim exceeds the Escape Case Threshold. "
                                                    + "An Escape Case Claim must be submitted for further costs to be paid."),
 
