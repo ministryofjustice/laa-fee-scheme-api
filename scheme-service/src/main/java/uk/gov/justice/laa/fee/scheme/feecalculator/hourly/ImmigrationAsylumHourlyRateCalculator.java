@@ -28,7 +28,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
-import uk.gov.justice.laa.fee.scheme.feecalculator.util.LimitContextNew;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.LimitContext;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
@@ -102,12 +102,12 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     String feeCode = feeEntity.getFeeCode();
     if (IAXL.equals(feeCode) || IMXL.equals(feeCode)) {
       // Check profit costs limit
-      LimitContextNew profitCostsLimitContext = new LimitContextNew(PROFIT_COST, feeEntity.getProfitCostLimit(),
+      LimitContext profitCostsLimitContext = new LimitContext(PROFIT_COST, feeEntity.getProfitCostLimit(),
           immigrationPriorAuthorityNumber, WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP);
       netProfitCosts = checkLimitAndCapIfExceeded(netProfitCosts, profitCostsLimitContext, validationMessages);
 
       // Check disbursement limit
-      LimitContextNew disbursementLimitContext = new LimitContextNew(DISBURSEMENT, feeEntity.getDisbursementLimit(),
+      LimitContext disbursementLimitContext = new LimitContext(DISBURSEMENT, feeEntity.getDisbursementLimit(),
           immigrationPriorAuthorityNumber, WARN_IMM_ASYLM_DISB_LEGAL_HELP);
       netDisbursementAmount = checkLimitAndCapIfExceeded(netDisbursementAmount, disbursementLimitContext, validationMessages);
     }
@@ -117,7 +117,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
 
     if (IA100.equals(feeCode)) {
       // Check total limit
-      LimitContextNew totalLimitContext = new LimitContextNew(TOTAL, feeEntity.getTotalLimit(),
+      LimitContext totalLimitContext = new LimitContext(TOTAL, feeEntity.getTotalLimit(),
           immigrationPriorAuthorityNumber, WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP);
       feeTotal = checkLimitAndCapIfExceeded(feeTotal, totalLimitContext, validationMessages);
     }
@@ -156,7 +156,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     String feeCode = feeEntity.getFeeCode();
     if (IAXC.equals(feeCode) || IMXC.equals(feeCode)) {
       // Check total limit
-      LimitContextNew totalLimitContext = new LimitContextNew(TOTAL, feeEntity.getTotalLimit(),
+      LimitContext totalLimitContext = new LimitContext(TOTAL, feeEntity.getTotalLimit(),
           feeCalculationRequest.getImmigrationPriorAuthorityNumber(), WARN_IMM_ASYLM_PRIOR_AUTH_CLR);
       feeTotal = checkLimitAndCapIfExceeded(feeTotal, totalLimitContext, validationMessages);
     }
@@ -194,7 +194,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     BigDecimal feeTotal = netProfitCosts.add(netCostOfCounsel).add(netDisbursementAmount);
 
     // Check total limit
-    LimitContextNew totalLimitContext = new LimitContextNew(TOTAL, feeEntity.getTotalLimit(),
+    LimitContext totalLimitContext = new LimitContext(TOTAL, feeEntity.getTotalLimit(),
         feeCalculationRequest.getImmigrationPriorAuthorityNumber(), WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM);
     feeTotal = checkLimitAndCapIfExceeded(feeTotal, totalLimitContext, validationMessages);
 

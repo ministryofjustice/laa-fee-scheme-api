@@ -28,7 +28,6 @@ import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
 import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
-import uk.gov.justice.laa.fee.scheme.exception.PoliceStationFeeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
@@ -200,7 +199,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
           .orElseThrow(throwException(ERR_CRIME_POLICE_SCHEME_ID, feeCalculationRequest));
 
     } else {
-      throw new PoliceStationFeeNotFoundException(feeCalculationRequest.getPoliceStationSchemeId());
+      throw new ValidationException(ERR_CRIME_POLICE_SCHEME_ID, new FeeContext(feeCalculationRequest));
     }
 
     log.info("Retrieved police station fees entity with policeStationFeesId: {}", policeStationFeesEntity.getPoliceStationFeesId());

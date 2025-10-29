@@ -32,8 +32,6 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @Component
 public class EducationFixedFeeCalculator implements FeeCalculator {
 
-  private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
-
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of();
@@ -48,7 +46,7 @@ public class EducationFixedFeeCalculator implements FeeCalculator {
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    log.info("Calculate Standard fixed fee");
+    log.info("Calculate Education fixed fee");
 
     // Fixed fee calculation
     BigDecimal fixedFee = defaultToZeroIfNull(feeEntity.getFixedFee());

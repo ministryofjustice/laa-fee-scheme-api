@@ -164,8 +164,7 @@ class PoliceStationFixedFeeCalculatorTest {
       double expectedCalculatedVat,
       double expectedDisbursementAmount,
       double disbursementVatAmount,
-      double expectedFixedFee,
-      double netProfitCostsAmount
+      double expectedFixedFee
   ) {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
@@ -178,7 +177,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
         .uniqueFileNumber(uniqueFileNumber)
-        .netProfitCosts(netProfitCostsAmount)
+        .netProfitCosts(0.00)
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
@@ -233,9 +232,7 @@ class PoliceStationFixedFeeCalculatorTest {
       double expectedCalculatedVat,
       double expectedDisbursementAmount,
       double disbursementVatAmount,
-      double expectedFixedFee,
-      double travelAndWaitingCostAmount,
-      double netProfitCostsAmount
+      double expectedFixedFee
   ) {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
@@ -245,8 +242,9 @@ class PoliceStationFixedFeeCalculatorTest {
         .policeStationSchemeId(policeStationSchemeId)
         .policeStationId(policeStationId)
         .uniqueFileNumber(uniqueFileNumber)
-        .travelAndWaitingCosts(travelAndWaitingCostAmount)
-        .netProfitCosts(netProfitCostsAmount)
+        .netTravelCosts(0.00)
+        .netWaitingCosts(0.00)
+        .netProfitCosts(0.00)
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
@@ -346,7 +344,8 @@ class PoliceStationFixedFeeCalculatorTest {
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
         .uniqueFileNumber("121222/4523")
-        .travelAndWaitingCosts(45.0)
+        .netTravelCosts(35.00)
+        .netWaitingCosts(10.00)
         .netProfitCosts(676.0)
         .build();
 
@@ -373,7 +372,8 @@ class PoliceStationFixedFeeCalculatorTest {
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
         .uniqueFileNumber("121222/4523")
-        .travelAndWaitingCosts(45.0)
+        .netTravelCosts(35.00)
+        .netWaitingCosts(10.00)
         .netProfitCosts(676.0)
         .build();
 
@@ -496,7 +496,7 @@ class PoliceStationFixedFeeCalculatorTest {
                                      double fixedFeeAmount) {
 
     return Arguments.of(testDescription, feeCode, policeStationId, policeStationSchemeId, uniqueFileNumber, vatIndicator,
-        expectedTotal, fixedFee, feeSchemeCode, expectedCalculatedVat, 50.5, 20.15, fixedFeeAmount, 0.0, 0.0);
+        expectedTotal, fixedFee, feeSchemeCode, expectedCalculatedVat, 50.5, 20.15, fixedFeeAmount);
   }
 
   private FeeEntity buildFixedFeeEntity(String feeCode, FeeSchemesEntity feeSchemesEntity, BigDecimal fixedFee) {

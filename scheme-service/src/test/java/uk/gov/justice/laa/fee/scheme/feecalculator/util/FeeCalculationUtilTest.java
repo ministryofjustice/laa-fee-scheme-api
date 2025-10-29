@@ -8,6 +8,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGS_COURT_DESIGNATED;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_CRIME_TRAVEL_COSTS;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -189,7 +190,7 @@ class FeeCalculationUtilTest {
   void checkLimitAndCapIfExceeded_returnsResult(BigDecimal amount, String authority, BigDecimal expectedAmount,
                                                 List<ValidationMessagesInner> expectedMessages) {
 
-    LimitContext limitContext = new LimitContext(LimitType.TOTAL, new BigDecimal("100"), authority, "Warning message");
+    LimitContext limitContext = new LimitContext(LimitType.TOTAL, new BigDecimal("100"), authority, WARN_CRIME_TRAVEL_COSTS);
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
     BigDecimal result = FeeCalculationUtil.checkLimitAndCapIfExceeded(amount, limitContext, validationMessages);
@@ -204,7 +205,11 @@ class FeeCalculationUtilTest {
         arguments(new BigDecimal("90"), null, new BigDecimal("90"), List.of()),
         arguments(new BigDecimal("200"), "priorAuth", new BigDecimal("200"), List.of()),
         arguments(new BigDecimal("200"), null, new BigDecimal("100"),
-            List.of(ValidationMessagesInner.builder().type(WARNING).message("Warning message").build()))
+            List.of(ValidationMessagesInner.builder()
+                .code(WARN_CRIME_TRAVEL_COSTS.getCode())
+                .type(WARNING)
+                .message(WARN_CRIME_TRAVEL_COSTS.getMessage())
+                .build()))
     );
   }
 

@@ -104,6 +104,8 @@ class PoliceStationHourlyRateCalculatorTest {
         .netProfitCostsAmount(34.56)
         .requestedNetProfitCostsAmount(34.56)
         .hourlyTotalAmount(expectedHourlyTotalAmount)
+        .netTravelCostsAmount(30.00)
+        .netWaitingCostsAmount(20.00)
         .build();
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
@@ -165,6 +167,8 @@ class PoliceStationHourlyRateCalculatorTest {
         .netProfitCostsAmount(34.56)
         .requestedNetProfitCostsAmount(34.56)
         .hourlyTotalAmount(expectedHourlyTotalAmount)
+        .netTravelCostsAmount(30.00)
+        .netWaitingCostsAmount(20.00)
         .build();
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
         .code(WARN_POLICE_OTHER_UPPER_LIMIT.getCode())

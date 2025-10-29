@@ -98,7 +98,8 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
             .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
             .hourlyTotalAmount(toDouble(feeTotal))
-            .travelAndWaitingCostAmount(feeCalculationRequest.getTravelAndWaitingCosts())
+            .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())
+            .netWaitingCostsAmount(feeCalculationRequest.getNetWaitingCosts())
             .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
             // net profit cost not capped, so requested and calculated will be same
             .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())

@@ -24,7 +24,7 @@ import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
-import uk.gov.justice.laa.fee.scheme.feecalculator.util.LimitContextNew;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.LimitContext;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
@@ -83,7 +83,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
       WarningType warning = (("IALB".equals(feeCalculationRequest.getFeeCode()) || "IMLB".equals(feeCalculationRequest.getFeeCode()))
           ? WARN_IMM_ASYLM_DISB_400_LEGAL_HELP
           : WARN_IMM_ASYLM_DISB_600_CLR);
-      LimitContextNew disbursementLimitContext = new LimitContextNew(DISBURSEMENT, feeEntity.getDisbursementLimit(),
+      LimitContext disbursementLimitContext = new LimitContext(DISBURSEMENT, feeEntity.getDisbursementLimit(),
           immigrationPriorAuthorityNumber, warning);
 
       netDisbursementAmount = checkLimitAndCapIfExceeded(requestedNetDisbursementAmount, disbursementLimitContext, validationMessages);

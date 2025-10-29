@@ -594,6 +594,43 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   }
 
   @Test
+  void shouldGetFeeCalculation_policeOtherFixedFee() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "INVB1",
+                  "claimId": "claim_123",
+                  "startDate": "2019-12-12",
+                  "uniqueFileNumber": "12122019/2423",
+                  "policeStationId": "NE001",
+                  "policeStationSchemeId": "1001",
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "INVB1",
+              "claimId": "claim_123",
+              "schemeId": "POL_FS2016",
+              "escapeCaseFlag": false,
+              "feeCalculation": {
+              "totalAmount": 34.44,
+              "vatIndicator": true,
+              "vatRateApplied": 20.0,
+              "calculatedVatAmount": 5.74,
+              "fixedFeeAmount": 28.7
+              }
+            }
+            """, STRICT));
+  }
+
+  @Test
   void shouldGetFeeCalculation_policeStationHourlyRate() throws Exception {
     mockMvc
         .perform(post(URI)
@@ -633,7 +670,9 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "disbursementVatAmount": 20.15,
                   "hourlyTotalAmount": 115.06,
                   "netProfitCostsAmount": 34.56,
-                  "requestedNetProfitCostsAmount": 34.56
+                  "requestedNetProfitCostsAmount": 34.56,
+                  "netTravelCostsAmount": 20.0,
+                  "netWaitingCostsAmount": 10.0
               }
             }
             """, STRICT));

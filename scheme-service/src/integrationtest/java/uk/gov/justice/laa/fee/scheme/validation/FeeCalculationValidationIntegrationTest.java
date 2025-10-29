@@ -670,7 +670,9 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                   "disbursementVatAmount": 120.0,
                   "hourlyTotalAmount": 680.0,
                   "netProfitCostsAmount": 50.0,
-                  "requestedNetProfitCostsAmount": 50.0
+                  "requestedNetProfitCostsAmount": 50.0,
+                  "netTravelCostsAmount": 20.0,
+                  "netWaitingCostsAmount": 10.0
               }
             }
             """, STRICT));
