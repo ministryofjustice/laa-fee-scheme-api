@@ -3,8 +3,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVOCACY_APPEALS_REVIEWS;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ADVOCACY_ASSIST_UPPER_LIMIT;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.hourly.AdvocacyAppealsReviewsHourlyRateCalculator.WARNING_CODE_DESCRIPTION;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -117,8 +116,8 @@ class AdvocacyAppealsReviewsHourlyRateCalculatorTest {
 
     List<ValidationMessagesInner> validationMessages = List.of(
         ValidationMessagesInner.builder()
-            .code(WARN_ADVOCACY_ASSIST_UPPER_LIMIT.getCode())
-            .message(WARN_ADVOCACY_ASSIST_UPPER_LIMIT.getMessage())
+            .code(WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT.getCode())
+            .message(WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT.getMessage())
             .type(WARNING)
             .build());
 

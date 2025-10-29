@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVOCACY_APPEALS_REVIEWS;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ADVOCACY_ASSIST_UPPER_LIMIT;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
@@ -63,7 +63,7 @@ public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator
         .add(requestedWaitingCosts);
 
     if (profitAndAdditionalCosts.add(requestedNetDisbursementAmount).compareTo(upperCostLimit) >= 0) {
-      validationMessages.add(buildValidationWarning(WARN_ADVOCACY_ASSIST_UPPER_LIMIT,
+      validationMessages.add(buildValidationWarning(WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT,
           "Profit and Additional Costs have exceeded upper cost limit"));
     }
 
