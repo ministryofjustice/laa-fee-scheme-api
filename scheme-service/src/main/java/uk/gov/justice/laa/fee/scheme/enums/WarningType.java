@@ -13,6 +13,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum WarningType {
+
+  WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD("WARCRM4", "The claim exceeds the Escape Case Threshold. An Escape "
+      + "Case Claim must be submitted for further costs to be paid."),
+
   WARN_CRIME_TRAVEL_COSTS("WARCRM1", "Cost not included. Travel costs cannot be claimed with Fee Code used.",
       Set.of("INVB1", "INVB2", "PROT", "PROU", "PROW", "PRIA", "PRIB1", "PRIB2", "PRIC1", "PRIC2",
           "PRID1", "PRID2", "PRIE1", "PRIE2")),

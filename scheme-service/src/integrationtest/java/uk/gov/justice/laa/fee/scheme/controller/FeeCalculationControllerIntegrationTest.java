@@ -944,4 +944,49 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             """, STRICT));
   }
 
+  @Test
+  void shouldGetFeeCalculation_preOrderCover() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "PROP1",
+                  "claimId": "claim_123",
+                  "uniqueFileNumber": "110425/abc",
+                  "netProfitCosts": 10.56,
+                  "netDisbursementAmount": 20.5,
+                  "disbursementVatAmount": 5.15,
+                  "netTravelCosts": 11.35,
+                  "netWaitingCosts": 12.22,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+                "feeCode": "PROP1",
+                "schemeId": "POC_FS2022",
+                "claimId": "claim_123",
+                "feeCalculation": {
+                    "totalAmount": 66.61,
+                    "vatIndicator": true,
+                    "vatRateApplied": 20.0,
+                    "calculatedVatAmount": 6.83,
+                    "disbursementAmount": 20.5,
+                    "requestedNetDisbursementAmount": 20.5,
+                    "disbursementVatAmount": 5.15,
+                    "hourlyTotalAmount": 34.13,
+                    "netProfitCostsAmount": 10.56,
+                    "requestedNetProfitCostsAmount": 10.56,
+                    "netTravelCostsAmount": 11.35,
+                    "netWaitingCostsAmount": 12.22
+                }
+            }
+            """, STRICT));
+  }
+
 }
