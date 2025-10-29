@@ -66,7 +66,7 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
 
     if (feeTotal.compareTo(upperCostLimit) > 0) {
       validationMessages.add(buildValidationWarning(WARN_POLICE_OTHER_UPPER_LIMIT,
-          "Disbursements cannot be claimed"));
+          "Fee total exceeds upper cost limit"));
     }
 
     // Apply VAT where applicable
