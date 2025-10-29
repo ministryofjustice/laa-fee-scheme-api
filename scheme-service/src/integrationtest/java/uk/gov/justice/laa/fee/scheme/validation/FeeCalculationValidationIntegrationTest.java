@@ -339,6 +339,52 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
             """, STRICT));
   }
 
+  @Test
+  void shouldReturnValidationWarning_family() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "FPB010",
+                  "startDate": "2023-04-01",
+                  "claimId": "claim_123",
+                  "netProfitCosts": 200.20,
+                  "netDisbursementAmount": 55.35,
+                  "disbursementVatAmount": 11.07,
+                  "londonRate": false,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json("""
+            {
+              "feeCode": "FPB010",
+              "claimId": "claim_123",
+              "schemeId": "FAM_NON_LON_FS2011",
+              "validationMessages": [
+                {
+                  "type": "WARNING",
+                  "code": "WARFAM1",
+                  "message": "Family escape case threshold"
+                }
+              ],
+              "escapeCaseFlag": true,
+              "feeCalculation": {
+                "totalAmount": 224.82,
+                "vatIndicator": true,
+                "vatRateApplied": 20.0,
+                "calculatedVatAmount": 26.4,
+                "disbursementAmount": 55.35,
+                "requestedNetDisbursementAmount": 55.35,
+                "disbursementVatAmount": 11.07,
+                "fixedFeeAmount": 132.0
+              }
+            }
+            """, STRICT));
+  }
+
   @ParameterizedTest
   @CsvSource({
       "IMCF, WARIA1, Costs have been capped at £600 without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit., "

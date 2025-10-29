@@ -1,9 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
-import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -73,12 +73,8 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
     boolean isEscaped = FeeCalculationUtil.isEscapedCase(feeTotal, feeEntity.getEscapeThresholdLimit());
 
     if (isEscaped) {
-      log.warn("Fee total exceeds escape threshold limit");
-      validationMessages.add(ValidationMessagesInner.builder()
-          .message(WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD.getMessage())
-          .code(WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD.getCode())
-          .type(WARNING)
-          .build());
+      validationMessages.add(buildValidationWarning(WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD,
+          "Fee total exceeds escape threshold limit"));
     }
 
     log.info("Build fee calculation response");

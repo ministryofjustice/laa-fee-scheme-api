@@ -10,9 +10,9 @@ import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRI
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.checkLimitAndCapIfExceeded;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.filterBoltOnFeeDetails;
-import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -257,12 +257,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
   private static void checkFieldIsEmpty(Double value, List<ValidationMessagesInner> validationMessages,
                                         WarningType warning, String logMessage) {
     if (value != null) {
-      log.warn(logMessage);
-      validationMessages.add(ValidationMessagesInner.builder()
-          .message(warning.getMessage())
-          .code(warning.getCode())
-          .type(WARNING)
-          .build());
+      validationMessages.add(buildValidationWarning(warning, logMessage));
     }
   }
 
