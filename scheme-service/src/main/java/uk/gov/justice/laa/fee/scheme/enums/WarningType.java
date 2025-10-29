@@ -77,9 +77,16 @@ public enum WarningType {
   WARN_POLICE_STATIONS_ESCAPE_THRESHOLD("WARCRM8", "The claim exceeds the Escape Case Threshold. "
                                                    + "An Escape Case Claim must be submitted for further costs to be paid."),
 
+  WARN_PRISON_MAY_HAVE_ESCAPED("WARCRM5", "Costs are included. Profit and Waiting Costs exceed the Lower "
+      + "Standard Fee Limit. An escape fee may be payable."),
+  WARN_PRISON_HAS_ESCAPED("WARCRM6", "The claim exceeds the Escape Case Threshold. An Escape Case Claim "
+      + "must be submitted for further costs to be paid."),
+
   WARN_PUBLIC_LAW_ESCAPE_THRESHOLD("WAROTH10", "Other Civil - Public Law (Non-Family) escape case threshold", CategoryType.PUBLIC_LAW),
 
   WARN_WELFARE_BENEFITS_ESCAPE_THRESHOLD("WAROTH11", "Other Civil - Welfare Benefits escape case threshold", CategoryType.WELFARE_BENEFITS);
+
+
 
   WarningType(String code, String message) {
     this(code, message, null, null);

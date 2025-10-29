@@ -673,4 +673,67 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
             }
             """, STRICT));
   }
+
+  @ParameterizedTest
+  @CsvSource({
+      "PRIA, WARCRM6, The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid., "
+          + "true, 360.9, 40.15, 200.75",
+      "PRIB1, WARCRM5, Costs are included. Profit and Waiting Costs exceed the Lower Standard Fee Limit. An escape fee may be payable., "
+          + "false, 364.72, 40.79, 203.93",
+  })
+  void shouldReturnValidationWarning_prisonLaw(
+      String feeCode,
+      String warningType,
+      String warningMessage,
+      boolean escapeFlag,
+      double totalAmount,
+      double calculatedVatAmount,
+      double fixedFeeAmount
+  ) throws Exception {
+
+    String expectedJson = """
+        {
+            "feeCode": "%s",
+            "schemeId": "PRISON_FS2016",
+            "claimId": "claim_123",
+            "validationMessages": [
+                {
+                    "type": "WARNING",
+                    "code": "%s",
+                    "message": "%s"
+                }
+            ],
+            "escapeCaseFlag": %s,
+            "feeCalculation": {
+                "totalAmount": %s,
+                "vatIndicator": true,
+                "vatRateApplied": 20.0,
+                "calculatedVatAmount": %s,
+                "requestedNetDisbursementAmount": 100.0,
+                "disbursementAmount": 100.0,
+                "disbursementVatAmount": 20.0,
+                "fixedFeeAmount": %s
+            }
+        }
+        """.formatted(feeCode, warningType, warningMessage, escapeFlag, totalAmount, calculatedVatAmount, fixedFeeAmount);
+
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "%s",
+                  "claimId": "claim_123",
+                  "uniqueFileNumber": "110425/abc",
+                  "netProfitCosts": 500,
+                  "netDisbursementAmount": 100,
+                  "disbursementVatAmount": 20,
+                  "vatIndicator": true,
+                  "netWaitingCosts": 150
+                }
+                """.formatted(feeCode))
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json(expectedJson, STRICT));
+  }
 }

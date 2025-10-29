@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PRISON_LAW;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_PRISON_HAS_ESCAPED;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_PRISON_MAY_HAVE_ESCAPED;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -27,6 +29,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -242,12 +245,13 @@ class PrisonLawFixedFeeCalculatorTest {
 
       List<ValidationMessagesInner> validationMessages = new ArrayList<>();
       if (nonNull(warningMessage)) {
-        String expectedMessage = "WARCRM5".equals(warningMessage)
-            ? PrisonLawFixedFeeCalculator.WARNING_MESSAGE_WARCRM5
-            : PrisonLawFixedFeeCalculator.WARNING_MESSAGE_WARCRM6;
+        WarningType expectedWarning = "WARCRM5".equals(warningMessage)
+            ? WARN_PRISON_MAY_HAVE_ESCAPED
+            : WARN_PRISON_HAS_ESCAPED;
 
         ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
-            .message(expectedMessage)
+            .message(expectedWarning.getMessage())
+            .code(expectedWarning.getCode())
             .type(WARNING)
             .build();
         validationMessages.add(validationMessage);

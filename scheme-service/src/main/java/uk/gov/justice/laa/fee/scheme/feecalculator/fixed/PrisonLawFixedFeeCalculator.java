@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_PRISON_HAS_ESCAPED;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_PRISON_MAY_HAVE_ESCAPED;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
@@ -35,11 +37,6 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
 
   private static final Set<String> FEE_CODES_ESCAPE_USING_ESCAPE_THRESHOLD = Set.of("PRIA", "PRIB2", "PRIC2", "PRID2", "PRIE2");
   private static final Set<String> FEE_CODES_ESCAPE_USING_FEE_LIMIT = Set.of("PRIB1", "PRIC1", "PRID1", "PRIE1");
-  // @TODO: TBC during error and validation work, and likely moved to common util
-  public static final String WARNING_MESSAGE_WARCRM5 = "Costs are included. Profit and Waiting Costs exceed the Lower "
-      + "Standard Fee Limit. An escape fee may be payable.";
-  public static final String WARNING_MESSAGE_WARCRM6 = "The claim exceeds the Escape Case Threshold. An Escape Case Claim "
-      + "must be submitted for further costs to be paid.";
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -70,6 +67,7 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
         .schemeId(feeEntity.getFeeScheme().getSchemeCode())
+        .claimId(feeCalculationRequest.getClaimId())
         .escapeCaseFlag(escapeCaseFlag)
         .validationMessages(validationMessages)
         .feeCalculation(feeCalculation).build();
@@ -105,7 +103,8 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
     if (isEscapedCase(totalAmount, feeLimit)) {
       log.warn("Case has exceeded fee limit");
       validationMessages.add(ValidationMessagesInner.builder()
-          .message(WARNING_MESSAGE_WARCRM5)
+          .message(WARN_PRISON_MAY_HAVE_ESCAPED.getMessage())
+          .code(WARN_PRISON_MAY_HAVE_ESCAPED.getCode())
           .type(WARNING)
           .build());
     } else {
@@ -124,7 +123,8 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
     if (isEscapedCase(totalAmount, escapeThresholdLimit)) {
       log.warn("Case has escaped");
       validationMessages.add(ValidationMessagesInner.builder()
-          .message(WARNING_MESSAGE_WARCRM6)
+          .message(WARN_PRISON_HAS_ESCAPED.getMessage())
+          .code(WARN_PRISON_HAS_ESCAPED.getCode())
           .type(WARNING)
           .build());
       return true;
