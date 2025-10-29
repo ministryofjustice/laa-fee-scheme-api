@@ -12,7 +12,7 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.util.LimitContextNew;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.LimitContext;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -35,7 +35,7 @@ public class ImmigrationAsylumDisbursementOnlyCalculator {
     String immigrationPriorAuthorityNumber = feeCalculationRequest.getImmigrationPriorAuthorityNumber();
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    LimitContextNew disbursementLimitContext = new LimitContextNew(DISBURSEMENT, feeEntity.getDisbursementLimit(),
+    LimitContext disbursementLimitContext = new LimitContext(DISBURSEMENT, feeEntity.getDisbursementLimit(),
         immigrationPriorAuthorityNumber, WARN_IMM_ASYLM_DISB_ONLY);
     BigDecimal netDisbursementAmount = checkLimitAndCapIfExceeded(requestedNetDisbursementAmount,
         disbursementLimitContext, validationMessages);

@@ -1,8 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
-import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -30,8 +31,6 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @Slf4j
 @Component
 public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
-
-  private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -74,11 +73,8 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
     boolean isEscaped = FeeCalculationUtil.isEscapedCase(feeTotal, feeEntity.getEscapeThresholdLimit());
 
     if (isEscaped) {
-      log.warn("Fee total exceeds escape threshold limit");
-      validationMessages.add(ValidationMessagesInner.builder()
-          .message(WARNING_CODE_DESCRIPTION)
-          .type(WARNING)
-          .build());
+      validationMessages.add(buildValidationWarning(WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD,
+          "Fee total exceeds escape threshold limit"));
     }
 
     log.info("Build fee calculation response");

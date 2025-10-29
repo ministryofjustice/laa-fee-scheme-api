@@ -13,6 +13,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum WarningType {
+
+  WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT("WARCRM3", "Costs are included. The Net Costs exceeds the Upper Costs Limitation."),
+
+  WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD("WARCRM4", "The claim exceeds the Escape Case Threshold. An Escape "
+      + "Case Claim must be submitted for further costs to be paid."),
+
   WARN_CRIME_TRAVEL_COSTS("WARCRM1", "Cost not included. Travel costs cannot be claimed with Fee Code used.",
       Set.of("INVB1", "INVB2", "PROT", "PROU", "PROW", "PRIA", "PRIB1", "PRIB2", "PRIC1", "PRIC2",
           "PRID1", "PRID2", "PRIE1", "PRIE2")),
@@ -69,6 +75,13 @@ public enum WarningType {
   WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD("WARMH1", "Mental Health escape case threshold", CategoryType.MENTAL_HEALTH),
 
   WARN_MISCELLANEOUS_ESCAPE_THRESHOLD("WAROTH9", "Other Civil - Miscellaneous escape case threshold", CategoryType.MISCELLANEOUS),
+
+  WARN_POLICE_OTHER_UPPER_LIMIT("WARCRM7", "Costs have been included. Net Costs exceed the Upper Cost Limitation."),
+
+  WARN_POLICE_STATIONS_DISBURSEMENTS("WARCRM9", "Costs have not been included. Disbursements cannot be claimed using fee code"),
+
+  WARN_POLICE_STATIONS_ESCAPE_THRESHOLD("WARCRM8", "The claim exceeds the Escape Case Threshold. "
+                                                   + "An Escape Case Claim must be submitted for further costs to be paid."),
 
   WARN_PUBLIC_LAW_ESCAPE_THRESHOLD("WAROTH10", "Other Civil - Public Law (Non-Family) escape case threshold", CategoryType.PUBLIC_LAW),
 

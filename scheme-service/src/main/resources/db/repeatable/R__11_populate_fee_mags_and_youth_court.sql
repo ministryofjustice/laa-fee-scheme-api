@@ -98,3 +98,10 @@ VALUES
     ('YOUY3', 'Youth Representation Order - second claim for deferred sentence - category 1A - higher standard fee - designated area', 1141.17, 'YOUTH_COURT_DESIGNATED', 'FIXED', 'YOUTH_COURT_FS2024'),
     ('YOUY4', 'Youth Representation Order - second claim for deferred sentence - category 1B - higher standard fee - designated area', 500.99, 'YOUTH_COURT_DESIGNATED', 'FIXED', 'YOUTH_COURT_FS2024')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
+
+INSERT INTO fee
+(fee_code, description, fixed_fee, category_type, fee_type, fee_scheme_code)
+VALUES
+    ('PROW', 'Sending Hearing Fixed Fee', 181.40, 'SENDING_HEARING', 'FIXED', 'SEND_HEAR_FS2020'),
+    ('PROW', 'Sending Hearing Fixed Fee', 208.61, 'SENDING_HEARING', 'FIXED', 'SEND_HEAR_FS2022')
+    ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;

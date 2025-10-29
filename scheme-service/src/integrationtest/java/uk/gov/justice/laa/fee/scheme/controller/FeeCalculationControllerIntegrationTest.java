@@ -594,6 +594,43 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
   }
 
   @Test
+  void shouldGetFeeCalculation_policeOtherFixedFee() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "INVB1",
+                  "claimId": "claim_123",
+                  "startDate": "2019-12-12",
+                  "uniqueFileNumber": "12122019/2423",
+                  "policeStationId": "NE001",
+                  "policeStationSchemeId": "1001",
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "INVB1",
+              "claimId": "claim_123",
+              "schemeId": "POL_FS2016",
+              "escapeCaseFlag": false,
+              "feeCalculation": {
+              "totalAmount": 34.44,
+              "vatIndicator": true,
+              "vatRateApplied": 20.0,
+              "calculatedVatAmount": 5.74,
+              "fixedFeeAmount": 28.7
+              }
+            }
+            """, STRICT));
+  }
+
+  @Test
   void shouldGetFeeCalculation_policeStationHourlyRate() throws Exception {
     mockMvc
         .perform(post(URI)
@@ -610,7 +647,8 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "netProfitCosts": 34.56,
                   "netDisbursementAmount": 50.5,
                   "disbursementVatAmount": 20.15,
-                  "travelAndWaitingCosts": 12.45,
+                  "netTravelCosts": 20.0,
+                  "netWaitingCosts": 10.0,
                   "vatIndicator": true
                 }
                 """)
@@ -620,20 +658,21 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(content().json("""
             {
               "feeCode": "INVH",
-              "claimId": "claim_123",
               "schemeId": "POL_FS2022",
+              "claimId": "claim_123",
               "feeCalculation": {
-                "totalAmount": 187.66,
-                "vatIndicator": true,
-                "vatRateApplied": 20.0,
-                "calculatedVatAmount": 19.5,
-                "disbursementAmount": 50.5,
-                "requestedNetDisbursementAmount": 50.5,
-                "disbursementVatAmount": 20.15,
-                "hourlyTotalAmount": 97.51,
-                "netProfitCostsAmount": 34.56,
-                "requestedNetProfitCostsAmount": 34.56,
-                "travelAndWaitingCostAmount": 12.45
+                  "totalAmount": 208.72,
+                  "vatIndicator": true,
+                  "vatRateApplied": 20.0,
+                  "calculatedVatAmount": 23.01,
+                  "disbursementAmount": 50.5,
+                  "requestedNetDisbursementAmount": 50.5,
+                  "disbursementVatAmount": 20.15,
+                  "hourlyTotalAmount": 115.06,
+                  "netProfitCostsAmount": 34.56,
+                  "requestedNetProfitCostsAmount": 34.56,
+                  "netTravelCostsAmount": 20.0,
+                  "netWaitingCostsAmount": 10.0
               }
             }
             """, STRICT));
@@ -863,6 +902,90 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                     }
                 ]
               }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldGetFeeCalculation_sendingHearing() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "PROW",
+                  "claimId": "claim_123",
+                  "representationOrderDate": "2025-02-01",
+                  "uniqueFileNumber": "010225/001",
+                  "netDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "PROW",
+              "schemeId": "SEND_HEAR_FS2022",
+              "claimId": "claim_123",
+              "feeCalculation": {
+                  "totalAmount": 398.38,
+                  "vatIndicator": true,
+                  "vatRateApplied": 20.0,
+                  "calculatedVatAmount": 41.72,
+                  "disbursementAmount": 123.38,
+                  "requestedNetDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "fixedFeeAmount": 208.61
+              }
+              }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldGetFeeCalculation_preOrderCover() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "PROP1",
+                  "claimId": "claim_123",
+                  "uniqueFileNumber": "110425/abc",
+                  "netProfitCosts": 10.56,
+                  "netDisbursementAmount": 20.5,
+                  "disbursementVatAmount": 5.15,
+                  "netTravelCosts": 11.35,
+                  "netWaitingCosts": 12.22,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+                "feeCode": "PROP1",
+                "schemeId": "POC_FS2022",
+                "claimId": "claim_123",
+                "feeCalculation": {
+                    "totalAmount": 66.61,
+                    "vatIndicator": true,
+                    "vatRateApplied": 20.0,
+                    "calculatedVatAmount": 6.83,
+                    "disbursementAmount": 20.5,
+                    "requestedNetDisbursementAmount": 20.5,
+                    "disbursementVatAmount": 5.15,
+                    "hourlyTotalAmount": 34.13,
+                    "netProfitCostsAmount": 10.56,
+                    "requestedNetProfitCostsAmount": 10.56,
+                    "netTravelCostsAmount": 11.35,
+                    "netWaitingCostsAmount": 12.22
+                }
+            }
             """, STRICT));
   }
 

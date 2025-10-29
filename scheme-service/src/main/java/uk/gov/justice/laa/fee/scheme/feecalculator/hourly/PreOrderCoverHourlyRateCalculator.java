@@ -1,8 +1,8 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISCRIMINATION_ESCAPE_THRESHOLD;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PRE_ORDER_COVER;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
+import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
@@ -26,55 +28,50 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 /**
- * Calculate the discrimination fee for a given fee entity and fee calculation request.
+ * Calculate the Pre Order Cover hourly rate fee,
+ * for a given fee entity and fee calculation request.
  */
 @Slf4j
 @Component
-public class DiscriminationHourlyRateCalculator implements FeeCalculator {
+public class PreOrderCoverHourlyRateCalculator implements FeeCalculator {
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
-    return Set.of(DISCRIMINATION);
+    return Set.of(PRE_ORDER_COVER);
   }
 
   /**
    * Calculated fee based on the provided fee entity and fee calculation request.
-   * the fee entity containing fee details
-   *
-   * @param feeCalculationRequest the request containing fee calculation data
-   * @param feeEntity             the fee entity containing fee details
-   * @return FeeCalculationResponse with calculated fee
    */
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    log.info("Calculate Discrimination hourly rate fee");
-
-    BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
-    BigDecimal netCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());
-
-    BigDecimal feeTotal = netProfitCosts.add(netCostOfCounsel);
+    log.info("Calculate Pre Order Cover hourly rate fee");
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
-    boolean isEscaped = FeeCalculationUtil.isEscapedCase(feeTotal, feeEntity.getEscapeThresholdLimit());
+    BigDecimal upperCostLimit = feeEntity.getTotalLimit();
 
-    if (isEscaped) {
-      validationMessages.add(buildValidationWarning(WARN_DISCRIMINATION_ESCAPE_THRESHOLD,
-          "Fee total exceeds escape threshold limit"));
-      feeTotal = escapeThresholdLimit;
+    BigDecimal requestedNetProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
+    BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+    BigDecimal requestedNetDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+    BigDecimal requestedTravelCosts = toBigDecimal(feeCalculationRequest.getNetTravelCosts());
+    BigDecimal requestedWaitingCosts = toBigDecimal(feeCalculationRequest.getNetWaitingCosts());
+
+    BigDecimal profitAndAdditionalCosts = requestedNetProfitCosts
+        .add(requestedTravelCosts)
+        .add(requestedWaitingCosts);
+
+    if (profitAndAdditionalCosts.add(requestedNetDisbursementAmount).compareTo(upperCostLimit) >= 0) {
+      log.info("profit and Additional Costs have exceeded upper cost limit, reject claim.");
+      // todo will be ERRCRM10 "Net Cost is more than the Upper Cost Limitation."
+      throw new ValidationException(ERR_ALL_FEE_CODE, new FeeContext(feeCalculationRequest));
     }
 
-    // Apply VAT where applicable
-    LocalDate startDate = feeCalculationRequest.getStartDate();
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(feeTotal, startDate, vatApplicable);
-
-    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
-
-    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(feeTotal, calculatedVatAmount,
-            netDisbursementAmount, disbursementVatAmount);
+    LocalDate startDate = getFeeClaimStartDate(PRE_ORDER_COVER, feeCalculationRequest);
+    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(profitAndAdditionalCosts, startDate, vatApplicable);
+    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(profitAndAdditionalCosts,
+        calculatedVatAmount, requestedNetDisbursementAmount, requestedNetDisbursementVatAmount);
 
     log.info("Build fee calculation response");
     return new FeeCalculationResponse().toBuilder()
@@ -82,21 +79,19 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
         .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .claimId(feeCalculationRequest.getClaimId())
         .validationMessages(validationMessages)
-        .escapeCaseFlag(isEscaped)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
             .vatRateApplied(toDoubleOrNull(getVatRateForDate(startDate, vatApplicable)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-            // disbursement not capped, so requested and calculated will be same
             .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
-            .hourlyTotalAmount(toDouble(feeTotal))
-            .netCostOfCounselAmount(feeCalculationRequest.getNetCostOfCounsel())
-            .netProfitCostsAmount(toDouble(netProfitCosts))
-            // net profit cost not capped, so requested and calculated will be same
-            .requestedNetProfitCostsAmount(toDouble(netProfitCosts))
+            .hourlyTotalAmount(toDouble(profitAndAdditionalCosts))
+            .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+            .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+            .netWaitingCostsAmount(feeCalculationRequest.getNetWaitingCosts())
+            .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())
             .build())
         .build();
   }
