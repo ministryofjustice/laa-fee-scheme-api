@@ -2,6 +2,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ASSOCIATED_CIVIL;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -59,7 +60,8 @@ class AssociatedCivilFixedFeeCalculatorTest {
     assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, true);
 
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
-        .message("123")
+        .message(WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD.getMessage())
+        .code(WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD.getCode())
         .type(WARNING)
         .build();
 
