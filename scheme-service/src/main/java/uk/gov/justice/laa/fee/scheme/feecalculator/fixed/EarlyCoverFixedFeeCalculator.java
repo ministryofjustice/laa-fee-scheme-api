@@ -20,7 +20,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 /**
- * Calculate the Sending Hearing fee for a given fee entity and fee calculation request.
+ * Calculate the Early Cover or Refused Means Test work fee for a given fee entity and fee calculation request.
  */
 @Slf4j
 @Component
@@ -34,7 +34,7 @@ public class EarlyCoverFixedFeeCalculator implements FeeCalculator {
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    log.info("Calculate Sending Hearing fixed fee");
+    log.info("Calculate Early Cover or Refused Means Test work fixed fee");
 
     // Fixed fee calculation
     BigDecimal fixedFee = defaultToZeroIfNull(feeEntity.getFixedFee());
