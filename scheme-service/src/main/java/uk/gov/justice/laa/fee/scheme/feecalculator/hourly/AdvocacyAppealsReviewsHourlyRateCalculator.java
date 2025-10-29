@@ -1,9 +1,10 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVOCACY_APPEALS_REVIEWS;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
-import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
@@ -33,8 +34,6 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @Component
 public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator {
 
-  public static final String WARNING_CODE_DESCRIPTION = "test warning message, limit exceeded";
-
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of(ADVOCACY_APPEALS_REVIEWS);
@@ -62,11 +61,8 @@ public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator
         .add(requestedWaitingCosts);
 
     if (profitAndAdditionalCosts.add(requestedNetDisbursementAmount).compareTo(upperCostLimit) >= 0) {
-      log.info("profit and Additional Costs have exceeded upper cost limit");
-      validationMessages.add(ValidationMessagesInner.builder()
-          .message(WARNING_CODE_DESCRIPTION)
-          .type(WARNING)
-          .build());
+      validationMessages.add(buildValidationWarning(WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT,
+          "Profit and Additional Costs have exceeded upper cost limit"));
     }
 
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();

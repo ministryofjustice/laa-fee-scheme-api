@@ -3,7 +3,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVOCACY_APPEALS_REVIEWS;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.hourly.AdvocacyAppealsReviewsHourlyRateCalculator.WARNING_CODE_DESCRIPTION;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -28,7 +28,6 @@ class AdvocacyAppealsReviewsHourlyRateCalculatorTest {
 
   @InjectMocks
   AdvocacyAppealsReviewsHourlyRateCalculator calculator;
-
 
   public static Stream<Arguments> testDataWithDisbursement() {
     return Stream.of(
@@ -115,15 +114,18 @@ class AdvocacyAppealsReviewsHourlyRateCalculatorTest {
         .netWaitingCostsAmount(requestedWaitingCosts)
         .build();
 
-    ValidationMessagesInner warning = ValidationMessagesInner.builder().message(WARNING_CODE_DESCRIPTION).type(WARNING).build();
-    List<ValidationMessagesInner> validationMessage = new ArrayList<>();
-    validationMessage.add(warning);
+    List<ValidationMessagesInner> validationMessages = List.of(
+        ValidationMessagesInner.builder()
+            .code(WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT.getCode())
+            .message(WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT.getMessage())
+            .type(WARNING)
+            .build());
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode(feeCode)
         .schemeId("AAR_FS2022")
         .claimId("claim_123")
-        .validationMessages(hasWarning ? validationMessage : new ArrayList<>())
+        .validationMessages(hasWarning ? validationMessages : new ArrayList<>())
         .feeCalculation(expectedCalculation)
         .build();
 
