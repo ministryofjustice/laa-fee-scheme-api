@@ -90,8 +90,6 @@ public enum WarningType {
 
   WARN_WELFARE_BENEFITS_ESCAPE_THRESHOLD("WAROTH11", "Other Civil - Welfare Benefits escape case threshold", CategoryType.WELFARE_BENEFITS);
 
-
-
   WarningType(String code, String message) {
     this(code, message, null, null);
   }

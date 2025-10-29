@@ -2,10 +2,10 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_PRISON_HAS_ESCAPED;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_PRISON_MAY_HAVE_ESCAPED;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
-import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
@@ -93,7 +93,7 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
   }
 
   /**
-   * Calculate if the  case may have escaped using fee limit,
+   * Calculate if the case may have escaped using fee limit,
    * escape flag will always be false.
    */
   private void feeLimitValidation(FeeEntity feeEntity, List<ValidationMessagesInner> validationMessages,
@@ -101,12 +101,8 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
 
     BigDecimal feeLimit = feeEntity.getTotalLimit();
     if (isEscapedCase(totalAmount, feeLimit)) {
-      log.warn("Case has exceeded fee limit");
-      validationMessages.add(ValidationMessagesInner.builder()
-          .message(WARN_PRISON_MAY_HAVE_ESCAPED.getMessage())
-          .code(WARN_PRISON_MAY_HAVE_ESCAPED.getCode())
-          .type(WARNING)
-          .build());
+      validationMessages.add(buildValidationWarning(WARN_PRISON_MAY_HAVE_ESCAPED,
+          "Case has exceeded fee limit"));
     } else {
       log.warn("Case has not exceeded fee limit");
     }
@@ -121,12 +117,8 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
 
     BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
     if (isEscapedCase(totalAmount, escapeThresholdLimit)) {
-      log.warn("Case has escaped");
-      validationMessages.add(ValidationMessagesInner.builder()
-          .message(WARN_PRISON_HAS_ESCAPED.getMessage())
-          .code(WARN_PRISON_HAS_ESCAPED.getCode())
-          .type(WARNING)
-          .build());
+      validationMessages.add(buildValidationWarning(WARN_PRISON_HAS_ESCAPED,
+          "Case has escaped"));
       return true;
     }
     log.warn("Case has not escaped");
