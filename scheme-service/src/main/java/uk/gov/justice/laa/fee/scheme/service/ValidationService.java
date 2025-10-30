@@ -82,7 +82,8 @@ public class ValidationService {
       throw new ValidationException(ERR_ALL_FEE_CODE, new FeeContext(feeCalculationRequest));
     }
 
-    if (isCrime(feeCalculationRequest.getFeeCode()) && StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber())) {
+    if ((isCrime(feeCalculationRequest.getFeeCode()) && StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber()))
+        && !feeCalculationRequest.getFeeCode().equals("PROD")) {
       throw new ValidationException(ERR_CRIME_UFN_MISSING, new FeeContext(feeCalculationRequest));
     }
 

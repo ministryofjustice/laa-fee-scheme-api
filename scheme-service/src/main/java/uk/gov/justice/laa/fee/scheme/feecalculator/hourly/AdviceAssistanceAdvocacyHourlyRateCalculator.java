@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVICE_ASSISTANCE_ADVOCACY;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVOCACY_APPEALS_REVIEWS;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
@@ -27,16 +28,16 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 /**
- * Calculate the Advocacy Assistance in the Crown Court or Appeals & Reviews hourly rate fee,
+ * Calculate the Advice and Assistance and Advocacy Assistance by a court Duty Solicitor hourly rate fee,
  * for a given fee entity and fee calculation request.
  */
 @Slf4j
 @Component
-public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator {
+public class AdviceAssistanceAdvocacyHourlyRateCalculator implements FeeCalculator {
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
-    return Set.of(ADVOCACY_APPEALS_REVIEWS);
+    return Set.of(ADVICE_ASSISTANCE_ADVOCACY);
   }
 
   /**
@@ -45,11 +46,9 @@ public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    log.info("Calculate Advocacy Assistance in the Crown Court or Appeals & Reviews hourly rate fee");
+    log.info("Calculate Advice and Assistance and Advocacy Assistance by a court Duty Solicitor hourly rate fee");
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    BigDecimal upperCostLimit = feeEntity.getTotalLimit();
-
     BigDecimal requestedNetProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal requestedNetDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
@@ -60,13 +59,8 @@ public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator
         .add(requestedTravelCosts)
         .add(requestedWaitingCosts);
 
-    if (profitAndAdditionalCosts.add(requestedNetDisbursementAmount).compareTo(upperCostLimit) > 0) {
-      validationMessages.add(buildValidationWarning(WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT,
-          "Profit and Additional Costs have exceeded upper cost limit"));
-    }
-
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    LocalDate startDate = getFeeClaimStartDate(ADVOCACY_APPEALS_REVIEWS, feeCalculationRequest);
+    LocalDate startDate = getFeeClaimStartDate(ADVICE_ASSISTANCE_ADVOCACY, feeCalculationRequest);
     BigDecimal calculatedVatAmount = VatUtil.getVatAmount(profitAndAdditionalCosts, startDate, vatApplicable);
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(profitAndAdditionalCosts,
         calculatedVatAmount, requestedNetDisbursementAmount, requestedNetDisbursementVatAmount);
