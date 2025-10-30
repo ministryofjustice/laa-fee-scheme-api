@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
+import uk.gov.justice.laa.fee.scheme.enums.CourtDesignationType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
@@ -90,8 +91,7 @@ public final class FeeCalculationUtil {
   public static ClaimStartDateType getFeeClaimStartDateType(CategoryType categoryType, FeeCalculationRequest feeCalculationRequest) {
     return switch (categoryType) {
       case ASSOCIATED_CIVIL, POLICE_STATION, PRISON_LAW, PRE_ORDER_COVER, EARLY_COVER, REFUSED_MEANS_TEST -> UFN;
-      case MAGS_COURT_DESIGNATED, MAGS_COURT_UNDESIGNATED, YOUTH_COURT_DESIGNATED, YOUTH_COURT_UNDESIGNATED,
-           SENDING_HEARING -> REP_ORDER_DATE;
+      case MAGISTRATES_COURT, YOUTH_COURT, SENDING_HEARING -> REP_ORDER_DATE;
       case ADVOCACY_APPEALS_REVIEWS -> getFeeClaimStartDateAdvocacyAppealsReviews(feeCalculationRequest);
       default -> CASE_START_DATE;
     };
@@ -182,4 +182,15 @@ public final class FeeCalculationUtil {
     }
     return boltOnFeeDetails;
   }
+
+  /**
+   * Check if the court type is Designated.
+   *
+   * @param courtDesignationType the court type to check
+   * @return true if the court Designation Type is DESIGNATED, false otherwise
+   */
+  public static boolean isCourtDesignated(CourtDesignationType courtDesignationType) {
+    return courtDesignationType == CourtDesignationType.DESIGNATED;
+  }
+
 }

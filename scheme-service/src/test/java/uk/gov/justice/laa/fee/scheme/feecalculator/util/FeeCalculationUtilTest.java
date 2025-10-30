@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGS_COURT_DESIGNATED;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_CRIME_TRAVEL_COSTS;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
@@ -71,7 +71,7 @@ class FeeCalculationUtilTest {
         .representationOrderDate(LocalDate.of(2022, 12, 1))
         .build();
 
-    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(MAGS_COURT_DESIGNATED, feeDataRequest);
+    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(MAGISTRATES_COURT, feeDataRequest);
 
     assertThat(result).isEqualTo(LocalDate.of(2022, 12, 1));
   }
@@ -80,7 +80,7 @@ class FeeCalculationUtilTest {
   @CsvSource({
       "COMMUNITY_CARE, CASE_START_DATE",
       "POLICE_STATION, UFN",
-      "MAGS_COURT_DESIGNATED, REP_ORDER_DATE",
+      "MAGISTRATES_COURT, REP_ORDER_DATE",
   })
   void getFeeClaimStartDateType_givenCategoryType_returnsClaimStartType(CategoryType categoryType, ClaimStartDateType expectedResult) {
     FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
@@ -91,8 +91,7 @@ class FeeCalculationUtilTest {
 
   @ParameterizedTest
   @EnumSource(value = CategoryType.class, names = {
-      "MAGS_COURT_DESIGNATED", "MAGS_COURT_UNDESIGNATED",
-      "YOUTH_COURT_DESIGNATED", "YOUTH_COURT_UNDESIGNATED"
+      "MAGISTRATES_COURT","YOUTH_COURT"
   })
   void calculate_ReturnRepresentationOrderDate_forMagistratesAndYouthCourts(CategoryType categoryType) {
     FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
@@ -232,4 +231,5 @@ class FeeCalculationUtilTest {
 
     assertThat(boltOnFeeDetailResponse).isNull();
   }
+
 }
