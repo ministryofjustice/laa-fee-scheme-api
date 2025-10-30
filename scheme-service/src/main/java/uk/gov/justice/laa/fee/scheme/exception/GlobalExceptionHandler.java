@@ -78,7 +78,6 @@ public class GlobalExceptionHandler {
 
     FeeCalculationResponse feeCalculationResponse = FeeCalculationResponse.builder()
         .feeCode(context.feeCode())
-        .schemeId(context.schemeId())
         .claimId(context.claimId())
         .validationMessages(List.of(validationMessages)).build();
 

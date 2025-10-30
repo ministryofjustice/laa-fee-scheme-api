@@ -77,7 +77,7 @@ class GlobalExceptionHandlerTest {
 
   @Test
   void handleValidationException() {
-    FeeContext feeContext = new FeeContext("FEE123", LocalDate.of(2020, 3, 1), "SchemeOne", "claim_123");
+    FeeContext feeContext = new FeeContext("FEE123", LocalDate.of(2020, 3, 1), "claim_123");
     ValidationException exception = new ValidationException(ERR_ALL_FEE_CODE, feeContext);
 
     ResponseEntity<FeeCalculationResponse> response = globalExceptionHandler.handleValidationException(exception);
@@ -87,7 +87,6 @@ class GlobalExceptionHandlerTest {
 
     FeeCalculationResponse feeCalculationResponse = response.getBody();
     assertThat(feeCalculationResponse.getFeeCode()).isEqualTo("FEE123");
-    assertThat(feeCalculationResponse.getSchemeId()).isEqualTo("SchemeOne");
     assertThat(feeCalculationResponse.getClaimId()).isEqualTo("claim_123");
 
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()

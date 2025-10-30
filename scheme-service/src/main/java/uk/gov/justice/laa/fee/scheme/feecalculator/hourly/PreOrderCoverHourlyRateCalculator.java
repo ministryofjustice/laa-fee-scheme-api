@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PRE_ORDER_COVER;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_PREORDER_COVER_UPPER_LIMIT;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
@@ -62,9 +62,7 @@ public class PreOrderCoverHourlyRateCalculator implements FeeCalculator {
         .add(requestedWaitingCosts);
 
     if (profitAndAdditionalCosts.add(requestedNetDisbursementAmount).compareTo(upperCostLimit) >= 0) {
-      log.info("profit and Additional Costs have exceeded upper cost limit, reject claim.");
-      // todo will be ERRCRM10 "Net Cost is more than the Upper Cost Limitation."
-      throw new ValidationException(ERR_ALL_FEE_CODE, new FeeContext(feeCalculationRequest));
+      throw new ValidationException(ERR_CRIME_PREORDER_COVER_UPPER_LIMIT, new FeeContext(feeCalculationRequest));
     }
 
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
