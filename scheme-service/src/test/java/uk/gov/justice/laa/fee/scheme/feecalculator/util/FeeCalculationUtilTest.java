@@ -3,9 +3,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
@@ -15,9 +13,7 @@ import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEn
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -231,28 +227,4 @@ class FeeCalculationUtilTest {
     assertThat(boltOnFeeDetailResponse).isNull();
   }
 
-  @Test
-  void shouldReturnTrue_WhenCategoryRequiresUniqueFileNumber() {
-    // Categories that should return true
-    Set<CategoryType> expectedTrueCategories = EnumSet.of(
-        CategoryType.ASSOCIATED_CIVIL,
-        CategoryType.POLICE_STATION,
-        CategoryType.PRISON_LAW,
-        CategoryType.PRE_ORDER_COVER,
-        CategoryType.EARLY_COVER,
-        CategoryType.REFUSED_MEANS_TEST
-    );
-
-    for (CategoryType category : expectedTrueCategories) {
-      assertTrue(FeeCalculationUtil.isUniqueFileNumberRequired(category),
-          "Expected TRUE for category: " + category);
-    }
-  }
-
-  @Test
-  void shouldReturnFalse_WhenCategoryDoesNotRequireUniqueFileNumber() {
-    // Checking for MAGISTRATES_COURT Category for which UFN is not mandatory
-    assertFalse(FeeCalculationUtil.isUniqueFileNumberRequired(MAGISTRATES_COURT),
-        "Expected FALSE for category not requiring unique file number");
-  }
 }

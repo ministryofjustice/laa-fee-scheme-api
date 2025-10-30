@@ -8,10 +8,8 @@ import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEn
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
@@ -214,22 +212,4 @@ public final class FeeCalculationUtil {
     return courtDesignationType == CourtDesignationType.DESIGNATED;
   }
 
-  private static final Set<CategoryType> UNIQUE_FILE_NUMBER_CATEGORIES = EnumSet.of(
-      CategoryType.ASSOCIATED_CIVIL,
-      CategoryType.POLICE_STATION,
-      CategoryType.PRISON_LAW,
-      CategoryType.PRE_ORDER_COVER,
-      CategoryType.EARLY_COVER,
-      CategoryType.REFUSED_MEANS_TEST
-  );
-
-  /**
-   * This method would check if UFN is mandatory using Category Type.
-   *
-   * @param categoryType CategoryType
-   * @return boolean
-   */
-  public static boolean isUniqueFileNumberRequired(CategoryType categoryType) {
-    return UNIQUE_FILE_NUMBER_CATEGORIES.contains(categoryType);
-  }
 }

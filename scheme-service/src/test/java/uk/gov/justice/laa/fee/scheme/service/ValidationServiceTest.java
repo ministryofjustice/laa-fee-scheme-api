@@ -310,6 +310,7 @@ class ValidationServiceTest {
 
   @Test
   void getValidFeeEntity_whenCrimeFeeCodeAndUfnIsMissing_shouldThrowException() {
+    when(feeDetailsService.getCaseType("INVC")).thenReturn(CRIME);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("INVC")
@@ -407,6 +408,7 @@ class ValidationServiceTest {
 
   @Test
   void getValidFeeEntity_whenFamilyCategoryAndLondonRateIsMissing_shouldThrowException() {
+    when(feeDetailsService.getCaseType("FPB010")).thenReturn(CIVIL);
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("FAM_LON_FS2011")
         .validFrom(LocalDate.of(2011, 1, 1)).build();
