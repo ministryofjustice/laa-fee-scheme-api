@@ -145,6 +145,9 @@ components:
           type: number
           format: double
           description: "Value of detention travel and waiting costs costs"
+        caseConcludedDate:
+          type: string
+          format: date
         numberOfMediationSessions:
           type: integer
           description: "Number of mediation sessions, where applicable this will determine fixed fee for mediation category of law."
