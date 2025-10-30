@@ -41,8 +41,6 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @Component
 public class OtherCivilFixedFeeCalculator implements FeeCalculator {
 
-  private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
-
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of(CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT,
@@ -81,7 +79,7 @@ public class OtherCivilFixedFeeCalculator implements FeeCalculator {
       List<WarningType> warningTypes = WarningType.getByCategory(feeEntity.getCategoryType());
 
       if (warningTypes.isEmpty()) {
-        throw new IllegalStateException("No error codes found for category: " + feeEntity.getCategoryType());
+        throw new IllegalStateException("No warning codes found for category: " + feeEntity.getCategoryType());
       }
 
       validationMessages.add(buildValidationWarning(warningTypes.getFirst(),

@@ -37,8 +37,6 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
     return Set.of(DISCRIMINATION);
   }
 
-  private static final String WARNING_CODE_DESCRIPTION = "123"; // clarify what description should be
-
   /**
    * Calculated fee based on the provided fee entity and fee calculation request.
    * the fee entity containing fee details
