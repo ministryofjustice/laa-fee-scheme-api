@@ -568,7 +568,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "feeCode": "INVC",
                   "claimId": "claim_123",
                   "startDate": "2019-12-12",
-                  "uniqueFileNumber": "121219/2423",
+                  "uniqueFileNumber": "121219/242",
                   "policeStationId": "NE001",
                   "policeStationSchemeId": "1001",
                   "vatIndicator": false
@@ -604,7 +604,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "feeCode": "INVB1",
                   "claimId": "claim_123",
                   "startDate": "2019-12-12",
-                  "uniqueFileNumber": "12122019/2423",
+                  "uniqueFileNumber": "12122019/242",
                   "policeStationId": "NE001",
                   "policeStationSchemeId": "1001",
                   "vatIndicator": true
@@ -641,7 +641,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "feeCode": "INVH",
                   "claimId": "claim_123",
                   "startDate": "2019-12-12",
-                  "uniqueFileNumber": "041122/6655",
+                  "uniqueFileNumber": "041122/665",
                   "policeStationId": "NE024",
                   "policeStationSchemeId": "1007",
                   "netProfitCosts": 34.56,
@@ -824,7 +824,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "%s",
-                  "uniqueFileNumber": "110425/abc",
+                  "uniqueFileNumber": "110425/123",
                   "netProfitCosts": %s,
                   "netDisbursementAmount": 80,
                   "disbursementVatAmount": 10,
@@ -1019,7 +1019,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                 {
                   "feeCode": "PROP1",
                   "claimId": "claim_123",
-                  "uniqueFileNumber": "110425/abc",
+                  "uniqueFileNumber": "110425/123",
                   "netProfitCosts": 10.56,
                   "netDisbursementAmount": 20.5,
                   "disbursementVatAmount": 5.15,
