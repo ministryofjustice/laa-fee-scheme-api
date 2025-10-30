@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CIVIL;
 import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CRIME;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGS_COURT_DESIGNATED;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE;
@@ -30,9 +30,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
-import uk.gov.justice.laa.fee.scheme.enums.AreaOfLawType;
-import uk.gov.justice.laa.fee.scheme.enums.CaseType;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.CourtDesignationType;
 import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.Region;
@@ -311,7 +310,6 @@ class ValidationServiceTest {
 
   @Test
   void getValidFeeEntity_whenCrimeFeeCodeAndUfnIsMissing_shouldThrowException() {
-    when(feeDetailsService.getCaseType("INVC")).thenReturn(CRIME);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("INVC")
@@ -356,7 +354,8 @@ class ValidationServiceTest {
         .feeCode("PROJ5")
         .feeScheme(feeSchemesEntity)
         .fixedFee(new BigDecimal("200"))
-        .categoryType(MAGS_COURT_DESIGNATED)
+        .categoryType(MAGISTRATES_COURT)
+        .courtDesignationType(CourtDesignationType.DESIGNATED)
         .feeType(FeeType.FIXED).build();
 
     List<FeeEntity> feeEntityList = List.of(feeEntity);
@@ -408,7 +407,6 @@ class ValidationServiceTest {
 
   @Test
   void getValidFeeEntity_whenFamilyCategoryAndLondonRateIsMissing_shouldThrowException() {
-    when(feeDetailsService.getCaseType("FPB010")).thenReturn(CIVIL);
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("FAM_LON_FS2011")
         .validFrom(LocalDate.of(2011, 1, 1)).build();

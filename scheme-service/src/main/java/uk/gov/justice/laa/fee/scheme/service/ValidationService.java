@@ -10,6 +10,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_MISSIN
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_FAMILY_LONDON_RATE;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_CRIME_TRAVEL_COSTS;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_CRIME_WAITING_COSTS;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isUniqueFileNumberRequired;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import io.micrometer.common.util.StringUtils;
@@ -82,11 +83,11 @@ public class ValidationService {
       throw new ValidationException(ERR_ALL_FEE_CODE, new FeeContext(feeCalculationRequest));
     }
 
-    if (isCrime(feeCalculationRequest.getFeeCode()) && StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber())) {
+    CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
+
+    if (isUniqueFileNumberRequired(categoryType) && StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber())) {
       throw new ValidationException(ERR_CRIME_UFN_MISSING, new FeeContext(feeCalculationRequest));
     }
-
-    CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
 
     if (categoryType.equals(CategoryType.FAMILY) && feeCalculationRequest.getLondonRate() == null) {
       throw new ValidationException(ERR_FAMILY_LONDON_RATE, new FeeContext(feeCalculationRequest));

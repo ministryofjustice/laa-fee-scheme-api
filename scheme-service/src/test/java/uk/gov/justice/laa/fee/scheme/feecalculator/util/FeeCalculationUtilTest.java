@@ -3,17 +3,21 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGS_COURT_DESIGNATED;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -70,7 +74,7 @@ class FeeCalculationUtilTest {
         .representationOrderDate(LocalDate.of(2022, 12, 1))
         .build();
 
-    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(MAGS_COURT_DESIGNATED, feeDataRequest);
+    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(MAGISTRATES_COURT, feeDataRequest);
 
     assertThat(result).isEqualTo(LocalDate.of(2022, 12, 1));
   }
@@ -79,7 +83,7 @@ class FeeCalculationUtilTest {
   @CsvSource({
       "COMMUNITY_CARE, CASE_START_DATE",
       "POLICE_STATION, UFN",
-      "MAGS_COURT_DESIGNATED, REP_ORDER_DATE",
+      "MAGISTRATES_COURT, REP_ORDER_DATE",
   })
   void getFeeClaimStartDateType_givenCategoryType_returnsClaimStartType(CategoryType categoryType, ClaimStartDateType expectedResult) {
     FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
@@ -90,8 +94,7 @@ class FeeCalculationUtilTest {
 
   @ParameterizedTest
   @EnumSource(value = CategoryType.class, names = {
-      "MAGS_COURT_DESIGNATED", "MAGS_COURT_UNDESIGNATED",
-      "YOUTH_COURT_DESIGNATED", "YOUTH_COURT_UNDESIGNATED"
+      "MAGISTRATES_COURT","YOUTH_COURT"
   })
   void calculate_ReturnRepresentationOrderDate_forMagistratesAndYouthCourts(CategoryType categoryType) {
     FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
@@ -226,5 +229,30 @@ class FeeCalculationUtilTest {
     BoltOnFeeDetails boltOnFeeDetailResponse = FeeCalculationUtil.filterBoltOnFeeDetails(boltOnFeeDetails);
 
     assertThat(boltOnFeeDetailResponse).isNull();
+  }
+
+  @Test
+  void shouldReturnTrue_WhenCategoryRequiresUniqueFileNumber() {
+    // Categories that should return true
+    Set<CategoryType> expectedTrueCategories = EnumSet.of(
+        CategoryType.ASSOCIATED_CIVIL,
+        CategoryType.POLICE_STATION,
+        CategoryType.PRISON_LAW,
+        CategoryType.PRE_ORDER_COVER,
+        CategoryType.EARLY_COVER,
+        CategoryType.REFUSED_MEANS_TEST
+    );
+
+    for (CategoryType category : expectedTrueCategories) {
+      assertTrue(FeeCalculationUtil.isUniqueFileNumberRequired(category),
+          "Expected TRUE for category: " + category);
+    }
+  }
+
+  @Test
+  void shouldReturnFalse_WhenCategoryDoesNotRequireUniqueFileNumber() {
+    // Checking for MAGISTRATES_COURT Category for which UFN is not mandatory
+    assertFalse(FeeCalculationUtil.isUniqueFileNumberRequired(MAGISTRATES_COURT),
+        "Expected FALSE for category not requiring unique file number");
   }
 }

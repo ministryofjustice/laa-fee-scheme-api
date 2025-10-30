@@ -8,12 +8,15 @@ import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEn
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
+import uk.gov.justice.laa.fee.scheme.enums.CourtDesignationType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
@@ -118,8 +121,7 @@ public final class FeeCalculationUtil {
   public static ClaimStartDateType getFeeClaimStartDateType(CategoryType categoryType, FeeCalculationRequest feeCalculationRequest) {
     return switch (categoryType) {
       case ASSOCIATED_CIVIL, POLICE_STATION, PRISON_LAW, PRE_ORDER_COVER, EARLY_COVER, REFUSED_MEANS_TEST -> UFN;
-      case MAGS_COURT_DESIGNATED, MAGS_COURT_UNDESIGNATED, YOUTH_COURT_DESIGNATED, YOUTH_COURT_UNDESIGNATED,
-           SENDING_HEARING -> REP_ORDER_DATE;
+      case MAGISTRATES_COURT, YOUTH_COURT, SENDING_HEARING -> REP_ORDER_DATE;
       case ADVOCACY_APPEALS_REVIEWS -> getFeeClaimStartDateAdvocacyAppealsReviews(feeCalculationRequest);
       default -> CASE_START_DATE;
     };
@@ -200,5 +202,34 @@ public final class FeeCalculationUtil {
       return null;
     }
     return boltOnFeeDetails;
+  }
+
+  /**
+   * Check if the court type is Designated.
+   *
+   * @param courtDesignationType the court type to check
+   * @return true if the court Designation Type is DESIGNATED, false otherwise
+   */
+  public static boolean isCourtDesignated(CourtDesignationType courtDesignationType) {
+    return courtDesignationType == CourtDesignationType.DESIGNATED;
+  }
+
+  private static final Set<CategoryType> UNIQUE_FILE_NUMBER_CATEGORIES = EnumSet.of(
+      CategoryType.ASSOCIATED_CIVIL,
+      CategoryType.POLICE_STATION,
+      CategoryType.PRISON_LAW,
+      CategoryType.PRE_ORDER_COVER,
+      CategoryType.EARLY_COVER,
+      CategoryType.REFUSED_MEANS_TEST
+  );
+
+  /**
+   * This method would check if UFN is mandatory using Category Type.
+   *
+   * @param categoryType CategoryType
+   * @return boolean
+   */
+  public static boolean isUniqueFileNumberRequired(CategoryType categoryType) {
+    return UNIQUE_FILE_NUMBER_CATEGORIES.contains(categoryType);
   }
 }

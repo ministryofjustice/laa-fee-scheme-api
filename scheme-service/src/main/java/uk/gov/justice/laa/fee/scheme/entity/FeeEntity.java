@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.CourtDesignationType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeBandType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.Region;
@@ -56,4 +57,6 @@ public class FeeEntity {
   private FeeType feeType;
   @Enumerated(EnumType.STRING)
   private FeeBandType feeBandType;
+  @Enumerated(EnumType.STRING)
+  private CourtDesignationType courtDesignationType;
 }
