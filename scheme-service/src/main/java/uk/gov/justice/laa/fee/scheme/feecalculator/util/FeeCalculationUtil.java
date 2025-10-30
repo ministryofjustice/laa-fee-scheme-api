@@ -145,7 +145,7 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Calculate total amount when only fees and VAT are applicable.
+   * Calculate the total amount when only fees and VAT are applicable.
    */
   public static BigDecimal calculateTotalAmount(BigDecimal feeTotal, BigDecimal calculatedVatAmount) {
     log.info("Calculate total fee amount with VAT where applicable");
