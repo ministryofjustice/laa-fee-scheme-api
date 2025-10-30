@@ -145,15 +145,6 @@ components:
           type: number
           format: double
           description: "Value of detention travel and waiting costs costs"
-        caseConcludedDate:
-          type: string
-          format: date
-        policeCourtOrPrisonId:
-          type: string
-          description: "ID corresponding with police, court or prison."
-        schemeId:
-          type: string
-          description: "Scheme Id for police station fixed fee calculation."
         numberOfMediationSessions:
           type: integer
           description: "Number of mediation sessions, where applicable this will determine fixed fee for mediation category of law."
