@@ -66,7 +66,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .policeStationId("NE001")
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
-        .uniqueFileNumber("121222/4523")
+        .uniqueFileNumber("121222/452")
         .netProfitCosts(676.0)
         .build();
 
@@ -118,7 +118,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .policeStationId(null)
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
-        .uniqueFileNumber("121222/4523")
+        .uniqueFileNumber("121222/452")
         .netProfitCosts(676.0)
         .build();
 
@@ -345,7 +345,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .policeStationId("BLAH")
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
-        .uniqueFileNumber("121222/4523")
+        .uniqueFileNumber("121222/452")
         .netTravelCosts(35.00)
         .netWaitingCosts(10.00)
         .netProfitCosts(676.0)
@@ -373,7 +373,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .policeStationSchemeId("BLAH")
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
-        .uniqueFileNumber("121222/4523")
+        .uniqueFileNumber("121222/452")
         .netTravelCosts(35.00)
         .netWaitingCosts(10.00)
         .netProfitCosts(676.0)
@@ -400,7 +400,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .vatIndicator(true)
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
-        .uniqueFileNumber("121222/4523")
+        .uniqueFileNumber("121222/452")
         .netTravelCosts(35.00)
         .netWaitingCosts(10.00)
         .netProfitCosts(676.0)
@@ -428,7 +428,7 @@ class PoliceStationFixedFeeCalculatorTest {
         .policeStationSchemeId("1001")
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
-        .uniqueFileNumber("121222/4523")
+        .uniqueFileNumber("121222/452")
         .netTravelCosts(20.00)
         .netWaitingCosts(10.00)
         .netProfitCosts(50.00)
