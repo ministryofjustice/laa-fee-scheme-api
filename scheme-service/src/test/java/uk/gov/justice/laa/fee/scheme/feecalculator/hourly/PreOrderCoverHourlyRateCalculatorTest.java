@@ -53,7 +53,7 @@ class PreOrderCoverHourlyRateCalculatorTest {
 
   @ParameterizedTest
   @MethodSource("testData")
-  void calculate_whenPreOrderCover_withDisbursement(
+  void calculate_whenPreOrderCover(
       String description,
       String feeCode,
       boolean vatIndicator,
