@@ -72,7 +72,7 @@ class PreOrderCoverHourlyRateCalculatorTest {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .claimId("claim_123")
-        .uniqueFileNumber("110425/abc")
+        .uniqueFileNumber("110425/123")
         .netProfitCosts(requestedProfitCosts)
         .netDisbursementAmount(netDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)

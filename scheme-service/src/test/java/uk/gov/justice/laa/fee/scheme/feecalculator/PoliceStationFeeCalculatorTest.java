@@ -47,7 +47,7 @@ class PoliceStationFeeCalculatorTest {
         .policeStationId("NE001")
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
-        .uniqueFileNumber("121222/4523")
+        .uniqueFileNumber("121222/452")
         .travelAndWaitingCosts(45.0)
         .netProfitCosts(676.0)
         .build();
@@ -104,7 +104,7 @@ class PoliceStationFeeCalculatorTest {
         .policeStationId("NE001")
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
-        .uniqueFileNumber("121222/4523")
+        .uniqueFileNumber("121222/452")
         .travelAndWaitingCosts(23.00)
         .netProfitCosts(450.90)
         .build();
