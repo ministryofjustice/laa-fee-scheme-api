@@ -933,4 +933,41 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
         .andExpect(status().isOk())
         .andExpect(content().json(expectedJson, STRICT));
   }
+
+  @Test
+  void shouldReturnValidationWarning_preOrderCover() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                      {
+                          "feeCode": "PROP1",
+                          "claimId": "claim_123",
+                          "uniqueFileNumber": "020416/001",
+                          "netProfitCosts": 10.0,
+                          "netTravelCosts": 57.0,
+                          "netWaitingCosts": 70.0,
+                          "netDisbursementAmount": 55.35,
+                          "disbursementVatAmount": 11.07,
+                          "vatIndicator": true
+                      }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+                "feeCode": "PROP1",
+                "claimId": "claim_123",
+                "validationMessages": [
+                  {
+                      "type": "ERROR",
+                      "code": "ERRCRM10",
+                      "message": "Net Cost is more than the Upper Cost Limitation."
+                  }
+                ]
+            }
+            """, STRICT));
+  }
 }
