@@ -30,8 +30,6 @@ class FeeDataServiceTest {
   @Test
   void getFeeEntities_shouldReturnValidResponse() {
 
-    FeeCalculationRequest feeCalculationRequest = buildFeeCalculationRequest();
-
     FeeEntity feeEntity = buildFeeEntity();
 
     when(feeRepository.findByFeeCode("INVC")).thenReturn(List.of(feeEntity));

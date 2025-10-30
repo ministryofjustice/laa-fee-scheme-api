@@ -22,10 +22,6 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 @Component
 public class MentalHealthDisbursementOnlyCalculator implements FeeCalculator {
 
-  // @TODO: TBC during error and validation work, and likely moved to common util
-  public static final String WARNING_MESSAGE_WARMH1 = "The claim exceeds the Escape Case Threshold. An Escape Case Claim "
-      + "must be submitted for further costs to be paid.";
-
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of();
@@ -40,7 +36,7 @@ public class MentalHealthDisbursementOnlyCalculator implements FeeCalculator {
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    log.info("Get fields from fee calculation request");
+    log.info("Calculate Mental Health disbursements only");
 
     BigDecimal requestNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal requestedDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());

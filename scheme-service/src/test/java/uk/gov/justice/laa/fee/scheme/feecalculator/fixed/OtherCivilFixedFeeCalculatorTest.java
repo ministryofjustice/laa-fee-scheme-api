@@ -1,11 +1,25 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLAIMS_PUBLIC_AUTHORITIES;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLINICAL_NEGLIGENCE;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DEBT;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING_HLPAS;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MISCELLANEOUS;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PUBLIC_LAW;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.WELFARE_BENEFITS;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -59,9 +73,7 @@ class OtherCivilFixedFeeCalculatorTest {
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, true);
 
-
     List<WarningType> warningTypes = WarningType.getByCategory(feeEntity.getCategoryType());
-
 
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
         .message(warningTypes.getFirst().getMessage())
@@ -71,6 +83,41 @@ class OtherCivilFixedFeeCalculatorTest {
 
     assertThat(result.getValidationMessages()).size().isEqualTo(1);
     assertThat(result.getValidationMessages().getFirst()).isEqualTo(validationMessage);
+  }
+
+  @Test
+  void calculate_givenInvalidCategoryThrowsException() {
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("FEE123")
+        .claimId("claim_123")
+        .uniqueFileNumber("04052025/224")
+        .startDate(LocalDate.of(2025, 4, 5))
+        .vatIndicator(true)
+        .netProfitCosts(501.00)
+        .netDisbursementAmount(370.00)
+        .disbursementVatAmount(74.00)
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("FEE123")
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("FEE123_FS2013").build())
+        .fixedFee(new BigDecimal("250.00"))
+        .categoryType(CategoryType.ADVOCACY_APPEALS_REVIEWS)
+        .escapeThresholdLimit(new BigDecimal("500.00"))
+        .build();
+
+    assertThatThrownBy(() -> feeCalculator.calculate(feeCalculationRequest, feeEntity))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessage("No warning codes found for category: ADVOCACY_APPEALS_REVIEWS");
+  }
+
+  @Test
+  void getSupportedCategories_shouldReturnExpectedCategories() {
+    Set<CategoryType> result = feeCalculator.getSupportedCategories();
+
+    assertThat(result).isEqualTo(Set.of(CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT,
+        HOUSING, HOUSING_HLPAS, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS));
   }
 
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netProfitCosts) {
