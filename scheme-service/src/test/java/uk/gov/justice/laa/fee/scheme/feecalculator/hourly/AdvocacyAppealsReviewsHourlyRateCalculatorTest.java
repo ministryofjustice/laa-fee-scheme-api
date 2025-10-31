@@ -94,7 +94,7 @@ class AdvocacyAppealsReviewsHourlyRateCalculatorTest {
         .feeScheme(FeeSchemesEntity.builder().schemeCode("AAR_FS2022").build())
         .categoryType(ADVOCACY_APPEALS_REVIEWS)
         .feeType(HOURLY)
-        .totalLimit(new BigDecimal(upperCostLimit))
+        .upperCostLimit(new BigDecimal(upperCostLimit))
         .build();
 
     FeeCalculationResponse response = calculator.calculate(feeCalculationRequest, feeEntity);
