@@ -41,6 +41,8 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @Service
 public class ValidationService {
 
+  private static final String PROD_FEE_CODE = "PROD";
+
   private static final LocalDate CIVIL_START_DATE = LocalDate.of(2013, 4, 1);
   private final FeeDetailsService feeDetailsService;
 
@@ -82,7 +84,8 @@ public class ValidationService {
       throw new ValidationException(ERR_ALL_FEE_CODE, new FeeContext(feeCalculationRequest));
     }
 
-    if (isCrime(feeCalculationRequest.getFeeCode()) && StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber())) {
+    if ((isCrime(feeCalculationRequest.getFeeCode()) && StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber()))
+        && !feeCalculationRequest.getFeeCode().equals(PROD_FEE_CODE)) {
       throw new ValidationException(ERR_CRIME_UFN_MISSING, new FeeContext(feeCalculationRequest));
     }
 

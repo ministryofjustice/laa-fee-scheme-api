@@ -12,13 +12,15 @@ public final class NumberUtil {
   }
 
   /**
-   * Converts a Double value to a BigDecimal with scaling.
+   * Converts a Number value to a BigDecimal with scaling.
    *
-   * @param value the Double value to convert
+   * @param value the Number value to convert
    * @return the converted BigDecimal
    */
-  public static BigDecimal toBigDecimal(Double value) {
-    return NumberUtils.toScaledBigDecimal(value);
+  public static BigDecimal toBigDecimal(Number value) {
+    return value == null
+        ? BigDecimal.ZERO
+        : NumberUtils.toScaledBigDecimal(new BigDecimal(value.toString()));
   }
 
   /**

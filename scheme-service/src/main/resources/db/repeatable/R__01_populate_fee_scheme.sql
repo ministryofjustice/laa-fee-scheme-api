@@ -1,3 +1,9 @@
+-- Fee Scheme for 'Advice and Assistance and Advocacy Assistance by a court Duty Solicitor'' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('AAA_FS2016', 'Advocacy Assistance in the Crown Court or Appeals & Reviews Fee Scheme 2016', '2016-04-01', NULL)
+ON CONFLICT (scheme_code) DO NOTHING;
+
 -- Fee Scheme for 'Advocacy Assistance in the Crown Court or Appeals & Reviews' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
