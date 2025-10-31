@@ -50,8 +50,7 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
-    // upper cost limit stored in profit cost list db column
-    BigDecimal upperCostLimit = feeEntity.getProfitCostLimit();
+    BigDecimal upperCostLimit = feeEntity.getUpperCostLimit();
 
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
 

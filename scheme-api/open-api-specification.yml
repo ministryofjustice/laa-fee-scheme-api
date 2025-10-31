@@ -107,7 +107,7 @@ components:
           description: "Police Station Scheme ID."
         uniqueFileNumber:
           type: string
-          description: "Unique File Number (UFN) for Police Station/Prison Law category. Format DDMMYY/NNNN"
+          description: "Unique File Number (UFN) for Police Station/Prison Law category. Format DDMMYY/NNN"
         netProfitCosts:
           type: number
           format: double
@@ -148,12 +148,6 @@ components:
         caseConcludedDate:
           type: string
           format: date
-        policeCourtOrPrisonId:
-          type: string
-          description: "ID corresponding with police, court or prison."
-        schemeId:
-          type: string
-          description: "Scheme Id for police station fixed fee calculation."
         numberOfMediationSessions:
           type: integer
           description: "Number of mediation sessions, where applicable this will determine fixed fee for mediation category of law."

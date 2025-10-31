@@ -40,6 +40,7 @@ public class FeeEntity {
   private BigDecimal disbursementLimit;
   private BigDecimal escapeThresholdLimit;
   private BigDecimal totalLimit;
+  private BigDecimal upperCostLimit;
   private Boolean priorAuthorityApplicable;
   private Boolean scheduleReference;
   private BigDecimal hoInterviewBoltOn;

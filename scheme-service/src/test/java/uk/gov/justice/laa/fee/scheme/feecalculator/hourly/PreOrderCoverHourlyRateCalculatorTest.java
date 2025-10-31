@@ -72,7 +72,7 @@ class PreOrderCoverHourlyRateCalculatorTest {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .claimId("claim_123")
-        .uniqueFileNumber("110425/abc")
+        .uniqueFileNumber("110425/123")
         .netProfitCosts(requestedProfitCosts)
         .netDisbursementAmount(netDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)
@@ -86,7 +86,7 @@ class PreOrderCoverHourlyRateCalculatorTest {
         .feeScheme(FeeSchemesEntity.builder().schemeCode("POC_FS2022").build())
         .categoryType(PRE_ORDER_COVER)
         .feeType(HOURLY)
-        .totalLimit(new BigDecimal(upperCostLimit))
+        .upperCostLimit(new BigDecimal(upperCostLimit))
         .build();
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()

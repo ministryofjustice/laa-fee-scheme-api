@@ -49,7 +49,7 @@ public class PreOrderCoverHourlyRateCalculator implements FeeCalculator {
     log.info("Calculate Pre Order Cover hourly rate fee");
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    BigDecimal upperCostLimit = feeEntity.getTotalLimit();
+    BigDecimal upperCostLimit = feeEntity.getUpperCostLimit();
 
     BigDecimal requestedNetProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());

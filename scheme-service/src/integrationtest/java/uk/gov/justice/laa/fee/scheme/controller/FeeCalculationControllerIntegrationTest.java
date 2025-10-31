@@ -568,7 +568,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "feeCode": "INVC",
                   "claimId": "claim_123",
                   "startDate": "2019-12-12",
-                  "uniqueFileNumber": "121219/2423",
+                  "uniqueFileNumber": "121219/242",
                   "policeStationId": "NE001",
                   "policeStationSchemeId": "1001",
                   "vatIndicator": false
@@ -604,7 +604,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "feeCode": "INVB1",
                   "claimId": "claim_123",
                   "startDate": "2019-12-12",
-                  "uniqueFileNumber": "12122019/2423",
+                  "uniqueFileNumber": "12122019/242",
                   "policeStationId": "NE001",
                   "policeStationSchemeId": "1001",
                   "vatIndicator": true
@@ -641,7 +641,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                   "feeCode": "INVH",
                   "claimId": "claim_123",
                   "startDate": "2019-12-12",
-                  "uniqueFileNumber": "041122/6655",
+                  "uniqueFileNumber": "041122/665",
                   "policeStationId": "NE024",
                   "policeStationSchemeId": "1007",
                   "netProfitCosts": 34.56,
@@ -824,7 +824,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             .content("""
                 {
                   "feeCode": "%s",
-                  "uniqueFileNumber": "110425/abc",
+                  "uniqueFileNumber": "110425/123",
                   "netProfitCosts": %s,
                   "netDisbursementAmount": 80,
                   "disbursementVatAmount": 10,
@@ -837,6 +837,39 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json(expectedJson, STRICT));
+  }
+
+  @Test
+  void shouldGetFeeCalculation_educationDisbursementOnly() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "EDUDIS",
+                  "claimId": "claim_123",
+                  "startDate": "2025-02-01",
+                  "netDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "EDUDIS",
+              "schemeId": "EDU_DISB_FS2024",
+              "claimId": "claim_123",
+              "feeCalculation": {
+                  "totalAmount": 148.05,
+                  "disbursementAmount": 123.38,
+                  "requestedNetDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67
+                }
+              }
+            """, STRICT));
   }
 
   @Test
@@ -872,6 +905,38 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             """, STRICT));
   }
 
+  @Test
+  void shouldGetFeeCalculation_mentalHealthDisbursementOnly() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "MHLDIS",
+                  "claimId": "claim_123",
+                  "startDate": "2025-07-29",
+                  "netDisbursementAmount": 1200.0,
+                  "disbursementVatAmount": 150.0
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "MHLDIS",
+              "schemeId": "MHL_DISB_FS2020",
+              "claimId": "claim_123",
+              "feeCalculation": {
+                  "totalAmount": 1350.0,
+                  "disbursementAmount": 1200.0,
+                  "requestedNetDisbursementAmount": 1200.0,
+                  "disbursementVatAmount": 150.0
+                }
+              }
+            """, STRICT));
+  }
 
   @Test
   void should_GetErrorCodeAndMessage_WhenLondonRateIsNotSupplied_InFamilyClaimRequest() throws Exception {
@@ -954,7 +1019,7 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
                 {
                   "feeCode": "PROP1",
                   "claimId": "claim_123",
-                  "uniqueFileNumber": "110425/abc",
+                  "uniqueFileNumber": "110425/123",
                   "netProfitCosts": 10.56,
                   "netDisbursementAmount": 20.5,
                   "disbursementVatAmount": 5.15,

@@ -80,7 +80,7 @@ class AdvocacyAppealsReviewsHourlyRateCalculatorTest {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .claimId("claim_123")
-        .uniqueFileNumber("110425/abc")
+        .uniqueFileNumber("110425/123")
         .netProfitCosts(requestedProfitCosts)
         .netDisbursementAmount(netDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)
@@ -94,7 +94,7 @@ class AdvocacyAppealsReviewsHourlyRateCalculatorTest {
         .feeScheme(FeeSchemesEntity.builder().schemeCode("AAR_FS2022").build())
         .categoryType(ADVOCACY_APPEALS_REVIEWS)
         .feeType(HOURLY)
-        .totalLimit(new BigDecimal(upperCostLimit))
+        .upperCostLimit(new BigDecimal(upperCostLimit))
         .build();
 
     FeeCalculationResponse response = calculator.calculate(feeCalculationRequest, feeEntity);

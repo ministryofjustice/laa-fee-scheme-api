@@ -37,7 +37,7 @@ class EarlyCoverFixedFeeCalculatorTest {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .claimId("claim_123")
-        .uniqueFileNumber("121222/4523")
+        .uniqueFileNumber("121222/452")
         .vatIndicator(vatIndicator)
         .build();
 
