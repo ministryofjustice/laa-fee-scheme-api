@@ -48,7 +48,7 @@ public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator
     log.info("Calculate Advocacy Assistance in the Crown Court or Appeals & Reviews hourly rate fee");
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    BigDecimal upperCostLimit = feeEntity.getTotalLimit();
+    BigDecimal upperCostLimit = feeEntity.getUpperCostLimit();
 
     BigDecimal requestedNetProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
