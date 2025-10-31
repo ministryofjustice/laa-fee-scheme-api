@@ -1,9 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVICE_ASSISTANCE_ADVOCACY;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVOCACY_APPEALS_REVIEWS;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
@@ -60,8 +57,8 @@ public class AdviceAssistanceAdvocacyHourlyRateCalculator implements FeeCalculat
         .add(requestedWaitingCosts);
 
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    LocalDate startDate = getFeeClaimStartDate(ADVICE_ASSISTANCE_ADVOCACY, feeCalculationRequest);
-    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(profitAndAdditionalCosts, startDate, vatApplicable);
+    LocalDate caseConcludedDate = getFeeClaimStartDate(ADVICE_ASSISTANCE_ADVOCACY, feeCalculationRequest);
+    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(profitAndAdditionalCosts, caseConcludedDate, vatApplicable);
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(profitAndAdditionalCosts,
         calculatedVatAmount, requestedNetDisbursementAmount, requestedNetDisbursementVatAmount);
 
@@ -74,7 +71,7 @@ public class AdviceAssistanceAdvocacyHourlyRateCalculator implements FeeCalculat
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
             .vatIndicator(vatApplicable)
-            .vatRateApplied(toDoubleOrNull(getVatRateForDate(startDate, vatApplicable)))
+            .vatRateApplied(toDoubleOrNull(getVatRateForDate(caseConcludedDate, vatApplicable)))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
