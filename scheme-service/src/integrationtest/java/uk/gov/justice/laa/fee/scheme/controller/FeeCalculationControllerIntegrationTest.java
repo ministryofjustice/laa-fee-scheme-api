@@ -1054,4 +1054,49 @@ public class FeeCalculationControllerIntegrationTest extends PostgresContainerTe
             """, STRICT));
   }
 
+  @Test
+  void shouldGetFeeCalculation_adviceAssistanceAdvocacy() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "PROD",
+                  "claimId": "claim_123",
+                  "caseConcludedDate": "2024-12-06",
+                  "netProfitCosts": 500,
+                  "netDisbursementAmount": 100,
+                  "disbursementVatAmount": 20,
+                  "vatIndicator": true,
+                  "netTravelCosts": 50,
+                  "netWaitingCosts": 50
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+                "feeCode": "PROD",
+                "schemeId": "AAA_FS2016",
+                "claimId": "claim_123",
+                "feeCalculation": {
+                    "totalAmount": 840.0,
+                    "vatIndicator": true,
+                    "vatRateApplied": 20.0,
+                    "calculatedVatAmount": 120.0,
+                    "disbursementAmount": 100.0,
+                    "requestedNetDisbursementAmount": 100.0,
+                    "disbursementVatAmount": 20.0,
+                    "hourlyTotalAmount": 600.0,
+                    "netProfitCostsAmount": 500.0,
+                    "requestedNetProfitCostsAmount": 500.0,
+                    "netTravelCostsAmount": 50.0,
+                    "netWaitingCostsAmount": 50.0
+                }
+            }
+            """, STRICT));
+  }
+
 }

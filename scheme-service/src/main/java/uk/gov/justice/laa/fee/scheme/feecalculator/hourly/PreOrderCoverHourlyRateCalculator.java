@@ -61,7 +61,7 @@ public class PreOrderCoverHourlyRateCalculator implements FeeCalculator {
         .add(requestedTravelCosts)
         .add(requestedWaitingCosts);
 
-    if (profitAndAdditionalCosts.add(requestedNetDisbursementAmount).compareTo(upperCostLimit) >= 0) {
+    if (profitAndAdditionalCosts.add(requestedNetDisbursementAmount).compareTo(upperCostLimit) > 0) {
       throw new ValidationException(ERR_CRIME_PREORDER_COVER_UPPER_LIMIT, new FeeContext(feeCalculationRequest));
     }
 

@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
 import static java.util.Objects.nonNull;
+import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.CASE_CONCLUDED_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.CASE_START_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.REP_ORDER_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.UFN;
@@ -93,6 +94,7 @@ public final class FeeCalculationUtil {
       case ASSOCIATED_CIVIL, POLICE_STATION, PRISON_LAW, PRE_ORDER_COVER, EARLY_COVER, REFUSED_MEANS_TEST -> UFN;
       case MAGISTRATES_COURT, YOUTH_COURT, SENDING_HEARING -> REP_ORDER_DATE;
       case ADVOCACY_APPEALS_REVIEWS -> getFeeClaimStartDateAdvocacyAppealsReviews(feeCalculationRequest);
+      case ADVICE_ASSISTANCE_ADVOCACY -> CASE_CONCLUDED_DATE;
       default -> CASE_START_DATE;
     };
   }
@@ -110,6 +112,7 @@ public final class FeeCalculationUtil {
     return switch (claimStartDateType) {
       case REP_ORDER_DATE -> feeCalculationRequest.getRepresentationOrderDate();
       case UFN -> DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
+      case CASE_CONCLUDED_DATE -> feeCalculationRequest.getCaseConcludedDate();
       default -> feeCalculationRequest.getStartDate();
     };
   }
