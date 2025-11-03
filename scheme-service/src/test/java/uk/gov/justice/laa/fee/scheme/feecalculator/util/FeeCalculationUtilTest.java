@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVICE_ASSISTANCE_ADVOCACY;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
@@ -72,6 +73,17 @@ class FeeCalculationUtilTest {
         .build();
 
     LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(MAGISTRATES_COURT, feeDataRequest);
+
+    assertThat(result).isEqualTo(LocalDate.of(2022, 12, 1));
+  }
+
+  @Test
+  void getFeeClaimStartDate_returnsCaseConcludedDate() {
+    FeeCalculationRequest feeDataRequest = FeeCalculationRequest.builder()
+        .caseConcludedDate(LocalDate.of(2022, 12, 1))
+        .build();
+
+    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(ADVICE_ASSISTANCE_ADVOCACY, feeDataRequest);
 
     assertThat(result).isEqualTo(LocalDate.of(2022, 12, 1));
   }

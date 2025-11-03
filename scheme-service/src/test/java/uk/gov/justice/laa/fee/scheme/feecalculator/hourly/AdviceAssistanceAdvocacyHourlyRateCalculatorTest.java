@@ -1,12 +1,10 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PRE_ORDER_COVER;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_PREORDER_COVER_UPPER_LIMIT;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVICE_ASSISTANCE_ADVOCACY;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,43 +15,37 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
-import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 @ExtendWith(MockitoExtension.class)
-class PreOrderCoverHourlyRateCalculatorTest {
+class AdviceAssistanceAdvocacyHourlyRateCalculatorTest {
 
   @InjectMocks
-  PreOrderCoverHourlyRateCalculator preOrderCoverHourlyRateCalculator;
-
+  AdviceAssistanceAdvocacyHourlyRateCalculator adviceAssistanceAdvocacyHourlyRateCalculator;
 
   public static Stream<Arguments> testData() {
     return Stream.of(
-        arguments("PROP1, no error", "PROP1", true, 10.0, 2.0, 10,
-            10, 10, 55.14, 6.0, 30.0, 48.0, false),
-        arguments("PROP2, no error", "PROP1", true, 10.0, 2.0, 10,
-            10, 10, 52.14, 6.0, 30.0, 48.0, false),
-        arguments("PROP1, has error", "PROP1", true, 10.0, 2.0, 60,
-            10, 10, 55.14, 6.0, 30.0, 48.0, true),
-        arguments("PROP1, has error", "PROP1", true, 10.0, 2.0, 60,
-            10, 10, 52.14, 6.0, 40.0, 58.0, true)
+        arguments("PROD, with VAT", "PROD", true, 100.0, 20.0, 290,
+            180, 120, 118.0, 590.0, 828.0),
+        arguments("PROD, without VAT", "PROD", false, 100.0, 20.0, 190,
+            110, 150, 0.0, 450.0, 570.0)
     );
   }
 
   private static Arguments arguments(String scenario, String feeCode, boolean vat,
                                      double netDisbursementAmount, double disbursementVatAmount, double requestedProfitCosts,
-                                     double requestedTravelCosts, double requestedWaitingCosts, double upperCostLimit,
-                                     double calculatedVatAmount, double hourlyTotalAmount, double expectedTotal, boolean hasError) {
+                                     double requestedTravelCosts, double requestedWaitingCosts,
+                                     double calculatedVatAmount, double hourlyTotalAmount, double expectedTotal) {
     return Arguments.of(scenario, feeCode, vat, netDisbursementAmount, disbursementVatAmount, requestedProfitCosts,
-        requestedTravelCosts, requestedWaitingCosts, upperCostLimit, calculatedVatAmount, hourlyTotalAmount,
-        expectedTotal, hasError);
+        requestedTravelCosts, requestedWaitingCosts, calculatedVatAmount, hourlyTotalAmount,
+        expectedTotal);
   }
 
   @ParameterizedTest
   @MethodSource("testData")
-  void calculate_whenPreOrderCover(
+  void calculate_whenAdviceAssistanceAdvocacy(
       String description,
       String feeCode,
       boolean vatIndicator,
@@ -62,17 +54,15 @@ class PreOrderCoverHourlyRateCalculatorTest {
       double requestedProfitCosts,
       double requestedTravelCosts,
       double requestedWaitingCosts,
-      double upperCostLimit,
       double calculatedVatAmount,
       double hourlyTotalAmount,
-      double expectedTotal,
-      boolean hasError
+      double expectedTotal
   ) {
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .claimId("claim_123")
-        .uniqueFileNumber("110425/123")
+        .caseConcludedDate(LocalDate.of(2024, 7, 29))
         .netProfitCosts(requestedProfitCosts)
         .netDisbursementAmount(netDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)
@@ -83,10 +73,9 @@ class PreOrderCoverHourlyRateCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("POC_FS2022").build())
-        .categoryType(PRE_ORDER_COVER)
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("AAA_FS2016").build())
+        .categoryType(ADVICE_ASSISTANCE_ADVOCACY)
         .feeType(HOURLY)
-        .upperCostLimit(new BigDecimal(upperCostLimit))
         .build();
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
@@ -104,24 +93,18 @@ class PreOrderCoverHourlyRateCalculatorTest {
         .netWaitingCostsAmount(requestedWaitingCosts)
         .build();
 
-    if (hasError) {
-      assertThatThrownBy(() -> preOrderCoverHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity))
-          .isInstanceOf(ValidationException.class)
-          .hasFieldOrPropertyWithValue("error", ERR_CRIME_PREORDER_COVER_UPPER_LIMIT)
-          .hasMessageContaining(ERR_CRIME_PREORDER_COVER_UPPER_LIMIT.getMessage());
-    } else {
-      FeeCalculationResponse response = preOrderCoverHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
-      FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
-          .feeCode(feeCode)
-          .schemeId("POC_FS2022")
-          .claimId("claim_123")
-          .validationMessages(new ArrayList<>())
-          .feeCalculation(expectedCalculation)
-          .build();
 
-      assertThat(response)
-          .usingRecursiveComparison()
-          .isEqualTo(expectedResponse);
-    }
+    FeeCalculationResponse response = adviceAssistanceAdvocacyHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
+        .feeCode(feeCode)
+        .schemeId("AAA_FS2016")
+        .claimId("claim_123")
+        .validationMessages(new ArrayList<>())
+        .feeCalculation(expectedCalculation)
+        .build();
+
+    assertThat(response)
+        .usingRecursiveComparison()
+        .isEqualTo(expectedResponse);
   }
 }
