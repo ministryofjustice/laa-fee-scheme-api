@@ -23,6 +23,8 @@ jobs:
 
       - name: Build API JAR
         run: ./gradlew clean build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build API Docker Image
         run: docker build -t laa-fee-scheme-api:build-image .
