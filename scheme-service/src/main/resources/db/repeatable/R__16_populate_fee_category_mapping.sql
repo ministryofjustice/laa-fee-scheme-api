@@ -1,3 +1,7 @@
+DELETE FROM fee_category_mapping
+WHERE fee_code IN ('ICASD', 'ICISD', 'ICSSD', 'ILHSD', 'MHLDIS', 'EDUDIS');
+
+
 INSERT INTO fee_category_mapping (fee_code, fee_description, fee_type, fee_scheme_category_type_id, category_of_law_type_id)
 VALUES ('IACA', 'Standard Fee - Asylum CLR  (2a)', 'FIXED', 1, 11),
        ('IACB', 'Standard Fee - Asylum CLR (2b + advocacy substantive hearing fee) ', 'FIXED', 1, 11),
@@ -21,10 +25,10 @@ VALUES ('IACA', 'Standard Fee - Asylum CLR  (2a)', 'FIXED', 1, 11),
        ('IRAR', 'CLR Upper Tribunal Transitional cases', 'HOURLY', 1, 11),
        ('IACD', 'Interim hourly rates - Asylum CLR', 'HOURLY', 1, 11),
        ('IMCD', 'Interim hourly rates - Immigration Interim CLR', 'HOURLY', 1, 11),
-       ('ICASD', 'Asylum CLR Hourly Rates Stage Disbursement', 'HOURLY', 1, 11),
-       ('ICISD', 'Immigration CLR Hourly Rates Stage Disbursement', 'HOURLY', 1, 11),
-       ('ICSSD', 'CLR SFS Stage Disbursement', 'FIXED', 1, 11),
-       ('ILHSD', 'LH Stage Disbursement', 'FIXED', 1, 11)
+       ('ICASD', 'Asylum CLR Hourly Rates Stage Disbursement', 'DISB_ONLY', 1, 11),
+       ('ICISD', 'Immigration CLR Hourly Rates Stage Disbursement', 'DISB_ONLY', 1, 11),
+       ('ICSSD', 'CLR SFS Stage Disbursement', 'DISB_ONLY', 1, 11),
+       ('ILHSD', 'LH Stage Disbursement', 'DISB_ONLY', 1, 11)
 ON CONFLICT (fee_code) DO NOTHING;
 
 INSERT INTO fee_category_mapping (fee_code, fee_description, fee_type, fee_scheme_category_type_id, category_of_law_type_id)
@@ -38,7 +42,7 @@ VALUES ('MHL01', 'Non-Mental Health Tribunal Fee', 'FIXED', 2, 21),
        ('MHL08', 'Mental Health Tribunal Fee - Levels 1 and 3', 'FIXED', 2, 21),
        ('MHL10', 'Mental Health Tribunal Fee - Level 1 (Rule 11(7)(a) cases where a patient has not engaged with the provider)',
               'FIXED', 2, 21),
-       ('MHLDIS', 'Mental Health - Interim Claim for Disbursements', 'FIXED', 2, 21)
+       ('MHLDIS', 'Mental Health - Interim Claim for Disbursements', 'DISB_ONLY', 2, 21)
 ON CONFLICT (fee_code) DO NOTHING;
 
 INSERT INTO fee_category_mapping (fee_code, fee_description, fee_type, fee_scheme_category_type_id, category_of_law_type_id)
@@ -130,7 +134,7 @@ VALUES ('COM', 'Community Care Legal Help Fixed Fee', 'FIXED', 5, 18),
        ('DEBT', 'Debt Legal Help Fixed Fee', 'FIXED', 8, 19),
        ('DISC', 'Discrimination Legal Help Payment', 'HOURLY', 9, 8),
        ('EDUFIN', 'Education Legal Help Fixed Fee', 'FIXED', 10, 17),
-       ('EDUDIS', 'Education - Interim Claim for Disbursement', 'FIXED', 10, 17),
+       ('EDUDIS', 'Education - Interim Claim for Disbursement', 'DISB_ONLY', 10, 17),
        ('ELA', 'HLPAS Stage One: early legal advice', 'FIXED', 11, 14),
        ('HOUS', 'Housing Fixed Fee', 'FIXED', 12, 13),
        ('MISCGEN', 'Miscellaneous Legal Help Fixed Fee', 'FIXED', 13, 23),
