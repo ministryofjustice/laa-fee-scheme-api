@@ -458,6 +458,54 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
   }
 
   @Test
+  void shouldReturnValidationWarning_immigrationAndAsylumHourlyRate_legalHelpIA100() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "IA100",
+                  "claimId": "claim_123",
+                  "startDate": "2015-02-11",
+                  "netProfitCosts": 1160.89,
+                  "netDisbursementAmount": 825.70,
+                  "disbursementVatAmount": 25.14,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+                "feeCode": "IA100",
+                "schemeId": "IMM_ASYLM_FS2013",
+                "claimId": "claim_123",
+                "validationMessages": [
+                    {
+                        "type": "WARNING",
+                        "code": "WARIA8",
+                        "message": "Costs have been capped. Costs for the Fee Code used cannot exceed £100."
+                    }
+                ],
+                "feeCalculation": {
+                  "totalAmount": 357.32,
+                  "vatIndicator": true,
+                  "vatRateApplied": 20.0,
+                  "calculatedVatAmount": 232.18,
+                  "disbursementAmount": 825.7,
+                  "requestedNetDisbursementAmount": 825.7,
+                  "disbursementVatAmount": 25.14,
+                  "hourlyTotalAmount": 100.0,
+                  "netProfitCostsAmount": 1160.89,
+                  "requestedNetProfitCostsAmount": 1160.89
+                }
+            }
+            """, STRICT));
+  }
+
+  @Test
   void shouldReturnValidationWarning_immigrationAndAsylumHourlyRate_legalHelp() throws Exception {
     mockMvc
         .perform(post(URI)
@@ -505,6 +553,54 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                     "hourlyTotalAmount": 900.0,
                     "netProfitCostsAmount": 500.0,
                     "requestedNetProfitCostsAmount": 1160.89
+                }
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationWarning_immigrationAndAsylumHourlyRate_clr() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "IAXC",
+                  "claimId": "claim_123",
+                  "startDate": "2015-02-11",
+                  "netProfitCosts": 1160.89,
+                  "netDisbursementAmount": 825.70,
+                  "disbursementVatAmount": 25.14,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+                "feeCode": "IAXC",
+                "schemeId": "IMM_ASYLM_FS2013",
+                "claimId": "claim_123",
+                "validationMessages": [
+                    {
+                        "type": "WARNING",
+                        "code": "WARIA4",
+                        "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
+                    }
+                ],
+                "feeCalculation": {
+                  "totalAmount": 1857.32,
+                  "vatIndicator": true,
+                  "vatRateApplied": 20.0,
+                  "calculatedVatAmount": 232.18,
+                  "disbursementAmount": 825.7,
+                  "requestedNetDisbursementAmount": 825.7,
+                  "disbursementVatAmount": 25.14,
+                  "hourlyTotalAmount": 1600.0,
+                  "netProfitCostsAmount": 1160.89,
+                  "requestedNetProfitCostsAmount": 1160.89
                 }
             }
             """, STRICT));
@@ -973,6 +1069,60 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                       "message": "Net Cost is more than the Upper Cost Limitation."
                   }
                 ]
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationWarning_mentalHealth() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "MHL03",
+                  "claimId": "claim_123",
+                  "startDate": "2025-02-01",
+                  "netDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "netProfitCosts": 1000,
+                  "netCostOfCounsel": 500,
+                  "vatIndicator": true,
+                  "boltOns": {
+                      "boltOnAdjournedHearing": 1
+                  }
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json("""
+            {
+              "feeCode": "MHL03",
+              "claimId": "claim_123",
+              "schemeId": "MHL_FS2013",
+              "validationMessages": [
+                  {
+                      "type": "WARNING",
+                      "code": "WARMH1",
+                      "message": "Mental Health escape case threshold"
+                  }
+              ],
+              "escapeCaseFlag": true,
+              "feeCalculation": {
+                  "totalAmount": 828.45,
+                  "vatIndicator": true,
+                  "vatRateApplied": 20.0,
+                  "calculatedVatAmount": 113.4,
+                  "disbursementAmount": 123.38,
+                  "requestedNetDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "fixedFeeAmount": 450.0,
+                  "boltOnFeeDetails": {
+                      "boltOnTotalFeeAmount": 117.0,
+                      "boltOnAdjournedHearingCount": 1,
+                      "boltOnAdjournedHearingFee": 117.0
+                  }
+              }
             }
             """, STRICT));
   }
