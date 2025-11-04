@@ -388,19 +388,23 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
   @ParameterizedTest
   @CsvSource({
       "IMCF, WARIA1, Costs have been capped at £600 without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit., "
-          + "2173.72, 250.6, 650.0, 600.0, 1092.0",
+          + "false, 2173.72, 250.6, 650.0, 600.0, 1092.0, 0",
       "IALB, WARIA2, Costs have been capped at £400 without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit., "
-          + "1158.92, 114.8, 450.0, 400.0, 413.0"
+          + "false, 1158.92, 114.8, 450.0, 400.0, 413.0, 0",
+      "IACE, WARIA3, The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid., "
+          + "true, 1116.12, 166.0, 50.0, 50.0, 669.0, 1500"
   })
   void shouldReturnValidationWarning_immigrationAndAsylumFixedFee(
       String feeCode,
       String warningType,
       String warningMessage,
+      boolean escapeFlag,
       double totalAmount,
       double calculatedVatAmount,
       double requestedDisbursementAmount,
       double disbursementAmount,
-      double fixedFeeAmount
+      double fixedFeeAmount,
+      double netProfitCosts
   ) throws Exception {
 
     String expectedJson = """
@@ -415,7 +419,7 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                     "message": "%s"
                 }
             ],
-            "escapeCaseFlag": false,
+            "escapeCaseFlag": %s,
             "feeCalculation": {
                 "totalAmount": %s,
                 "vatIndicator": true,
@@ -429,7 +433,8 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                 "jrFormFillingAmount": 50.0
             }
         }
-        """.formatted(feeCode, warningType, warningMessage, totalAmount, calculatedVatAmount, requestedDisbursementAmount, disbursementAmount, fixedFeeAmount);
+        """.formatted(feeCode, warningType, warningMessage, escapeFlag, totalAmount, calculatedVatAmount, requestedDisbursementAmount, disbursementAmount,
+        fixedFeeAmount, netProfitCosts);
 
     mockMvc.perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
@@ -443,9 +448,10 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                   "disbursementVatAmount": 70.12,
                   "vatIndicator": true,
                   "detentionTravelAndWaitingCosts": 111.00,
-                  "jrFormFilling": 50.00
+                  "jrFormFilling": 50.00,
+                  "netProfitCosts": "%s"
                 }
-                """.formatted(feeCode, requestedDisbursementAmount))
+                """.formatted(feeCode, requestedDisbursementAmount, netProfitCosts))
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().json(expectedJson, STRICT));

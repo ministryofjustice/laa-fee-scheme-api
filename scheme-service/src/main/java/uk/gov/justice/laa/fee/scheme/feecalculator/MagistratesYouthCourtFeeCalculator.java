@@ -19,7 +19,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
  */
 @RequiredArgsConstructor
 @Component
-public class MagistratesYouthCourtCalculator implements FeeCalculator {
+public class MagistratesYouthCourtFeeCalculator implements FeeCalculator {
 
   private final DesignatedCourtFixedFeeCalculator designatedCourtFixedFeeCalculator;
 

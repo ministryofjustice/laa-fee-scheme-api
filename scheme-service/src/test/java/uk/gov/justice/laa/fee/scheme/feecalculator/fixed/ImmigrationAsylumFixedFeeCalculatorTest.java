@@ -7,7 +7,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLU
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_400_LEGAL_HELP;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_600_CLR;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.fixed.ImmigrationAsylumFixedFeeCalculator.WARNING_MESSAGE_WARIA3;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_ESCAPE_THRESHOLD;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -322,7 +322,8 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
 
       if (hasWarning) {
         ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
-            .message(WARNING_MESSAGE_WARIA3)
+            .code(WARN_IMM_ASYLM_ESCAPE_THRESHOLD.getCode())
+            .message(WARN_IMM_ASYLM_ESCAPE_THRESHOLD.getMessage())
             .type(WARNING)
             .build();
         assertThat(response.getValidationMessages()).containsExactly(validationMessage);
