@@ -7,6 +7,5 @@ import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 /**
  * Context for limit validation.
  */
-// TODO rename/replace to limitContext once all warnings done.
 public record LimitContext(LimitType limitType, BigDecimal limit, String authority, WarningType warning) {
 }
