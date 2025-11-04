@@ -35,8 +35,6 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
     return Set.of(); // Only used by PoliceStationFeeCalculator and not available via FeeCalculatorFactory
   }
 
-  private static final String WARNING_NET_PROFIT_COSTS = "warning net profit costs";
-
   /**
    * Calculated fee based on the provided fee entity and fee calculation request.
    *

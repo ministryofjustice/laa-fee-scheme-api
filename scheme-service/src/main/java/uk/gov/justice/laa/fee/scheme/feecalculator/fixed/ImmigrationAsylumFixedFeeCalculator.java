@@ -3,6 +3,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 import static uk.gov.justice.laa.fee.scheme.enums.LimitType.DISBURSEMENT;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_400_LEGAL_HELP;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_600_CLR;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_ESCAPE_THRESHOLD;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.checkLimitAndCapIfExceeded;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.filterBoltOnFeeDetails;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
@@ -43,9 +44,6 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
   private static final Set<String> FEE_CODES_NO_DISBURSEMENT_LIMIT_AND_NO_ESCAPE = Set.of("IDAS1", "IDAS2");
   private static final Set<String> FEE_CODES_WITH_SUBSTANTIVE_HEARING = Set.of("IACB", "IACC", "IACF", "IMCB", "IMCC", "IMCD");
   private static final Set<String> NO_COUNSEL_FEE_CODES = Set.of("IALB", "IMLB");
-  // @TODO: TBC during error and validation work, and likely moved to common util
-  public static final String WARNING_MESSAGE_WARIA3 = "The claim exceeds the Escape Case Threshold. An Escape Case "
-      + "Claim must be submitted for further costs to be paid. ";
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -160,7 +158,8 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     if (isEscapedCase(totalAmount, escapeThresholdLimit)) {
       log.warn("Case has escaped");
       validationMessages.add(ValidationMessagesInner.builder()
-          .message(WARNING_MESSAGE_WARIA3)
+          .code(WARN_IMM_ASYLM_ESCAPE_THRESHOLD.getCode())
+          .message(WARN_IMM_ASYLM_ESCAPE_THRESHOLD.getMessage())
           .type(WARNING)
           .build());
       return true;

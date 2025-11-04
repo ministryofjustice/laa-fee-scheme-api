@@ -30,7 +30,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 class MagistratesYouthCourtFeeCalculatorTest {
 
   @InjectMocks
-  MagistratesYouthCourtCalculator magistratesYouthCourtCalculator;
+  MagistratesYouthCourtFeeCalculator magistratesYouthCourtFeeCalculator;
 
   @Mock
   DesignatedCourtFixedFeeCalculator designatedCourtFixedFeeCalculator;
@@ -78,7 +78,7 @@ class MagistratesYouthCourtFeeCalculatorTest {
 
     when(designatedCourtFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity)).thenReturn(expectedResponse);
 
-    FeeCalculationResponse result = magistratesYouthCourtCalculator.calculate(feeCalculationRequest, feeEntity);
+    FeeCalculationResponse result = magistratesYouthCourtFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("PROL2");
@@ -118,7 +118,7 @@ class MagistratesYouthCourtFeeCalculatorTest {
 
     when(undesignatedCourtFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity)).thenReturn(expectedResponse);
 
-    FeeCalculationResponse result = magistratesYouthCourtCalculator.calculate(feeCalculationRequest, feeEntity);
+    FeeCalculationResponse result = magistratesYouthCourtFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("EDUDIS");
@@ -128,7 +128,7 @@ class MagistratesYouthCourtFeeCalculatorTest {
 
   @Test
   void getSupportedCategories_shouldReturnMagistratesOrYouthCourtCategory() {
-    Set<CategoryType> result = magistratesYouthCourtCalculator.getSupportedCategories();
+    Set<CategoryType> result = magistratesYouthCourtFeeCalculator.getSupportedCategories();
 
     assertThat(result).isEqualTo(Set.of(MAGISTRATES_COURT, YOUTH_COURT));
   }

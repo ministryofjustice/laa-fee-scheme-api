@@ -53,7 +53,8 @@ public enum WarningType {
                                         + "Authority Number. Disbursement costs exceed the Disbursement Limit."),
   WARN_IMM_ASYLM_DISB_400_LEGAL_HELP("WARIA2", "Costs have been capped at £400 without an Immigration "
                                                + "Priority Authority Number. Disbursement costs exceed the Disbursement Limit."),
-  WARN_IMM_ASYLM_ESCAPE_THRESHOLD("WARIA3", "Immigration & Asylum escape case threshold", CategoryType.IMMIGRATION_ASYLUM),
+  WARN_IMM_ASYLM_ESCAPE_THRESHOLD("WARIA3", "The claim exceeds the Escape Case Threshold. An Escape Case Claim "
+                                            + "must be submitted for further costs to be paid.", CategoryType.IMMIGRATION_ASYLUM),
   WARN_IMM_ASYLM_PRIOR_AUTH_CLR("WARIA4", "Costs have been capped. The amount entered exceeds the Total "
                                           + "Cost Limit. An Immigration Prior Authority number must be entered."),
   WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM("WARIA5", "Costs have been capped. The amount entered exceeds the "
