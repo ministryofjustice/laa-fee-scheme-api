@@ -31,3 +31,6 @@ spring:
 application:
   logging:
     level: WARN
+
+prometheus:
+  dashboardUrl: https://grafana.live.cloud-platform.service.justice.gov.uk/d/laa-fee-scheme-api-staging-dashboard
