@@ -25,6 +25,7 @@ public class FeeCalculationController implements FeeCalculationApi {
     try {
       setUpMdc(feeCalculationRequest);
 
+      log.info("FeeCalculation request received: {}", feeCalculationRequest);
       log.info("Getting fee calculation");
 
       FeeCalculationResponse feeCalculationResponse = feeCalculationService.calculateFee(feeCalculationRequest);
