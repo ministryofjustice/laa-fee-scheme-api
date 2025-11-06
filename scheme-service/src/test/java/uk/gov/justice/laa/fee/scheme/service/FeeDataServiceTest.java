@@ -15,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
-import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.repository.FeeRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,19 +51,6 @@ class FeeDataServiceTest {
         .feeType(FeeType.FIXED)
         .build();
     return feeEntity;
-  }
-
-  private static FeeCalculationRequest buildFeeCalculationRequest() {
-    return FeeCalculationRequest.builder()
-        .feeCode("INVC")
-        .startDate(LocalDate.of(2017, 7, 29))
-        .vatIndicator(Boolean.TRUE)
-        .policeStationSchemeId("1003")
-        .policeStationId("NA2093")
-        .uniqueFileNumber("010122/456")
-        .netDisbursementAmount(50.50)
-        .disbursementVatAmount(20.15)
-        .build();
   }
 
 }

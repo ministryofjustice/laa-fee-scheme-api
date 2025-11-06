@@ -69,7 +69,6 @@ class PoliceStationHourlyRateCalculatorTest {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(FEE_CODE)
-        .startDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(vatIndicator)
         .policeStationSchemeId(POLICE_STATION_SCHEME_ID)
         .policeStationId(POLICE_STATION_ID)
@@ -132,7 +131,6 @@ class PoliceStationHourlyRateCalculatorTest {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(FEE_CODE)
-        .startDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(vatIndicator)
         .policeStationSchemeId(POLICE_STATION_SCHEME_ID)
         .policeStationId(POLICE_STATION_ID)
