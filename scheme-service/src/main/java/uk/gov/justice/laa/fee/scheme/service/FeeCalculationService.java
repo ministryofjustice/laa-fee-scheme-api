@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CaseType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculatorFactory;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -24,6 +25,8 @@ public class FeeCalculationService {
 
   private final FeeDataService feeDataService;
 
+  private final FeeDetailsService feeDetailsService;
+
   private final ValidationService validationService;
 
   /**
@@ -35,16 +38,17 @@ public class FeeCalculationService {
   public FeeCalculationResponse calculateFee(FeeCalculationRequest request) {
 
     log.info("Start calculating fee");
+    CaseType caseType = feeDetailsService.getCaseType(request);
 
     List<FeeEntity> feeEntityList = feeDataService.getFeeEntities(request.getFeeCode());
 
-    FeeEntity feeEntity = validationService.getValidFeeEntity(feeEntityList, request);
+    FeeEntity feeEntity = validationService.getValidFeeEntity(feeEntityList, request, caseType);
 
     // Calculate fee
     FeeCalculator calculator = calculatorFactory.getCalculator(feeEntity.getCategoryType());
     FeeCalculationResponse response = calculator.calculate(request, feeEntity);
 
-    List<ValidationMessagesInner> warnings = validationService.checkForWarnings(request);
+    List<ValidationMessagesInner> warnings = validationService.checkForWarnings(request, caseType);
 
     // Add any warnings to response
     if (!warnings.isEmpty()) {
