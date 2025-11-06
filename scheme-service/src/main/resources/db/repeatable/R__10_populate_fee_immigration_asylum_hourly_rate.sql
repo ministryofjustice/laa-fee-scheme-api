@@ -1,6 +1,3 @@
-DELETE FROM fee
-WHERE fee_code IN ('IACD', 'IMCD');
-
 INSERT INTO fee
 (fee_code, description, profit_cost_limit, disbursement_limit, total_limit, fee_scheme_code, category_type, fee_type)
 VALUES ('IAXL', 'LH Hourly Rates - Asylum', 800.00, 400.00, NULL, 'IMM_ASYLM_FS2013', 'IMMIGRATION_ASYLUM', 'HOURLY'),

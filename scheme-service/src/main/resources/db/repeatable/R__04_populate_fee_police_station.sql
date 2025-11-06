@@ -1,5 +1,3 @@
-DELETE FROM fee WHERE fee_code IN ('INVA', 'INVE', 'INVH', 'INVK', 'INVL', 'INVM', 'INVB1', 'INVB2', 'INVC');
-
 INSERT INTO fee (fee_code, fee_scheme_code, fixed_fee, upper_cost_limit, description, category_type, fee_type)
 VALUES ('INVA', 'POL_FS2016', NULL, 273.75, 'Advice and Assistance (not at the police station)','POLICE_STATION', 'HOURLY'),
        ('INVE', 'POL_FS2016', NULL, 1368.75, 'Warrant of further detention (including armed forces, Terrorism Act 2000, advice & assistance and other police station advice where given)','POLICE_STATION', 'HOURLY'),

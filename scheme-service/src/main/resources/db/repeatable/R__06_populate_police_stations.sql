@@ -1,5 +1,3 @@
-TRUNCATE TABLE police_stations;
-
 INSERT INTO police_stations (police_station_id, police_station_name, ps_scheme_id,
                              ps_scheme_name)
 VALUES ('NE001', 'HARTLEPOOL', '1001', 'Hartlepool'),
