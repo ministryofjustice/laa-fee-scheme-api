@@ -60,7 +60,6 @@ class PoliceStationFixedFeeCalculatorTest {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode("INVC")
-        .startDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(true)
         .policeStationSchemeId("1001")
         .policeStationId("NE001")
@@ -112,7 +111,6 @@ class PoliceStationFixedFeeCalculatorTest {
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode("INVC")
         .claimId("claim_123")
-        .startDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(true)
         .policeStationSchemeId("1001")
         .policeStationId(null)
@@ -172,7 +170,6 @@ class PoliceStationFixedFeeCalculatorTest {
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .claimId("claim_123")
-        .startDate(LocalDate.of(2021, 7, 29))
         .vatIndicator(vatIndicator)
         .policeStationSchemeId(policeStationSchemeId)
         .policeStationId(policeStationId)
@@ -239,7 +236,6 @@ class PoliceStationFixedFeeCalculatorTest {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
-        .startDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(vatIndicator)
         .policeStationSchemeId(policeStationSchemeId)
         .policeStationId(policeStationId)
@@ -278,7 +274,6 @@ class PoliceStationFixedFeeCalculatorTest {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode("INVC")
-        .startDate(LocalDate.of(2022, 12, 29))
         .vatIndicator(true)
         .policeStationSchemeId("1001")
         .policeStationId("NE001")
@@ -340,7 +335,6 @@ class PoliceStationFixedFeeCalculatorTest {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode("INVC")
-        .startDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(true)
         .policeStationId("BLAH")
         .netDisbursementAmount(50.50)
@@ -368,7 +362,6 @@ class PoliceStationFixedFeeCalculatorTest {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode("INVC")
-        .startDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(true)
         .policeStationSchemeId("BLAH")
         .netDisbursementAmount(50.50)
@@ -396,7 +389,6 @@ class PoliceStationFixedFeeCalculatorTest {
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode("INVC")
-        .startDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(true)
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
@@ -423,7 +415,6 @@ class PoliceStationFixedFeeCalculatorTest {
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode("INVB1")
         .claimId("claim_123")
-        .startDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(true)
         .policeStationSchemeId("1001")
         .netDisbursementAmount(50.50)

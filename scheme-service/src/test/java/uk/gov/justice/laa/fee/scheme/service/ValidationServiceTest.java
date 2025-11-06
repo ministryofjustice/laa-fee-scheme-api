@@ -314,7 +314,6 @@ class ValidationServiceTest {
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("INVC")
-        .startDate(LocalDate.of(2022, 1, 1))
         .vatIndicator(Boolean.TRUE)
         .policeStationSchemeId("1003")
         .policeStationId("NA2093")
@@ -521,7 +520,6 @@ class ValidationServiceTest {
   private static FeeCalculationRequest getFeeCalculationRequest() {
     return FeeCalculationRequest.builder()
         .feeCode("INVC")
-        .startDate(LocalDate.of(2022, 1, 1))
         .vatIndicator(Boolean.TRUE)
         .policeStationSchemeId("1003")
         .policeStationId("NA2093")

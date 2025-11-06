@@ -35,59 +35,48 @@ class FeeCalculationControllerTest {
   @MockitoBean
   private FeeCalculationService feeCalculationService;
 
-  private FeeCalculationRequest feeCalculationRequest;
-
-  @BeforeEach
-  void setUp() {
-    feeCalculationRequest = FeeCalculationRequest.builder()
+  @Test
+  void getFeeCalculation() throws Exception {
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
         .feeCode("FEE123")
         .startDate(LocalDate.of(2025, 7, 29))
         .netProfitCosts(1000.50)
         .netDisbursementAmount(200.75)
         .disbursementVatAmount(40.15)
         .vatIndicator(true)
-        .immigrationPriorAuthorityNumber("AUTH123")
-        .boltOns(BoltOnType.builder()
-            .boltOnHomeOfficeInterview(2)
-            .boltOnAdjournedHearing(1)
-            .boltOnCmrhOral(1)
-            .boltOnCmrhTelephone(3)
-            .build())
         .build();
-  }
 
-  @Test
-  void getFeeCalculation() throws Exception {
-
-    FeeCalculationResponse responseDto = FeeCalculationResponse.builder()
+    FeeCalculationResponse response = FeeCalculationResponse.builder()
         .feeCode("FEE123")
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(1500.12)
             .build())
         .build();
 
-    when(feeCalculationService.calculateFee(feeCalculationRequest))
-        .thenReturn(responseDto);
+    when(feeCalculationService.calculateFee(request)).thenReturn(response);
 
     mockMvc.perform(post("/api/v1/fee-calculation")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(feeCalculationRequest)))
+            .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.feeCode").value("FEE123"))
-        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(1500));
+        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(1500.12));
   }
 
   @Test
   void getFeeCalculation_whenGivenPoliceStationIds() throws Exception {
 
-    feeCalculationRequest.setPoliceStationId("PS1");
-    feeCalculationRequest.setPoliceStationSchemeId("PSS1");
-    feeCalculationRequest.setUniqueFileNumber("UFN1");
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("FEE456")
+        .policeStationId("PS1")
+        .policeStationSchemeId("PSS1")
+        .uniqueFileNumber("UFN1")
+        .build();
 
     FeeCalculationResponse responseDto = FeeCalculationResponse.builder()
-        .feeCode("FEE123")
+        .feeCode("FEE456")
         .feeCalculation(FeeCalculation.builder()
-            .totalAmount(1500.12)
+            .totalAmount(650.20)
             .build())
         .build();
 
@@ -98,8 +87,8 @@ class FeeCalculationControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(feeCalculationRequest)))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.feeCode").value("FEE123"))
-        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(1500));
+        .andExpect(jsonPath("$.feeCode").value("FEE456"))
+        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(650.20));
   }
 
 }

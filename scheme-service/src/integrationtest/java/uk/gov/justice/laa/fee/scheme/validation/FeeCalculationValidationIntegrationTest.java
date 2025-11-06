@@ -105,7 +105,6 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                 {
                   "feeCode": "INVC",
                   "claimId": "claim_123",
-                  "startDate": "2012-12-12",
                   "uniqueFileNumber": "121212/242",
                   "policeStationId": "NE001",
                   "policeStationSchemeId": "1001",
@@ -138,7 +137,6 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                 {
                   "feeCode": "INVC",
                   "claimId": "claim_123",
-                  "startDate": "2023-12-12",
                   "uniqueFileNumber": "121219/242",
                   "policeStationId": "BLAH",
                   "policeStationSchemeId": "1001",
@@ -171,7 +169,6 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                 {
                   "feeCode": "INVC",
                   "claimId": "claim_123",
-                  "startDate": "2021-12-12",
                   "uniqueFileNumber": "121221/242",
                   "policeStationSchemeId": "BLAH",
                   "vatIndicator": false
@@ -203,7 +200,6 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                 {
                   "feeCode": "INVK",
                   "claimId": "claim_123",
-                  "startDate": "2023-12-12",
                   "policeStationId": "NE001",
                   "policeStationSchemeId": "1001",
                   "vatIndicator": false
@@ -734,7 +730,6 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                       {
                           "feeCode": "INVC",
                           "claimId": "claim_123",
-                          "startDate": "2019-12-12",
                           "uniqueFileNumber": "12122019/242",
                           "policeStationId": "NE001",
                           "policeStationSchemeId": "1001",
@@ -783,7 +778,6 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                       {
                           "feeCode": "INVA",
                           "claimId": "claim_123",
-                          "startDate": "2019-12-12",
                           "uniqueFileNumber": "12122019/242",
                           "netProfitCosts": 50,
                           "netTravelCosts": 20,
@@ -836,7 +830,6 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                       {
                         "feeCode": "INVB1",
                         "claimId": "claim_123",
-                        "startDate": "2019-12-12",
                         "uniqueFileNumber": "12122019/242",
                         "policeStationId": "NE001",
                         "policeStationSchemeId": "1001",

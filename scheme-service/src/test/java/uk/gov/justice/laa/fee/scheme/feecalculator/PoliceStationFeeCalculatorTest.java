@@ -41,7 +41,6 @@ class PoliceStationFeeCalculatorTest {
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("INVC")
-        .startDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(true)
         .policeStationSchemeId("1001")
         .policeStationId("NE001")
@@ -98,7 +97,6 @@ class PoliceStationFeeCalculatorTest {
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("INVK")
-        .startDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(true)
         .policeStationSchemeId("1001")
         .policeStationId("NE001")
