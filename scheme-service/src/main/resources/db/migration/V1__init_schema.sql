@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS category_of_law_type
 (
     category_of_law_type_id SERIAL PRIMARY KEY,
     code                    VARCHAR(10) NOT NULL UNIQUE,
-    description             TEXT        NOT null,
+    description             TEXT        NOT NULL,
     area_of_law_type_id     INT         NOT NULL REFERENCES area_of_law_type (area_of_law_type_id)
 );
 
