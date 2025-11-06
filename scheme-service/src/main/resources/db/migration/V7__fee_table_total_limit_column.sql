@@ -1,2 +1,0 @@
-ALTER TABLE fee
-    ADD COLUMN total_limit NUMERIC(10, 2) NULL;
