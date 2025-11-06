@@ -3,10 +3,14 @@ package uk.gov.justice.laa.fee.scheme.service;
 import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CIVIL;
 import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CRIME;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.SENDING_HEARING;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.YOUTH_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE_TOO_OLD;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_REP_ORDER_DATE;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_REP_ORDER_DATE_MISSING;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_MISSING;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_FAMILY_LONDON_RATE;
@@ -46,7 +50,7 @@ public class ValidationService {
   private static final String PROD_FEE_CODE = "PROD";
 
   private static final LocalDate CIVIL_START_DATE = LocalDate.of(2013, 4, 1);
-  private final FeeDetailsService feeDetailsService;
+  private static final List<CategoryType> CRIME_USING_REP_ORDER_DATE = List.of(MAGISTRATES_COURT, YOUTH_COURT, SENDING_HEARING);
 
   private static boolean filterByRegion(FeeEntity fee, Boolean isLondonRate) {
     if (fee.getCategoryType() != CategoryType.FAMILY) {
@@ -89,9 +93,15 @@ public class ValidationService {
 
     CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
 
-    if ((caseType.equals(CRIME) && StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber()))
-        && !feeCalculationRequest.getFeeCode().equals(PROD_FEE_CODE)) {
-      throw new ValidationException(ERR_CRIME_UFN_MISSING, new FeeContext(feeCalculationRequest));
+    if (caseType.equals(CRIME)) {
+      if (CRIME_USING_REP_ORDER_DATE.contains(categoryType)) {
+        if (feeCalculationRequest.getRepresentationOrderDate() == null) {
+          throw new ValidationException(ERR_CRIME_REP_ORDER_DATE_MISSING, new FeeContext(feeCalculationRequest));
+        }
+      } else if (StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber())
+          && !feeCalculationRequest.getFeeCode().equals(PROD_FEE_CODE)) {
+        throw new ValidationException(ERR_CRIME_UFN_MISSING, new FeeContext(feeCalculationRequest));
+      }
     }
 
     if (categoryType.equals(CategoryType.FAMILY) && feeCalculationRequest.getLondonRate() == null) {
