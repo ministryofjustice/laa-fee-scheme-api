@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CIVIL;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 
 import java.math.BigDecimal;
@@ -35,6 +36,9 @@ class FeeCalculationServiceTest {
   FeeDataService feeDataService;
 
   @Mock
+  FeeDetailsService feeDetailsService;
+
+  @Mock
   ValidationService validationService;
 
   @Mock
@@ -53,7 +57,8 @@ class FeeCalculationServiceTest {
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
     when(feeDataService.getFeeEntities("FEE123")).thenReturn(feeEntityList);
-    when(validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest)).thenReturn(feeEntity);
+    when(feeDetailsService.getCaseType(feeCalculationRequest)).thenReturn(CIVIL);
+    when(validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest, CIVIL)).thenReturn(feeEntity);
     when(feeCalculatorFactory.getCalculator(category)).thenReturn(immigrationCalculator);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
@@ -95,8 +100,9 @@ class FeeCalculationServiceTest {
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
     when(feeDataService.getFeeEntities("FEE123")).thenReturn(feeEntityList);
-    when(validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest)).thenReturn(feeEntity);
-    when(validationService.checkForWarnings(feeCalculationRequest))
+    when(feeDetailsService.getCaseType(feeCalculationRequest)).thenReturn(CIVIL);
+    when(validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest, CIVIL)).thenReturn(feeEntity);
+    when(validationService.checkForWarnings(feeCalculationRequest, CIVIL))
         .thenReturn(List.of(ValidationMessagesInner.builder()
         .type(ValidationMessagesInner.TypeEnum.WARNING)
         .code("WARCIV2")

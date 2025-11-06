@@ -1,5 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.controller;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -19,13 +23,15 @@ import uk.gov.justice.laa.fee.scheme.service.FeeCalculationService;
 public class FeeCalculationController implements FeeCalculationApi {
 
   private final FeeCalculationService feeCalculationService;
+  private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule())
+      .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).setSerializationInclusion(JsonInclude.Include.ALWAYS);
 
   @Override
   public ResponseEntity<FeeCalculationResponse> getFeeCalculation(FeeCalculationRequest feeCalculationRequest) {
     try {
       setUpMdc(feeCalculationRequest);
 
-      log.info("FeeCalculation request received: {}", feeCalculationRequest);
+      logFeeRequest(feeCalculationRequest);
       log.info("Getting fee calculation");
 
       FeeCalculationResponse feeCalculationResponse = feeCalculationService.calculateFee(feeCalculationRequest);
@@ -57,4 +63,14 @@ public class FeeCalculationController implements FeeCalculationApi {
       MDC.put("uniqueFileNumber", feeCalculationRequest.getUniqueFileNumber());
     }
   }
+
+  private void logFeeRequest(FeeCalculationRequest request) {
+    try {
+      log.info("FeeCalculation request received: {}", objectMapper.writeValueAsString(request));
+    } catch (Exception e) {
+      log.warn("FeeCalculation request received, but could not serialize object", e);
+    }
+  }
+
+
 }
