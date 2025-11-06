@@ -14,6 +14,8 @@ DROP TABLE IF EXISTS area_of_law_type CASCADE;
 
 DROP TABLE IF EXISTS police_stations CASCADE;
 
+DROP TABLE IF EXISTS category_of_law_look_up CASCADE;
+
 CREATE TABLE IF NOT EXISTS fee_schemes
 (
     scheme_code VARCHAR PRIMARY KEY,
@@ -48,16 +50,6 @@ CREATE TABLE IF NOT EXISTS fee
     mediation_fee_higher        NUMERIC(10, 2) NULL,
     court_designation_type      VARCHAR(50)    NULL,
     fee_band_type               VARCHAR        NULL
-);
-
-
-CREATE TABLE IF NOT EXISTS category_of_law_look_up
-(
-    category_of_law_look_up_id SERIAL PRIMARY KEY,
-    category_code              VARCHAR      NOT NULL,
-    full_description           VARCHAR(255) NOT NULL,
-    area_of_law                VARCHAR(50)  NOT NULL,
-    fee_code                   VARCHAR      NOT NULL
 );
 
 
@@ -115,9 +107,6 @@ CREATE TABLE IF NOT EXISTS fee_category_mapping
     category_of_law_type_id     INT         NOT NULL REFERENCES category_of_law_type (category_of_law_type_id)
 );
 
-
-ALTER TABLE category_of_law_look_up
-    ADD CONSTRAINT uq_category_of_law_look_up_category_code_fee_code UNIQUE (category_code, fee_code);
 
 ALTER TABLE police_station_fees
     ADD CONSTRAINT uq_police_station_fees_category_code_fee_code UNIQUE (ps_scheme_id, fee_scheme_code);
