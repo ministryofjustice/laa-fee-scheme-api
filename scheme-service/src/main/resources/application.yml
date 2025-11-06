@@ -42,7 +42,7 @@ logging:
   level:
     root: ${ROOT_LOGGING_LEVEL:info}
     org.springframework: ${SPRING_LOGGING_LEVEL:info}
-    uk.gov.justice.laa.fee.scheme: ${APP_LOGGING_LEVEL:DEBUG}
+    uk.gov.justice.laa.fee.scheme: ${APP_LOGGING_LEVEL:info}
 
 laa.springboot.starter:
   auth:
