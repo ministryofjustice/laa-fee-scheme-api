@@ -1,6 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.controller;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -8,8 +8,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
+import java.util.List;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -100,6 +106,37 @@ class FeeCalculationControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.feeCode").value("FEE123"))
         .andExpect(jsonPath("$.feeCalculation.totalAmount").value(1500));
+  }
+
+  @Test
+  void getFeeCalculation_andLogFeeRequest() throws Exception {
+    Logger feeLogger = (Logger) LoggerFactory.getLogger(FeeCalculationController.class);
+    ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+    listAppender.start();
+    feeLogger.addAppender(listAppender);
+
+    FeeCalculationResponse responseDto = FeeCalculationResponse.builder()
+        .feeCode("FEE123")
+        .feeCalculation(FeeCalculation.builder()
+            .totalAmount(1500.12)
+            .build())
+        .build();
+
+    when(feeCalculationService.calculateFee(feeCalculationRequest)).thenReturn(responseDto);
+
+    mockMvc.perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(feeCalculationRequest)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.feeCode").value("FEE123"))
+        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(1500));
+
+    List<ILoggingEvent> logsList = listAppender.list;
+    assertThat(logsList.stream().anyMatch(event -> event.getLevel() == Level.INFO
+        && event.getFormattedMessage().contains("\"feeCode\":\"FEE123\""))).isTrue();
+
+    listAppender.stop();
+    feeLogger.detachAppender(listAppender);
   }
 
 }

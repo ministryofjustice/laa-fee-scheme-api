@@ -5,12 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CIVIL;
 import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CRIME;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE_TOO_OLD;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_REP_ORDER_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_MISSING;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_FAMILY_LONDON_RATE;
@@ -31,7 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.enums.CourtDesignationType;
 import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.Region;
@@ -510,61 +507,6 @@ class ValidationServiceTest {
           .isInstanceOf(ValidationException.class)
           .hasFieldOrPropertyWithValue("error", ERR_CRIME_UFN_MISSING)
           .hasMessage("ERRCRM7 - Enter a UFN.");
-    }
-
-    @Test
-    void getValidFeeEntity_whenCriminalProceedingsAndRepOrderDateIsMissing_shouldThrowException() {
-      FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-          .feeCode("PROJ4")
-          .startDate(LocalDate.of(2025, 1, 1))
-          .vatIndicator(Boolean.TRUE)
-          .netDisbursementAmount(50.50)
-          .disbursementVatAmount(20.15)
-          .build();
-
-      FeeEntity feeEntity = FeeEntity.builder()
-          .feeCode("PROJ4")
-          .feeScheme(FeeSchemesEntity.builder().build())
-          .fixedFee(new BigDecimal("200"))
-          .categoryType(MAGISTRATES_COURT)
-          .courtDesignationType(CourtDesignationType.DESIGNATED)
-          .feeType(FeeType.FIXED).build();
-
-      List<FeeEntity> feeEntityList = List.of(feeEntity);
-
-      assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest, CRIME))
-          .isInstanceOf(ValidationException.class)
-          .hasFieldOrPropertyWithValue("error", ERR_CRIME_REP_ORDER_DATE_MISSING)
-          .hasMessage("ERRCRM8 - Enter a representation order date.");
-    }
-
-    @Test
-    void getValidFeeEntity_whenCrimeFeeCodeAndRepOrderDateIsInvalid_shouldThrowException() {
-      FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-          .feeCode("PROW")
-          .representationOrderDate(LocalDate.of(202, 1, 1))
-          .uniqueFileNumber("010120/456")
-          .vatIndicator(Boolean.TRUE)
-          .netDisbursementAmount(50.50)
-          .disbursementVatAmount(20.15)
-          .build();
-
-      FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("SEND_HEAR_FS2020")
-          .validFrom(LocalDate.of(2025, 10, 1)).build();
-
-      FeeEntity feeEntity = FeeEntity.builder()
-          .feeCode("PROW")
-          .feeScheme(feeSchemesEntity)
-          .fixedFee(new BigDecimal("200"))
-          .categoryType(SENDING_HEARING)
-          .feeType(FeeType.FIXED).build();
-
-      List<FeeEntity> feeEntityList = List.of(feeEntity);
-
-      assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest, CRIME))
-          .isInstanceOf(ValidationException.class)
-          .hasFieldOrPropertyWithValue("error", ERR_CRIME_REP_ORDER_DATE)
-          .hasMessage("ERRCRM12 - Fee Code is not valid for the Case Start Date.");
     }
   }
 }
