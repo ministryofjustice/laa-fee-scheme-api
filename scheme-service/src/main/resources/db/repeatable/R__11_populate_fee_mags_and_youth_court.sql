@@ -1,6 +1,3 @@
-DELETE FROM fee WHERE fee_scheme_code LIKE '%COURT%';
-/** above statement will be removed as part refactoring exercise **/
-
 INSERT INTO fee (fee_code, description, fixed_fee, category_type, fee_type, fee_scheme_code, court_designation_type, fee_band_type)
 VALUES ('PROE1', 'Representation in the Magistrates Court - category 1A - lower standard fee - undesignated area',
         194.68, 'MAGISTRATES_COURT', 'FIXED', 'MAGS_COURT_FS2016', 'UNDESIGNATED', 'LOWER'),

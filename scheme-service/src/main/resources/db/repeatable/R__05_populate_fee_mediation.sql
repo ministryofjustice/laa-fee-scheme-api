@@ -1,9 +1,3 @@
-DELETE FROM fee
-WHERE fee_code IN ('MAM1','MAM2','MAM3','MED1','MED2','MED3','MED4','MED5','MED6','MED7',
-                   'MED8','MED9','MED10','MED11','MED12','MED13','MED14','MED15','MED16',
-                   'MED17','MED18','MED19','MED20','MED21','MED22','MED23','MED24','MED25',
-                   'MED26','MED27','MED28','MED29','MED30','MED31','MED32');
-
 INSERT INTO fee (fee_code, description, fixed_fee, mediation_fee_lower, mediation_fee_higher, fee_scheme_code, category_type, fee_type)
 VALUES ('ASSA', 'Mediation Assesment (alone)', 87.00, NULL, NULL, 'MED_FS2013', 'MEDIATION', 'FIXED'),
        ('ASSS', 'Mediation Assesment (separate)', 87.00, NULL, NULL, 'MED_FS2013', 'MEDIATION', 'FIXED'),

@@ -1,7 +1,4 @@
 -- Fee Scheme for 2016 'Advocacy Assistance in the Crown Court or Appeals & Reviews' category
-
-DELETE FROM fee WHERE category_type = 'ADVOCACY_APPEALS_REVIEWS';
-
 INSERT INTO fee
 (fee_code, description, upper_cost_limit, category_type, fee_type, fee_scheme_code)
 VALUES
