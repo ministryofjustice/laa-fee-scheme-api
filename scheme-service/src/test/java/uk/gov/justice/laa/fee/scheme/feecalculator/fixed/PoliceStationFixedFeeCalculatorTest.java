@@ -407,7 +407,7 @@ class PoliceStationFixedFeeCalculatorTest {
   }
 
   @Test
-  void calculate_whenGivenFeeCodeAndNetDisbursementAmount_shouldReturnWarning() {
+  void calculate_whenGivenFeeCodeAndNetDisbursementAmount_shouldReturnWithoutWarning() {
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
     FeeEntity feeEntity = buildFixedFeeEntity("INVB1", feeSchemesEntity, new BigDecimal("200.56"));
@@ -439,11 +439,6 @@ class PoliceStationFixedFeeCalculatorTest {
         .feeCode("INVB1")
         .schemeId("POL_FS2022")
         .claimId("claim_123")
-        .validationMessages(List.of(ValidationMessagesInner.builder()
-                .code("WARCRM9")
-                .type(WARNING)
-                .message("Costs have not been included. Disbursements cannot be claimed using fee code INVB1.")
-            .build()))
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();

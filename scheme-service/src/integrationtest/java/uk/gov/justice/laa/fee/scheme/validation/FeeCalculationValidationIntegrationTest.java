@@ -821,7 +821,7 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
   }
 
   @Test
-  void shouldReturnValidationWarningForDisbursements_policeStations() throws Exception {
+  void shouldReturnWithoutValidationWarningForDisbursements_policeStations() throws Exception {
     mockMvc
         .perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
@@ -846,13 +846,6 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "feeCode": "INVB1",
               "schemeId": "POL_FS2016",
               "claimId": "claim_123",
-              "validationMessages": [
-                  {
-                    "type": "WARNING",
-                    "code": "WARCRM9",
-                    "message": "Costs have not been included. Disbursements cannot be claimed using fee code INVB1."
-                  }
-              ],
               "escapeCaseFlag": false,
               "feeCalculation": {
                   "totalAmount": 34.44,
