@@ -6,6 +6,7 @@ metadata:
     prometheus: prometheus-operator
     role: alert-rules
     release: prometheus-operator
+    {{ include "laa-fee-scheme-api.labels" . | nindent 4 }}
   name: prometheus-custom-rules-{{ .Chart.Name }}
 
 spec:
@@ -14,7 +15,6 @@ spec:
       rules:
         - alert: KubeQuota-Exceeded
           annotations:
-            Pod {{"{{"}} $labels.namespace {{"}}"}}/{{"{{"}} $labels.pod {{"}}"}} ({{"{{"}} $labels.container {{"}}"}}) is restarting {{"{{"}} printf "%.2f" $value {{"}}"}} times / 5 minutes.
             message: Namespace {{ $labels.namespace }} is using {{ printf "%0.0f" $value }}% of its {{ $labels.resource }} quota.
             runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubequotaexceeded
             dashboard_url: {{ .Values.prometheus.dashboardUrl }}
