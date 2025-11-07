@@ -11,6 +11,15 @@ spec:
   groups:
   - name: application-rules
     rules:
+    - alert: Instance-Down
+      expr: absent(up{namespace="laa-apply-for-legalaid-uat"}) == 1
+      for: 1m
+      labels:
+        severity: {{ .Values.prometheus.severity }}
+      annotations:
+        message: Namespace {{"{{"}} $labels.namespace {{"}}"}} is down.
+        runbook_url: https://dsdmoj.atlassian.net/wiki/spaces/LFSP/pages/5844631676/Runbook+-+Fee+Scheme+Platform+API
+        dashboard_url: {{ .Values.prometheus.dashboardUrl }}
     - alert: KubeQuota-Exceeded
       annotations:
         message: Namespace {{"{{"}} $labels.namespace {{"}}"}} is using {{"{{"}} printf "%0.0f" $value {{"}}"}}% of its {{"{{"}} $labels.resource {{"}}"}} quota.
