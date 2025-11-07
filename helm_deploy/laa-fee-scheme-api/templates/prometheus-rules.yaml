@@ -15,7 +15,7 @@ spec:
       rules:
         - alert: KubeQuota-Exceeded
           annotations:
-            message: Namespace {{ $labels.namespace }} is using {{ printf "%0.0f" $value }}% of its {{ $labels.resource }} quota.
+            message: "{{`Namespace {{ $labels.namespace }} is using {{ printf "%0.0f" $value }}% of its {{ $labels.resource }} quota.`}}"
             runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubequotaexceeded
             dashboard_url: {{ .Values.prometheus.dashboardUrl }}
           expr: |-
