@@ -3,14 +3,18 @@ kind: PrometheusRule
 metadata:
   namespace: {{ .Release.Namespace }}
   labels:
+    prometheus: prometheus-operator
     role: alert-rules
+    release: prometheus-operator
   name: prometheus-custom-rules-{{ .Chart.Name }}
+
 spec:
   groups:
     - name: application-rules
       rules:
         - alert: KubeQuota-Exceeded
           annotations:
+            Pod {{"{{"}} $labels.namespace {{"}}"}}/{{"{{"}} $labels.pod {{"}}"}} ({{"{{"}} $labels.container {{"}}"}}) is restarting {{"{{"}} printf "%.2f" $value {{"}}"}} times / 5 minutes.
             message: Namespace {{ $labels.namespace }} is using {{ printf "%0.0f" $value }}% of its {{ $labels.resource }} quota.
             runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubequotaexceeded
             dashboard_url: {{ .Values.prometheus.dashboardUrl }}
@@ -42,7 +46,7 @@ spec:
             severity: {{ .Values.prometheus.severity }}
         - alert: KubeDeploymentGenerationMismatch
           annotations:
-            message: Deployment generation for {{ $labels.namespace }}/{{ $labels.deployment}} does not match, 
+            message: Deployment generation for {{ $labels.namespace }}/{{ $labels.deployment}} does not match,
               this indicates that the Deployment has failed but has not been rolled back.
             runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubedeploymentgenerationmismatch
             dashboard_url: {{ .Values.prometheus.dashboardUrl }}
