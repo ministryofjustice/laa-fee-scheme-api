@@ -12,7 +12,7 @@ spec:
   - name: application-rules
     rules:
     - alert: Instance-Down
-      expr: absent(up{namespace="laa-apply-for-legalaid-uat"}) == 1
+      expr: absent(up{namespace="{{ .Release.Namespace }}"}) == 1
       for: 1m
       labels:
         severity: {{ .Values.prometheus.severity }}
