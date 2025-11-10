@@ -807,7 +807,7 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
   }
 
   @Test
-  void shouldReturnValidationWarningForDisbursements_policeStations() throws Exception {
+  void shouldReturnWithoutValidationWarningForDisbursements_policeStations() throws Exception {
     mockMvc
         .perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
@@ -832,13 +832,6 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "feeCode": "INVB1",
               "schemeId": "POL_FS2016",
               "claimId": "claim_123",
-              "validationMessages": [
-                  {
-                    "type": "WARNING",
-                    "code": "WARCRM9",
-                    "message": "Costs have not been included. Disbursements cannot be claimed using fee code INVB1."
-                  }
-              ],
               "escapeCaseFlag": false,
               "feeCalculation": {
                   "totalAmount": 34.44,
@@ -1105,4 +1098,45 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
             }
             """, STRICT));
   }
+
+  @ParameterizedTest
+  @CsvSource({
+      "PROJ5, MAGS_COURT_FS2022",
+      "YOUK2, YOUTH_COURT_FS2024",
+      "PROW, SEND_HEAR_FS2022",
+  })
+  void shouldReturnValidationError_criminalProceedings_missingRepOrderDate(String feeCode) throws Exception {
+    String expectedJson = """
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "validationMessages": [
+              {
+                  "type": "ERROR",
+                  "code": "ERRCRM8",
+                  "message": "Enter a representation order date."
+              }
+          ]
+        }
+        """.formatted(feeCode);
+
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "%s",
+                  "claimId": "claim_123",
+                  "uniqueFileNumber": "121219/242",
+                  "netDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "vatIndicator": true
+                }
+                """.formatted(feeCode))
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json(expectedJson, STRICT));
+  }
+
 }
