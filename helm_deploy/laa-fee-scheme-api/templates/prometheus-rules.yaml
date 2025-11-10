@@ -11,15 +11,6 @@ spec:
   groups:
   - name: application-rules
     rules:
-    - alert: Instance-Down
-      expr: absent(up{namespace="{{ .Release.Namespace }}"}) == 1
-      for: 1m
-      labels:
-        severity: {{ .Values.prometheus.severity }}
-      annotations:
-        message: Namespace {{"{{"}} $labels.namespace {{"}}"}} is down.
-        runbook_url: https://dsdmoj.atlassian.net/wiki/spaces/LFSP/pages/5844631676/Runbook+-+Fee+Scheme+Platform+API
-        dashboard_url: {{ .Values.prometheus.dashboardUrl }}
     - alert: KubeQuota-Exceeded
       annotations:
         message: Namespace {{"{{"}} $labels.namespace {{"}}"}} is using {{"{{"}} printf "%0.0f" $value {{"}}"}}% of its {{"{{"}} $labels.resource {{"}}"}} quota.
@@ -30,7 +21,7 @@ spec:
         / ignoring(instance, job, type)
         (kube_resourcequota{job="kube-state-metrics", type="hard", namespace="{{ .Release.Namespace }}"} > 0)
         > 90
-      for: 15m
+      for: 1m
       labels:
         severity: {{ .Values.prometheus.severity }}
     - alert: KubePodCrashLooping
@@ -39,7 +30,7 @@ spec:
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubepodcrashlooping
         dashboard_url: {{ .Values.prometheus.dashboardUrl }}
       expr: rate(kube_pod_container_status_restarts_total{job="kube-state-metrics", namespace="{{ .Release.Namespace }}"}[15m]) * 60 * 5 > 0
-      for: 1h
+      for: 1m
       labels:
         severity: {{ .Values.prometheus.severity }}
     - alert: KubePodNotReady
@@ -48,7 +39,7 @@ spec:
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubepodnotready
         dashboard_url: {{ .Values.prometheus.dashboardUrl }}
       expr: sum by (namespace, pod) (kube_pod_status_phase{job="kube-state-metrics",namespace="{{ .Release.Namespace }}",phase=~"Pending|Unknown"}) > 0
-      for: 1h
+      for: 1m
       labels:
         severity: {{ .Values.prometheus.severity }}
     - alert: KubeDeploymentGenerationMismatch
@@ -58,7 +49,7 @@ spec:
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubedeploymentgenerationmismatch
         dashboard_url: {{ .Values.prometheus.dashboardUrl }}
       expr: (kube_deployment_status_observed_generation{job="kube-state-metrics", namespace="{{ .Release.Namespace }}"} != kube_deployment_metadata_generation{job="kube-state-metrics", namespace="{{ .Release.Namespace }}"})
-      for: 15m
+      for: 1m
       labels:
         severity: {{ .Values.prometheus.severity }}
     - alert: KubeDeploymentReplicasMismatch
@@ -67,6 +58,6 @@ spec:
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubedeploymentreplicasmismatch
         dashboard_url: {{ .Values.prometheus.dashboardUrl }}
       expr: (kube_deployment_spec_replicas{job="kube-state-metrics", namespace="{{ .Release.Namespace }}"} != kube_deployment_status_replicas_available{job="kube-state-metrics", namespace="{{ .Release.Namespace }}"})
-      for: 1h
+      for: 1m
       labels:
         severity: {{ .Values.prometheus.severity }}
