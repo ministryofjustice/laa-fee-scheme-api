@@ -11,6 +11,15 @@ spec:
   groups:
   - name: application-rules
     rules:
+    - alert: KubeDeploymentReplicasMismatch
+      annotations:
+        message: No pods running in {{"{{"}} $labels.namespace {{"}}"}}/{{"{{"}} $labels.deployment {{"}}"}}.
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubedeploymentreplicasmismatch
+        dashboard_url: {{ .Values.prometheus.dashboardUrl }}
+      expr: kube_deployment_status_replicas_available{job="kube-state-metrics", namespace="{{ .Release.Namespace }}"} == 0
+      for: 1m
+      labels:
+        severity: {{ .Values.prometheus.severity }}
     - alert: KubeQuota-Exceeded
       annotations:
         message: Namespace {{"{{"}} $labels.namespace {{"}}"}} is using {{"{{"}} printf "%0.0f" $value {{"}}"}}% of its {{"{{"}} $labels.resource {{"}}"}} quota.
