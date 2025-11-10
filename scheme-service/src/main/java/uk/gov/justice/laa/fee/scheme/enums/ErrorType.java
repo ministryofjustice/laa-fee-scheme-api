@@ -22,6 +22,7 @@ public enum ErrorType {
   ERR_CRIME_POLICE_STATION_ID("ERRCRM3", "Enter a valid Police station ID, Court ID, or Prison ID."),
   ERR_CRIME_PREORDER_COVER_UPPER_LIMIT("ERRCRM10", "Net Cost is more than the Upper Cost Limitation."),
   ERR_CRIME_REP_ORDER_DATE("ERRCRM12", "Fee Code is not valid for the Case Start Date."),
+  ERR_CRIME_REP_ORDER_DATE_MISSING("ERRCRM8", "Enter a representation order date."),
   ERR_CRIME_UFN_MISSING("ERRCRM7", "Enter a UFN."),
   ERR_CRIME_UFN_DATE("ERRCRM1", "Fee Code is not valid for the Case Start Date."),
 
