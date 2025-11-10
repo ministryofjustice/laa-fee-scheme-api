@@ -1,2 +1,0 @@
-ALTER TABLE fee
-    ADD COLUMN fee_type VARCHAR NULL;

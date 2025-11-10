@@ -1,7 +1,3 @@
-DELETE FROM fee_category_mapping
-WHERE fee_code IN ('ICASD', 'ICISD', 'ICSSD', 'ILHSD', 'MHLDIS', 'EDUDIS');
-
-
 INSERT INTO fee_category_mapping (fee_code, fee_description, fee_type, fee_scheme_category_type_id, category_of_law_type_id)
 VALUES ('IACA', 'Standard Fee - Asylum CLR  (2a)', 'FIXED', 1, 11),
        ('IACB', 'Standard Fee - Asylum CLR (2b + advocacy substantive hearing fee) ', 'FIXED', 1, 11),

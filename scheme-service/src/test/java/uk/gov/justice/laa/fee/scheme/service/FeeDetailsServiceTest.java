@@ -19,6 +19,8 @@ import uk.gov.justice.laa.fee.scheme.enums.AreaOfLawType;
 import uk.gov.justice.laa.fee.scheme.enums.CaseType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.exception.CategoryCodeNotFoundException;
+import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponse;
 import uk.gov.justice.laa.fee.scheme.repository.FeeCategoryMappingRepository;
 
@@ -71,13 +73,14 @@ class FeeDetailsServiceTest {
         .code(AreaOfLawType.LEGAL_HELP).caseType(CaseType.CIVIL).build();
     CategoryOfLawTypeEntity categoryOfLawType = CategoryOfLawTypeEntity.builder()
         .code("AAP").areaOfLawType(areaOfLawTypeEntity).build();
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder().feeCode(feeCode).build();
 
     FeeCategoryMappingEntity feeCategoryMappingEntity = mock(FeeCategoryMappingEntity.class);
     when(feeCategoryMappingEntity.getCategoryOfLawType()).thenReturn(categoryOfLawType);
 
     when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(feeCode)).thenReturn(Optional.of(feeCategoryMappingEntity));
 
-    CaseType result = feeDetailsService.getCaseType(feeCode);
+    CaseType result = feeDetailsService.getCaseType(feeCalculationRequest);
 
     assertThat(result).isEqualTo(CaseType.CIVIL);
   }
@@ -85,12 +88,12 @@ class FeeDetailsServiceTest {
   @Test
   void getCaseType_shouldThrowExceptionCategoryOfLawNotFound() {
     String feeCode = "FEE123";
-
     when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(any())).thenReturn(Optional.empty());
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder().feeCode(feeCode).build();
 
-    assertThatThrownBy(() -> feeDetailsService.getCaseType(feeCode))
-        .isInstanceOf(CategoryCodeNotFoundException.class)
-        .hasMessage(String.format("Category of law code not found for feeCode: %s", feeCode));
+    assertThatThrownBy(() -> feeDetailsService.getCaseType(feeCalculationRequest))
+        .isInstanceOf(ValidationException.class)
+        .hasMessage("ERRALL1 - Enter a valid Fee Code.");
 
   }
 }

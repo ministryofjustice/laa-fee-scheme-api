@@ -1,5 +1,3 @@
-DELETE FROM fee WHERE fee_code IN ('PROP1', 'PROP2');
-
 -- Fee Scheme for 2016 'Pre Order Cover' category
 INSERT INTO fee
 (fee_code, description, upper_cost_limit, category_type, fee_type, fee_scheme_code)
