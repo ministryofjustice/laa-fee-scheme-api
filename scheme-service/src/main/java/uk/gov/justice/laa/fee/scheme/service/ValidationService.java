@@ -10,13 +10,10 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_REP_ORDER_
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_MISSING;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_FAMILY_LONDON_RATE;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_CRIME_TRAVEL_COSTS;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_CRIME_WAITING_COSTS;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import io.micrometer.common.util.StringUtils;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -115,22 +112,9 @@ public class ValidationService {
   public List<ValidationMessagesInner> checkForWarnings(FeeCalculationRequest feeCalculationRequest, CaseType caseType) {
 
     log.info("Checking for warnings");
+    // Validation Messages need to be populated here based on caseType and Fee code
 
-    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    String feeCode = feeCalculationRequest.getFeeCode();
-
-    if (caseType.equals(CRIME)) {
-      if (WARN_CRIME_TRAVEL_COSTS.containsFeeCode(feeCode) && feeCalculationRequest.getNetTravelCosts() != null) {
-        log.warn("{} - Net travel costs cannot be claimed", WARN_CRIME_TRAVEL_COSTS.getCode());
-        validationMessages.add(buildValidationMessage(WARN_CRIME_TRAVEL_COSTS));
-      }
-
-      if (WARN_CRIME_WAITING_COSTS.containsFeeCode(feeCode) && feeCalculationRequest.getNetWaitingCosts() != null) {
-        log.warn("{} - Net waiting costs cannot be claimed", WARN_CRIME_WAITING_COSTS.getCode());
-        validationMessages.add(buildValidationMessage(WARN_CRIME_WAITING_COSTS));
-      }
-    }
-    return validationMessages;
+    return List.of();
   }
 
   /**

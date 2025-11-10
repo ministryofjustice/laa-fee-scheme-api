@@ -398,7 +398,7 @@ class ValidationServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"INVB1", "INVB2", "PROT", "PROU", "PROW", "PRIA", "PRIB1", "PRIB2", "PRIC1", "PRIC2",
         "PRID1", "PRID2", "PRID1", "PRID2", "PRIE1", "PRIE2"})
-    void checkForWarnings_whenGivenCrimeFeeCodeAndNetTravelCosts_returnsWarnings(String feeCode) {
+    void checkForWarnings_whenGivenCrimeFeeCodeAndNetTravelCosts_returnsNoWarnings(String feeCode) {
       FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
           .feeCode(feeCode)
           .netTravelCosts(100.0)
@@ -406,16 +406,12 @@ class ValidationServiceTest {
 
       List<ValidationMessagesInner> result = validationService.checkForWarnings(feeCalculationRequest, CRIME);
 
-      assertThat(result).containsExactly(ValidationMessagesInner.builder()
-          .type(WARNING)
-          .code("WARCRM1")
-          .message("Cost not included. Travel costs cannot be claimed with Fee Code used.")
-          .build());
+      assertThat(result).isEmpty();
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"INVB1", "INVB2", "PROT", "PROU", "PROW"})
-    void checkForWarnings_whenGivenCrimeFeeCodeAndNetWaitingCosts_returnsWarnings(String feeCode) {
+    void checkForWarnings_whenGivenCrimeFeeCodeAndNetWaitingCosts_returnsNoWarnings(String feeCode) {
       FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
           .feeCode(feeCode)
           .netWaitingCosts(100.0)
@@ -423,11 +419,7 @@ class ValidationServiceTest {
 
       List<ValidationMessagesInner> result = validationService.checkForWarnings(feeCalculationRequest, CRIME);
 
-      assertThat(result).containsExactly(ValidationMessagesInner.builder()
-          .type(WARNING)
-          .code("WARCRM2")
-          .message("Cost not included. Waiting costs cannot be claimed with Fee Code used.")
-          .build());
+      assertThat(result).isEmpty();
     }
 
     @Test

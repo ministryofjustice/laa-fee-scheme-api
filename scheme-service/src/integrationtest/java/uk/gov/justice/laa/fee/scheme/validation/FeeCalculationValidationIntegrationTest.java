@@ -256,7 +256,7 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
   }
 
   @Test
-  void shouldReturnValidationWarning_whenCrimeFeeCodeAndNetTravelCosts() throws Exception {
+  void shouldReturnNoValidationWarning_whenCrimeFeeCodeAndNetTravelCosts() throws Exception {
     mockMvc.perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
@@ -277,13 +277,6 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "feeCode": "INVB1",
               "claimId": "claim_123",
               "schemeId": "POL_FS2016",
-              "validationMessages": [
-                {
-                  "type":"WARNING",
-                  "code":"WARCRM1",
-                  "message":"Cost not included. Travel costs cannot be claimed with Fee Code used."
-                }
-              ],
               "escapeCaseFlag": false,
               "feeCalculation": {
                 "totalAmount": 28.7,
@@ -296,7 +289,7 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
   }
 
   @Test
-  void shouldReturnValidationWarning_whenCrimeFeeCodeAndNetWaitingCosts() throws Exception {
+  void shouldReturnNoValidationWarning_whenCrimeFeeCodeAndNetWaitingCosts() throws Exception {
     mockMvc.perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
@@ -317,13 +310,6 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
               "feeCode": "INVB1",
               "claimId": "claim_123",
               "schemeId": "POL_FS2016",
-              "validationMessages": [
-                {
-                  "type":"WARNING",
-                  "code":"WARCRM2",
-                  "message":"Cost not included. Waiting costs cannot be claimed with Fee Code used."
-                }
-              ],
               "escapeCaseFlag": false,
               "feeCalculation": {
                 "totalAmount": 28.7,
