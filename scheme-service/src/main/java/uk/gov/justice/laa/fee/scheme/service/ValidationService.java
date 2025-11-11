@@ -14,12 +14,12 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_REP_ORDER_
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_MISSING;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_FAMILY_LONDON_RATE;
-import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import io.micrometer.common.util.StringUtils;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,6 @@ import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
 import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
 import uk.gov.justice.laa.fee.scheme.enums.Region;
-import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
@@ -48,6 +47,7 @@ public class ValidationService {
 
   private static final LocalDate CIVIL_START_DATE = LocalDate.of(2013, 4, 1);
   private static final List<CategoryType> CRIME_USING_REP_ORDER_DATE = List.of(MAGISTRATES_COURT, YOUTH_COURT, SENDING_HEARING);
+  public static final String PROH_FEE_CODE = "PROH";
 
   private static boolean filterByRegion(FeeEntity fee, Boolean isLondonRate) {
     if (fee.getCategoryType() != CategoryType.FAMILY) {
@@ -62,14 +62,6 @@ public class ValidationService {
     LocalDate validTo = fee.getFeeScheme().getValidTo();
 
     return !validFrom.isAfter(claimStartDate) && (validTo == null || !claimStartDate.isAfter(validTo));
-  }
-
-  private static ValidationMessagesInner buildValidationMessage(WarningType warning) {
-    return ValidationMessagesInner.builder()
-        .type(WARNING)
-        .code(warning.getCode())
-        .message(warning.getMessage())
-        .build();
   }
 
   /**
@@ -88,15 +80,28 @@ public class ValidationService {
       throw new ValidationException(ERR_ALL_FEE_CODE, new FeeContext(feeCalculationRequest));
     }
 
+    if (feeCalculationRequest.getFeeCode().equals(PROH_FEE_CODE)) {
+      if (!(feeCalculationRequest.getRepresentationOrderDate() != null
+          || StringUtils.isNotBlank(feeCalculationRequest.getUniqueFileNumber()))) {
+        throw new ValidationException(ERR_CRIME_UFN_DATE, new FeeContext(feeCalculationRequest));
+      }
+    } else {
+      if (!isFeeCodeValidForRepOrderDate(feeCalculationRequest)) {
+        throw new ValidationException(ERR_CRIME_REP_ORDER_DATE, new FeeContext(feeCalculationRequest));
+      }
+    }
+
     CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
 
+    ClaimStartDateType claimStartDateType = FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeCalculationRequest);
     if (caseType.equals(CRIME)) {
-      if (CRIME_USING_REP_ORDER_DATE.contains(categoryType)) {
+      if (claimStartDateType == ClaimStartDateType.REP_ORDER_DATE) {
         if (feeCalculationRequest.getRepresentationOrderDate() == null) {
           throw new ValidationException(ERR_CRIME_REP_ORDER_DATE_MISSING, new FeeContext(feeCalculationRequest));
         }
       } else if (StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber())
-          && !feeCalculationRequest.getFeeCode().equals(PROD_FEE_CODE)) {
+          && !(feeCalculationRequest.getFeeCode().equals(PROD_FEE_CODE)
+              || feeCalculationRequest.getFeeCode().equals(PROH_FEE_CODE))) {
         throw new ValidationException(ERR_CRIME_UFN_MISSING, new FeeContext(feeCalculationRequest));
       }
     }
@@ -181,5 +186,32 @@ public class ValidationService {
           }
           return new ValidationException(error, new FeeContext(feeCalculationRequest));
         });
+  }
+
+  /**
+   *  Validate Fee Code against a set of Magistrates, Youth & Advocacy Fee codes.
+   *
+   * @param feeCalculationRequest FeeCalculationRequest
+   * @return boolean
+   */
+  public boolean isFeeCodeValidForRepOrderDate(FeeCalculationRequest feeCalculationRequest) {
+    final Pattern repOrderDtPattern = Pattern.compile(
+        "^(PRO[EFKLV][1-4]|PROJ[1-8]|YOU[EF][1-3]|YOU[XKLY][1-4]|APP[AB]|PROW)$");
+
+    if (feeCalculationRequest.getRepresentationOrderDate() != null) {
+      return repOrderDtPattern.matcher(feeCalculationRequest.getFeeCode()).matches();
+    }
+    return true;
+  }
+
+  /**
+   *  Validate Fee Code against a set of Magistrates, Youth & Advocacy Fee codes.
+   *
+   * @param feeCalculationRequest FeeCalculationRequest
+   * @return boolean
+   */
+  public boolean validateAdvocacyAssistanceForClaimDate(FeeCalculationRequest feeCalculationRequest) {
+    return feeCalculationRequest.getRepresentationOrderDate() != null
+        || !StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber());
   }
 }

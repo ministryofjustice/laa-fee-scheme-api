@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CIVIL;
 import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CRIME;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVICE_ASSISTANCE_ADVOCACY;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
@@ -558,7 +559,67 @@ class ValidationServiceTest {
       assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest, CRIME))
           .isInstanceOf(ValidationException.class)
           .hasFieldOrPropertyWithValue("error", ERR_CRIME_REP_ORDER_DATE)
-          .hasMessage("ERRCRM12 - Fee Code is not valid for the Case Start Date.");
+          .hasMessage("ERRCRM12 - Fee Code is not valid for the Representation Order Date provided.");
+    }
+
+    @Test
+    void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndRepOrderDateUFN_NotSupplied_shouldThrowException() {
+      FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+          .feeCode("PROH")
+          .representationOrderDate(null)
+          .uniqueFileNumber(null)
+          .vatIndicator(Boolean.TRUE)
+          .netDisbursementAmount(50.50)
+          .disbursementVatAmount(20.15)
+          .build();
+
+      FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2025")
+          .validFrom(LocalDate.of(2025, 10, 1)).build();
+
+      FeeEntity feeEntity = FeeEntity.builder()
+          .feeCode("PROH")
+          .feeScheme(feeSchemesEntity)
+          .fixedFee(new BigDecimal("200"))
+          .categoryType(ADVICE_ASSISTANCE_ADVOCACY)
+          .feeType(FeeType.FIXED).build();
+
+      List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+      assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest, CRIME))
+          .isInstanceOf(ValidationException.class)
+          .hasFieldOrPropertyWithValue("error", ERR_CRIME_UFN_DATE)
+          .hasMessage("ERRCRM1 - Fee Code is not valid for the Case Start Date.");
+    }
+
+    @Test
+    void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndRepOrderDateSupplied_shouldReturnValidResponse() {
+      FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+          .feeCode("PROH")
+          .representationOrderDate(LocalDate.of(2022, 12, 1))
+          .uniqueFileNumber("010525/456")
+          .vatIndicator(Boolean.TRUE)
+          .netDisbursementAmount(50.50)
+          .disbursementVatAmount(20.15)
+          .caseConcludedDate(LocalDate.of(2022, 12, 11))
+          .build();
+
+      FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2022")
+          .validFrom(LocalDate.of(2022, 10, 1)).build();
+
+      FeeEntity feeEntity = FeeEntity.builder()
+          .feeCode("PROH")
+          .feeScheme(feeSchemesEntity)
+          .fixedFee(new BigDecimal("200"))
+          .categoryType(ADVICE_ASSISTANCE_ADVOCACY)
+          .feeType(FeeType.FIXED).build();
+
+      List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+      FeeEntity feeEntityResponse =  validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest, CRIME);
+      assertThat(feeEntityResponse).isNotNull();
+      assertThat(feeEntityResponse.getFeeCode()).isEqualTo("PROH");
+      assertThat(feeEntityResponse.getFixedFee()).isEqualTo("200");
+      assertThat(feeEntityResponse.getFeeScheme().getSchemeCode()).isEqualTo("MAGS_COURT_FS2022");
     }
   }
 }

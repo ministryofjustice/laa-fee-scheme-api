@@ -248,7 +248,7 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                 {
                   "type":"ERROR",
                   "code":"ERRCRM12",
-                  "message":"Fee Code is not valid for the Case Start Date."
+                  "message":"Fee Code is not valid for the Representation Order Date provided."
                 }
               ]
             }
