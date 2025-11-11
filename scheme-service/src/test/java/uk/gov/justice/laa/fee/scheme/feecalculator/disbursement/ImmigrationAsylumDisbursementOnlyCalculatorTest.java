@@ -42,12 +42,16 @@ class ImmigrationAsylumDisbursementOnlyCalculatorTest {
 
         arguments("ICSSD, above disbursement limit, without prior authority",
             "ICSSD", null, 1111.0, 200.0,
-            600.0, 600.0, 800.0, true)
+            600.0, 600.0, 800.0, true),
+
+        arguments("ICSSD, no disbursement claimed",
+            "ICSSD", null, null, null,
+            null, 600.0, 0.0, false)
     );
   }
 
-  private static Arguments arguments(String scenario, String feeCode, String priorAuthority, double requestedNetDisbursementAmount,
-                                     double disbursementVatAmount, double netDisbursementAmount, double netDisbursementLimit,
+  private static Arguments arguments(String scenario, String feeCode, String priorAuthority, Double requestedNetDisbursementAmount,
+                                     Double disbursementVatAmount, Double netDisbursementAmount, double netDisbursementLimit,
                                      double expectedTotal, boolean hasWarning) {
 
     return Arguments.of(scenario, feeCode, priorAuthority, requestedNetDisbursementAmount, disbursementVatAmount,
@@ -60,9 +64,9 @@ class ImmigrationAsylumDisbursementOnlyCalculatorTest {
       String description,
       String feeCode,
       String immigrationPriorityAuthority,
-      double requestedNetDisbursementAmount,
-      double disbursementVatAmount,
-      double netDisbursementAmount,
+      Double requestedNetDisbursementAmount,
+      Double disbursementVatAmount,
+      Double netDisbursementAmount,
       double disbursementLimit,
       double expectedTotal,
       boolean hasWarning

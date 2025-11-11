@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.disbursement;
 
+import static java.util.Objects.nonNull;
 import static uk.gov.justice.laa.fee.scheme.enums.LimitType.DISBURSEMENT;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_ONLY;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.checkLimitAndCapIfExceeded;
@@ -52,7 +53,7 @@ public class ImmigrationAsylumDisbursementOnlyCalculator {
         .validationMessages(validationMessages)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
-            .disbursementAmount(toDouble(netDisbursementAmount))
+            .disbursementAmount(nonNull(feeCalculationRequest.getNetDisbursementAmount()) ? toDouble(netDisbursementAmount) : null)
             .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
             .build())
