@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
+import static java.util.Objects.nonNull;
 import static uk.gov.justice.laa.fee.scheme.enums.LimitType.DISBURSEMENT;
 import static uk.gov.justice.laa.fee.scheme.enums.LimitType.PROFIT_COST;
 import static uk.gov.justice.laa.fee.scheme.enums.LimitType.TOTAL;
@@ -289,11 +290,11 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
         .vatRateApplied(toDoubleOrNull(VatUtil
             .getVatRateForDate(feeCalculationRequest.getStartDate(), feeCalculationRequest.getVatIndicator())))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
-        .disbursementAmount(toDouble(disbursementAmount))
+        .disbursementAmount(nonNull(feeCalculationRequest.getNetDisbursementAmount()) ? toDouble(disbursementAmount) : null)
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .hourlyTotalAmount(toDouble(hourlyTotalAmount))
-        .netProfitCostsAmount(toDouble(netProfitCostsAmount))
+        .netProfitCostsAmount(nonNull(feeCalculationRequest.getNetProfitCosts()) ? toDouble(netProfitCostsAmount) : null)
         .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
         .netCostOfCounselAmount(includeCostOfCounsel ? feeCalculationRequest.getNetCostOfCounsel() : null)
         .boltOnFeeDetails(filterBoltOnFeeDetails(boltOnFeeDetails))
