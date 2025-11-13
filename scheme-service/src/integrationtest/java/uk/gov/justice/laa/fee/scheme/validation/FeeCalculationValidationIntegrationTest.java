@@ -283,7 +283,7 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                 {
                   "type": "WARNING",
                   "code": "WARFAM1",
-                  "message": "Family escape case threshold"
+                  "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
                 }
               ],
               "escapeCaseFlag": true,
@@ -304,11 +304,11 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
   @ParameterizedTest
   @CsvSource({
       "IMCF, WARIA1, Costs have been capped at £600 without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit., "
-          + "false, 2173.72, 250.6, 650.0, 600.0, 1092.0, 0",
+      + "false, 2173.72, 250.6, 650.0, 600.0, 1092.0, 0",
       "IALB, WARIA2, Costs have been capped at £400 without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit., "
-          + "false, 1158.92, 114.8, 450.0, 400.0, 413.0, 0",
+      + "false, 1158.92, 114.8, 450.0, 400.0, 413.0, 0",
       "IACE, WARIA3, The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid., "
-          + "true, 1116.12, 166.0, 50.0, 50.0, 669.0, 1500"
+      + "true, 1116.12, 166.0, 50.0, 50.0, 669.0, 1500"
   })
   void shouldReturnValidationWarning_immigrationAndAsylumFixedFee(
       String feeCode,
@@ -882,9 +882,9 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
   @ParameterizedTest
   @CsvSource({
       "PRIA, WARCRM6, The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid., "
-          + "true, 360.9, 40.15, 200.75",
+      + "true, 360.9, 40.15, 200.75",
       "PRIB1, WARCRM5, Costs are included. Profit and Waiting Costs exceed the Lower Standard Fee Limit. An escape fee may be payable., "
-          + "false, 364.72, 40.79, 203.93",
+      + "false, 364.72, 40.79, 203.93",
   })
   void shouldReturnValidationWarning_prisonLaw(
       String feeCode,
@@ -1010,7 +1010,7 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                   {
                       "type": "WARNING",
                       "code": "WARMH1",
-                      "message": "Mental Health escape case threshold"
+                      "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
                   }
               ],
               "escapeCaseFlag": true,
@@ -1073,4 +1073,116 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
         .andExpect(content().json(expectedJson, STRICT));
   }
 
+  @ParameterizedTest
+  @CsvSource({
+      "CAPA, CAPA_FS2013, WAROTH2, 434.85, 47.8, 239.0",
+      "CLIN, CLIN_FS2013, WAROTH3, 382.05, 39.0, 195.0",
+      "COM, COM_FS2013, WAROTH4, 467.25, 53.2, 266.0",
+      "DEBT, DEBT_FS2013, WAROTH5, 364.05, 36.0, 180.0",
+      "EDUFIN, EDU_FS2013, WAROTH7, 474.45, 54.4, 272.0",
+      "ELA, ELA_FS2024, WAROTH6,  336.45, 31.4, 157.0",
+      "HOUS, HOUS_FS2013, WAROTH8, 336.45, 31.4, 157.0",
+      "MISCCON, MISC_FS2013, WAROTH9, 338.85, 31.8, 159.0",
+      "PUB, PUB_FS2013, WAROTH10, 458.85, 51.8, 259.0",
+      "WFB1, WB_FS2025, WAROTH11, 397.65, 41.6, 208.0"
+  })
+  public void shouldReturnValidationWarning_otherCivilCategories(String feeCode, String schemeId, String warningCode,
+                                                                 String expectedTotal, String expectedVatAmount,
+                                                                 String expectedFixedFeeAmount) throws Exception {
+    String expectedJson = """
+        {
+            "feeCode": "%s",
+            "schemeId": "%s",
+            "claimId": "claim_123",
+            "validationMessages": [
+                {
+                    "type": "WARNING",
+                    "code": "%s",
+                    "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
+                }
+            ],
+            "escapeCaseFlag": true,
+            "feeCalculation": {
+                "totalAmount": %s,
+                "vatIndicator": true,
+                "vatRateApplied": 20.0,
+                "calculatedVatAmount": %s,
+                "disbursementAmount": 123.38,
+                "requestedNetDisbursementAmount": 123.38,
+                "disbursementVatAmount": 24.67,
+                "fixedFeeAmount": %s
+            }
+        }
+        """.formatted(feeCode, schemeId, warningCode, expectedTotal, expectedVatAmount, expectedFixedFeeAmount);
+
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "%s",
+                  "claimId": "claim_123",
+                  "startDate": "2025-06-01",
+                  "netProfitCosts": 1000.0,
+                  "netDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "vatIndicator": true
+                }
+                """.formatted(feeCode))
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json(expectedJson, STRICT));
+  }
+
+  @Test
+  void shouldReturnValidationWarning_discrimination() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "DISC",
+                  "claimId": "claim_123",
+                  "startDate": "2019-09-30",
+                  "netProfitCosts": 900,
+                  "netCostOfCounsel": 79.19,
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+                "feeCode": "DISC",
+                "schemeId": "DISC_FS2013",
+                "claimId": "claim_123",
+                "validationMessages": [
+                    {
+                        "type": "WARNING",
+                        "code": "WAROTH1",
+                        "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
+                    }
+                ],
+                "escapeCaseFlag": true,
+                "feeCalculation": {
+                    "totalAmount": 960.33,
+                    "vatIndicator": true,
+                    "vatRateApplied": 20.0,
+                    "calculatedVatAmount": 140.0,
+                    "disbursementAmount": 100.21,
+                    "requestedNetDisbursementAmount": 100.21,
+                    "disbursementVatAmount": 20.12,
+                    "hourlyTotalAmount": 700.0,
+                    "netProfitCostsAmount": 900.0,
+                    "requestedNetProfitCostsAmount": 900.0,
+                    "netCostOfCounselAmount": 79.19
+                }
+            }
+            """, STRICT));
+  }
 }
