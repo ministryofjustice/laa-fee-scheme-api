@@ -1147,7 +1147,7 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
                   "feeCode": "DISC",
                   "claimId": "claim_123",
                   "startDate": "2019-09-30",
-                  "netProfitCosts": 239.06,
+                  "netProfitCosts": 900,
                   "netCostOfCounsel": 79.19,
                   "netDisbursementAmount": 100.21,
                   "disbursementVatAmount": 20.12,
@@ -1159,24 +1159,31 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json("""
             {
-              "feeCode": "DISC",
-              "schemeId": "DISC_FS2013",
-              "claimId": "claim_123",
-              "escapeCaseFlag": false,
-              "feeCalculation": {
-                "totalAmount": 502.23,
-                "vatIndicator": true,
-                "vatRateApplied": 20.00,
-                "calculatedVatAmount": 63.65,
-                "disbursementAmount": 100.21,
-                "requestedNetDisbursementAmount": 100.21,
-                "disbursementVatAmount": 20.12,
-                "hourlyTotalAmount": 318.25,
-                "netCostOfCounselAmount": 79.19,
-                "netProfitCostsAmount": 239.06,
-                "requestedNetProfitCostsAmount": 239.06
+                "feeCode": "DISC",
+                "schemeId": "DISC_FS2013",
+                "claimId": "claim_123",
+                "validationMessages": [
+                    {
+                        "type": "WARNING",
+                        "code": "WAROTH1",
+                        "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
+                    }
+                ],
+                "escapeCaseFlag": true,
+                "feeCalculation": {
+                    "totalAmount": 960.33,
+                    "vatIndicator": true,
+                    "vatRateApplied": 20.0,
+                    "calculatedVatAmount": 140.0,
+                    "disbursementAmount": 100.21,
+                    "requestedNetDisbursementAmount": 100.21,
+                    "disbursementVatAmount": 20.12,
+                    "hourlyTotalAmount": 700.0,
+                    "netProfitCostsAmount": 900.0,
+                    "requestedNetProfitCostsAmount": 900.0,
+                    "netCostOfCounselAmount": 79.19
                 }
-              }
+            }
             """, STRICT));
   }
 }
