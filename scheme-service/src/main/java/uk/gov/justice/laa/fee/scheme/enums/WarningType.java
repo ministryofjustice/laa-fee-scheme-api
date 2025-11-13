@@ -15,112 +15,83 @@ import lombok.RequiredArgsConstructor;
 public enum WarningType {
   WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT("WARCRM3", "Costs are included. The Net Costs exceeds the Upper Costs Limitation."),
 
-  WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD("WARCRM4", "The claim exceeds the Escape Case Threshold. An Escape "
-                                                    + "Case Claim must be submitted for further costs to be paid."),
+  WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD("WARCRM4", getEscapeMessage()),
 
-  WARN_CLAIM_AGNST_PUB_AUTH_ESCAPE_THRESHOLD("WAROTH2",
-      "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid.",
-      CategoryType.CLAIMS_PUBLIC_AUTHORITIES),
+  WARN_CLAIM_AGNST_PUB_AUTH_ESCAPE_THRESHOLD("WAROTH2", getEscapeMessage(), CategoryType.CLAIMS_PUBLIC_AUTHORITIES),
 
-  WARN_CLINICAL_NEGLIGENCE_ESCAPE_THRESHOLD("WAROTH3",
-      "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid.",
-      CategoryType.CLINICAL_NEGLIGENCE),
+  WARN_CLINICAL_NEGLIGENCE_ESCAPE_THRESHOLD("WAROTH3", getEscapeMessage(), CategoryType.CLINICAL_NEGLIGENCE),
 
-  WARN_COMMUNITY_CARE_ESCAPE_THRESHOLD("WAROTH4",
-      "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid.",
-      CategoryType.COMMUNITY_CARE),
+  WARN_COMMUNITY_CARE_ESCAPE_THRESHOLD("WAROTH4", getEscapeMessage(), CategoryType.COMMUNITY_CARE),
 
-  WARN_DEBT_ESCAPE_THRESHOLD("WAROTH5",
-      "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid.",
-      CategoryType.DEBT),
+  WARN_DEBT_ESCAPE_THRESHOLD("WAROTH5", getEscapeMessage(), CategoryType.DEBT),
 
-  WARN_DISCRIMINATION_ESCAPE_THRESHOLD("WAROTH1",
-      "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid.",
-      CategoryType.DISCRIMINATION),
+  WARN_DISCRIMINATION_ESCAPE_THRESHOLD("WAROTH1", getEscapeMessage(), CategoryType.DISCRIMINATION),
 
-  WARN_EDUCATION_ESCAPE_THRESHOLD("WAROTH7",
-      "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid.",
-      CategoryType.EDUCATION),
+  WARN_EDUCATION_ESCAPE_THRESHOLD("WAROTH7", getEscapeMessage(), CategoryType.EDUCATION),
 
-  WARN_FAMILY_ESCAPE_THRESHOLD("WARFAM1",
-      "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid.",
-      CategoryType.FAMILY),
+  WARN_FAMILY_ESCAPE_THRESHOLD("WARFAM1", getEscapeMessage(), CategoryType.FAMILY),
 
-  WARN_HOUSING_ESCAPE_THRESHOLD("WAROTH8",
-      "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid.",
-      CategoryType.HOUSING),
+  WARN_HOUSING_ESCAPE_THRESHOLD("WAROTH8", getEscapeMessage(), CategoryType.HOUSING),
 
-  WARN_HOUSING_HLPAS_ESCAPE_THRESHOLD("WAROTH6",
-      "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid.",
-      CategoryType.HOUSING_HLPAS),
+  WARN_HOUSING_HLPAS_ESCAPE_THRESHOLD("WAROTH6", getEscapeMessage(), CategoryType.HOUSING_HLPAS),
 
   WARN_IMM_ASYLM_DISB_600_CLR("WARIA1", "Costs have been capped at £600 without an Immigration Priority "
-                                        + "Authority Number. Disbursement costs exceed the Disbursement Limit."),
+      + "Authority Number. Disbursement costs exceed the Disbursement Limit."),
   WARN_IMM_ASYLM_DISB_400_LEGAL_HELP("WARIA2", "Costs have been capped at £400 without an Immigration "
-                                               + "Priority Authority Number. Disbursement costs exceed the Disbursement Limit."),
-  WARN_IMM_ASYLM_ESCAPE_THRESHOLD("WARIA3", "The claim exceeds the Escape Case Threshold. An Escape Case Claim "
-                                            + "must be submitted for further costs to be paid.", CategoryType.IMMIGRATION_ASYLUM),
+      + "Priority Authority Number. Disbursement costs exceed the Disbursement Limit."),
+  WARN_IMM_ASYLM_ESCAPE_THRESHOLD("WARIA3", getEscapeMessage(), CategoryType.IMMIGRATION_ASYLUM),
   WARN_IMM_ASYLM_PRIOR_AUTH_CLR("WARIA4", "Costs have been capped. The amount entered exceeds the Total "
-                                          + "Cost Limit. An Immigration Prior Authority number must be entered."),
+      + "Cost Limit. An Immigration Prior Authority number must be entered."),
   WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM("WARIA5", "Costs have been capped. The amount entered exceeds the "
-                                              + "Total Cost Limit. An Immigration Prior Authority number must be entered."),
+      + "Total Cost Limit. An Immigration Prior Authority number must be entered."),
   WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP("WARIA6", "Costs have been capped. The amount entered exceeds the"
-                                                 + " Total Cost Limit. An Immigration Prior Authority number must be entered."),
+      + " Total Cost Limit. An Immigration Prior Authority number must be entered."),
   WARN_IMM_ASYLM_DISB_LEGAL_HELP("WARIA7", "Costs have been capped without an Immigration Priority Authority"
-                                           + " Number. Disbursement costs exceed the Disbursement Limit."),
+      + " Number. Disbursement costs exceed the Disbursement Limit."),
   WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP("WARIA8", "Costs have been capped. Costs for the Fee Code used "
-                                                     + "cannot exceed £100."),
+      + "cannot exceed £100."),
   WARN_IMM_ASYLM_DETENTION_TRAVEL("WARIA9", "Costs not included. Detention Travel and Waiting costs on hourly"
-                                            + " rates cases should be reported as Profit Costs."),
+      + " rates cases should be reported as Profit Costs."),
   WARN_IMM_ASYLM_JR_FORM_FILLING("WARIA10", "Costs have been included. JR/ form filling costs should only be completed "
-                                            + "for standard fee cases. Hourly rates costs should be reported in the Profit Costs."),
+      + "for standard fee cases. Hourly rates costs should be reported in the Profit Costs."),
 
   WARN_IMM_ASYLM_DISB_ONLY("WARIA11", "Costs have been capped without an Immigration Priority Authority Number. "
-                                      + "Disbursement costs exceed the Disbursement Limit."),
+      + "Disbursement costs exceed the Disbursement Limit."),
 
-  WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD("WARMH1",
-      "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid.",
-      CategoryType.MENTAL_HEALTH),
+  WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD("WARMH1", getEscapeMessage(), CategoryType.MENTAL_HEALTH),
 
-  WARN_MISCELLANEOUS_ESCAPE_THRESHOLD("WAROTH9",
-      "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid.",
-      CategoryType.MISCELLANEOUS),
+  WARN_MISCELLANEOUS_ESCAPE_THRESHOLD("WAROTH9", getEscapeMessage(), CategoryType.MISCELLANEOUS),
 
   WARN_POLICE_OTHER_UPPER_LIMIT("WARCRM7", "Costs have been included. Net Costs exceed the Upper Cost Limitation."),
 
-  WARN_POLICE_STATIONS_ESCAPE_THRESHOLD("WARCRM8", "The claim exceeds the Escape Case Threshold. "
-                                                   + "An Escape Case Claim must be submitted for further costs to be paid."),
+  WARN_POLICE_STATIONS_ESCAPE_THRESHOLD("WARCRM8", getEscapeMessage()),
 
-  WARN_PRISON_HAS_ESCAPED("WARCRM6", "The claim exceeds the Escape Case Threshold. An Escape Case Claim "
-                                     + "must be submitted for further costs to be paid."),
+  WARN_PRISON_HAS_ESCAPED("WARCRM6", getEscapeMessage()),
   WARN_PRISON_MAY_HAVE_ESCAPED("WARCRM5", "Costs are included. Profit and Waiting Costs exceed the Lower "
-                                          + "Standard Fee Limit. An escape fee may be payable."),
+      + "Standard Fee Limit. An escape fee may be payable."),
 
-  WARN_PUBLIC_LAW_ESCAPE_THRESHOLD("WAROTH10",
-      "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid.",
-      CategoryType.PUBLIC_LAW),
+  WARN_PUBLIC_LAW_ESCAPE_THRESHOLD("WAROTH10", getEscapeMessage(), CategoryType.PUBLIC_LAW),
 
-  WARN_WELFARE_BENEFITS_ESCAPE_THRESHOLD("WAROTH11",
-      "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid.",
-      CategoryType.WELFARE_BENEFITS);
+  WARN_WELFARE_BENEFITS_ESCAPE_THRESHOLD("WAROTH11", getEscapeMessage(), CategoryType.WELFARE_BENEFITS);
 
+
+  private final String code;
+  private final String message;
+  private final Set<String> feeCodes;
+  private final CategoryType categoryType;
 
   WarningType(String code, String message) {
     this(code, message, null, null);
-  }
-
-  WarningType(String code, String message, Set<String> feeCodes) {
-    this(code, message, feeCodes, null);
   }
 
   WarningType(String code, String message, CategoryType categoryType) {
     this(code, message, null, categoryType);
   }
 
-  private final String code;
-  private final String message;
-  private final Set<String> feeCodes;
-  private final CategoryType categoryType;
+  private static String getEscapeMessage() {
+    return "The claim exceeds the Escape Case Threshold. "
+        + "An Escape Case Claim must be submitted for further costs to be paid.";
+  }
 
   /**
    * Helper to get all error codes for a given CategoryType.

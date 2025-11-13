@@ -8,8 +8,8 @@ import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
  */
 @Getter
 public class ValidationException extends RuntimeException  {
-  private final ErrorType error;
-  private final FeeContext context;
+  private final transient ErrorType error;
+  private final transient FeeContext context;
 
   /**
    * Constructor for ValidationException.

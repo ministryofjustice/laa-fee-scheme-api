@@ -19,7 +19,7 @@ class SortedMdcConverterTest {
   SortedMdcConverter converter = new SortedMdcConverter();
 
   @Test
-  public void convert_givenNonEmptyMdc_shouldReturnFormattedMdcString() {
+  void convert_givenNonEmptyMdc_shouldReturnFormattedMdcString() {
     when(event.getMDCPropertyMap()).thenReturn(Map.of("feeCode", "FEE123", "startDate", "15-02-11"));
 
     String result = converter.convert(event);
@@ -28,21 +28,21 @@ class SortedMdcConverterTest {
   }
 
   @Test
-  public void convert_givenNullMdc_shouldReturnEmptyString() {
+  void convert_givenNullMdc_shouldReturnEmptyString() {
     when(event.getMDCPropertyMap()).thenReturn(null);
 
     String result = converter.convert(event);
 
-    assertThat(result).isEqualTo("");
+    assertThat(result).isEmpty();
   }
 
   @Test
-  public void convert_givenEmptyMdc_shouldReturnEmptyString() {
+  void convert_givenEmptyMdc_shouldReturnEmptyString() {
     when(event.getMDCPropertyMap()).thenReturn(Map.of());
 
     String result = converter.convert(event);
 
-    assertThat(result).isEqualTo("");
+    assertThat(result).isEmpty();
   }
 
 }

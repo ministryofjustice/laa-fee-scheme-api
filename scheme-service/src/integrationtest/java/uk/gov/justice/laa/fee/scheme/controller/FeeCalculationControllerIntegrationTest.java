@@ -22,7 +22,7 @@ import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTest
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-public class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase {
+class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase {
 
   @Autowired
   private MockMvc mockMvc;

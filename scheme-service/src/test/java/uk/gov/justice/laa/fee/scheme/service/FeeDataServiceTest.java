@@ -42,7 +42,7 @@ class FeeDataServiceTest {
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022")
         .validFrom(LocalDate.of(2022, 1, 1)).build();
 
-    FeeEntity feeEntity = FeeEntity.builder()
+    return FeeEntity.builder()
         .feeCode("INVC")
         .feeScheme(feeSchemesEntity)
         .profitCostLimit(new BigDecimal("123.56"))
@@ -50,7 +50,6 @@ class FeeDataServiceTest {
         .categoryType(POLICE_STATION)
         .feeType(FeeType.FIXED)
         .build();
-    return feeEntity;
   }
 
 }

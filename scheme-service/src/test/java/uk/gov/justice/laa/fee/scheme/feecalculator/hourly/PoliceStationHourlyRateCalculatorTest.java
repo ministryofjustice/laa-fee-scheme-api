@@ -6,7 +6,6 @@ import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_POLICE_OTHER_
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
