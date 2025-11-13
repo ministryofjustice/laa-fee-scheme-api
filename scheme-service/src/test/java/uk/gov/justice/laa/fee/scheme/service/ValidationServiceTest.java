@@ -2,8 +2,11 @@ package uk.gov.justice.laa.fee.scheme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CIVIL;
 import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CRIME;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVICE_ASSISTANCE_ADVOCACY;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
@@ -402,7 +405,7 @@ class ValidationServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"INVB1", "INVB2", "PROT", "PROU", "PROW", "PRIA", "PRIB1", "PRIB2", "PRIC1", "PRIC2",
         "PRID1", "PRID2", "PRID1", "PRID2", "PRIE1", "PRIE2"})
-    void checkForWarnings_whenGivenCrimeFeeCodeAndNetTravelCosts_returnsWarnings(String feeCode) {
+    void checkForWarnings_whenGivenCrimeFeeCodeAndNetTravelCosts_returnsNoWarnings(String feeCode) {
       FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
           .feeCode(feeCode)
           .netTravelCosts(100.0)
@@ -410,16 +413,12 @@ class ValidationServiceTest {
 
       List<ValidationMessagesInner> result = validationService.checkForWarnings(feeCalculationRequest, CRIME);
 
-      assertThat(result).containsExactly(ValidationMessagesInner.builder()
-          .type(WARNING)
-          .code("WARCRM1")
-          .message("Cost not included. Travel costs cannot be claimed with Fee Code used.")
-          .build());
+      assertThat(result).isEmpty();
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"INVB1", "INVB2", "PROT", "PROU", "PROW"})
-    void checkForWarnings_whenGivenCrimeFeeCodeAndNetWaitingCosts_returnsWarnings(String feeCode) {
+    void checkForWarnings_whenGivenCrimeFeeCodeAndNetWaitingCosts_returnsNoWarnings(String feeCode) {
       FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
           .feeCode(feeCode)
           .netWaitingCosts(100.0)
@@ -427,11 +426,7 @@ class ValidationServiceTest {
 
       List<ValidationMessagesInner> result = validationService.checkForWarnings(feeCalculationRequest, CRIME);
 
-      assertThat(result).containsExactly(ValidationMessagesInner.builder()
-          .type(WARNING)
-          .code("WARCRM2")
-          .message("Cost not included. Waiting costs cannot be claimed with Fee Code used.")
-          .build());
+      assertThat(result).isEmpty();
     }
 
     @Test
@@ -566,7 +561,116 @@ class ValidationServiceTest {
       assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest, CRIME))
           .isInstanceOf(ValidationException.class)
           .hasFieldOrPropertyWithValue("error", ERR_CRIME_REP_ORDER_DATE)
-          .hasMessage("ERRCRM12 - Fee Code is not valid for the Case Start Date.");
+          .hasMessage("ERRCRM12 - Fee Code is not valid for the Representation Order Date provided.");
+    }
+
+    @Test
+    void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndRepOrderDateUFN_NotSupplied_shouldThrowException() {
+      FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+          .feeCode("PROH")
+          .representationOrderDate(null)
+          .uniqueFileNumber(null)
+          .vatIndicator(Boolean.TRUE)
+          .netDisbursementAmount(50.50)
+          .disbursementVatAmount(20.15)
+          .build();
+
+      FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2025")
+          .validFrom(LocalDate.of(2025, 10, 1)).build();
+
+      FeeEntity feeEntity = FeeEntity.builder()
+          .feeCode("PROH")
+          .feeScheme(feeSchemesEntity)
+          .fixedFee(new BigDecimal("200"))
+          .categoryType(ADVICE_ASSISTANCE_ADVOCACY)
+          .feeType(FeeType.FIXED).build();
+
+      List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+      assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest, CRIME))
+          .isInstanceOf(ValidationException.class)
+          .hasFieldOrPropertyWithValue("error", ERR_CRIME_UFN_DATE)
+          .hasMessage("ERRCRM1 - Fee Code is not valid for the Case Start Date.");
+    }
+
+    @Test
+    void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndRepOrderDateSupplied_shouldReturnValidResponse() {
+      FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+          .feeCode("PROH")
+          .representationOrderDate(LocalDate.of(2022, 12, 1))
+          .uniqueFileNumber("010525/456")
+          .vatIndicator(Boolean.TRUE)
+          .netDisbursementAmount(50.50)
+          .disbursementVatAmount(20.15)
+          .caseConcludedDate(LocalDate.of(2022, 12, 11))
+          .build();
+
+      FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2022")
+          .validFrom(LocalDate.of(2022, 10, 1)).build();
+
+      FeeEntity feeEntity = FeeEntity.builder()
+          .feeCode("PROH")
+          .feeScheme(feeSchemesEntity)
+          .fixedFee(new BigDecimal("200"))
+          .categoryType(ADVICE_ASSISTANCE_ADVOCACY)
+          .feeType(FeeType.FIXED).build();
+
+      List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+      FeeEntity feeEntityResponse =  validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest, CRIME);
+      assertThat(feeEntityResponse).isNotNull();
+      assertThat(feeEntityResponse.getFeeCode()).isEqualTo("PROH");
+      assertThat(feeEntityResponse.getFixedFee()).isEqualTo("200");
+      assertThat(feeEntityResponse.getFeeScheme().getSchemeCode()).isEqualTo("MAGS_COURT_FS2022");
+    }
+
+
+    @ParameterizedTest
+    @CsvSource({
+        "PROE1, 2025-11-12",
+        "PROF4, 2025-11-12",
+        "PROJ3, 2025-11-12",
+        "YOUE2, 2025-11-12",
+        "APPB, 2025-11-12",
+        "PROW, 2025-11-12"
+    })
+    void testValidFeeCodes(String feeCode, String repDate) {
+      FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+            .feeCode(feeCode).representationOrderDate(LocalDate.parse(repDate)).build();
+      assertTrue(validationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
+    }
+
+    // Test invalid fee codes
+    @ParameterizedTest
+    @CsvSource({
+        "INVALID, 2025-11-12",
+        "PROX5, 2025-11-12",
+        "YOUZ1, 2025-11-12",
+        "APPZ, 2025-11-12"
+    })
+    void testInvalidFeeCodes(String feeCode, String repDate) {
+      FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+          .feeCode(feeCode).representationOrderDate(LocalDate.parse(repDate)).build();
+      assertFalse(validationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
+    }
+
+    // Test null repDate returns true
+    @ParameterizedTest
+    @ValueSource(strings = {"PROW", "APPB"})
+    void testNullRepDate(String feeCode) {
+      FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+          .feeCode(feeCode).representationOrderDate(null).build();
+      assertTrue(validationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "PROH, 2025-10-12, 2025-11-12",
+    })
+    void testValidAdvocacyAssistanceFeeCode(String feeCode, String caseConcludedDate) {
+      FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+          .feeCode(feeCode).caseConcludedDate(LocalDate.parse(caseConcludedDate)).build();
+      assertTrue(validationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
     }
   }
 }

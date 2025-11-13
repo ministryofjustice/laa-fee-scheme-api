@@ -9,13 +9,12 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVICE_ASSISTANCE
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_CRIME_TRAVEL_COSTS;
-import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -28,6 +27,7 @@ import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.LimitType;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
@@ -200,8 +200,7 @@ class FeeCalculationUtilTest {
   @MethodSource("limitTestData")
   void checkLimitAndCapIfExceeded_returnsResult(BigDecimal amount, String authority, BigDecimal expectedAmount,
                                                 List<ValidationMessagesInner> expectedMessages) {
-
-    LimitContext limitContext = new LimitContext(LimitType.TOTAL, new BigDecimal("100"), authority, WARN_CRIME_TRAVEL_COSTS);
+    LimitContext limitContext = new LimitContext(LimitType.TOTAL, new BigDecimal("100"), authority, null);
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
     BigDecimal result = FeeCalculationUtil.checkLimitAndCapIfExceeded(amount, limitContext, validationMessages);
@@ -215,12 +214,7 @@ class FeeCalculationUtilTest {
     return Stream.of(
         arguments(new BigDecimal("90"), null, new BigDecimal("90"), List.of()),
         arguments(new BigDecimal("200"), "priorAuth", new BigDecimal("200"), List.of()),
-        arguments(new BigDecimal("200"), null, new BigDecimal("100"),
-            List.of(ValidationMessagesInner.builder()
-                .code(WARN_CRIME_TRAVEL_COSTS.getCode())
-                .type(WARNING)
-                .message(WARN_CRIME_TRAVEL_COSTS.getMessage())
-                .build()))
+        arguments(new BigDecimal("200"), null, new BigDecimal("100"), List.of())
     );
   }
 

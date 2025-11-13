@@ -71,12 +71,13 @@ public final class FeeCalculationUtil {
           limitContext.limitType().getDisplayName(), limitContext.limit());
 
       WarningType warning = limitContext.warning();
-      validationMessages.add(ValidationMessagesInner.builder()
-          .message(warning.getMessage())
-          .code(warning.getCode())
-          .type(WARNING)
-          .build());
-
+      if (warning != null) {
+        validationMessages.add(ValidationMessagesInner.builder()
+            .message(warning.getMessage())
+            .code(warning.getCode())
+            .type(WARNING)
+            .build());
+      }
       return limit;
     }
     return amount;
