@@ -2,6 +2,8 @@ package uk.gov.justice.laa.fee.scheme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CIVIL;
 import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CRIME;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVICE_ASSISTANCE_ADVOCACY;
@@ -620,6 +622,55 @@ class ValidationServiceTest {
       assertThat(feeEntityResponse.getFeeCode()).isEqualTo("PROH");
       assertThat(feeEntityResponse.getFixedFee()).isEqualTo("200");
       assertThat(feeEntityResponse.getFeeScheme().getSchemeCode()).isEqualTo("MAGS_COURT_FS2022");
+    }
+
+
+    @ParameterizedTest
+    @CsvSource({
+        "PROE1, 2025-11-12",
+        "PROF4, 2025-11-12",
+        "PROJ3, 2025-11-12",
+        "YOUE2, 2025-11-12",
+        "APPB, 2025-11-12",
+        "PROW, 2025-11-12"
+    })
+    void testValidFeeCodes(String feeCode, String repDate) {
+      FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+            .feeCode(feeCode).representationOrderDate(LocalDate.parse(repDate)).build();
+      assertTrue(validationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
+    }
+
+    // Test invalid fee codes
+    @ParameterizedTest
+    @CsvSource({
+        "INVALID, 2025-11-12",
+        "PROX5, 2025-11-12",
+        "YOUZ1, 2025-11-12",
+        "APPZ, 2025-11-12"
+    })
+    void testInvalidFeeCodes(String feeCode, String repDate) {
+      FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+          .feeCode(feeCode).representationOrderDate(LocalDate.parse(repDate)).build();
+      assertFalse(validationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
+    }
+
+    // Test null repDate returns true
+    @ParameterizedTest
+    @ValueSource(strings = {"PROW", "APPB"})
+    void testNullRepDate(String feeCode) {
+      FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+          .feeCode(feeCode).representationOrderDate(null).build();
+      assertTrue(validationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "PROH, 2025-10-12, 2025-11-12",
+    })
+    void testValidAdvocacyAssistanceFeeCode(String feeCode, String caseConcludedDate) {
+      FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+          .feeCode(feeCode).caseConcludedDate(LocalDate.parse(caseConcludedDate)).build();
+      assertTrue(validationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
     }
   }
 }
