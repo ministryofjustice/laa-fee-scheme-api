@@ -93,8 +93,10 @@ public class ValidationService {
 
     CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
 
-    ClaimStartDateType claimStartDateType = FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeCalculationRequest);
+
     if (caseType.equals(CRIME)) {
+      ClaimStartDateType claimStartDateType = FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeCalculationRequest);
+
       if (claimStartDateType == ClaimStartDateType.REP_ORDER_DATE) {
         if (feeCalculationRequest.getRepresentationOrderDate() == null) {
           throw new ValidationException(ERR_CRIME_REP_ORDER_DATE_MISSING, new FeeContext(feeCalculationRequest));
