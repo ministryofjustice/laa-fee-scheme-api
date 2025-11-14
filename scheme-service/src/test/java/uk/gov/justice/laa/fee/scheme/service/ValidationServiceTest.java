@@ -588,8 +588,8 @@ class ValidationServiceTest {
 
       assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest, CRIME))
           .isInstanceOf(ValidationException.class)
-          .hasFieldOrPropertyWithValue("error", ERR_CRIME_UFN_DATE)
-          .hasMessage("ERRCRM1 - Fee Code is not valid for the Case Start Date.");
+          .hasFieldOrPropertyWithValue("error", ERR_CRIME_UFN_MISSING)
+          .hasMessage("ERRCRM7 - Enter a UFN.");
     }
 
     @Test
