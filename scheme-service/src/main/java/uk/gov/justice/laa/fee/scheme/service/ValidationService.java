@@ -94,9 +94,9 @@ public class ValidationService {
     ClaimStartDateType claimStartDateType = FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeCalculationRequest);
 
     if (feeCalculationRequest.getFeeCode().equals(FEE_CODE_PROH)) {
-      if (!(feeCalculationRequest.getRepresentationOrderDate() != null
-          || StringUtils.isNotBlank(feeCalculationRequest.getUniqueFileNumber()))) {
-        throw new ValidationException(ERR_CRIME_UFN_DATE, new FeeContext(feeCalculationRequest));
+      if (feeCalculationRequest.getRepresentationOrderDate() == null
+          && StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber())) {
+        throw new ValidationException(ERR_CRIME_UFN_MISSING, new FeeContext(feeCalculationRequest));
       }
     } else {
       if (!isFeeCodeValidForRepOrderDate(feeCalculationRequest)) {
