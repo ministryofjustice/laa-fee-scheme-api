@@ -64,10 +64,7 @@ class FamilyFixedFeeCalculatorTest {
   void getSupportedCategories_ShouldReturnAllExpectedCategories() {
     Set<CategoryType> categories = familyFixedFeeCalculator.getSupportedCategories();
 
-    assertThat(categories).isNotNull();
-    assertThat(categories).hasSize(1); // make sure the total count matches
-    assertThat(categories).containsExactlyInAnyOrder(
-        CategoryType.FAMILY);
+    assertThat(categories).hasSize(1).containsExactlyInAnyOrder(CategoryType.FAMILY); // make sure the total count matches
   }
 
   @Test

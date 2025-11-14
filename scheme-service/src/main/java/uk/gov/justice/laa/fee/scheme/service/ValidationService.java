@@ -3,9 +3,6 @@ package uk.gov.justice.laa.fee.scheme.service;
 import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CIVIL;
 import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CRIME;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.SENDING_HEARING;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.YOUTH_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE_TOO_OLD;
@@ -46,7 +43,6 @@ public class ValidationService {
   private static final String FEE_CODE_PROD = "PROD";
 
   private static final LocalDate CIVIL_START_DATE = LocalDate.of(2013, 4, 1);
-  private static final List<CategoryType> CRIME_USING_REP_ORDER_DATE = List.of(MAGISTRATES_COURT, YOUTH_COURT, SENDING_HEARING);
   public static final String FEE_CODE_PROH = "PROH";
 
   private static boolean filterByRegion(FeeEntity fee, Boolean isLondonRate) {
@@ -80,6 +76,23 @@ public class ValidationService {
       throw new ValidationException(ERR_ALL_FEE_CODE, new FeeContext(feeCalculationRequest));
     }
 
+    CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
+    if (caseType.equals(CRIME)) {
+      validateCrimeFee(feeCalculationRequest, categoryType);
+    }
+
+    if (categoryType.equals(CategoryType.FAMILY) && feeCalculationRequest.getLondonRate() == null) {
+      throw new ValidationException(ERR_FAMILY_LONDON_RATE, new FeeContext(feeCalculationRequest));
+    }
+
+    LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeCalculationRequest);
+    checkValidStartDate(feeEntityList, feeCalculationRequest, caseType);
+    return getFeeEntityForStartDate(feeEntityList, feeCalculationRequest, claimStartDate, caseType);
+  }
+
+  private void validateCrimeFee(FeeCalculationRequest feeCalculationRequest, CategoryType categoryType) {
+    ClaimStartDateType claimStartDateType = FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeCalculationRequest);
+
     if (feeCalculationRequest.getFeeCode().equals(FEE_CODE_PROH)) {
       if (!(feeCalculationRequest.getRepresentationOrderDate() != null
           || StringUtils.isNotBlank(feeCalculationRequest.getUniqueFileNumber()))) {
@@ -91,32 +104,15 @@ public class ValidationService {
       }
     }
 
-    CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
-
-
-    if (caseType.equals(CRIME)) {
-      ClaimStartDateType claimStartDateType = FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeCalculationRequest);
-
-      if (claimStartDateType == ClaimStartDateType.REP_ORDER_DATE) {
-        if (feeCalculationRequest.getRepresentationOrderDate() == null) {
-          throw new ValidationException(ERR_CRIME_REP_ORDER_DATE_MISSING, new FeeContext(feeCalculationRequest));
-        }
-      } else if (StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber())
-          && !(feeCalculationRequest.getFeeCode().equals(FEE_CODE_PROD)
-              || feeCalculationRequest.getFeeCode().equals(FEE_CODE_PROH))) {
-        throw new ValidationException(ERR_CRIME_UFN_MISSING, new FeeContext(feeCalculationRequest));
+    if (claimStartDateType == ClaimStartDateType.REP_ORDER_DATE) {
+      if (feeCalculationRequest.getRepresentationOrderDate() == null) {
+        throw new ValidationException(ERR_CRIME_REP_ORDER_DATE_MISSING, new FeeContext(feeCalculationRequest));
       }
+    } else if (StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber())
+        && !(feeCalculationRequest.getFeeCode().equals(FEE_CODE_PROD)
+            || feeCalculationRequest.getFeeCode().equals(FEE_CODE_PROH))) {
+      throw new ValidationException(ERR_CRIME_UFN_MISSING, new FeeContext(feeCalculationRequest));
     }
-
-    if (categoryType.equals(CategoryType.FAMILY) && feeCalculationRequest.getLondonRate() == null) {
-      throw new ValidationException(ERR_FAMILY_LONDON_RATE, new FeeContext(feeCalculationRequest));
-    }
-
-    LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeCalculationRequest);
-
-    checkValidStartDate(feeEntityList, feeCalculationRequest, caseType);
-
-    return getFeeEntityForStartDate(feeEntityList, feeCalculationRequest, claimStartDate, caseType);
   }
 
   /**

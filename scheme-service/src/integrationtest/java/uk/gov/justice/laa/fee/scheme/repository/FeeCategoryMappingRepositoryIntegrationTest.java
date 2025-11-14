@@ -13,7 +13,7 @@ import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTest
 
 @DataJpaTest
 @Testcontainers
-public class FeeCategoryMappingRepositoryIntegrationTest extends PostgresContainerTestBase {
+class FeeCategoryMappingRepositoryIntegrationTest extends PostgresContainerTestBase {
 
   @Autowired
   private FeeCategoryMappingRepository repository;

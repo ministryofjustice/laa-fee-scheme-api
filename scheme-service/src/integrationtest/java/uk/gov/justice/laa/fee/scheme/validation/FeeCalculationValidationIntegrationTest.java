@@ -20,7 +20,7 @@ import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTest
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-public class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase {
+class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase {
 
   private static final String AUTH_TOKEN = "int-test-token";
   private static final String URI = "/api/v1/fee-calculation";
@@ -1086,7 +1086,7 @@ public class FeeCalculationValidationIntegrationTest extends PostgresContainerTe
       "PUB, PUB_FS2013, WAROTH10, 458.85, 51.8, 259.0",
       "WFB1, WB_FS2025, WAROTH11, 397.65, 41.6, 208.0"
   })
-  public void shouldReturnValidationWarning_otherCivilCategories(String feeCode, String schemeId, String warningCode,
+  void shouldReturnValidationWarning_otherCivilCategories(String feeCode, String schemeId, String warningCode,
                                                                  String expectedTotal, String expectedVatAmount,
                                                                  String expectedFixedFeeAmount) throws Exception {
     String expectedJson = """
