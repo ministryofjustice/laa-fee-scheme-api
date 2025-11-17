@@ -16,6 +16,8 @@ DROP TABLE IF EXISTS police_stations CASCADE;
 
 DROP TABLE IF EXISTS category_of_law_look_up CASCADE;
 
+DROP TABLE IF EXISTS vat_rates CASCADE;
+
 CREATE TABLE IF NOT EXISTS fee_schemes
 (
     scheme_code VARCHAR PRIMARY KEY,
@@ -30,8 +32,8 @@ CREATE TABLE IF NOT EXISTS fee
     fee_code                    VARCHAR        NOT NULL,
     description                 VARCHAR        NOT NULL,
     fee_scheme_code             VARCHAR        NOT NULL REFERENCES fee_schemes (scheme_code),
-    category_type               VARCHAR        NULL,
-    fee_type                    VARCHAR        NULL,
+    category_type               VARCHAR        NOT NULL,
+    fee_type                    VARCHAR        NOT NULL,
     region                      VARCHAR        NULL,
     fixed_fee                   NUMERIC(10, 2) NULL,
     profit_cost_limit           NUMERIC(10, 2) NULL,
@@ -48,7 +50,7 @@ CREATE TABLE IF NOT EXISTS fee
     adjorn_hearing_bolt_on      NUMERIC(10, 2) NULL,
     mediation_fee_lower         NUMERIC(10, 2) NULL,
     mediation_fee_higher        NUMERIC(10, 2) NULL,
-    court_designation_type      VARCHAR(50)    NULL,
+    court_designation_type      VARCHAR        NULL,
     fee_band_type               VARCHAR        NULL
 );
 
@@ -107,9 +109,18 @@ CREATE TABLE IF NOT EXISTS fee_category_mapping
     category_of_law_type_id     INT         NOT NULL REFERENCES category_of_law_type (category_of_law_type_id)
 );
 
+CREATE TABLE IF NOT EXISTS vat_rates
+(
+    id                          SERIAL PRIMARY KEY,
+    start_date                  DATE NOT NULL,
+    vat_rate                    NUMERIC(10,2) NOT NULL
+);
 
 ALTER TABLE police_station_fees
     ADD CONSTRAINT uq_police_station_fees_category_code_fee_code UNIQUE (ps_scheme_id, fee_scheme_code);
 
 ALTER TABLE fee
     ADD CONSTRAINT uq_fee_scheme_code_fee_code UNIQUE (fee_code, fee_scheme_code);
+
+ALTER TABLE vat_rates
+    ADD CONSTRAINT uq_start_date_vat_rate UNIQUE (start_date, vat_rate);
