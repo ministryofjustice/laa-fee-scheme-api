@@ -18,6 +18,8 @@ DROP TABLE IF EXISTS category_of_law_look_up CASCADE;
 
 DROP TABLE IF EXISTS vat_rates CASCADE;
 
+DROP TABLE IF EXISTS fee_information CASCADE;
+
 CREATE TABLE IF NOT EXISTS fee_schemes
 (
     scheme_code VARCHAR PRIMARY KEY,
@@ -25,6 +27,13 @@ CREATE TABLE IF NOT EXISTS fee_schemes
     valid_from  DATE    NOT NULL,
     valid_to    DATE    NULL
 );
+
+CREATE TABLE IF NOT EXISTS fee_information
+(
+    fee_code                    VARCHAR(10) PRIMARY KEY,
+    fee_description             TEXT        NOT NULL,
+    fee_type                    VARCHAR(15) NOT NULL
+    );
 
 CREATE TABLE IF NOT EXISTS fee
 (
@@ -98,13 +107,10 @@ CREATE TABLE IF NOT EXISTS fee_scheme_category_type
     fee_scheme_category_name    VARCHAR(50) NOT NULL UNIQUE
 );
 
-
 CREATE TABLE IF NOT EXISTS fee_category_mapping
 (
     id                          SERIAL PRIMARY KEY,
-    fee_code                    VARCHAR(10) NOT NULL UNIQUE,
-    fee_description             TEXT        NOT NULL,
-    fee_type                    VARCHAR(15) NOT NULL,
+    fee_code                    VARCHAR(10) NOT NULL UNIQUE REFERENCES fee_information (fee_code),
     fee_scheme_category_type_id INT         NOT NULL REFERENCES fee_scheme_category_type (fee_scheme_category_type_id),
     category_of_law_type_id     INT         NOT NULL REFERENCES category_of_law_type (category_of_law_type_id)
 );
