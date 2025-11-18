@@ -1,6 +1,8 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.FAMILY;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
@@ -15,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
@@ -24,9 +27,13 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
+import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 @ExtendWith(MockitoExtension.class)
 class FamilyFixedFeeCalculatorTest {
+
+  @Mock
+  VatRatesService vatRatesService;
 
   @InjectMocks
   FamilyFixedFeeCalculator familyFixedFeeCalculator;
@@ -36,7 +43,9 @@ class FamilyFixedFeeCalculatorTest {
       "false, 170.33", // No VAT
       "true, 180.33" // VAT applied
   })
-  void getFee_shouldReturnFeeCalculationResponse(boolean vatIndicator, double expectedTotal) {
+  void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double expectedTotal) {
+    mockVatRatesService(vatIndicator);
+
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("COM")
         .startDate(LocalDate.of(2025, 5, 12))
@@ -69,6 +78,8 @@ class FamilyFixedFeeCalculatorTest {
 
   @Test
   void should_returnValidationWarningMessageInResponse_when_total_fee_exceeds_escape_threshold_limit_for_family() {
+    mockVatRatesService(true);
+
     BigDecimal fixedFee = new BigDecimal("263.00");
     BigDecimal escapeThresoldLimit = new BigDecimal("550.00");
 
@@ -127,5 +138,11 @@ class FamilyFixedFeeCalculatorTest {
         .isEqualTo(expectedResponse);
 
   }
+
+  private void mockVatRatesService(Boolean vatIndicator) {
+    when(vatRatesService.getVatRateForDate(any(), any()))
+        .thenReturn(vatIndicator ? new BigDecimal("20.00") : BigDecimal.ZERO);
+  }
+
 
 }

@@ -2,6 +2,8 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MEDIATION;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_MEDIATION_SESSIONS;
 
@@ -16,6 +18,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
@@ -24,9 +27,13 @@ import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 @ExtendWith(MockitoExtension.class)
 class MediationFixedFeeCalculatorTest {
+
+  @Mock
+  VatRatesService vatRatesService;
 
   @InjectMocks
   MediationFixedFeeCalculator mediationFeeCalculator;
@@ -73,6 +80,8 @@ class MediationFixedFeeCalculatorTest {
       double expectedFixedFee,
       double expectedCalculatedVat
   ) {
+
+    mockVatRatesService(vatIndicator);
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -123,6 +132,7 @@ class MediationFixedFeeCalculatorTest {
 
   @Test
   void getFee_whenMediationSessionIsNull_thenThrowsException() {
+
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("MDAS2B")
         .claimId("claim_123")
@@ -153,5 +163,10 @@ class MediationFixedFeeCalculatorTest {
     Set<CategoryType> result = mediationFeeCalculator.getSupportedCategories();
 
     assertThat(result).isEqualTo(Set.of(MEDIATION));
+  }
+
+  private void mockVatRatesService(Boolean vatIndicator) {
+    when(vatRatesService.getVatRateForDate(any(), any()))
+        .thenReturn(vatIndicator ? new BigDecimal("20.00") : BigDecimal.ZERO);
   }
 }

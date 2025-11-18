@@ -1,12 +1,15 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
@@ -14,9 +17,13 @@ import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 @ExtendWith(MockitoExtension.class)
 class EarlyCoverFixedFeeCalculatorTest {
+
+  @Mock
+  VatRatesService vatRatesService;
 
   @InjectMocks
   EarlyCoverFixedFeeCalculator earlyCoverFixedFeeCalculator;
@@ -30,6 +37,8 @@ class EarlyCoverFixedFeeCalculatorTest {
   })
   void calculate_shouldReturnFeeCalculationResponse(String feeCode, double fixedFees, boolean vatIndicator,
                                                     double expectedTotal, double expectedVat, String categoryType) {
+
+    mockVatRatesService(vatIndicator);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -50,7 +59,13 @@ class EarlyCoverFixedFeeCalculatorTest {
     assertFeeCalculation(result, feeCode, fixedFees, expectedTotal, vatIndicator, expectedVat);
   }
 
+  private void mockVatRatesService(Boolean vatIndicator) {
+    when(vatRatesService.getVatRateForDate(any(), any()))
+        .thenReturn(vatIndicator ? new BigDecimal("20.00") : BigDecimal.ZERO);
+  }
+
   private void assertFeeCalculation(FeeCalculationResponse response, String feeCode, double fixedFees,
+
                                     double total, boolean vatIndicator, double vat) {
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo(feeCode);

@@ -3,6 +3,8 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_400_LEGAL_HELP;
@@ -23,6 +25,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
@@ -34,9 +37,13 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
+import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 @ExtendWith(MockitoExtension.class)
 class ImmigrationAsylumFixedFeeCalculatorTest {
+
+  @Mock
+  VatRatesService vatRatesService;
 
   @InjectMocks
   ImmigrationAsylumFixedFeeCalculator immigrationAsylumFixedFeeCalculator;
@@ -128,6 +135,8 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         double expectedCalculatedVat,
         double expectedFixedFee) {
 
+      mockVatRatesService(vatIndicator);
+
       FeeCalculationRequest feeData = buildRequest(feeCode, netDisbursementAmount, disbursementVatAmount, vatIndicator,
           immigrationPriorityAuthority, detentionTravelAndWaitingCosts, jrFormfilling);
 
@@ -178,6 +187,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
     })
     void calculate_whenImmigrationAndAsylum_withNoDisbursementLimit(String feeCode, double expectedTotal,
                                                                     double requestedDisbursementAmount) {
+      mockVatRatesService(true);
 
       FeeCalculationRequest feeCalculationRequest = buildRequest(feeCode, requestedDisbursementAmount, 20.0,
           true, null, 0.0, 0.0
@@ -202,6 +212,8 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
     void calculate_whenImmigrationAndAsylum_withDisbursementBeyondLimit(String feeCode, double expectedTotal,
                                                                         double requestedDisbursementAmount,
                                                                         double disbursementLimit, String warningMessage) {
+
+      mockVatRatesService(true);
 
       FeeCalculationRequest feeCalculationRequest = buildRequest(feeCode, requestedDisbursementAmount, 20.0,
           true, null, 0.0, 0.0);
@@ -270,6 +282,8 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         "IDAS1, IDAS2"
     })
     void shouldNotCalculate_escapeCase_whenCaseCannotEscape(String feeCode) {
+      mockVatRatesService(true);
+
       FeeCalculationRequest feeCalculationRequest = buildRequest(feeCode, null, null, null);
       FeeEntity feeEntity = buildFeeEntity(feeCode, BigDecimal.valueOf(75.5), null, null, null);
       FeeCalculationResponse response = immigrationAsylumFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
@@ -312,6 +326,8 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
         double escapeThresholdLimit,
         boolean hasWarning) {
 
+      mockVatRatesService(true);
+
       FeeCalculationRequest feeCalculationRequest = buildRequest(feeCode, null,
           requestedNetProfitCosts, requestedNetCounselCosts);
 
@@ -341,4 +357,8 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
     assertThat(result).isEmpty();
   }
 
+  private void mockVatRatesService(Boolean vatIndicator) {
+    when(vatRatesService.getVatRateForDate(any(), any()))
+        .thenReturn(vatIndicator ? new BigDecimal("20.00") : BigDecimal.ZERO);
+  }
 }

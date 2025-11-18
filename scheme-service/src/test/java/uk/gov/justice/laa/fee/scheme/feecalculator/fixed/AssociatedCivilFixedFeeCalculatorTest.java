@@ -2,14 +2,12 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ASSOCIATED_CIVIL;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -22,14 +20,13 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
-import uk.gov.justice.laa.fee.scheme.service.VatService;
-import uk.gov.justice.laa.fee.scheme.service.model.VatResult;
+import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 @ExtendWith(MockitoExtension.class)
 class AssociatedCivilFixedFeeCalculatorTest {
 
   @Mock
-  VatService vatService;
+  VatRatesService vatRatesService;
 
   @InjectMocks
   AssociatedCivilFixedFeeCalculator associatedCivilFixedFeeCalculator;
@@ -42,9 +39,9 @@ class AssociatedCivilFixedFeeCalculatorTest {
       "true, 80.00, 20.00, 180.33, 10.00" // Equal to escape threshold limit (VAT applied)
   })
   void calculate_whenVatIndicatorIsFalseShouldReturnFeeCalculationResponse(boolean vatIndicator, double netTravelCosts,
-                                                    double netWaitingCosts, double expectedTotal,
-                                                    double expectedVat) {
-    mockVatService(vatIndicator);
+                                                                           double netWaitingCosts, double expectedTotal,
+                                                                           double expectedVat) {
+    mockVatRatesService(vatIndicator);
 
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netTravelCosts, netWaitingCosts);
     FeeEntity feeEntity = buildFeeEntity();
@@ -65,7 +62,7 @@ class AssociatedCivilFixedFeeCalculatorTest {
                                                     double netWaitingCosts, double expectedTotal,
                                                     double expectedVat) {
 
-    mockVatService(vatIndicator);
+    mockVatRatesService(vatIndicator);
 
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netTravelCosts, netWaitingCosts);
     FeeEntity feeEntity = buildFeeEntity();
@@ -85,7 +82,7 @@ class AssociatedCivilFixedFeeCalculatorTest {
                                                                double netWaitingCosts, double expectedTotal,
                                                                double expectedVat) {
 
-    mockVatService(vatIndicator);
+    mockVatRatesService(vatIndicator);
 
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netTravelCosts, netWaitingCosts);
     FeeEntity feeEntity = buildFeeEntity();
@@ -104,10 +101,9 @@ class AssociatedCivilFixedFeeCalculatorTest {
     assertThat(result.getValidationMessages().getFirst()).isEqualTo(validationMessage);
   }
 
-  private void mockVatService(Boolean vatIndicator) {
-    when(vatService.calculateVat(new BigDecimal("50.00"),LocalDate.of(2016,4, 2), vatIndicator))
-        .thenReturn(vatIndicator ? new VatResult(new BigDecimal("10.00"), new BigDecimal("20.00"))
-            : new VatResult(BigDecimal.ZERO, BigDecimal.ZERO));
+  private void mockVatRatesService(Boolean vatIndicator) {
+    when(vatRatesService.getVatRateForDate(any(), any()))
+        .thenReturn(vatIndicator ? new BigDecimal("20.00") : BigDecimal.ZERO);
   }
 
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netTravelCosts,

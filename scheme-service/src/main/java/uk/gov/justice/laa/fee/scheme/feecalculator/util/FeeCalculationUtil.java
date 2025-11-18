@@ -8,6 +8,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.UFN;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -146,6 +147,17 @@ public final class FeeCalculationUtil {
       log.info("Determining fee start date, using Unique File Number");
       return UFN;
     }
+  }
+
+  /**
+   * Calculate the VAT amount for a given value using the tax rate.
+   */
+  public static BigDecimal calculateVatAmount(BigDecimal value, BigDecimal taxRate) {
+    log.info("Calculate VAT amount");
+
+    return value.multiply(taxRate)
+        .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)
+        .setScale(2, RoundingMode.HALF_UP);
   }
 
   /**
