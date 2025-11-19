@@ -149,6 +149,14 @@ class FeeCalculationUtilTest {
   }
 
   @Test
+  void calculateVatAmount_shouldReturnResult() {
+    BigDecimal totalAmount = FeeCalculationUtil.calculateVatAmount(new BigDecimal("170.50"),
+        new BigDecimal("20.00"));
+
+    assertThat(totalAmount).isEqualTo(new BigDecimal("34.10"));
+  }
+
+  @Test
   void calculateTotalAmount_givenFeeAndDisbursements_returnsTotal() {
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(new BigDecimal("120.50"),
         new BigDecimal("24.10"),
