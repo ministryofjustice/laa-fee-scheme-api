@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.disbursement;
 
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
-import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -41,11 +41,7 @@ public class MentalHealthDisbursementOnlyCalculator implements FeeCalculator {
     BigDecimal requestNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal requestedDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    log.info("Calculate total fee amount with any disbursements, bolt ons and VAT where applicable");
-    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(
-        requestNetDisbursementAmount,
-        requestedDisbursementVatAmount
-    );
+    BigDecimal totalAmount = calculateTotalAmount(requestNetDisbursementAmount, requestedDisbursementVatAmount);
 
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()

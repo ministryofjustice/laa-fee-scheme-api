@@ -150,12 +150,12 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Calculate the VAT amount for a given value using the tax rate.
+   * Calculate the VAT amount for a given value using the VAT rate.
    */
-  public static BigDecimal calculateVatAmount(BigDecimal value, BigDecimal taxRate) {
+  public static BigDecimal calculateVatAmount(BigDecimal value, BigDecimal vatRate) {
     log.info("Calculate VAT amount");
 
-    return value.multiply(taxRate)
+    return value.multiply(vatRate)
         .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)
         .setScale(2, RoundingMode.HALF_UP);
   }
