@@ -4,6 +4,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ASSOCIATED_CI
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -57,7 +58,7 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
     BigDecimal fixedFeeAmount = defaultToZeroIfNull(feeEntity.getFixedFee());
 
     // Calculate VAT if applicable
-    LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(CategoryType.ASSOCIATED_CIVIL, feeCalculationRequest);
+    LocalDate claimStartDate = getFeeClaimStartDate(CategoryType.ASSOCIATED_CIVIL, feeCalculationRequest);
     Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
     BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatApplicable);
     BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAmount, vatRate);

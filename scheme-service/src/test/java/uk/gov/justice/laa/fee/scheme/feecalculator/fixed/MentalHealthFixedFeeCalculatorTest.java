@@ -40,6 +40,64 @@ class MentalHealthFixedFeeCalculatorTest {
   @InjectMocks
   MentalHealthFixedFeeCalculator mentalhealthFixedFeeCalculator;
 
+  private static FeeCalculationResponse buildExpectedResponse(String feeCode, FeeCalculation expectedCalculation,
+                                                              boolean hasEscaped,
+                                                              List<ValidationMessagesInner> validationMessages) {
+    return FeeCalculationResponse.builder()
+        .feeCode(feeCode)
+        .schemeId("MHL_FS2013")
+        .claimId("claim_123")
+        .validationMessages(validationMessages)
+        .escapeCaseFlag(hasEscaped)
+        .feeCalculation(expectedCalculation)
+        .build();
+  }
+
+  private static FeeCalculation buildFeeCalculation(double fixedFee, boolean vatIndicator, Double calculatedVat,
+                                                    Integer boltOnNumber, Double boltOnTotalFeeAmount,
+                                                    Double boltOnAdjournedHearingFee, double expectedTotal) {
+    return FeeCalculation.builder()
+        .totalAmount(expectedTotal)
+        .vatIndicator(vatIndicator)
+        .vatRateApplied(vatIndicator ? 20.0 : null)
+        .disbursementAmount(50.50)
+        .requestedNetDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .fixedFeeAmount(fixedFee)
+        .calculatedVatAmount(calculatedVat)
+        .boltOnFeeDetails(BoltOnFeeDetails.builder()
+            .boltOnTotalFeeAmount(boltOnTotalFeeAmount)
+            .boltOnAdjournedHearingFee(boltOnAdjournedHearingFee)
+            .boltOnAdjournedHearingCount(boltOnNumber)
+            .build())
+        .build();
+  }
+
+  private static FeeEntity buildFeeEntity(String feeCode, double fixedFee, Double escapeThresholdLimit) {
+    return FeeEntity.builder()
+        .feeCode(feeCode)
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("MHL_FS2013").build())
+        .fixedFee(BigDecimal.valueOf(fixedFee))
+        .categoryType(MENTAL_HEALTH)
+        .adjornHearingBoltOn(BigDecimal.valueOf(100.0))
+        .escapeThresholdLimit(nonNull(escapeThresholdLimit) ? BigDecimal.valueOf(escapeThresholdLimit) : null)
+        .build();
+  }
+
+  private static FeeCalculationRequest buildFeeCalculationRequest(String feeCode, boolean vatIndicator,
+                                                                  Integer boltOnNumber, Double requestedNetProfitCosts) {
+    return FeeCalculationRequest.builder()
+        .feeCode(feeCode)
+        .claimId("claim_123")
+        .startDate(LocalDate.of(2025, 7, 29))
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .vatIndicator(vatIndicator)
+        .boltOns(BoltOnType.builder().boltOnAdjournedHearing(boltOnNumber).build())
+        .netProfitCosts(requestedNetProfitCosts)
+        .build();
+  }
+
   @Nested
   class MentalHealthFeeCalculationTest {
 
@@ -176,64 +234,6 @@ class MentalHealthFixedFeeCalculatorTest {
           .isEqualTo(expectedResponse);
     }
 
-  }
-
-  private static FeeCalculationResponse buildExpectedResponse(String feeCode, FeeCalculation expectedCalculation,
-                                                              boolean hasEscaped,
-                                                              List<ValidationMessagesInner> validationMessages) {
-    return FeeCalculationResponse.builder()
-        .feeCode(feeCode)
-        .schemeId("MHL_FS2013")
-        .claimId("claim_123")
-        .validationMessages(validationMessages)
-        .escapeCaseFlag(hasEscaped)
-        .feeCalculation(expectedCalculation)
-        .build();
-  }
-
-  private static FeeCalculation buildFeeCalculation(double fixedFee, boolean vatIndicator, Double calculatedVat,
-                                                    Integer boltOnNumber, Double boltOnTotalFeeAmount,
-                                                    Double boltOnAdjournedHearingFee, double expectedTotal) {
-    return FeeCalculation.builder()
-        .totalAmount(expectedTotal)
-        .vatIndicator(vatIndicator)
-        .vatRateApplied(vatIndicator ? 20.0 : null)
-        .disbursementAmount(50.50)
-        .requestedNetDisbursementAmount(50.50)
-        .disbursementVatAmount(20.15)
-        .fixedFeeAmount(fixedFee)
-        .calculatedVatAmount(calculatedVat)
-        .boltOnFeeDetails(BoltOnFeeDetails.builder()
-            .boltOnTotalFeeAmount(boltOnTotalFeeAmount)
-            .boltOnAdjournedHearingFee(boltOnAdjournedHearingFee)
-            .boltOnAdjournedHearingCount(boltOnNumber)
-            .build())
-        .build();
-  }
-
-  private static FeeEntity buildFeeEntity(String feeCode, double fixedFee, Double escapeThresholdLimit) {
-    return FeeEntity.builder()
-        .feeCode(feeCode)
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("MHL_FS2013").build())
-        .fixedFee(BigDecimal.valueOf(fixedFee))
-        .categoryType(MENTAL_HEALTH)
-        .adjornHearingBoltOn(BigDecimal.valueOf(100.0))
-        .escapeThresholdLimit(nonNull(escapeThresholdLimit) ? BigDecimal.valueOf(escapeThresholdLimit) : null)
-        .build();
-  }
-
-  private static FeeCalculationRequest buildFeeCalculationRequest(String feeCode, boolean vatIndicator,
-                                                                  Integer boltOnNumber, Double requestedNetProfitCosts) {
-    return FeeCalculationRequest.builder()
-        .feeCode(feeCode)
-        .claimId("claim_123")
-        .startDate(LocalDate.of(2025, 7, 29))
-        .netDisbursementAmount(50.50)
-        .disbursementVatAmount(20.15)
-        .vatIndicator(vatIndicator)
-        .boltOns(BoltOnType.builder().boltOnAdjournedHearing(boltOnNumber).build())
-        .netProfitCosts(requestedNetProfitCosts)
-        .build();
   }
 
   private void mockVatRatesService(Boolean vatIndicator) {

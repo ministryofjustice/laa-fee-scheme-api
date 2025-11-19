@@ -3,9 +3,9 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_PRISON_HAS_ESCAPED;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_PRISON_MAY_HAVE_ESCAPED;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
@@ -26,6 +26,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
+import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 /**
  * Calculate the prison law fee for a given fee entity and fee data.
@@ -37,6 +38,8 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
 
   private static final Set<String> FEE_CODES_ESCAPE_USING_ESCAPE_THRESHOLD = Set.of("PRIA", "PRIB2", "PRIC2", "PRID2", "PRIE2");
   private static final Set<String> FEE_CODES_ESCAPE_USING_FEE_LIMIT = Set.of("PRIB1", "PRIC1", "PRID1", "PRIE1");
+
+  private final VatRatesService vatRatesService;
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -50,14 +53,6 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
 
     log.info("Calculate Prison Law fixed fee");
 
-    return calculateFeesUsingFeeCode(feeEntity, feeCalculationRequest);
-
-  }
-
-  private FeeCalculationResponse calculateFeesUsingFeeCode(FeeEntity feeEntity,
-                                                           FeeCalculationRequest feeCalculationRequest) {
-
-    log.info("Calculate fixed fee and costs using fee entity");
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
     FeeCalculation feeCalculation = mapFeeCalculation(feeCalculationRequest, feeEntity.getFixedFee());
@@ -97,7 +92,7 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
    * escape flag will always be false.
    */
   private void feeLimitValidation(FeeEntity feeEntity, List<ValidationMessagesInner> validationMessages,
-                                     BigDecimal totalAmount) {
+                                  BigDecimal totalAmount) {
 
     BigDecimal feeLimit = feeEntity.getTotalLimit();
     if (isEscapedCase(totalAmount, feeLimit)) {
@@ -129,35 +124,35 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
    * Mapping fee elements into Fee Calculation.
    *
    * @param feeCalculationRequest FeeCalculationRequest
-   * @param fixedFee              BigDecimal
+   * @param fixedFeeAmount        BigDecimal
    * @return FeeCalculation
    */
-  private FeeCalculation mapFeeCalculation(FeeCalculationRequest feeCalculationRequest, BigDecimal fixedFee) {
+  private FeeCalculation mapFeeCalculation(FeeCalculationRequest feeCalculationRequest, BigDecimal fixedFeeAmount) {
 
+    // Calculate VAT if applicable
+    LocalDate claimStartDate = getFeeClaimStartDate(CategoryType.PRISON_LAW, feeCalculationRequest);
+    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatApplicable);
+    BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAmount, vatRate);
+
+    // Get disbursements
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-
     BigDecimal requestedDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    LocalDate claimStartDate = FeeCalculationUtil
-        .getFeeClaimStartDate(CategoryType.PRISON_LAW, feeCalculationRequest);
-
-    // Apply VAT where applicable
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-
-    BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
-
-    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee, fixedFeeVatAmount,
+    // Calculate total amount
+    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFeeAmount, calculatedVatAmount,
         requestedNetDisbursementAmount, requestedDisbursementVatAmount);
 
+    log.info("Build fee calculation response");
     return FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
         .vatIndicator(vatApplicable)
-        .vatRateApplied(toDoubleOrNull(getVatRateForDate(claimStartDate, vatApplicable)))
-        .calculatedVatAmount(toDouble(fixedFeeVatAmount))
+        .vatRateApplied(toDoubleOrNull(vatRate))
+        .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
-        .fixedFeeAmount(toDouble(fixedFee))
+        .fixedFeeAmount(toDouble(fixedFeeAmount))
         .build();
   }
 
