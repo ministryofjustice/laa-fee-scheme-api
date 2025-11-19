@@ -2,6 +2,8 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PRE_ORDER_COVER;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_PREORDER_COVER_UPPER_LIMIT;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
@@ -14,6 +16,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
@@ -21,9 +24,13 @@ import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 @ExtendWith(MockitoExtension.class)
 class PreOrderCoverHourlyRateCalculatorTest {
+
+  @Mock
+  VatRatesService vatRatesService;
 
   @InjectMocks
   PreOrderCoverHourlyRateCalculator preOrderCoverHourlyRateCalculator;
@@ -110,6 +117,8 @@ class PreOrderCoverHourlyRateCalculatorTest {
           .hasFieldOrPropertyWithValue("error", ERR_CRIME_PREORDER_COVER_UPPER_LIMIT)
           .hasMessageContaining(ERR_CRIME_PREORDER_COVER_UPPER_LIMIT.getMessage());
     } else {
+      mockVatRatesService(vatIndicator);
+
       FeeCalculationResponse response = preOrderCoverHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
       FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
           .feeCode(feeCode)
@@ -123,5 +132,10 @@ class PreOrderCoverHourlyRateCalculatorTest {
           .usingRecursiveComparison()
           .isEqualTo(expectedResponse);
     }
+  }
+
+  private void mockVatRatesService(Boolean vatIndicator) {
+    when(vatRatesService.getVatRateForDate(any(), any()))
+        .thenReturn(vatIndicator ? new BigDecimal("20.00") : BigDecimal.ZERO);
   }
 }

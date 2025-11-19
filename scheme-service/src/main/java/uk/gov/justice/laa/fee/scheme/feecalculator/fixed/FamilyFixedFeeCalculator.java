@@ -59,8 +59,8 @@ public class FamilyFixedFeeCalculator implements FeeCalculator {
 
     // Calculate VAT if applicable
     LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(feeEntity.getCategoryType(), feeCalculationRequest);
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatApplicable);
+    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatIndicator);
     BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAmount, vatRate);
 
     // Get disbursements
@@ -101,7 +101,7 @@ public class FamilyFixedFeeCalculator implements FeeCalculator {
         .escapeCaseFlag(isClaimEscaped)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
-            .vatIndicator(vatApplicable)
+            .vatIndicator(vatIndicator)
             .vatRateApplied(toDoubleOrNull(vatRate))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())

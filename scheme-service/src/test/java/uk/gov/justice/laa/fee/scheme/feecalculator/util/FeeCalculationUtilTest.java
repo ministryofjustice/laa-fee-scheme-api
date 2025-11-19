@@ -148,20 +148,6 @@ class FeeCalculationUtilTest {
     );
   }
 
-  private static FeeCalculationRequest getFeeCalculationRequest() {
-    return FeeCalculationRequest.builder()
-        .feeCode("ABC")
-        .startDate(LocalDate.of(2017, 7, 29))
-        .vatIndicator(Boolean.TRUE)
-        .policeStationSchemeId("1003")
-        .policeStationId("NA2093")
-        .uniqueFileNumber("011222/456")
-        .netDisbursementAmount(50.50)
-        .disbursementVatAmount(20.15)
-        .representationOrderDate(LocalDate.of(2023, 12, 12))
-        .build();
-  }
-
   @Test
   void calculateTotalAmount_givenFeeAndDisbursements_returnsTotal() {
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(new BigDecimal("120.50"),
@@ -236,4 +222,17 @@ class FeeCalculationUtilTest {
     assertThat(boltOnFeeDetailResponse).isNull();
   }
 
+  private static FeeCalculationRequest getFeeCalculationRequest() {
+    return FeeCalculationRequest.builder()
+        .feeCode("ABC")
+        .startDate(LocalDate.of(2017, 7, 29))
+        .vatIndicator(Boolean.TRUE)
+        .policeStationSchemeId("1003")
+        .policeStationId("NA2093")
+        .uniqueFileNumber("011222/456")
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .representationOrderDate(LocalDate.of(2023, 12, 12))
+        .build();
+  }
 }

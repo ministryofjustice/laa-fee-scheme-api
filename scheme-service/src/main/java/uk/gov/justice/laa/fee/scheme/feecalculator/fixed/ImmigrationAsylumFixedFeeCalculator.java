@@ -102,8 +102,8 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
 
     // Calculate VAT if applicable
     LocalDate startDate = feeCalculationRequest.getStartDate();
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatApplicable);
+    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatIndicator);
     BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAndAdditionalCosts, vatRate);
 
     // Calculate total amount
@@ -125,7 +125,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
         .escapeCaseFlag(escapeCaseFlag)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
-            .vatIndicator(vatApplicable)
+            .vatIndicator(vatIndicator)
             .vatRateApplied(toDoubleOrNull(vatRate))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(nonNull(feeCalculationRequest.getNetDisbursementAmount()) ? toDouble(netDisbursementAmount) : null)

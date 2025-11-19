@@ -47,6 +47,7 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
    * Calculated fee based on the provided fee entity and fee calculation request.
    *
    * @param feeCalculationRequest the request containing fee calculation data
+   * @param feeEntity             the fee entity containing fee details
    * @return FeeCalculationResponse with calculated fee
    */
   @Override
@@ -59,8 +60,8 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
 
     // Calculate VAT if applicable
     LocalDate claimStartDate = getFeeClaimStartDate(CategoryType.ASSOCIATED_CIVIL, feeCalculationRequest);
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatApplicable);
+    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatIndicator);
     BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAmount, vatRate);
 
     // Get disbursements
@@ -97,7 +98,7 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
         .escapeCaseFlag(isEscaped)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
-            .vatIndicator(vatApplicable)
+            .vatIndicator(vatIndicator)
             .vatRateApplied(toDoubleOrNull(vatRate))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())

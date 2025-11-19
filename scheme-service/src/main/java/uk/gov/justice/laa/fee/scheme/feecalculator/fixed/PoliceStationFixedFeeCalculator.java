@@ -84,8 +84,8 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
 
     // Calculate VAT if applicable
     LocalDate claimStartDate = getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatApplicable);
+    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatIndicator);
     BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAmount, vatRate);
 
     // Get disbursements
@@ -114,7 +114,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
         .validationMessages(validationMessages)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
-            .vatIndicator(vatApplicable)
+            .vatIndicator(vatIndicator)
             .vatRateApplied(toDoubleOrNull(vatRate))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
@@ -135,8 +135,8 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
 
     // Calculate VAT if applicable
     LocalDate claimStartDate = getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatApplicable);
+    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatIndicator);
     BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAmount, vatRate);
 
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount);
@@ -149,7 +149,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
         .escapeCaseFlag(false)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
-            .vatIndicator(vatApplicable)
+            .vatIndicator(vatIndicator)
             .vatRateApplied(toDoubleOrNull(vatRate))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .fixedFeeAmount(toDouble(fixedFeeAmount))

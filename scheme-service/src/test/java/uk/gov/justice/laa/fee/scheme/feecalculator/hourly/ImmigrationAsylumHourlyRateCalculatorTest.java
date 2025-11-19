@@ -2,6 +2,8 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DETENTION_TRAVEL;
@@ -24,6 +26,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
@@ -35,6 +38,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
+import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 @ExtendWith(MockitoExtension.class)
 class ImmigrationAsylumHourlyRateCalculatorTest {
@@ -43,6 +47,9 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
 
   private static final String AUTHORITY = "priorAuth";
   private static final String NO_AUTHORITY = null;
+
+  @Mock
+  VatRatesService vatRatesService;
 
   @InjectMocks
   ImmigrationAsylumHourlyRateCalculator immigrationAsylumHourlyRateCalculator;
@@ -55,7 +62,10 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
                                                                      double expectedHourlyTotal, double expectedNetProfitCosts,
                                                                      double expectedNetDisbursement, List<WarningType> expectedWarnings) {
 
-    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+    mockVatRatesService(vatIndicator);
+
+    FeeCalculationRequest
+        feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .startDate(LocalDate.of(2025, 5, 11))
         .netProfitCosts(netProfitCosts)
@@ -145,6 +155,8 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
                                                                           double expectedTotal, double expectedCalculatedVat,
                                                                           double expectedHourlyTotal, List<WarningType> expectedWarnings) {
 
+    mockVatRatesService(vatIndicator);
+
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .startDate(LocalDate.of(2025, 5, 11))
@@ -204,6 +216,8 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
   @MethodSource("warningTestDataLegalHelp")
   void calculateFee_whenLegalHelpFeeCodeAndGivenUnexpectedField_shouldReturnWarning(Double detentionTravelAndWaitingCosts,
                                                                                     Double jrFormFilling, List<WarningType> expectedWarnings) {
+    mockVatRatesService(false);
+
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("IAXL")
         .startDate(LocalDate.of(2025, 5, 11))
@@ -238,6 +252,8 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
                                                                double netProfitCosts, double netCostOfCounsel, double netDisbursement,
                                                                double disbursementVat, double expectedTotal, double expectedCalculatedVat,
                                                                double expectedHourlyTotal, List<WarningType> expectedWarnings) {
+
+    mockVatRatesService(vatIndicator);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -304,6 +320,9 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
   @MethodSource(value = {"warningTestDataClr", "warningTestDataClrInterim"})
   void calculateFee_whenClrAndGivenUnexpectedField_shouldReturnWarning(String feeCode, Double detentionTravelAndWaitingCosts,
                                                                        Double jrFormFilling, List<WarningType> expectedWarnings) {
+
+    mockVatRatesService(false);
+
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .startDate(LocalDate.of(2025, 5, 11))
@@ -347,6 +366,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
                                                                       double disbursementVat, double expectedTotal, double expectedCalculatedVat,
                                                                       double expectedHourlyTotal, List<WarningType> expectedWarnings) {
 
+    mockVatRatesService(vatIndicator);
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .startDate(LocalDate.of(2025, 5, 11))
@@ -507,5 +527,10 @@ class ImmigrationAsylumHourlyRateCalculatorTest {
         .boltOnSubstantiveHearingFee(boltOnSubstantiveHearingFee)
         .boltOnTotalFeeAmount(boltOnTotalFeeAmount)
         .build();
+  }
+
+  private void mockVatRatesService(Boolean vatIndicator) {
+    when(vatRatesService.getVatRateForDate(any(), any()))
+        .thenReturn(vatIndicator ? new BigDecimal("20.00") : BigDecimal.ZERO);
   }
 }

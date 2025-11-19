@@ -51,8 +51,8 @@ public class DesignatedCourtFixedFeeCalculator implements FeeCalculator {
 
     // Calculate VAT if applicable
     LocalDate startDate = feeCalculationRequest.getRepresentationOrderDate();
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatApplicable);
+    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatIndicator);
     BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAmount, vatRate);
 
     // Get disbursements
@@ -70,7 +70,7 @@ public class DesignatedCourtFixedFeeCalculator implements FeeCalculator {
         .claimId(feeCalculationRequest.getClaimId())
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
-            .vatIndicator(vatApplicable)
+            .vatIndicator(vatIndicator)
             .vatRateApplied(toDoubleOrNull(vatRate))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())

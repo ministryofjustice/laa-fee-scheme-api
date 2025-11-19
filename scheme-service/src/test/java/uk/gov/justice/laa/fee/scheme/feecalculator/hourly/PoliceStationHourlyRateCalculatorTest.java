@@ -1,6 +1,8 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_POLICE_OTHER_UPPER_LIMIT;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
@@ -16,6 +18,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
@@ -25,6 +28,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
+import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 @ExtendWith(MockitoExtension.class)
 class PoliceStationHourlyRateCalculatorTest {
@@ -35,13 +39,16 @@ class PoliceStationHourlyRateCalculatorTest {
   private static final String POLICE_STATION_SCHEME_ID = "1007";
   private static final String UFN = "041223/665";
 
+  @Mock
+  VatRatesService vatRatesService;
+
   @InjectMocks
   PoliceStationHourlyRateCalculator policeStationHourlyRateCalculator;
 
   public static Stream<Arguments> testPoliceOtherData() {
     return Stream.of(
         arguments("INVM Police Fee Code, VAT applied", true, 232.72,
-            27.01,  135.06),
+            27.01, 135.06),
         arguments("INVM Police Fee Code, VAT applied", false, 205.71,
             0, 135.06)
     );
@@ -65,6 +72,8 @@ class PoliceStationHourlyRateCalculatorTest {
       double expectedCalculatedVat,
       double expectedHourlyTotalAmount
   ) {
+
+    mockVatRatesService(vatIndicator);
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(FEE_CODE)
@@ -127,6 +136,8 @@ class PoliceStationHourlyRateCalculatorTest {
       double expectedCalculatedVat,
       double expectedHourlyTotalAmount
   ) {
+
+    mockVatRatesService(vatIndicator);
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(FEE_CODE)
@@ -193,4 +204,8 @@ class PoliceStationHourlyRateCalculatorTest {
     assertThat(result).isEmpty();
   }
 
+  private void mockVatRatesService(Boolean vatIndicator) {
+    when(vatRatesService.getVatRateForDate(any(), any()))
+        .thenReturn(vatIndicator ? new BigDecimal("20.00") : BigDecimal.ZERO);
+  }
 }
