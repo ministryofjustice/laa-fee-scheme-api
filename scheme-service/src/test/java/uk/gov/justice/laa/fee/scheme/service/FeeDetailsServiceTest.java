@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.AreaOfLawTypeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.CategoryOfLawTypeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeCategoryMappingEntity;
+import uk.gov.justice.laa.fee.scheme.entity.FeeInformationEntity;
 import uk.gov.justice.laa.fee.scheme.enums.AreaOfLawType;
 import uk.gov.justice.laa.fee.scheme.enums.CaseType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
@@ -39,12 +40,16 @@ class FeeDetailsServiceTest {
     CategoryOfLawTypeEntity categoryOfLawType = CategoryOfLawTypeEntity.builder().code("AAP").build();
     FeeType feeType = FeeType.FIXED;
 
+    // Mock FeeInformationEntity
+    FeeInformationEntity feeInformation = mock(FeeInformationEntity.class);
+    when(feeInformation.getFeeDescription()).thenReturn("Claims Against Public Authorities Legal Help Fixed Fee");
+    when(feeInformation.getFeeType()).thenReturn(feeType);
+
     FeeCategoryMappingEntity feeCategoryMappingEntity = mock(FeeCategoryMappingEntity.class);
     when(feeCategoryMappingEntity.getCategoryOfLawType()).thenReturn(categoryOfLawType);
-    when(feeCategoryMappingEntity.getFeeDescription()).thenReturn("Claims Against Public Authorities Legal Help Fixed Fee");
-    when(feeCategoryMappingEntity.getFeeType()).thenReturn(feeType);
+    when(feeCategoryMappingEntity.getFeeInformation()).thenReturn(feeInformation); // return mock
 
-    when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(any())).thenReturn(Optional.of(feeCategoryMappingEntity));
+    when(feeCategoryMappingRepository.findByFeeInformationFeeCode(any())).thenReturn(Optional.of(feeCategoryMappingEntity));
 
     FeeDetailsResponse response = feeDetailsService.getFeeDetails(feeCode);
 
@@ -57,7 +62,7 @@ class FeeDetailsServiceTest {
   void getFeeDetails_shouldReturnExceptionCategoryOfLawNotFound() {
     String feeCode = "FEE123";
 
-    when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(any())).thenReturn(Optional.empty());
+    when(feeCategoryMappingRepository.findByFeeInformationFeeCode(any())).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> feeDetailsService.getFeeDetails(feeCode))
         .isInstanceOf(CategoryCodeNotFoundException.class)
@@ -78,7 +83,7 @@ class FeeDetailsServiceTest {
     FeeCategoryMappingEntity feeCategoryMappingEntity = mock(FeeCategoryMappingEntity.class);
     when(feeCategoryMappingEntity.getCategoryOfLawType()).thenReturn(categoryOfLawType);
 
-    when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(feeCode)).thenReturn(Optional.of(feeCategoryMappingEntity));
+    when(feeCategoryMappingRepository.findByFeeInformationFeeCode(feeCode)).thenReturn(Optional.of(feeCategoryMappingEntity));
 
     CaseType result = feeDetailsService.getCaseType(feeCalculationRequest);
 
@@ -88,7 +93,7 @@ class FeeDetailsServiceTest {
   @Test
   void getCaseType_shouldThrowExceptionCategoryOfLawNotFound() {
     String feeCode = "FEE123";
-    when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(any())).thenReturn(Optional.empty());
+    when(feeCategoryMappingRepository.findByFeeInformationFeeCode(any())).thenReturn(Optional.empty());
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder().feeCode(feeCode).build();
 
     assertThatThrownBy(() -> feeDetailsService.getCaseType(feeCalculationRequest))

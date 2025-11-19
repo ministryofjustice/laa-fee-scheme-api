@@ -32,17 +32,15 @@ CREATE TABLE IF NOT EXISTS fee_information
 (
     fee_code                    VARCHAR(10) PRIMARY KEY,
     fee_description             TEXT        NOT NULL,
-    fee_type                    VARCHAR(15) NOT NULL
+    fee_type                    VARCHAR(15) NOT NULL,
+    category_type               VARCHAR        NOT NULL
     );
 
 CREATE TABLE IF NOT EXISTS fee
 (
     fee_id                      SERIAL PRIMARY KEY,
-    fee_code                    VARCHAR        NOT NULL,
-    description                 VARCHAR        NOT NULL,
+    fee_code                    VARCHAR(10) NOT NULL REFERENCES fee_information(fee_code),
     fee_scheme_code             VARCHAR        NOT NULL REFERENCES fee_schemes (scheme_code),
-    category_type               VARCHAR        NOT NULL,
-    fee_type                    VARCHAR        NOT NULL,
     region                      VARCHAR        NULL,
     fixed_fee                   NUMERIC(10, 2) NULL,
     profit_cost_limit           NUMERIC(10, 2) NULL,
@@ -110,7 +108,7 @@ CREATE TABLE IF NOT EXISTS fee_scheme_category_type
 CREATE TABLE IF NOT EXISTS fee_category_mapping
 (
     id                          SERIAL PRIMARY KEY,
-    fee_code                    VARCHAR(10) NOT NULL UNIQUE REFERENCES fee_information (fee_code),
+    fee_information             VARCHAR(10) NOT NULL UNIQUE REFERENCES fee_information (fee_code),
     fee_scheme_category_type_id INT         NOT NULL REFERENCES fee_scheme_category_type (fee_scheme_category_type_id),
     category_of_law_type_id     INT         NOT NULL REFERENCES category_of_law_type (category_of_law_type_id)
 );

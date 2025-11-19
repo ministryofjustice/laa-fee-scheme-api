@@ -21,20 +21,21 @@ class FeeCategoryMappingRepositoryIntegrationTest extends PostgresContainerTestB
   @Test
   void should_Return_FeeCategoryMappingEntity_whenFeeCodeIsPresent() {
     String feeCode = "IACA";
-    Optional<FeeCategoryMappingEntity> result = repository.findFeeCategoryMappingByFeeCode(feeCode);
+    Optional<FeeCategoryMappingEntity> result = repository.findByFeeInformationFeeCode(feeCode);
 
     assertThat(result).isPresent();
 
     FeeCategoryMappingEntity feeCategoryMappingEntity = result.get();
     assertThat(feeCategoryMappingEntity.getCategoryOfLawType().getCode()).isEqualTo("IMMAS");
-    assertThat(feeCategoryMappingEntity.getFeeDescription()).isEqualTo("Standard Fee - Asylum CLR  (2a)");
-    assertThat(feeCategoryMappingEntity.getFeeType()).isEqualTo(FeeType.FIXED);
+    assertThat(feeCategoryMappingEntity.getFeeInformation().getFeeDescription()).isEqualTo("Standard Fee - Asylum CLR  (2a)");
+    assertThat(feeCategoryMappingEntity.getFeeInformation().getFeeType()).isEqualTo(FeeType.FIXED);
   }
 
   @Test
   void should_Return_Empty_whenFeeCodeIsNotPresent() {
     String feeCode = "XYZ";
-    Optional<FeeCategoryMappingEntity> result = repository.findFeeCategoryMappingByFeeCode(feeCode);
+    Optional<FeeCategoryMappingEntity> result = repository.findByFeeInformationFeeCode(feeCode);
     assertThat(result).isEmpty();
   }
 }
+
