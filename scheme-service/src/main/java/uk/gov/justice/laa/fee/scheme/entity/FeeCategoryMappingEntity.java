@@ -48,13 +48,6 @@ public class FeeCategoryMappingEntity {
   }
 
   /**
-   * Getter for fee category type.
-   */
-  public String getFeeCode() {
-    return fee != null ? fee.getFeeCode() : null;
-  }
-
-  /**
    * Getter for fee type.
    */
   public FeeType getFeeType() {

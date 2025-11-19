@@ -22,7 +22,6 @@ class FeeCategoryMappingEntityTest {
 
     assertThat(feeCategoryMappingEntity.getId()).isEqualTo(1L);
     assertThat(feeCategoryMappingEntity.getFee()).isEqualTo(fee);
-    assertThat(feeCategoryMappingEntity.getFeeCode()).isEqualTo("INVA");
     assertThat(feeCategoryMappingEntity.getFeeDescription()).isEqualTo("Advice and Assistance (not at the police station)");
     assertThat(feeCategoryMappingEntity.getFeeType()).isEqualTo(FeeType.HOURLY);
   }
@@ -33,7 +32,6 @@ class FeeCategoryMappingEntityTest {
         .id(2L)
         .build();
 
-    assertThat(mapping.getFeeCode()).isNull();
     assertThat(mapping.getFeeDescription()).isNull();
     assertThat(mapping.getFeeType()).isNull();
   }
