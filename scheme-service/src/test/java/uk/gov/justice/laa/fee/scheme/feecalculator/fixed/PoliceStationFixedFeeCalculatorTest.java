@@ -30,6 +30,7 @@ import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
+import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -38,10 +39,7 @@ import uk.gov.justice.laa.fee.scheme.repository.PoliceStationFeesRepository;
 import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 @ExtendWith(MockitoExtension.class)
-class PoliceStationFixedFeeCalculatorTest {
-
-  @Mock
-  VatRatesService vatRatesService;
+class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @InjectMocks
   PoliceStationFixedFeeCalculator policeStationFixedFeeCalculator;
@@ -537,11 +535,5 @@ class PoliceStationFixedFeeCalculatorTest {
         .feeType(FeeType.FIXED)
         .build();
   }
-
-  private void mockVatRatesService(Boolean vatIndicator) {
-    when(vatRatesService.getVatRateForDate(any(), any()))
-        .thenReturn(vatIndicator ? new BigDecimal("20.00") : BigDecimal.ZERO);
-  }
-
 
 }

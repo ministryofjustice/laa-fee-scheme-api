@@ -3,8 +3,6 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_400_LEGAL_HELP;
@@ -25,25 +23,21 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
-import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 @ExtendWith(MockitoExtension.class)
-class ImmigrationAsylumFixedFeeCalculatorTest {
-
-  @Mock
-  VatRatesService vatRatesService;
+class ImmigrationAsylumFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @InjectMocks
   ImmigrationAsylumFixedFeeCalculator immigrationAsylumFixedFeeCalculator;
@@ -355,10 +349,5 @@ class ImmigrationAsylumFixedFeeCalculatorTest {
   void getSupportedCategories_shouldReturnEmptySet() {
     Set<CategoryType> result = immigrationAsylumFixedFeeCalculator.getSupportedCategories();
     assertThat(result).isEmpty();
-  }
-
-  private void mockVatRatesService(Boolean vatIndicator) {
-    when(vatRatesService.getVatRateForDate(any(), any()))
-        .thenReturn(vatIndicator ? new BigDecimal("20.00") : BigDecimal.ZERO);
   }
 }
