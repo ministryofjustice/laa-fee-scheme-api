@@ -1,4 +1,4 @@
-INSERT INTO fee_category_mapping (fee_information, fee_scheme_category_type_id, category_of_law_type_id)
+INSERT INTO fee_category_mapping (fee_code, fee_scheme_category_type_id, category_of_law_type_id)
 VALUES ('IACA',1, 11),
        ('IACB',1, 11),
        ('IACC',1, 11),
@@ -25,9 +25,9 @@ VALUES ('IACA',1, 11),
        ('ICISD',1, 11),
        ('ICSSD',1, 11),
        ('ILHSD',1, 11)
-ON CONFLICT (fee_information) DO NOTHING;
+ON CONFLICT (fee_code) DO NOTHING;
 
-INSERT INTO fee_category_mapping (fee_information, fee_scheme_category_type_id, category_of_law_type_id)
+INSERT INTO fee_category_mapping (fee_code, fee_scheme_category_type_id, category_of_law_type_id)
 VALUES ('MHL01',2, 21),
        ('MHL02',2, 21),
        ('MHL03',2, 21),
@@ -38,9 +38,9 @@ VALUES ('MHL01',2, 21),
        ('MHL08',2, 21),
        ('MHL10', 2, 21),
        ('MHLDIS',2, 21)
-ON CONFLICT (fee_information) DO NOTHING;
+ON CONFLICT (fee_code) DO NOTHING;
 
-INSERT INTO fee_category_mapping (fee_information, fee_scheme_category_type_id, category_of_law_type_id)
+INSERT INTO fee_category_mapping (fee_code, fee_scheme_category_type_id, category_of_law_type_id)
 VALUES ('FPB010',3, 7),
        ('FPB020',3, 7),
        ('FPB030',3, 7),
@@ -60,9 +60,9 @@ VALUES ('FPB010',3, 7),
        ('FVP190',3, 7),
        ('FVP200',3, 7),
        ('FVP210',3, 7)
-ON CONFLICT (fee_information) DO NOTHING;
+ON CONFLICT (fee_code) DO NOTHING;
 
-INSERT INTO fee_category_mapping (fee_information, fee_scheme_category_type_id, category_of_law_type_id)
+INSERT INTO fee_category_mapping (fee_code, fee_scheme_category_type_id, category_of_law_type_id)
 VALUES ('FVP020',3, 7),
        ('FVP040',3, 7),
        ('FVP030',3, 7),
@@ -79,9 +79,9 @@ VALUES ('FVP020',3, 7),
        ('FVP091',3, 7),
        ('FVP071',3, 7),
        ('FVP081',3, 7)
-ON CONFLICT (fee_information) DO NOTHING;
+ON CONFLICT (fee_code) DO NOTHING;
 
-INSERT INTO fee_category_mapping (fee_information, fee_scheme_category_type_id, category_of_law_type_id)
+INSERT INTO fee_category_mapping (fee_code, fee_scheme_category_type_id, category_of_law_type_id)
 VALUES ('ASSA',4, 6),
        ('ASSS',4, 6),
        ('ASST',4, 6),
@@ -101,9 +101,9 @@ VALUES ('ASSA',4, 6),
        ('MDAC1P',4, 6),
        ('MDAC2C',4, 6),
        ('MDAC1C',4, 6)
-ON CONFLICT (fee_information) DO NOTHING;
+ON CONFLICT (fee_code) DO NOTHING;
 
-INSERT INTO fee_category_mapping (fee_information, fee_scheme_category_type_id, category_of_law_type_id)
+INSERT INTO fee_category_mapping (fee_code, fee_scheme_category_type_id, category_of_law_type_id)
 VALUES ('MDPS2B',4, 6),
        ('MDPS1B',4, 6),
        ('MDPC2B',4, 6),
@@ -120,9 +120,9 @@ VALUES ('MDPS2B',4, 6),
        ('MDCS1S',4, 6),
        ('MDCC2S',4, 6),
        ('MDCC1S',4, 6)
- ON CONFLICT (fee_information) DO NOTHING;
+ ON CONFLICT (fee_code) DO NOTHING;
  
-INSERT INTO fee_category_mapping (fee_information, fee_scheme_category_type_id, category_of_law_type_id)
+INSERT INTO fee_category_mapping (fee_code, fee_scheme_category_type_id, category_of_law_type_id)
 VALUES ('COM',5, 18),
        ('CAPA',6, 15),
        ('CLIN',7, 10),
@@ -139,9 +139,9 @@ VALUES ('COM',5, 18),
        ('MISCEMP',13, 23),
        ('PUB',14, 9),
        ('WFB1',15, 16)
-ON CONFLICT (fee_information) DO NOTHING;
+ON CONFLICT (fee_code) DO NOTHING;
 
-INSERT INTO fee_category_mapping (fee_information, fee_scheme_category_type_id, category_of_law_type_id)
+INSERT INTO fee_category_mapping (fee_code, fee_scheme_category_type_id, category_of_law_type_id)
 VALUES ('INVC',16, 3),
        ('INVA',17, 3),
        ('INVE', 17, 3),
@@ -168,9 +168,9 @@ VALUES ('INVC',16, 3),
        ('PROK1',18, 3),
        ('PROK2',18, 3),
        ('PROK3',18, 3)
-ON CONFLICT (fee_information) DO NOTHING;
+ON CONFLICT (fee_code) DO NOTHING;
 
-INSERT INTO fee_category_mapping (fee_information, fee_scheme_category_type_id, category_of_law_type_id)
+INSERT INTO fee_category_mapping (fee_code, fee_scheme_category_type_id, category_of_law_type_id)
 VALUES ('PROL1',18, 3),
        ('PROL2',18, 3),
        ('PROL3', 18, 3),
@@ -203,18 +203,18 @@ VALUES ('PROL1',18, 3),
        ('YOUL4',18, 3),
        ('YOUX1', 18, 3),
        ('YOUX2', 18, 3)
-ON CONFLICT (fee_information) DO NOTHING;
+ON CONFLICT (fee_code) DO NOTHING;
 
-INSERT INTO fee_category_mapping (fee_information, fee_scheme_category_type_id, category_of_law_type_id)
+INSERT INTO fee_category_mapping (fee_code, fee_scheme_category_type_id, category_of_law_type_id)
 VALUES ('YOUX3', 18, 3),
        ('YOUX4', 18, 3),
        ('YOUY1', 18, 3),
        ('YOUY2', 18, 3),
        ('YOUY3', 18, 3),
        ('YOUY4', 18, 3)
-ON CONFLICT (fee_information) DO NOTHING;  
+ON CONFLICT (fee_code) DO NOTHING;
 
-INSERT INTO fee_category_mapping (fee_information, fee_scheme_category_type_id, category_of_law_type_id)     
+INSERT INTO fee_category_mapping (fee_code, fee_scheme_category_type_id, category_of_law_type_id)
 VALUES ('PRIA',19, 4),
        ('PRIB1',19, 4),
        ('PRIB2',19, 4),
@@ -230,4 +230,4 @@ VALUES ('PRIA',19, 4),
        ('ASMS',21, 2),
        ('ASPL',21, 2),
        ('ASAS',21, 2)
-ON CONFLICT (fee_information) DO NOTHING;
+ON CONFLICT (fee_code) DO NOTHING;

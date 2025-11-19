@@ -29,8 +29,8 @@ public class FeeCategoryMappingEntity {
   private Long id;
 
   @OneToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "fee_information", referencedColumnName = "fee_code")
-  private FeeInformationEntity feeInformation;
+  @JoinColumn(name = "fee_code", referencedColumnName = "fee_code")
+  private FeeInformationEntity feeCode;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "fee_scheme_category_type_id")

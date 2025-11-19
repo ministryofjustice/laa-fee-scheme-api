@@ -11,6 +11,6 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeCategoryMappingEntity;
 @Repository
 public interface FeeCategoryMappingRepository extends JpaRepository<FeeCategoryMappingEntity, Long> {
 
-  Optional<FeeCategoryMappingEntity> findByFeeInformationFeeCode(String feeCode);
+  Optional<FeeCategoryMappingEntity> findByFeeCodeFeeCode(String feeCode);
 
 }

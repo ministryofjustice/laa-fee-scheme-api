@@ -40,8 +40,8 @@ public class FeeDetailsService {
 
     return FeeDetailsResponse.builder()
         .categoryOfLawCode(feeCategoryMapping.getCategoryOfLawType().getCode())
-        .feeCodeDescription(feeCategoryMapping.getFeeInformation().getFeeDescription())
-        .feeType(feeCategoryMapping.getFeeInformation().getFeeType().toString())
+        .feeCodeDescription(feeCategoryMapping.getFeeCode().getFeeDescription())
+        .feeType(feeCategoryMapping.getFeeCode().getFeeType().toString())
         .build();
   }
 
@@ -59,12 +59,12 @@ public class FeeDetailsService {
   }
 
   private FeeCategoryMappingEntity getFeeCategoryMapping(FeeCalculationRequest feeCalculationRequest) {
-    return feeCategoryMappingRepository.findByFeeInformationFeeCode(feeCalculationRequest.getFeeCode())
+    return feeCategoryMappingRepository.findByFeeCodeFeeCode(feeCalculationRequest.getFeeCode())
         .orElseThrow(() -> new ValidationException(ERR_ALL_FEE_CODE, new FeeContext(feeCalculationRequest)));
   }
 
   private FeeCategoryMappingEntity getFeeCategoryMapping(String feeCode) {
-    return feeCategoryMappingRepository.findByFeeInformationFeeCode(feeCode)
+    return feeCategoryMappingRepository.findByFeeCodeFeeCode(feeCode)
         .orElseThrow(() -> new CategoryCodeNotFoundException(feeCode));
   }
 }
