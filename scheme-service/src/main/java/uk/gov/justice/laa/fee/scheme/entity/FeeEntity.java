@@ -53,10 +53,6 @@ public class FeeEntity {
   private BigDecimal mediationFeeHigher;
   @Enumerated(EnumType.STRING)
   private Region region;
-  @Enumerated(EnumType.STRING)
-  private FeeBandType feeBandType;
-  @Enumerated(EnumType.STRING)
-  private CourtDesignationType courtDesignationType;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "fee_code", referencedColumnName = "fee_code", insertable = false, updatable = false)
@@ -69,6 +65,12 @@ public class FeeEntity {
   private CategoryType categoryType;
   @Transient
   private FeeType feeType;
+  @Transient
+  @Enumerated(EnumType.STRING)
+  private FeeBandType feeBandType;
+  @Transient
+  @Enumerated(EnumType.STRING)
+  private CourtDesignationType courtDesignationType;
 
   /**
    * Getter for fee description.
@@ -98,5 +100,25 @@ public class FeeEntity {
       return feeType;
     }
     return feeInformation != null ? feeInformation.getFeeType() : null;
+  }
+
+  /**
+   * Getter for feeBandType.
+   */
+  public FeeBandType getFeeBandType() {
+    if (feeBandType != null) {
+      return feeBandType;
+    }
+    return feeInformation != null ? feeInformation.getFeeBandType() : null;
+  }
+
+  /**
+   * Getter for courtDesignationType.
+   */
+  public CourtDesignationType getCourtDesignationType() {
+    if (feeType != null) {
+      return courtDesignationType;
+    }
+    return feeInformation != null ? feeInformation.getCourtDesignationType() : null;
   }
 }

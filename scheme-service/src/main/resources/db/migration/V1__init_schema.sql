@@ -18,7 +18,7 @@ DROP TABLE IF EXISTS category_of_law_look_up CASCADE;
 
 DROP TABLE IF EXISTS vat_rates CASCADE;
 
-DROP TABLE IF EXISTS fee_information CASCADE;
+DROP TABLE IF EXISTS fee_code_information CASCADE;
 
 CREATE TABLE IF NOT EXISTS fee_schemes
 (
@@ -28,18 +28,20 @@ CREATE TABLE IF NOT EXISTS fee_schemes
     valid_to    DATE    NULL
 );
 
-CREATE TABLE IF NOT EXISTS fee_information
+CREATE TABLE IF NOT EXISTS fee_code_information
 (
     fee_code                    VARCHAR(10) PRIMARY KEY,
     fee_description             TEXT        NOT NULL,
     fee_type                    VARCHAR(15) NOT NULL,
-    category_type               VARCHAR        NOT NULL
-    );
+    category_type               VARCHAR        NOT NULL,
+    court_designation_type      VARCHAR        NULL,
+    fee_band_type               VARCHAR        NULL
+);
 
 CREATE TABLE IF NOT EXISTS fee
 (
     fee_id                      SERIAL PRIMARY KEY,
-    fee_code                    VARCHAR(10) NOT NULL REFERENCES fee_information(fee_code),
+    fee_code                    VARCHAR(10) NOT NULL REFERENCES fee_code_information(fee_code),
     fee_scheme_code             VARCHAR        NOT NULL REFERENCES fee_schemes (scheme_code),
     region                      VARCHAR        NULL,
     fixed_fee                   NUMERIC(10, 2) NULL,
@@ -56,9 +58,7 @@ CREATE TABLE IF NOT EXISTS fee
     substantive_hearing_bolt_on NUMERIC(10, 2) NULL,
     adjorn_hearing_bolt_on      NUMERIC(10, 2) NULL,
     mediation_fee_lower         NUMERIC(10, 2) NULL,
-    mediation_fee_higher        NUMERIC(10, 2) NULL,
-    court_designation_type      VARCHAR        NULL,
-    fee_band_type               VARCHAR        NULL
+    mediation_fee_higher        NUMERIC(10, 2) NULL
 );
 
 
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS fee_scheme_category_type
 CREATE TABLE IF NOT EXISTS fee_category_mapping
 (
     id                          SERIAL PRIMARY KEY,
-    fee_code                    VARCHAR(10) NOT NULL UNIQUE REFERENCES fee_information (fee_code),
+    fee_code                    VARCHAR(10) NOT NULL UNIQUE REFERENCES fee_code_information (fee_code),
     fee_scheme_category_type_id INT         NOT NULL REFERENCES fee_scheme_category_type (fee_scheme_category_type_id),
     category_of_law_type_id     INT         NOT NULL REFERENCES category_of_law_type (category_of_law_type_id)
 );

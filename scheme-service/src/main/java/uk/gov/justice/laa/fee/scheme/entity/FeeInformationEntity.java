@@ -11,17 +11,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.CourtDesignationType;
+import uk.gov.justice.laa.fee.scheme.enums.FeeBandType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 
 /**
- *  Entity to hold fee information values from fee_information table.
+ *  Entity to hold fee information values from fee_code_information table.
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "fee_information")
+@Table(name = "fee_code_information")
 public class FeeInformationEntity {
 
   @Id
@@ -39,4 +41,11 @@ public class FeeInformationEntity {
   @Enumerated(EnumType.STRING)
   private CategoryType categoryType;
 
+  @Column(name = "fee_band_type")
+  @Enumerated(EnumType.STRING)
+  private FeeBandType feeBandType;
+
+  @Column(name = "court_designation_type")
+  @Enumerated(EnumType.STRING)
+  private CourtDesignationType courtDesignationType;
 }
