@@ -1,12 +1,14 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MENTAL_HEALTH;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.YOUTH_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.DISB_ONLY;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
+import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -29,21 +31,21 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 @ExtendWith(MockitoExtension.class)
 class MagistratesYouthCourtFeeCalculatorTest {
 
-  @InjectMocks
-  MagistratesYouthCourtFeeCalculator magistratesYouthCourtFeeCalculator;
-
   @Mock
   DesignatedCourtFixedFeeCalculator designatedCourtFixedFeeCalculator;
 
   @Mock
   UndesignatedCourtFixedFeeCalculator undesignatedCourtFixedFeeCalculator;
 
+  @InjectMocks
+  MagistratesYouthCourtFeeCalculator magistratesYouthCourtFeeCalculator;
+
   @Test
   void getFee_whenMagistratesCourtDesignatedAndFeeFixed_shouldReturnFeeCalculationResponse() {
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("PROL2")
-        .startDate(LocalDate.of(2017, 7, 29))
+        .representationOrderDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(true)
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
@@ -87,22 +89,22 @@ class MagistratesYouthCourtFeeCalculatorTest {
   }
 
   @Test
-  void getFee_whenMentalHealthFeeDisbursement_shouldReturnFeeCalculationResponse() {
+  void getFee_whenMagistratesCourtUndesignatedAndFeeFixed_shouldReturnFeeCalculationResponse() {
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode("EDUDIS")
-        .startDate(LocalDate.of(2017, 7, 29))
+        .feeCode("PROV1")
+        .representationOrderDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(true)
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("EDUDIS")
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("MHL_FS2013").build())
-        .categoryType(MENTAL_HEALTH)
-        .feeType(DISB_ONLY)
-        .disbursementLimit(new BigDecimal("400.00"))
+        .feeCode("PROV1")
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2016").build())
+        .categoryType(MAGISTRATES_COURT)
+        .courtDesignationType(CourtDesignationType.UNDESIGNATED)
+        .feeType(FIXED)
         .build();
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
@@ -110,8 +112,8 @@ class MagistratesYouthCourtFeeCalculatorTest {
         .build();
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
-        .feeCode("EDUDIS")
-        .schemeId("MHL_FS2013")
+        .feeCode("PROV1")
+        .schemeId("MAGS_COURT_FS2016")
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();
@@ -121,7 +123,7 @@ class MagistratesYouthCourtFeeCalculatorTest {
     FeeCalculationResponse result = magistratesYouthCourtFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
     assertThat(result).isNotNull();
-    assertThat(result.getFeeCode()).isEqualTo("EDUDIS");
+    assertThat(result.getFeeCode()).isEqualTo("PROV1");
     assertThat(result.getFeeCalculation()).isNotNull();
     assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(311.32);
   }
@@ -132,5 +134,4 @@ class MagistratesYouthCourtFeeCalculatorTest {
 
     assertThat(result).isEqualTo(Set.of(MAGISTRATES_COURT, YOUTH_COURT));
   }
-
 }
