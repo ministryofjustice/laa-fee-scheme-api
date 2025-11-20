@@ -2,13 +2,13 @@ package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.YOUTH_COURT;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isCourtDesignated;
 
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.CourtDesignationType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.DesignatedCourtFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.UndesignatedCourtFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -38,11 +38,10 @@ public class MagistratesYouthCourtFeeCalculator implements FeeCalculator {
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    if (isCourtDesignated(feeEntity.getCourtDesignationType())) {
-      return designatedCourtFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
-    } else {
-      return undesignatedCourtFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
-    }
+    return switch (feeEntity.getCourtDesignationType()) {
+      case CourtDesignationType.DESIGNATED -> designatedCourtFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+      case CourtDesignationType.UNDESIGNATED  -> undesignatedCourtFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+    };
   }
 
 }

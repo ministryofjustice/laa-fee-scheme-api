@@ -1,8 +1,10 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
+import static uk.gov.justice.laa.fee.scheme.enums.FeeType.DISB_ONLY;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 
@@ -137,6 +139,22 @@ class PoliceStationFeeCalculatorTest {
     assertThat(result.getFeeCode()).isEqualTo("INVK");
     assertThat(result.getFeeCalculation()).isNotNull();
     assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(311.32);
+  }
+
+  @Test
+  void calculate_shouldThrowIllegalStateException_whenFeeTypeIsDisbursementOnly() {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("INVC")
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("INVC")
+        .feeType(DISB_ONLY)
+        .build();
+
+    assertThatThrownBy(() -> policeStationFeeCalculator.calculate(feeCalculationRequest, feeEntity))
+        .isInstanceOf(UnsupportedOperationException.class)
+        .hasMessage("Disbursement only fee is not supported for Police Station category.");
   }
 
   @Test

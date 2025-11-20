@@ -1,10 +1,12 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MENTAL_HEALTH;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.DISB_ONLY;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
+import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -120,6 +122,22 @@ class MentalHealthFeeCalculatorTest {
     assertThat(result.getFeeCode()).isEqualTo("EDUDIS");
     assertThat(result.getFeeCalculation()).isNotNull();
     assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(311.32);
+  }
+
+  @Test
+  void calculate_shouldThrowIllegalStateException_whenFeeTypeIsDisbursementOnly() {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("EDUDIS")
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("EDUDIS")
+        .feeType(HOURLY)
+        .build();
+
+    assertThatThrownBy(() -> mentalHealthFeeCalculator.calculate(feeCalculationRequest, feeEntity))
+        .isInstanceOf(UnsupportedOperationException.class)
+        .hasMessage("Hourly rate fee is not supported for Mental Health category.");
   }
 
   @Test
