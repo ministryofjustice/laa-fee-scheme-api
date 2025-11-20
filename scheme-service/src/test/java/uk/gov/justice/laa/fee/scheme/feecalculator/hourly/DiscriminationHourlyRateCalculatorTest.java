@@ -17,13 +17,14 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
-class DiscriminationHourlyRateCalculatorTest {
+class DiscriminationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
 
   @InjectMocks
   DiscriminationHourlyRateCalculator discriminationHourlyRateCalculator;
@@ -37,6 +38,9 @@ class DiscriminationHourlyRateCalculatorTest {
   })
   void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double netProfitCosts, double costOfCounsel,
                                                     double expectedTotal, double expectedVat, double expectedHourlyTotal) {
+
+    mockVatRatesService(vatIndicator);
+
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel);
     FeeEntity feeEntity = buildFeeEntity();
 
@@ -56,6 +60,9 @@ class DiscriminationHourlyRateCalculatorTest {
   void calculate_shouldReturnFeeCalculationResponseWithWarning(boolean vatIndicator, double netProfitCosts,
                                                                double costOfCounsel, double expectedTotal,
                                                                double expectedVat, double expectedHourlyTotal) {
+
+    mockVatRatesService(vatIndicator);
+
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel);
     FeeEntity feeEntity = buildFeeEntity();
 
@@ -126,5 +133,4 @@ class DiscriminationHourlyRateCalculatorTest {
     assertThat(calculation.getDisbursementVatAmount()).isEqualTo(13.04);
     assertThat(calculation.getHourlyTotalAmount()).isEqualTo(expectedHourlyTotal);
   }
-
 }

@@ -14,7 +14,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,30 +21,23 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
-class PrisonLawFixedFeeCalculatorTest {
+class PrisonLawFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
-  @Spy
   @InjectMocks
   private PrisonLawFixedFeeCalculator prisonLawFeeCalculator;
-
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.openMocks(this);
-  }
 
   @Test
   void testGetSupportedCategories() {
@@ -131,6 +123,8 @@ class PrisonLawFixedFeeCalculatorTest {
         double expectedFixedFee,
         double expectedCalculatedVat
     ) {
+
+      mockVatRatesService(vatIndicator);
 
       FeeCalculationRequest feeCalculationRequest = buildFeeCalculationRequest(feeCode, uniqueFileNumber, vatIndicator,
           disbursementAmount, disbursementVatAmount, null, null
@@ -235,6 +229,8 @@ class PrisonLawFixedFeeCalculatorTest {
         String warningMessage,
         boolean hasEscaped
     ) {
+
+      mockVatRatesService(vatIndicator);
 
       FeeCalculationRequest feeCalculationRequest = buildFeeCalculationRequest(feeCode, uniqueFileNumber, vatIndicator,
           disbursementAmount, disbursementVatAmount, requestedNetProfitCosts, requestedNetWaitingCosts);

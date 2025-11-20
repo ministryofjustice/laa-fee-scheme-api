@@ -30,14 +30,16 @@ import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
+import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.repository.PoliceStationFeesRepository;
+import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 @ExtendWith(MockitoExtension.class)
-class PoliceStationFixedFeeCalculatorTest {
+class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @InjectMocks
   PoliceStationFixedFeeCalculator policeStationFixedFeeCalculator;
@@ -47,6 +49,8 @@ class PoliceStationFixedFeeCalculatorTest {
 
   @Test
   void test_whenPoliceStationClaimForInvoiceSubmitted_shouldReturnValidResponse() {
+
+    mockVatRatesService(true);
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
     FeeEntity feeEntity = buildFixedFeeEntity("INVC", feeSchemesEntity, new BigDecimal("200.56"));
@@ -97,6 +101,8 @@ class PoliceStationFixedFeeCalculatorTest {
 
   @Test
   void test_whenPoliceStationClaimForInvoiceSubmitted_PoliceStationId_NotSupplied_shouldReturnValidResponse() {
+
+    mockVatRatesService(true);
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
     FeeEntity feeEntity = buildFixedFeeEntity("INVC", feeSchemesEntity, new BigDecimal("200.56"));
@@ -166,6 +172,8 @@ class PoliceStationFixedFeeCalculatorTest {
       double expectedFixedFee
   ) {
 
+    mockVatRatesService(vatIndicator);
+
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .claimId("claim_123")
@@ -233,6 +241,8 @@ class PoliceStationFixedFeeCalculatorTest {
       double expectedFixedFee
   ) {
 
+    mockVatRatesService(vatIndicator);
+
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .vatIndicator(vatIndicator)
@@ -270,6 +280,8 @@ class PoliceStationFixedFeeCalculatorTest {
 
   @Test
   void test_whenClaimsSubmittedForPoliceStationAreFlaggedAsEscape_shouldReturnFeeWithEscapeFlagEnabled() {
+
+    mockVatRatesService(true);
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode("INVC")
@@ -407,6 +419,8 @@ class PoliceStationFixedFeeCalculatorTest {
 
   @Test
   void calculate_whenGivenFeeCodeAndNetDisbursementAmount_shouldReturnWithoutWarning() {
+
+    mockVatRatesService(true);
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
     FeeEntity feeEntity = buildFixedFeeEntity("INVB1", feeSchemesEntity, new BigDecimal("200.56"));

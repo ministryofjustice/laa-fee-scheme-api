@@ -18,12 +18,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CourtDesignationType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 @ExtendWith(MockitoExtension.class)
-class DesignatedCourtFixedFeeCalculatorTest {
+class DesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @InjectMocks
   DesignatedCourtFixedFeeCalculator calculator;
@@ -102,6 +103,8 @@ class DesignatedCourtFixedFeeCalculatorTest {
         double expectedTotal,
         double expectedVat
     ) {
+      mockVatRatesService(vatIndicator);
+
       FeeCalculationRequest feeCalculationRequest = buildRequestDesignated(feeCode, vatIndicator);
 
       FeeEntity feeEntity = FeeEntity.builder()
@@ -130,6 +133,8 @@ class DesignatedCourtFixedFeeCalculatorTest {
         double expectedTotal,
         double expectedVat
     ) {
+      mockVatRatesService(vatIndicator);
+
       FeeCalculationRequest feeCalculationRequest = buildRequestDesignated(feeCode, vatIndicator);
 
       FeeEntity feeEntity = FeeEntity.builder()

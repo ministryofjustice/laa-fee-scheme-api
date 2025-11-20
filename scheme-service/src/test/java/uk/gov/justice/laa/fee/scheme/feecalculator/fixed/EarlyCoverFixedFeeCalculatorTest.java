@@ -11,12 +11,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 @ExtendWith(MockitoExtension.class)
-class EarlyCoverFixedFeeCalculatorTest {
+class EarlyCoverFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @InjectMocks
   EarlyCoverFixedFeeCalculator earlyCoverFixedFeeCalculator;
@@ -30,6 +31,8 @@ class EarlyCoverFixedFeeCalculatorTest {
   })
   void calculate_shouldReturnFeeCalculationResponse(String feeCode, double fixedFees, boolean vatIndicator,
                                                     double expectedTotal, double expectedVat, String categoryType) {
+
+    mockVatRatesService(vatIndicator);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -51,6 +54,7 @@ class EarlyCoverFixedFeeCalculatorTest {
   }
 
   private void assertFeeCalculation(FeeCalculationResponse response, String feeCode, double fixedFees,
+
                                     double total, boolean vatIndicator, double vat) {
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo(feeCode);

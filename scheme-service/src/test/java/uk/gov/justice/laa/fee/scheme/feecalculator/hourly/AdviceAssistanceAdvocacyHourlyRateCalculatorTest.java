@@ -15,12 +15,13 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 @ExtendWith(MockitoExtension.class)
-class AdviceAssistanceAdvocacyHourlyRateCalculatorTest {
+class AdviceAssistanceAdvocacyHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
 
   @InjectMocks
   AdviceAssistanceAdvocacyHourlyRateCalculator adviceAssistanceAdvocacyHourlyRateCalculator;
@@ -58,6 +59,8 @@ class AdviceAssistanceAdvocacyHourlyRateCalculatorTest {
       double hourlyTotalAmount,
       double expectedTotal
   ) {
+
+    mockVatRatesService(vatIndicator);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)

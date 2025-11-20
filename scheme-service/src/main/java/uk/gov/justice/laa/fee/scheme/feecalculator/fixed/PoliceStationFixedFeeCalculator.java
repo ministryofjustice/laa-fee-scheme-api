@@ -4,9 +4,11 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_POLICE_SCH
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_POLICE_STATION_ID;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_POLICE_STATIONS_ESCAPE_THRESHOLD;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
+import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
@@ -28,12 +30,12 @@ import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
 import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
-import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.repository.PoliceStationFeesRepository;
+import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 /**
  * Calculate the police station fee for a given fee entity and fee data.
@@ -51,6 +53,8 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
   private static final String INVC = "INVC";
 
   private final PoliceStationFeesRepository policeStationFeesRepository;
+
+  private final VatRatesService vatRatesService;
 
   /**
    * Determines the calculation based on police fee code.
@@ -75,19 +79,24 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
 
     log.info("Calculate fixed fee and costs using police station fees entity");
 
-    BigDecimal fixedFee = policeStationFeesEntity.getFixedFee();
+    // Get fixed fee amount
+    BigDecimal fixedFeeAmount = defaultToZeroIfNull(policeStationFeesEntity.getFixedFee());
+
+    // Calculate VAT if applicable
+    LocalDate claimStartDate = getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
+    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatIndicator);
+    BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAmount, vatRate);
+
+    // Get disbursements
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    // Apply VAT where applicable
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    LocalDate claimStartDate = FeeCalculationUtil
-        .getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
-    BigDecimal calculatedVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
-
-    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee, calculatedVatAmount,
+    // Calculate total amount
+    BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount,
         requestedNetDisbursementAmount, disbursementVatAmount);
 
+    // Escape case logic
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     boolean isEscaped = isEscapedCase(totalAmount, policeStationFeesEntity.getEscapeThreshold());
 
@@ -105,13 +114,14 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
         .validationMessages(validationMessages)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
-            .vatIndicator(vatApplicable)
-            .vatRateApplied(toDoubleOrNull(getVatRateForDate(claimStartDate, vatApplicable)))
+            .vatIndicator(vatIndicator)
+            .vatRateApplied(toDoubleOrNull(vatRate))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
-            .fixedFeeAmount(toDouble(fixedFee)).build())
+            .fixedFeeAmount(toDouble(fixedFeeAmount))
+            .build())
         .build();
   }
 
@@ -120,16 +130,16 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
 
     log.info("Calculate fixed fee and costs using fee entity");
 
-    BigDecimal fixedFee = feeEntity.getFixedFee();
-    LocalDate claimStartDate = FeeCalculationUtil
-        .getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
+    // Get fixed fee amount
+    BigDecimal fixedFeeAmount = feeEntity.getFixedFee();
 
-    // Apply VAT where applicable
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
-    BigDecimal calculatedVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
+    // Calculate VAT if applicable
+    LocalDate claimStartDate = getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
+    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatIndicator);
+    BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAmount, vatRate);
 
-    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee, calculatedVatAmount);
+    BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount);
 
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
@@ -139,10 +149,10 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
         .escapeCaseFlag(false)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
-            .vatIndicator(vatApplicable)
-            .vatRateApplied(toDoubleOrNull(getVatRateForDate(claimStartDate, vatApplicable)))
-            .calculatedVatAmount(toDouble(fixedFeeVatAmount))
-            .fixedFeeAmount(toDouble(fixedFee))
+            .vatIndicator(vatIndicator)
+            .vatRateApplied(toDoubleOrNull(vatRate))
+            .calculatedVatAmount(toDouble(calculatedVatAmount))
+            .fixedFeeAmount(toDouble(fixedFeeAmount))
             .build()).build();
   }
 

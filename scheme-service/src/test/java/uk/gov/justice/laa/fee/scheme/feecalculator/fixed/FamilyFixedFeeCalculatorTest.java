@@ -20,13 +20,14 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
-class FamilyFixedFeeCalculatorTest {
+class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @InjectMocks
   FamilyFixedFeeCalculator familyFixedFeeCalculator;
@@ -36,7 +37,9 @@ class FamilyFixedFeeCalculatorTest {
       "false, 170.33", // No VAT
       "true, 180.33" // VAT applied
   })
-  void getFee_shouldReturnFeeCalculationResponse(boolean vatIndicator, double expectedTotal) {
+  void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double expectedTotal) {
+    mockVatRatesService(vatIndicator);
+
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("COM")
         .startDate(LocalDate.of(2025, 5, 12))
@@ -69,6 +72,8 @@ class FamilyFixedFeeCalculatorTest {
 
   @Test
   void should_returnValidationWarningMessageInResponse_when_total_fee_exceeds_escape_threshold_limit_for_family() {
+    mockVatRatesService(true);
+
     BigDecimal fixedFee = new BigDecimal("263.00");
     BigDecimal escapeThresoldLimit = new BigDecimal("550.00");
 

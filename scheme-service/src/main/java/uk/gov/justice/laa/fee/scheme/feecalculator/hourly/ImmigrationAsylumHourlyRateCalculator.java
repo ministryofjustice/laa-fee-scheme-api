@@ -12,6 +12,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRI
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.checkLimitAndCapIfExceeded;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.filterBoltOnFeeDetails;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
@@ -20,9 +21,11 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
@@ -30,27 +33,27 @@ import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.LimitContext;
-import uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
+import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 /**
  * Calculate the Immigration and Asylum hourly rate fee for a given fee entity and fee calculation request.
  */
 @Slf4j
 @Component
-public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
+@RequiredArgsConstructor
+public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
+
+  private final VatRatesService vatRatesService;
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of(); // Only used by ImmigrationAsylumFeeCalculator and not available via FeeCalculatorFactory
-  }
-
-  private ImmigrationAsylumHourlyRateCalculator() {
   }
 
   // Legal Help fee codes
@@ -91,7 +94,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
   /**
    * Calculate fee for Legal Help (IAXL, IMXL, IA100 fee codes).
    */
-  private static FeeCalculationResponse calculateFeeLegalHelp(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+  private FeeCalculationResponse calculateFeeLegalHelp(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     log.info("Calculate Immigration and Asylum (Legal Help) hourly rate fee");
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
@@ -125,16 +128,21 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
 
     checkFieldsAreEmpty(feeCalculationRequest, validationMessages);
 
+
+    // Calculate VAT if applicable
+    LocalDate startDate = feeCalculationRequest.getStartDate();
+    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatIndicator);
     // VAT is calculated on net profit costs only
-    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(netProfitCosts,
-        feeCalculationRequest.getStartDate(), feeCalculationRequest.getVatIndicator());
+    BigDecimal calculatedVatAmount = calculateVatAmount(netProfitCosts, vatRate);
 
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
+    // Calculate total amount
     BigDecimal totalAmount = feeTotal.add(calculatedVatAmount).add(disbursementVatAmount);
 
-    FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, calculatedVatAmount,
-        netDisbursementAmount, feeTotal, netProfitCosts, false, null);
+    FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, vatRate,
+        calculatedVatAmount, netDisbursementAmount, feeTotal, netProfitCosts, false, null);
 
     return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, validationMessages, feeCalculation);
   }
@@ -142,7 +150,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
   /**
    * Calculate fee for CLR (IAXC, IMXC, IRAR fee codes).
    */
-  private static FeeCalculationResponse calculateFeeClr(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+  private FeeCalculationResponse calculateFeeClr(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     log.info("Calculate Immigration and Asylum (CLR) hourly rate fee");
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
@@ -166,15 +174,20 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
 
     // VAT is calculated on net profit costs and net cost of counsel only
     BigDecimal feeWithoutDisbursements = netProfitCosts.add(netCostOfCounsel);
-    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(feeWithoutDisbursements,
-        feeCalculationRequest.getStartDate(), feeCalculationRequest.getVatIndicator());
+
+    // Calculate VAT if applicable
+    LocalDate startDate = feeCalculationRequest.getStartDate();
+    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatIndicator);
+    BigDecimal calculatedVatAmount = calculateVatAmount(feeWithoutDisbursements, vatRate);
 
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
+    // Calculate total amount
     BigDecimal totalAmount = feeTotal.add(calculatedVatAmount).add(disbursementVatAmount);
 
-    FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, calculatedVatAmount,
-        netDisbursementAmount, feeTotal, netProfitCosts, true, null);
+    FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, vatRate,
+        calculatedVatAmount, netDisbursementAmount, feeTotal, netProfitCosts, true, null);
 
     return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, validationMessages, feeCalculation);
   }
@@ -182,7 +195,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
   /**
    * Calculate fee for CLR Interim (IACD, IAMD fee codes).
    */
-  private static FeeCalculationResponse calculateFeeClrInterim(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+  private FeeCalculationResponse calculateFeeClrInterim(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     log.info("Calculate Immigration and Asylum (CLR Interim) hourly rate fee");
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
@@ -219,32 +232,37 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
 
     // VAT is calculated on net profit costs, net cost of counsel & bolt ons only
     BigDecimal feeWithoutDisbursements = netProfitCosts.add(netCostOfCounsel).add(boltsOnTotal);
-    BigDecimal calculatedVatAmount = VatUtil.getVatAmount(feeWithoutDisbursements,
-        feeCalculationRequest.getStartDate(), feeCalculationRequest.getVatIndicator());
+
+    // Calculate VAT if applicable
+    LocalDate startDate = feeCalculationRequest.getStartDate();
+    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatIndicator);
+    BigDecimal calculatedVatAmount = calculateVatAmount(feeWithoutDisbursements, vatRate);
 
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
+    // Calculate total amount
     BigDecimal totalAmount = feeTotalWithBoltsOn.add(calculatedVatAmount).add(disbursementVatAmount);
 
-    FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, calculatedVatAmount,
-        netDisbursementAmount, feeTotalWithBoltsOn, netProfitCosts, true, boltOnFeeDetails);
+    FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, vatRate,
+        calculatedVatAmount, netDisbursementAmount, feeTotalWithBoltsOn, netProfitCosts, true, boltOnFeeDetails);
 
     return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, validationMessages, feeCalculation);
   }
 
-  private static boolean isLegalHelp(String feeCode) {
+  private boolean isLegalHelp(String feeCode) {
     return IAXL.equals(feeCode) || IMXL.equals(feeCode) || IA100.equals(feeCode);
   }
 
-  private static boolean isClr(String feeCode) {
+  private boolean isClr(String feeCode) {
     return IAXC.equals(feeCode) || IMXC.equals(feeCode) || IRAR.equals(feeCode);
   }
 
-  private static boolean isClrInterim(String feeCode) {
+  private boolean isClrInterim(String feeCode) {
     return IACD.equals(feeCode) || IMCD.equals(feeCode);
   }
 
-  private static void checkFieldsAreEmpty(FeeCalculationRequest feeCalculationRequest,
+  private void checkFieldsAreEmpty(FeeCalculationRequest feeCalculationRequest,
                                           List<ValidationMessagesInner> validationMessages) {
     log.info("Check detention travel waiting and costs field is empty for fee calculation");
     checkFieldIsEmpty(feeCalculationRequest.getDetentionTravelAndWaitingCosts(), validationMessages,
@@ -255,14 +273,14 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
         WARN_IMM_ASYLM_JR_FORM_FILLING, "JR form filling not applicable for legal help");
   }
 
-  private static void checkFieldIsEmpty(Double value, List<ValidationMessagesInner> validationMessages,
+  private void checkFieldIsEmpty(Double value, List<ValidationMessagesInner> validationMessages,
                                         WarningType warning, String logMessage) {
     if (value != null) {
       validationMessages.add(buildValidationWarning(warning, logMessage));
     }
   }
 
-  private static FeeCalculationResponse buildFeeCalculationResponse(FeeCalculationRequest feeCalculationRequest,
+  private FeeCalculationResponse buildFeeCalculationResponse(FeeCalculationRequest feeCalculationRequest,
                                                                     FeeEntity feeEntity,
                                                                     List<ValidationMessagesInner> validationMessages,
                                                                     FeeCalculation feeCalculation) {
@@ -275,8 +293,9 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
         .build();
   }
 
-  private static FeeCalculation buildFeeCalculation(FeeCalculationRequest feeCalculationRequest,
+  private FeeCalculation buildFeeCalculation(FeeCalculationRequest feeCalculationRequest,
                                                     BigDecimal totalAmount,
+                                                    BigDecimal vatRate,
                                                     BigDecimal calculatedVatAmount,
                                                     BigDecimal disbursementAmount,
                                                     BigDecimal hourlyTotalAmount,
@@ -287,8 +306,7 @@ public final class ImmigrationAsylumHourlyRateCalculator implements FeeCalculato
     return FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
         .vatIndicator(feeCalculationRequest.getVatIndicator())
-        .vatRateApplied(toDoubleOrNull(VatUtil
-            .getVatRateForDate(feeCalculationRequest.getStartDate(), feeCalculationRequest.getVatIndicator())))
+        .vatRateApplied(toDoubleOrNull(vatRate))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(nonNull(feeCalculationRequest.getNetDisbursementAmount()) ? toDouble(disbursementAmount) : null)
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
