@@ -12,11 +12,14 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
+import uk.gov.justice.laa.fee.scheme.exception.CaseConcludedDateRequiredException;
+import uk.gov.justice.laa.fee.scheme.exception.StartDateRequiredException;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
@@ -102,8 +105,10 @@ public final class FeeCalculationUtil {
     return switch (claimStartDateType) {
       case REP_ORDER_DATE -> feeCalculationRequest.getRepresentationOrderDate();
       case UFN -> DateUtil.toLocalDate(Objects.requireNonNull(feeCalculationRequest.getUniqueFileNumber()));
-      case CASE_CONCLUDED_DATE -> feeCalculationRequest.getCaseConcludedDate();
-      default -> feeCalculationRequest.getStartDate();
+      case CASE_CONCLUDED_DATE -> Optional.ofNullable(feeCalculationRequest.getCaseConcludedDate())
+          .orElseThrow(() -> new CaseConcludedDateRequiredException(feeCalculationRequest.getFeeCode()));
+      default -> Optional.ofNullable(feeCalculationRequest.getStartDate())
+          .orElseThrow(() -> new StartDateRequiredException(feeCalculationRequest.getFeeCode()));
     };
   }
 

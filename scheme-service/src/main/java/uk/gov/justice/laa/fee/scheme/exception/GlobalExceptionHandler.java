@@ -61,6 +61,22 @@ public class GlobalExceptionHandler {
   }
 
   /**
+   * Global exception handler for startDate not provided exception.
+   */
+  @ExceptionHandler({StartDateRequiredException.class})
+  public ResponseEntity<ErrorResponse> handleStartDateNotProvided(StartDateRequiredException ex) {
+    return handleException(ex, HttpStatus.NOT_FOUND);
+  }
+
+  /**
+   * Global exception handler for caseConcludedDate not provided exception.
+   */
+  @ExceptionHandler({CaseConcludedDateRequiredException.class})
+  public ResponseEntity<ErrorResponse> handleCaseConcludedDateNotProvided(CaseConcludedDateRequiredException ex) {
+    return handleException(ex, HttpStatus.NOT_FOUND);
+  }
+
+  /**
    * Global exception handler for ValidationException exception.
    */
   @ExceptionHandler(ValidationException.class)

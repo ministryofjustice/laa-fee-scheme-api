@@ -122,4 +122,28 @@ class GlobalExceptionHandlerTest {
     assertThat(response.getBody().getStatus()).isEqualTo(500);
     assertThat(response.getBody().getMessage()).isEqualTo("some error");
   }
+
+  @Test
+  void handleStartDateNotProvided() {
+    StartDateRequiredException exception = new StartDateRequiredException("FEE123");
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleStartDateNotProvided(exception);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().getStatus()).isEqualTo(404);
+    assertThat(response.getBody().getMessage()).isEqualTo("Start Date is required for feeCode: FEE123");
+  }
+
+  @Test
+  void handleCaseConcludedDateNotProvided() {
+    CaseConcludedDateRequiredException exception = new CaseConcludedDateRequiredException("FEE123");
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleCaseConcludedDateNotProvided(exception);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().getStatus()).isEqualTo(404);
+    assertThat(response.getBody().getMessage()).isEqualTo("Case Concluded Date is required for feeCode: FEE123");
+  }
 }
