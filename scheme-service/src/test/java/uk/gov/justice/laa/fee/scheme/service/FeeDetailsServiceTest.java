@@ -44,7 +44,7 @@ class FeeDetailsServiceTest {
     when(feeCategoryMappingEntity.getFeeDescription()).thenReturn("Claims Against Public Authorities Legal Help Fixed Fee");
     when(feeCategoryMappingEntity.getFeeType()).thenReturn(feeType);
 
-    when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(any())).thenReturn(Optional.of(feeCategoryMappingEntity));
+    when(feeCategoryMappingRepository.findFirstByFee_FeeCode(any())).thenReturn(Optional.of(feeCategoryMappingEntity));
 
     FeeDetailsResponse response = feeDetailsService.getFeeDetails(feeCode);
 
@@ -57,7 +57,7 @@ class FeeDetailsServiceTest {
   void getFeeDetails_shouldReturnExceptionCategoryOfLawNotFound() {
     String feeCode = "FEE123";
 
-    when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(any())).thenReturn(Optional.empty());
+    when(feeCategoryMappingRepository.findFirstByFee_FeeCode(any())).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> feeDetailsService.getFeeDetails(feeCode))
         .isInstanceOf(CategoryCodeNotFoundException.class)
@@ -78,7 +78,7 @@ class FeeDetailsServiceTest {
     FeeCategoryMappingEntity feeCategoryMappingEntity = mock(FeeCategoryMappingEntity.class);
     when(feeCategoryMappingEntity.getCategoryOfLawType()).thenReturn(categoryOfLawType);
 
-    when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(feeCode)).thenReturn(Optional.of(feeCategoryMappingEntity));
+    when(feeCategoryMappingRepository.findFirstByFee_FeeCode(feeCode)).thenReturn(Optional.of(feeCategoryMappingEntity));
 
     CaseType result = feeDetailsService.getCaseType(feeCalculationRequest);
 
@@ -88,7 +88,7 @@ class FeeDetailsServiceTest {
   @Test
   void getCaseType_shouldThrowExceptionCategoryOfLawNotFound() {
     String feeCode = "FEE123";
-    when(feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(any())).thenReturn(Optional.empty());
+    when(feeCategoryMappingRepository.findFirstByFee_FeeCode(any())).thenReturn(Optional.empty());
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder().feeCode(feeCode).build();
 
     assertThatThrownBy(() -> feeDetailsService.getCaseType(feeCalculationRequest))

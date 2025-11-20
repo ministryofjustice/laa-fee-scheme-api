@@ -102,9 +102,7 @@ CREATE TABLE IF NOT EXISTS fee_scheme_category_type
 CREATE TABLE IF NOT EXISTS fee_category_mapping
 (
     id                          SERIAL PRIMARY KEY,
-    fee_code                    VARCHAR(10) NOT NULL UNIQUE,
-    fee_description             TEXT        NOT NULL,
-    fee_type                    VARCHAR(15) NOT NULL,
+    fee_id                      INT NOT NULL UNIQUE REFERENCES fee(fee_id),
     fee_scheme_category_type_id INT         NOT NULL REFERENCES fee_scheme_category_type (fee_scheme_category_type_id),
     category_of_law_type_id     INT         NOT NULL REFERENCES category_of_law_type (category_of_law_type_id)
 );

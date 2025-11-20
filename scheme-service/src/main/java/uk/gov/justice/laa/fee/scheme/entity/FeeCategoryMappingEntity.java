@@ -1,8 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -30,13 +28,6 @@ public class FeeCategoryMappingEntity {
   @Id
   private Long id;
 
-  private String feeCode;
-
-  private String feeDescription;
-
-  @Enumerated(EnumType.STRING)
-  private FeeType feeType;
-
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "fee_scheme_category_type_id")
   private FeeSchemeCategoryTypeEntity feeSchemeCategoryType;
@@ -45,4 +36,21 @@ public class FeeCategoryMappingEntity {
   @JoinColumn(name = "category_of_law_type_id")
   private CategoryOfLawTypeEntity categoryOfLawType;
 
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "fee_id")
+  private FeeEntity fee;
+
+  /**
+   * Getter for fee description.
+   */
+  public String getFeeDescription() {
+    return fee != null ? fee.getDescription() : null;
+  }
+
+  /**
+   * Getter for fee type.
+   */
+  public FeeType getFeeType() {
+    return fee != null ? fee.getFeeType() : null;
+  }
 }

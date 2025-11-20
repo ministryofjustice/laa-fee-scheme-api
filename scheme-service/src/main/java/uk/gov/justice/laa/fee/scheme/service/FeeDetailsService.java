@@ -59,12 +59,12 @@ public class FeeDetailsService {
   }
 
   private FeeCategoryMappingEntity getFeeCategoryMapping(FeeCalculationRequest feeCalculationRequest) {
-    return feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(feeCalculationRequest.getFeeCode())
+    return feeCategoryMappingRepository.findFirstByFee_FeeCode(feeCalculationRequest.getFeeCode())
         .orElseThrow(() -> new ValidationException(ERR_ALL_FEE_CODE, new FeeContext(feeCalculationRequest)));
   }
 
   private FeeCategoryMappingEntity getFeeCategoryMapping(String feeCode) {
-    return feeCategoryMappingRepository.findFeeCategoryMappingByFeeCode(feeCode)
+    return feeCategoryMappingRepository.findFirstByFee_FeeCode(feeCode)
         .orElseThrow(() -> new CategoryCodeNotFoundException(feeCode));
   }
 }

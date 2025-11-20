@@ -1,7 +1,7 @@
 -- 2013 SCHEME (IMM_ASYLM_FS2013)
 INSERT INTO fee
 (fee_code, description, fixed_fee, escape_threshold_limit, disbursement_limit,fee_scheme_code, category_type, ho_interview_bolt_on, adjorn_hearing_bolt_on, oral_cmrh_bolt_on, telephone_cmrh_bolt_on, substantive_hearing_bolt_on, fee_type)
-VALUES ('IACA', 'Asylum CLR Fixed Fee 2a', 227, 681, 600, 'IMM_ASYLM_FS2013', 'IMMIGRATION_ASYLUM', NULL, NULL, 166, 90, NULL, 'FIXED'),
+VALUES ('IACA', 'Standard Fee - Asylum CLR  (2a)', 227, 681, 600, 'IMM_ASYLM_FS2013', 'IMMIGRATION_ASYLUM', NULL, NULL, 166, 90, NULL, 'FIXED'),
        ('IACB', 'Asylum CLR Fixed Fee (2b + advocacy substantive hearing fee)', 869, 1701, 600, 'IMM_ASYLM_FS2013', 'IMMIGRATION_ASYLUM', NULL, 161, 166, 90, 302, 'FIXED'),
        ('IALB', 'Asylum LH Fixed Fee', 413, 1239, 400, 'IMM_ASYLM_FS2013', 'IMMIGRATION_ASYLUM', 266, NULL, NULL, NULL, NULL, 'FIXED'),
        ('IMCA', 'Immigration CLR Fixed Fee 2a', 227, 681, 600, 'IMM_ASYLM_FS2013', 'IMMIGRATION_ASYLUM', NULL, NULL, 166, 90, NULL, 'FIXED'),
@@ -17,7 +17,7 @@ VALUES ('IACA', 'Asylum CLR Fixed Fee 2a', 227, 681, 600, 'IMM_ASYLM_FS2013', 'I
 -- 2020 SCHEME (IMM_ASYLM_FS2020)
 INSERT INTO fee
 (fee_code, description, fixed_fee, escape_threshold_limit, disbursement_limit,fee_scheme_code, category_type, ho_interview_bolt_on, adjorn_hearing_bolt_on, oral_cmrh_bolt_on, telephone_cmrh_bolt_on, substantive_hearing_bolt_on, fee_type)
-VALUES ('IACA', 'Asylum CLR Fixed Fee 2a', 227, 681, 600, 'IMM_ASYLM_FS2020', 'IMMIGRATION_ASYLUM', NULL, NULL, 166, 90, 302, 'FIXED'),
+VALUES ('IACA', 'Standard Fee - Asylum CLR  (2a)', 227, 681, 600, 'IMM_ASYLM_FS2020', 'IMMIGRATION_ASYLUM', NULL, NULL, 166, 90, 302, 'FIXED'),
        ('IACB', 'Asylum CLR Fixed Fee (2b + advocacy substantive hearing fee)', 869, 1701, 600, 'IMM_ASYLM_FS2020', 'IMMIGRATION_ASYLUM', NULL, 161, 166, 90, 302, 'FIXED'),
        ('IACC', 'Asylum CLR (2c + advocacy substantive hearing fee)', 929, 1881, 600, 'IMM_ASYLM_FS2020', 'IMMIGRATION_ASYLUM', NULL, 161, 166, 90, 302, 'FIXED'),
        ('IALB', 'Asylum LH Fixed Fee', 413, 1239, 400, 'IMM_ASYLM_FS2020', 'IMMIGRATION_ASYLUM', 266, NULL, NULL, NULL, NULL, 'FIXED'),
