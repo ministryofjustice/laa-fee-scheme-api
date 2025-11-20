@@ -129,11 +129,11 @@ class EducationFeeCalculatorTest {
   @Test
   void calculate_shouldThrowIllegalStateException_whenFeeTypeIsHourly() {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode("EDUDIS")
+        .feeCode("EDUFIN")
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("EDUDIS")
+        .feeCode("EDUFIN")
         .feeType(HOURLY)
         .build();
 

@@ -88,7 +88,7 @@ class MentalHealthFeeCalculatorTest {
   void getFee_whenMentalHealthFeeDisbursement_shouldReturnFeeCalculationResponse() {
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode("EDUDIS")
+        .feeCode("MHLDIS")
         .startDate(LocalDate.of(2017, 7, 29))
         .vatIndicator(true)
         .netDisbursementAmount(50.50)
@@ -96,7 +96,7 @@ class MentalHealthFeeCalculatorTest {
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("EDUDIS")
+        .feeCode("MHLDIS")
         .feeScheme(FeeSchemesEntity.builder().schemeCode("MHL_FS2013").build())
         .categoryType(MENTAL_HEALTH)
         .feeType(DISB_ONLY)
@@ -108,7 +108,7 @@ class MentalHealthFeeCalculatorTest {
         .build();
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
-        .feeCode("EDUDIS")
+        .feeCode("MHLDIS")
         .schemeId("MHL_FS2013")
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
@@ -119,19 +119,19 @@ class MentalHealthFeeCalculatorTest {
     FeeCalculationResponse result = mentalHealthFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
     assertThat(result).isNotNull();
-    assertThat(result.getFeeCode()).isEqualTo("EDUDIS");
+    assertThat(result.getFeeCode()).isEqualTo("MHLDIS");
     assertThat(result.getFeeCalculation()).isNotNull();
     assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(311.32);
   }
 
   @Test
-  void calculate_shouldThrowIllegalStateException_whenFeeTypeIsDisbursementOnly() {
+  void calculate_shouldThrowIllegalStateException_whenFeeTypeIsHourlyRate() {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode("EDUDIS")
+        .feeCode("MHL03")
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("EDUDIS")
+        .feeCode("MHL03")
         .feeType(HOURLY)
         .build();
 

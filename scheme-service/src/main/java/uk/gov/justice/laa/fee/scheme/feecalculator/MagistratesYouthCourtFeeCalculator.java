@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.enums.CourtDesignationType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.DesignatedCourtFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.UndesignatedCourtFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -39,8 +38,8 @@ public class MagistratesYouthCourtFeeCalculator implements FeeCalculator {
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
     return switch (feeEntity.getCourtDesignationType()) {
-      case CourtDesignationType.DESIGNATED -> designatedCourtFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
-      case CourtDesignationType.UNDESIGNATED  -> undesignatedCourtFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+      case DESIGNATED -> designatedCourtFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+      case UNDESIGNATED -> undesignatedCourtFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
     };
   }
 
