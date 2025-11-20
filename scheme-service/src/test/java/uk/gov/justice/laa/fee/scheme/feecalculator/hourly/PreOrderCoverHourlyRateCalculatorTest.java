@@ -18,12 +18,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
+import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 @ExtendWith(MockitoExtension.class)
-class PreOrderCoverHourlyRateCalculatorTest {
+class PreOrderCoverHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
 
   @InjectMocks
   PreOrderCoverHourlyRateCalculator preOrderCoverHourlyRateCalculator;
@@ -110,6 +111,8 @@ class PreOrderCoverHourlyRateCalculatorTest {
           .hasFieldOrPropertyWithValue("error", ERR_CRIME_PREORDER_COVER_UPPER_LIMIT)
           .hasMessageContaining(ERR_CRIME_PREORDER_COVER_UPPER_LIMIT.getMessage());
     } else {
+      mockVatRatesService(vatIndicator);
+
       FeeCalculationResponse response = preOrderCoverHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
       FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
           .feeCode(feeCode)

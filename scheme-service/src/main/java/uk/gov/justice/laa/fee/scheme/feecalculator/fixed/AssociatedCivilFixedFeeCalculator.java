@@ -2,8 +2,10 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -14,23 +16,27 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
-import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
+import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 /**
  * Calculate the Associated Civil Work fee for a given fee entity and fee calculation request.
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
+
+  private final VatRatesService vatRatesService;
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -41,6 +47,7 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
    * Calculated fee based on the provided fee entity and fee calculation request.
    *
    * @param feeCalculationRequest the request containing fee calculation data
+   * @param feeEntity             the fee entity containing fee details
    * @return FeeCalculationResponse with calculated fee
    */
   @Override
@@ -48,17 +55,22 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
 
     log.info("Calculate Associated Civil fixed fee");
 
-    // Fixed fee calculation
-    BigDecimal fixedFee = defaultToZeroIfNull(feeEntity.getFixedFee());
-    LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(CategoryType.ASSOCIATED_CIVIL, feeCalculationRequest);
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
+    // Get fixed fee amount
+    BigDecimal fixedFeeAmount = defaultToZeroIfNull(feeEntity.getFixedFee());
 
-    BigDecimal calculatedVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
+    // Calculate VAT if applicable
+    LocalDate claimStartDate = getFeeClaimStartDate(CategoryType.ASSOCIATED_CIVIL, feeCalculationRequest);
+    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatIndicator);
+    BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAmount, vatRate);
+
+    // Get disbursements
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(fixedFee,
-        calculatedVatAmount, netDisbursementAmount, disbursementVatAmount);
+    // Calculate total amount
+    BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount,
+        netDisbursementAmount, disbursementVatAmount);
 
     // Escape case logic
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
@@ -70,7 +82,7 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
         .add(netWaitingCosts);
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    boolean isEscaped = FeeCalculationUtil.isEscapedCase(feeTotal, feeEntity.getEscapeThresholdLimit());
+    boolean isEscaped = isEscapedCase(feeTotal, feeEntity.getEscapeThresholdLimit());
 
     if (isEscaped) {
       validationMessages.add(buildValidationWarning(WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD,
@@ -86,13 +98,13 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
         .escapeCaseFlag(isEscaped)
         .feeCalculation(FeeCalculation.builder()
             .totalAmount(toDouble(totalAmount))
-            .vatIndicator(vatApplicable)
-            .vatRateApplied(toDoubleOrNull(getVatRateForDate(claimStartDate, vatApplicable)))
+            .vatIndicator(vatIndicator)
+            .vatRateApplied(toDoubleOrNull(vatRate))
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
-            .fixedFeeAmount(toDouble(fixedFee))
+            .fixedFeeAmount(toDouble(fixedFeeAmount))
             .build())
         .build();
   }

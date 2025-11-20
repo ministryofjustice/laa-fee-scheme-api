@@ -1,9 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MEDIATION;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.VatUtil.getVatRateForDate;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
@@ -11,6 +11,7 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
@@ -22,13 +23,17 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 /**
  * Calculate the mediation fee for a given fee entity and fee data.
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class MediationFixedFeeCalculator implements FeeCalculator {
+
+  private final VatRatesService vatRatesService;
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -58,7 +63,7 @@ public class MediationFixedFeeCalculator implements FeeCalculator {
   /**
    * Gets fixed fee depending on number if mediation sessions.
    */
-  private static FeeCalculationResponse getCalculationWithMediationSessions(FeeEntity feeEntity,
+  private FeeCalculationResponse getCalculationWithMediationSessions(FeeEntity feeEntity,
                                                                             FeeCalculationRequest feeCalculationRequest) {
     log.info("Check numberOfMediationSessions is valid");
     Integer numberOfMediationSessions = feeCalculationRequest.getNumberOfMediationSessions();
@@ -72,22 +77,22 @@ public class MediationFixedFeeCalculator implements FeeCalculator {
     return calculateMediation(baseFee, feeCalculationRequest, feeEntity);
   }
 
-  private static FeeCalculationResponse calculateMediation(BigDecimal fixedFee, FeeCalculationRequest feeCalculationRequest,
+  private FeeCalculationResponse calculateMediation(BigDecimal fixedFeeAmount, FeeCalculationRequest feeCalculationRequest,
                                                            FeeEntity feeEntity) {
 
     log.info("Get fields from fee calculation request");
-    Boolean vatApplicable = feeCalculationRequest.getVatIndicator();
-    LocalDate claimStartDate = getFeeClaimStartDate(feeEntity.getCategoryType(), feeCalculationRequest);
 
-    BigDecimal fixedFeeVatAmount = getVatAmount(fixedFee, claimStartDate, vatApplicable);
+    // Calculate VAT if applicable
+    LocalDate claimStartDate = getFeeClaimStartDate(feeEntity.getCategoryType(), feeCalculationRequest);
+    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatIndicator);
+    BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAmount, vatRate);
+
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    log.info("Calculate total fee amount with any disbursements, and VAT where applicable");
-    BigDecimal finalTotal = fixedFee
-        .add(fixedFeeVatAmount)
-        .add(netDisbursementAmount)
-        .add(disbursementVatAmount);
+    BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount,
+        netDisbursementAmount, disbursementVatAmount);
 
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
@@ -96,14 +101,14 @@ public class MediationFixedFeeCalculator implements FeeCalculator {
         .claimId(feeCalculationRequest.getClaimId())
         .escapeCaseFlag(false)
         .feeCalculation(FeeCalculation.builder()
-            .totalAmount(toDouble(finalTotal))
-            .vatIndicator(vatApplicable)
-            .vatRateApplied(toDoubleOrNull(getVatRateForDate(claimStartDate, vatApplicable)))
-            .calculatedVatAmount(toDouble(fixedFeeVatAmount))
+            .totalAmount(toDouble(totalAmount))
+            .vatIndicator(vatIndicator)
+            .vatRateApplied(toDoubleOrNull(vatRate))
+            .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
-            .fixedFeeAmount(toDouble(fixedFee))
+            .fixedFeeAmount(toDouble(fixedFeeAmount))
             .build())
         .build();
   }

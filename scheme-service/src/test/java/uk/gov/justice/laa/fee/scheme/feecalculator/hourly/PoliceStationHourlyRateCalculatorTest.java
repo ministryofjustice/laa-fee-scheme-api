@@ -21,13 +21,14 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
-class PoliceStationHourlyRateCalculatorTest {
+class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
 
   private static final String FEE_CODE = "INVM";
   private static final String FEE_SCHEME_CODE = "POL_2023";
@@ -41,7 +42,7 @@ class PoliceStationHourlyRateCalculatorTest {
   public static Stream<Arguments> testPoliceOtherData() {
     return Stream.of(
         arguments("INVM Police Fee Code, VAT applied", true, 232.72,
-            27.01,  135.06),
+            27.01, 135.06),
         arguments("INVM Police Fee Code, VAT applied", false, 205.71,
             0, 135.06)
     );
@@ -65,6 +66,8 @@ class PoliceStationHourlyRateCalculatorTest {
       double expectedCalculatedVat,
       double expectedHourlyTotalAmount
   ) {
+
+    mockVatRatesService(vatIndicator);
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(FEE_CODE)
@@ -127,6 +130,8 @@ class PoliceStationHourlyRateCalculatorTest {
       double expectedCalculatedVat,
       double expectedHourlyTotalAmount
   ) {
+
+    mockVatRatesService(vatIndicator);
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(FEE_CODE)
@@ -192,5 +197,4 @@ class PoliceStationHourlyRateCalculatorTest {
 
     assertThat(result).isEmpty();
   }
-
 }

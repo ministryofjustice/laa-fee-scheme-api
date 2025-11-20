@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -28,7 +29,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
-class MentalHealthFixedFeeCalculatorTest {
+class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @InjectMocks
   MentalHealthFixedFeeCalculator mentalhealthFixedFeeCalculator;
@@ -132,6 +133,8 @@ class MentalHealthFixedFeeCalculatorTest {
         double expectedTotal
     ) {
 
+      mockVatRatesService(vatIndicator);
+
       FeeCalculationRequest feeData = buildFeeCalculationRequest(feeCode, vatIndicator, boltOnNumber, null);
       FeeEntity feeEntity = buildFeeEntity(feeCode, fixedFee, null);
 
@@ -196,6 +199,8 @@ class MentalHealthFixedFeeCalculatorTest {
         boolean hasWarning,
         Double escapeThresholdLimit
     ) {
+
+      mockVatRatesService(vatIndicator);
 
       FeeCalculationRequest feeData = buildFeeCalculationRequest(feeCode, vatIndicator, boltOnNumber, requestedNetProfitCosts);
       FeeEntity feeEntity = buildFeeEntity(feeCode, fixedFee, escapeThresholdLimit);

@@ -27,13 +27,14 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
-class OtherCivilFixedFeeCalculatorTest {
+class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @InjectMocks
   OtherCivilFixedFeeCalculator feeCalculator;
@@ -47,6 +48,8 @@ class OtherCivilFixedFeeCalculatorTest {
   })
   void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double netProfitCosts,
                                                     double expectedTotal, double expectedVat) {
+
+    mockVatRatesService(vatIndicator);
 
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts);
     FeeEntity feeEntity = buildFeeEntity();
@@ -63,6 +66,8 @@ class OtherCivilFixedFeeCalculatorTest {
   })
   void calculate_shouldReturnFeeCalculationResponseWithWarning(boolean vatIndicator, double netProfitCosts,
                                                                double expectedTotal, double expectedVat) {
+
+    mockVatRatesService(vatIndicator);
 
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts);
     FeeEntity feeEntity = buildFeeEntity();
@@ -85,6 +90,8 @@ class OtherCivilFixedFeeCalculatorTest {
 
   @Test
   void calculate_givenInvalidCategoryThrowsException() {
+
+    mockVatRatesService(true);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("FEE123")
