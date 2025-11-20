@@ -16,8 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
-import uk.gov.justice.laa.fee.scheme.enums.CourtDesignationType;
-import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -31,16 +29,6 @@ import uk.gov.justice.laa.fee.scheme.util.DateUtil;
 public final class FeeCalculationUtil {
 
   private FeeCalculationUtil() {
-  }
-
-  /**
-   * Check if the fee type is FIXED.
-   *
-   * @param feeType the fee type to check
-   * @return true if the fee type is FIXED, false otherwise
-   */
-  public static boolean isFixedFee(FeeType feeType) {
-    return feeType == FeeType.FIXED;
   }
 
   /**
@@ -197,16 +185,6 @@ public final class FeeCalculationUtil {
       return null;
     }
     return boltOnFeeDetails;
-  }
-
-  /**
-   * Check if the court type is Designated.
-   *
-   * @param courtDesignationType the court type to check
-   * @return true if the court Designation Type is DESIGNATED, false otherwise
-   */
-  public static boolean isCourtDesignated(CourtDesignationType courtDesignationType) {
-    return courtDesignationType == CourtDesignationType.DESIGNATED;
   }
 
 }

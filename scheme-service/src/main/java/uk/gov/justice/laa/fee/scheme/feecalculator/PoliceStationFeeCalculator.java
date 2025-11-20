@@ -1,12 +1,11 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isFixedFee;
-
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.PoliceStationFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.PoliceStationHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -34,11 +33,13 @@ public class PoliceStationFeeCalculator implements FeeCalculator {
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    if (isFixedFee(feeEntity.getFeeType())) {
-      return policeStationFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
-    } else {
-      return policeStationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
-    }
+    return switch (feeEntity.getFeeType()) {
+      case FeeType.FIXED -> policeStationFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+      case FeeType.HOURLY -> policeStationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
+      case FeeType.DISB_ONLY ->
+          throw new UnsupportedOperationException("Disbursement only fee is not supported for Police Station category.");
+    };
+
   }
 
 }

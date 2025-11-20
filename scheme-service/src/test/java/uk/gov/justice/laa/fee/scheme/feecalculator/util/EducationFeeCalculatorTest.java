@@ -1,11 +1,13 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.EDUCATION;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MENTAL_HEALTH;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.DISB_ONLY;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
+import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -125,10 +127,25 @@ class EducationFeeCalculatorTest {
   }
 
   @Test
+  void calculate_shouldThrowIllegalStateException_whenFeeTypeIsHourly() {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("EDUFIN")
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("EDUFIN")
+        .feeType(HOURLY)
+        .build();
+
+    assertThatThrownBy(() -> educationFeeCalculator.calculate(feeCalculationRequest, feeEntity))
+        .isInstanceOf(UnsupportedOperationException.class)
+        .hasMessage("Hourly rate fee is not supported for Education category.");
+  }
+
+  @Test
   void getSupportedCategories_shouldReturnEducationCategory() {
     Set<CategoryType> result = educationFeeCalculator.getSupportedCategories();
 
     assertThat(result).isEqualTo(Set.of(EDUCATION));
   }
-
 }
