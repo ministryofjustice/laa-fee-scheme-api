@@ -1,17 +1,17 @@
 -- Fee Scheme for 2016 'Advocacy Assistance in the Crown Court or Appeals & Reviews' category
 INSERT INTO fee
-(fee_code, description, upper_cost_limit, category_type, fee_type, fee_scheme_code)
+(fee_code, upper_cost_limit, fee_scheme_code)
 VALUES
-    ('PROH', 'Advocacy Assistance in the Crown Court', 1368.75, 'ADVOCACY_APPEALS_REVIEWS', 'HOURLY', 'AAR_FS2016'),
-    ('APPA', 'Advice and assistance in relation to an appeal (except CCRC)', 273.75, 'ADVOCACY_APPEALS_REVIEWS', 'HOURLY', 'AAR_FS2016'),
-    ('APPB', 'Advice and assistance in relation to CCRC application', 456.25, 'ADVOCACY_APPEALS_REVIEWS', 'HOURLY', 'AAR_FS2016')
+    ('PROH', 1368.75, 'AAR_FS2016'),
+    ('APPA', 273.75, 'AAR_FS2016'),
+    ('APPB', 456.25, 'AAR_FS2016')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
 -- Fee Scheme for 2022 'Advocacy Assistance in the Crown Court or Appeals & Reviews' category
 INSERT INTO fee
-(fee_code, description, upper_cost_limit, category_type, fee_type, fee_scheme_code)
+(fee_code, upper_cost_limit, fee_scheme_code)
 VALUES
-    ('PROH', 'Advocacy Assistance in the Crown Court', 1574.06, 'ADVOCACY_APPEALS_REVIEWS', 'HOURLY', 'AAR_FS2022'),
-    ('APPA', 'Advice and assistance in relation to an appeal (except CCRC)', 314.81, 'ADVOCACY_APPEALS_REVIEWS', 'HOURLY', 'AAR_FS2022'),
-    ('APPB', 'Advice and assistance in relation to CCRC application', 524.69, 'ADVOCACY_APPEALS_REVIEWS', 'HOURLY', 'AAR_FS2022')
+    ('PROH', 1574.06, 'AAR_FS2022'),
+    ('APPA', 314.81, 'AAR_FS2022'),
+    ('APPB', 524.69, 'AAR_FS2022')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
