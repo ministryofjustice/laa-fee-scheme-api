@@ -8,6 +8,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVICE_ASSISTANCE_ADVOCACY;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MEDIATION;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 
 import java.math.BigDecimal;
@@ -26,6 +27,8 @@ import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.LimitType;
+import uk.gov.justice.laa.fee.scheme.exception.CaseConcludedDateRequiredException;
+import uk.gov.justice.laa.fee.scheme.exception.StartDateRequiredException;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
@@ -242,5 +245,25 @@ class FeeCalculationUtilTest {
         .disbursementVatAmount(20.15)
         .representationOrderDate(LocalDate.of(2023, 12, 12))
         .build();
+  }
+
+  @Test
+  void shouldThrowException_ifStartDateIsNull() {
+    FeeCalculationRequest request = getFeeCalculationRequest();
+    request.setStartDate(null);
+
+    assertThrows(StartDateRequiredException.class, () ->
+        FeeCalculationUtil.getFeeClaimStartDate(MEDIATION, request)
+    );
+  }
+
+  @Test
+  void shouldThrowException_ifCaseConcludedDateIsNull() {
+    FeeCalculationRequest request = getFeeCalculationRequest();
+    request.setCaseConcludedDate(null);
+
+    assertThrows(CaseConcludedDateRequiredException.class, () ->
+        FeeCalculationUtil.getFeeClaimStartDate(ADVICE_ASSISTANCE_ADVOCACY, request)
+    );
   }
 }
