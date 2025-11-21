@@ -279,7 +279,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
                 {
                   "feeCode": "IMXL",
                   "claimId": "claim_123",
-                  "startDate": "2015-02-11",
+                  "startDate": "2024-02-11",
                   "netProfitCosts": 116.89,
                   "netDisbursementAmount": 125.70,
                   "disbursementVatAmount": 25.14,
@@ -292,7 +292,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         .andExpect(content().json("""
             {
               "feeCode": "IMXL",
-              "schemeId": "IMM_ASYLM_FS2013",
+              "schemeId": "IMM_ASYLM_FS2023",
               "claimId": "claim_123",
               "feeCalculation": {
                 "totalAmount": 291.11,
@@ -320,7 +320,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
                 {
                   "feeCode": "IAXC",
                   "claimId": "claim_123",
-                  "startDate": "2015-02-11",
+                  "startDate": "2024-02-11",
                   "netProfitCosts": 116.89,
                   "netCostOfCounsel": 356.90,
                   "netDisbursementAmount": 125.70,
@@ -334,7 +334,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         .andExpect(content().json("""
             {
               "feeCode": "IAXC",
-              "schemeId": "IMM_ASYLM_FS2013",
+              "schemeId": "IMM_ASYLM_FS2023",
               "claimId": "claim_123",
               "feeCalculation": {
                 "totalAmount": 719.39,
