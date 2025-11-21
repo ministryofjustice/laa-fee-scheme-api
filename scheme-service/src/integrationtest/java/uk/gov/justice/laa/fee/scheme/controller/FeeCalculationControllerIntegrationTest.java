@@ -658,7 +658,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
               "schemeId": "POL_FS2022",
               "claimId": "claim_123",
               "feeCalculation": {
-                  "totalAmount": 208.72,
+                  "totalAmount": 158.22,
                   "vatIndicator": true,
                   "vatRateApplied": 20.0,
                   "calculatedVatAmount": 23.01,

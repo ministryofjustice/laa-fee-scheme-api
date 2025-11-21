@@ -6,6 +6,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_POLICE_OTHER_
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -32,60 +33,158 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
 
   private static final String FEE_CODE = "INVM";
   private static final String FEE_SCHEME_CODE = "POL_2023";
-  private static final String POLICE_STATION_ID = "NE024";
-  private static final String POLICE_STATION_SCHEME_ID = "1007";
   private static final String UFN = "041223/665";
 
   @InjectMocks
   PoliceStationHourlyRateCalculator policeStationHourlyRateCalculator;
 
+
   public static Stream<Arguments> testPoliceOtherData() {
+
+    LocalDate start2016 = LocalDate.of(2016, 4, 15);
+    LocalDate start2021 = LocalDate.of(2021, 7, 10);
+    LocalDate start2022 = LocalDate.of(2022, 5, 20);
+
     return Stream.of(
-        arguments("INVM Police Fee Code, VAT applied", true, 232.72,
-            27.01, 135.06),
-        arguments("INVM Police Fee Code, VAT applied", false, 205.71,
-            0, 135.06)
+
+        // ---------- INVA ----------
+        arguments("INVA, VAT applied", "INVA", true,
+            start2016, "POL_FS2016",
+            100.0, 60.0, 12.0, 20.0, 10.0,
+            240.0, 38.0, 190.0),
+
+        arguments("INVA, VAT NOT applied", "INVA", false,
+            start2022, "POL_FS2022",
+            100.0, 60.0, 12.0, 20.0, 10.0,
+            202.0, 0.0, 190.0),
+
+        // ---------- INVE ----------
+        arguments("INVE, VAT applied", "INVE", true,
+            start2016, "POL_FS2016",
+            140.0, 70.0, 14.0, 15.0, 8.0,
+            293.6, 46.6, 233.0),
+
+        arguments("INVE, VAT NOT applied", "INVE", false,
+            start2022, "POL_FS2022",
+            140.0, 70.0, 14.0, 15.0, 8.0,
+            247.0, 0.0, 233.0),
+
+        // ---------- INVH ----------
+        arguments("INVH, VAT applied", "INVH", true,
+            start2016, "POL_FS2016",
+            160.0, 85.0, 17.0, 22.0, 6.0,
+            344.6, 54.6, 273.0),
+
+        arguments("INVH, VAT NOT applied", "INVH", false,
+            start2022, "POL_FS2022",
+            160.0, 85.0, 17.0, 22.0, 6.0,
+            290.0, 0.0, 273.0),
+
+        // ---------- INVK ----------
+        arguments("INVK, VAT applied", "INVK", true,
+            start2016, "POL_FS2016",
+            130.0, 75.0, 15.0, 18.0, 7.0,
+            291.0, 46.0, 230.0),
+
+        arguments("INVK, VAT NOT applied", "INVK", false,
+            start2022, "POL_FS2022",
+            130.0, 75.0, 15.0, 18.0, 7.0,
+            245.0, 0.0, 230.0),
+
+        // ---------- INVL ----------
+        arguments("INVL, VAT applied", "INVL", true,
+            start2016, "POL_FS2016",
+            180.0, 95.0, 19.0, 20.0, 11.0,
+            386.2, 61.2, 306.0),
+
+        arguments("INVL, VAT NOT applied", "INVL", false,
+            start2022, "POL_FS2022",
+            180.0, 95.0, 19.0, 20.0, 11.0,
+            325.0, 0.0, 306.0),
+
+        // ---------- INVM (Special Schemes Only) ----------
+        arguments("INVM, VAT applied (FS2021)", "INVM", true,
+            start2021, "POL_FS2021",
+            150.0, 110.0, 22.0, 19.0, 9.0,
+            367.6, 57.6, 288.0),
+
+        arguments("INVM, VAT NOT applied (FS2022)", "INVM", false,
+            start2022, "POL_FS2022",
+            150.0, 110.0, 22.0, 19.0, 9.0,
+            310.0, 0.0, 288.0)
     );
   }
 
+
+
   private static Arguments arguments(String testDescription,
+                                     String feeCode,
                                      boolean vatIndicator,
+                                     LocalDate startDate,
+                                     String feeSchemeCode,
+                                     double netProfitCosts,
+                                     double disbursementAmount,
+                                     double disbursementVatAmount,
+                                     double netTravelCosts,
+                                     double netWaitingCosts,
                                      double expectedTotal,
                                      double expectedCalculatedVat,
                                      double expectedHourlyTotalAmount) {
-    return Arguments.of(testDescription, vatIndicator,
-        expectedTotal, expectedCalculatedVat, expectedHourlyTotalAmount);
+
+    return Arguments.of(
+        testDescription,
+        feeCode,
+        vatIndicator,
+        startDate,
+        feeSchemeCode,
+        netProfitCosts,
+        disbursementAmount,
+        disbursementVatAmount,
+        netTravelCosts,
+        netWaitingCosts,
+        expectedTotal,
+        expectedCalculatedVat,
+        expectedHourlyTotalAmount
+    );
   }
+
 
   @ParameterizedTest
   @MethodSource("testPoliceOtherData")
   void test_whenPoliceStation_shouldReturnFee(
       String description,
-      boolean vatIndicator,
+      String feeCode,
+      boolean inputVatIndicator,
+      LocalDate startDate,
+      String feeSchemeCode,
+      double inputNetProfitCosts,
+      double inputDisbursementAmount,
+      double inputDisbursementVatAmount,
+      double inputNetTravelCosts,
+      double inputNetWaitingCosts,
       double expectedTotal,
       double expectedCalculatedVat,
       double expectedHourlyTotalAmount
   ) {
 
-    mockVatRatesService(vatIndicator);
+    mockVatRatesService(inputVatIndicator);
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
-        .feeCode(FEE_CODE)
-        .vatIndicator(vatIndicator)
-        .policeStationSchemeId(POLICE_STATION_SCHEME_ID)
-        .policeStationId(POLICE_STATION_ID)
-        .netDisbursementAmount(50.50)
-        .disbursementVatAmount(20.15)
-        .netTravelCosts(30.00)
-        .netWaitingCosts(20.00)
+        .feeCode(feeCode)
+        .startDate(startDate)
+        .vatIndicator(inputVatIndicator)
+        .netProfitCosts(inputNetProfitCosts)
+        .netDisbursementAmount(inputDisbursementAmount)
+        .disbursementVatAmount(inputDisbursementVatAmount)
+        .netTravelCosts(inputNetTravelCosts)
+        .netWaitingCosts(inputNetWaitingCosts)
         .uniqueFileNumber(UFN)
-        .netProfitCosts(34.56)
         .build();
 
-    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(FEE_SCHEME_CODE).build();
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
 
     FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode(FEE_CODE)
+        .feeCode(feeCode)
         .feeScheme(feeSchemesEntity)
         .upperCostLimit(BigDecimal.valueOf(100000.00))
         .categoryType(POLICE_STATION)
@@ -96,22 +195,22 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(expectedTotal)
-        .vatIndicator(vatIndicator)
-        .vatRateApplied(vatIndicator ? 20.0 : null)
-        .disbursementAmount(50.5)
-        .requestedNetDisbursementAmount(50.5)
-        .disbursementVatAmount(20.15)
+        .vatIndicator(inputVatIndicator)
+        .vatRateApplied(inputVatIndicator ? 20.0 : null)
+        .disbursementAmount(inputDisbursementAmount)
+        .requestedNetDisbursementAmount(inputDisbursementAmount)
+        .disbursementVatAmount(inputDisbursementVatAmount)
         .calculatedVatAmount(expectedCalculatedVat)
-        .netProfitCostsAmount(34.56)
-        .requestedNetProfitCostsAmount(34.56)
+        .netProfitCostsAmount(inputNetProfitCosts)
+        .requestedNetProfitCostsAmount(inputNetProfitCosts)
         .hourlyTotalAmount(expectedHourlyTotalAmount)
-        .netTravelCostsAmount(30.00)
-        .netWaitingCostsAmount(20.00)
+        .netTravelCostsAmount(inputNetTravelCosts)
+        .netWaitingCostsAmount(inputNetWaitingCosts)
         .build();
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
-        .feeCode(FEE_CODE)
-        .schemeId(FEE_SCHEME_CODE)
+        .feeCode(feeCode)
+        .schemeId(feeSchemeCode)
         .validationMessages(new ArrayList<>())
         .feeCalculation(expectedCalculation)
         .build();
@@ -125,31 +224,38 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
   @MethodSource("testPoliceOtherData")
   void test_whenPoliceStation_shouldReturnFeeWithWarning(
       String description,
-      boolean vatIndicator,
+      String feeCode,
+      boolean inputVatIndicator,
+      LocalDate startDate,
+      String feeSchemeCode,
+      double inputNetProfitCosts,
+      double inputDisbursementAmount,
+      double inputDisbursementVatAmount,
+      double inputNetTravelCosts,
+      double inputNetWaitingCosts,
       double expectedTotal,
       double expectedCalculatedVat,
       double expectedHourlyTotalAmount
   ) {
 
-    mockVatRatesService(vatIndicator);
+    mockVatRatesService(inputVatIndicator);
 
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
-        .feeCode(FEE_CODE)
-        .vatIndicator(vatIndicator)
-        .policeStationSchemeId(POLICE_STATION_SCHEME_ID)
-        .policeStationId(POLICE_STATION_ID)
-        .netDisbursementAmount(50.50)
-        .disbursementVatAmount(20.15)
-        .netTravelCosts(30.00)
-        .netWaitingCosts(20.00)
+        .feeCode(feeCode)
+        .startDate(startDate)
+        .vatIndicator(inputVatIndicator)
+        .netProfitCosts(inputNetProfitCosts)
+        .netDisbursementAmount(inputDisbursementAmount)
+        .disbursementVatAmount(inputDisbursementVatAmount)
+        .netTravelCosts(inputNetTravelCosts)
+        .netWaitingCosts(inputNetWaitingCosts)
         .uniqueFileNumber(UFN)
-        .netProfitCosts(34.56)
         .build();
 
-    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(FEE_SCHEME_CODE).build();
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
 
     FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode(FEE_CODE)
+        .feeCode(feeCode)
         .feeScheme(feeSchemesEntity)
         .upperCostLimit(new BigDecimal("25.0"))
         .categoryType(POLICE_STATION)
@@ -160,17 +266,17 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
         .totalAmount(expectedTotal)
-        .vatIndicator(vatIndicator)
-        .vatRateApplied(vatIndicator ? 20.0 : null)
-        .disbursementAmount(50.5)
-        .requestedNetDisbursementAmount(50.5)
-        .disbursementVatAmount(20.15)
+        .vatIndicator(inputVatIndicator)
+        .vatRateApplied(inputVatIndicator ? 20.0 : null)
+        .disbursementAmount(inputDisbursementAmount)
+        .requestedNetDisbursementAmount(inputDisbursementAmount)
+        .disbursementVatAmount(inputDisbursementVatAmount)
         .calculatedVatAmount(expectedCalculatedVat)
-        .netProfitCostsAmount(34.56)
-        .requestedNetProfitCostsAmount(34.56)
+        .netProfitCostsAmount(inputNetProfitCosts)
+        .requestedNetProfitCostsAmount(inputNetProfitCosts)
         .hourlyTotalAmount(expectedHourlyTotalAmount)
-        .netTravelCostsAmount(30.00)
-        .netWaitingCostsAmount(20.00)
+        .netTravelCostsAmount(inputNetTravelCosts)
+        .netWaitingCostsAmount(inputNetWaitingCosts)
         .build();
     ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
         .code(WARN_POLICE_OTHER_UPPER_LIMIT.getCode())
@@ -179,8 +285,8 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .build();
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
-        .feeCode(FEE_CODE)
-        .schemeId(FEE_SCHEME_CODE)
+        .feeCode(feeCode)
+        .schemeId(feeSchemeCode)
         .validationMessages(List.of(validationMessage))
         .feeCalculation(expectedCalculation)
         .build();
