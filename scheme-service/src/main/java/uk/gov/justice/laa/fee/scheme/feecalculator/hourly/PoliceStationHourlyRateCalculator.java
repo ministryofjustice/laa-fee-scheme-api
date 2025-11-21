@@ -2,7 +2,6 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_POLICE_OTHER_UPPER_LIMIT;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
@@ -81,8 +80,7 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
     // Calculate total amount
-    BigDecimal totalAmount = calculateTotalAmount(feeTotal, calculatedVatAmount,
-            netDisbursementAmount, disbursementVatAmount);
+    BigDecimal totalAmount = feeTotal.add(calculatedVatAmount).add(disbursementVatAmount);
 
     log.info("Build fee calculation response");
     return new FeeCalculationResponse().toBuilder()

@@ -723,7 +723,7 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
                   }
               ],
               "feeCalculation": {
-                  "totalAmount": 1536.0,
+                  "totalAmount": 936.0,
                   "vatIndicator": true,
                   "vatRateApplied": 20.0,
                   "calculatedVatAmount": 136.0,
