@@ -5,7 +5,7 @@ plugins {
 }
 
 def versions = [
-        sentry 						: '8.26.0'
+        sentry 						: '8.27.0'
 ]
 
 test {
@@ -92,7 +92,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0'
 
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.14'
 
@@ -103,8 +103,8 @@ dependencies {
     implementation 'org.postgresql:postgresql:42.7.8'
 
 // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
-    implementation 'org.flywaydb:flyway-core:11.17.0'
-    implementation 'org.flywaydb:flyway-database-postgresql:11.17.0'
+    implementation 'org.flywaydb:flyway-core:11.17.1'
+    implementation 'org.flywaydb:flyway-database-postgresql:11.17.1'
 
     implementation 'io.micrometer:micrometer-registry-prometheus:1.16.0'
 
