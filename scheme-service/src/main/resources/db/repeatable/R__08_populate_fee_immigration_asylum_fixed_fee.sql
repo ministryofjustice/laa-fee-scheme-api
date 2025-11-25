@@ -41,18 +41,13 @@ ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
 -- 2025 SCHEME (IMM_ASYLM_FS2025)
 INSERT INTO fee
-(fee_code, description, fixed_fee, escape_threshold_limit, disbursement_limit,fee_scheme_code, category_type, ho_interview_bolt_on, adjorn_hearing_bolt_on, oral_cmrh_bolt_on, telephone_cmrh_bolt_on, substantive_hearing_bolt_on, fee_type)
-VALUES ('IACE', 'Asylum CLR Fixed Fee 2d', 808, 1616, 600, 'IMM_ASYLM_FS2025', 'IMMIGRATION_ASYLUM', NULL, NULL, 183, 99, NULL, 'FIXED'),
-       ('IACF', 'Asylum CLR Fixed Fee (2e + advocacy substantive hearing fee)', 1551, 2438, 600, 'IMM_ASYLM_FS2025', 'IMMIGRATION_ASYLUM', NULL, 177, 183, 99, 332, 'FIXED'),
-       ('IALB', 'Asylum LH Fixed Fee', 559, 1118, 400, 'IMM_ASYLM_FS2025', 'IMMIGRATION_ASYLUM', 360, NULL, NULL, NULL, NULL, 'FIXED'),
-       ('IMCE', 'Immigration CLR Fixed Fee 2d', 759, 1518, 600, 'IMM_ASYLM_FS2025', 'IMMIGRATION_ASYLUM', NULL, NULL, 183, 99, NULL, 'FIXED'),
-       ('IMCF', 'Immigration CLR Fixed Fee (2e + advocacy substantive hearing fee)', 1294, 2066, 600, 'IMM_ASYLM_FS2025', 'IMMIGRATION_ASYLUM', NULL, 177, 183, 99, 261, 'FIXED'),
-       ('IMLB', 'Immigration LH Fixed Fee', 317, 634, 400, 'IMM_ASYLM_FS2025', 'IMMIGRATION_ASYLUM', 360, NULL, NULL, NULL, NULL, 'FIXED'),
-       ('IDAS1', 'Detained Duty Advice Scheme (1-4 clients seen)', 249, NULL, NULL, 'IMM_ASYLM_FS2025', 'IMMIGRATION_ASYLUM', NULL, NULL, NULL, NULL, NULL, 'FIXED'),
-       ('IDAS2', 'Detained Duty Advice Scheme (5+ clients seen)', 497, NULL, NULL, 'IMM_ASYLM_FS2025', 'IMMIGRATION_ASYLUM', NULL, NULL, NULL, NULL, NULL, 'FIXED')
-
-ON CONFLICT (fee_code, fee_scheme_code) DO UPDATE
-    SET
-        category_type = EXCLUDED.category_type,
-        fee_type = EXCLUDED.fee_type,
-        substantive_hearing_bolt_on = EXCLUDED.substantive_hearing_bolt_on;
+(fee_code, fixed_fee, escape_threshold_limit, disbursement_limit,fee_scheme_code, ho_interview_bolt_on, adjorn_hearing_bolt_on, oral_cmrh_bolt_on, telephone_cmrh_bolt_on, substantive_hearing_bolt_on)
+VALUES ('IACE', 808, 1616, 600, 'IMM_ASYLM_FS2025', NULL, NULL, 183, 99, NULL),
+       ('IACF', 1551, 2438, 600, 'IMM_ASYLM_FS2025', NULL, 177, 183, 99, 332),
+       ('IALB', 559, 1118, 400, 'IMM_ASYLM_FS2025', 360, NULL, NULL, NULL, NULL),
+       ('IMCE', 759, 1518, 600, 'IMM_ASYLM_FS2025', NULL, NULL, 183, 99, NULL),
+       ('IMCF', 1294, 2066, 600, 'IMM_ASYLM_FS2025', NULL, 177, 183, 99, 261),
+       ('IMLB', 317, 634, 400, 'IMM_ASYLM_FS2025', 360, NULL, NULL, NULL, NULL),
+       ('IDAS1', 249, NULL, NULL, 'IMM_ASYLM_FS2025', NULL, NULL, NULL, NULL, NULL),
+       ('IDAS2', 497, NULL, NULL, 'IMM_ASYLM_FS2025', NULL, NULL, NULL, NULL, NULL)
+ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
