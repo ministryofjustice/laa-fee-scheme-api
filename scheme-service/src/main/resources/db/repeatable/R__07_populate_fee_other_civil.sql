@@ -20,3 +20,10 @@ INSERT INTO fee (fee_code, fixed_fee, escape_threshold_limit, fee_scheme_code)
 VALUES ('EDUFIN', 272.00, 816.00, 'EDU_FS2013'),
        ('EDUDIS', NULL, NULL, 'EDU_DISB_FS2024')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
+
+-- Uplifted  Fixed Fees for Debt, Housing ELA and Housing
+INSERT INTO fee (fee_code, fixed_fee, escape_threshold_limit, fee_scheme_code)
+VALUES ('DEBT', 256.00, 768.00, 'DEBT_FS2025'),
+       ('ELA', 223.00, 669.00, 'ELA_FS2025'),
+       ('HOUS', 223.00, 669.00, 'HOUS_FS2025')
+ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;

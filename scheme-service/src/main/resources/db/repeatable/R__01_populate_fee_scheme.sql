@@ -41,6 +41,11 @@ VALUES
     ('DEBT_FS2013', 'Debt Fee Scheme 2013', '2013-04-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('DEBT_FS2025', 'Debt Fee Scheme 2025', '2025-12-22', NULL)
+ON CONFLICT (scheme_code) DO NOTHING;
+
 -- Fee Scheme for 'Discrimination' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
@@ -59,6 +64,11 @@ VALUES
     ('ELA_FS2024', 'Housing - HLPAS Fee Scheme 2024', '2024-09-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('ELA_FS2025', 'Housing - HLPAS Fee Scheme 2025', '2025-12-22', NULL)
+ON CONFLICT (scheme_code) DO NOTHING;
+
 -- Fee Scheme for 'Family' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
@@ -74,6 +84,11 @@ VALUES
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('HOUS_FS2013', 'Housing Fee Scheme 2013', '2013-04-01', NULL)
+ON CONFLICT (scheme_code) DO NOTHING;
+
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('HOUS_FS2025', 'Housing Fee Scheme 2025', '2025-12-22', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Immigration and Asylum' category
