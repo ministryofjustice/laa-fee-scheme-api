@@ -1,6 +1,6 @@
-INSERT INTO fee (fee_code, description, disbursement_limit, fee_scheme_code, category_type, fee_type)
-VALUES ('ICASD', 'Asylum CLR Hourly Rates Stage Disbursement', 1600.00, 'IMM_ASYLM_DISBURSEMENT_FS2020', 'IMMIGRATION_ASYLUM', 'DISB_ONLY'),
-       ('ICISD', 'Immigration CLR Hourly Rates Stage Disbursement', 1200.00, 'IMM_ASYLM_DISBURSEMENT_FS2020', 'IMMIGRATION_ASYLUM', 'DISB_ONLY'),
-       ('ICSSD', 'CLR SFS Stage Disbursement', 600.00, 'IMM_ASYLM_DISBURSEMENT_FS2020', 'IMMIGRATION_ASYLUM', 'DISB_ONLY'),
-       ('ILHSD', 'LH Stage Disbursement', 400.00, 'IMM_ASYLM_DISBURSEMENT_FS2020', 'IMMIGRATION_ASYLUM', 'DISB_ONLY')
+INSERT INTO fee (fee_code, disbursement_limit, fee_scheme_code)
+VALUES ('ICASD', 1600.00, 'IMM_ASYLM_DISBURSEMENT_FS2020'),
+       ('ICISD', 1200.00, 'IMM_ASYLM_DISBURSEMENT_FS2020'),
+       ('ICSSD', 600.00, 'IMM_ASYLM_DISBURSEMENT_FS2020'),
+       ('ILHSD', 400.00, 'IMM_ASYLM_DISBURSEMENT_FS2020')
     ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
