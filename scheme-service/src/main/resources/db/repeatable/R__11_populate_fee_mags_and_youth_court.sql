@@ -98,3 +98,33 @@ INSERT INTO fee (fee_code, fixed_fee, fee_scheme_code)
 VALUES ('PROW', 181.40, 'SEND_HEAR_FS2020'),
        ('PROW', 208.61, 'SEND_HEAR_FS2022')
     ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
+
+-- undesignated magistrates court uplift 2025
+INSERT INTO fee (fee_code, fixed_fee, fee_scheme_code)
+VALUES ('PROE1', 246.27, 'MAGS_COURT_FS2025'),
+       ('PROE2', 200.21, 'MAGS_COURT_FS2025'),
+       ('PROE3', 353.51, 'MAGS_COURT_FS2025'),
+       ('PROF1', 521.57, 'MAGS_COURT_FS2025'),
+       ('PROF2', 481.59, 'MAGS_COURT_FS2025'),
+       ('PROF3', 810.79, 'MAGS_COURT_FS2025'),
+       ('PROJ1', 246.27, 'MAGS_COURT_FS2025'),
+       ('PROJ2', 200.21, 'MAGS_COURT_FS2025'),
+       ('PROJ3', 521.57, 'MAGS_COURT_FS2025'),
+       ('PROJ4', 481.59, 'MAGS_COURT_FS2025')
+ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
+
+-- undesignated youth court uplift 2025
+INSERT INTO fee (fee_code, fixed_fee, fee_scheme_code)
+VALUES ('YOUE1', 904.72, 'YOUTH_COURT_FS2025'),
+       ('YOUE2', 200.21, 'YOUTH_COURT_FS2025'),
+       ('YOUE3', 1011.96, 'YOUTH_COURT_FS2025'),
+       ('YOUE4', 353.51, 'YOUTH_COURT_FS2025'),
+       ('YOUF1', 1180.01, 'YOUTH_COURT_FS2025'),
+       ('YOUF2', 481.59, 'YOUTH_COURT_FS2025'),
+       ('YOUF3', 1469.24, 'YOUTH_COURT_FS2025'),
+       ('YOUF4', 810.79, 'YOUTH_COURT_FS2025'),
+       ('YOUX1', 904.72, 'YOUTH_COURT_FS2025'),
+       ('YOUX2', 200.21, 'YOUTH_COURT_FS2025'),
+       ('YOUX3', 1180.01, 'YOUTH_COURT_FS2025'),
+       ('YOUX4', 481.59, 'YOUTH_COURT_FS2025')
+ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
