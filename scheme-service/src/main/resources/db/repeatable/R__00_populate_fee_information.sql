@@ -1,16 +1,17 @@
+-- immigration and asylum
 INSERT INTO fee_code_information (fee_code, fee_description, fee_type, category_type)
 VALUES ('IACA', 'Standard Fee - Asylum CLR  (2a)', 'FIXED', 'IMMIGRATION_ASYLUM'),
-       ('IACB', 'Standard Fee - Asylum CLR (2b + advocacy substantive hearing fee) ', 'FIXED', 'IMMIGRATION_ASYLUM'),
-       ('IACC', 'Standard Fee - Asylum CLR (2c + advocacy substantive hearing fee) ', 'FIXED', 'IMMIGRATION_ASYLUM'),
+       ('IACB', 'Standard Fee - Asylum CLR (2b + advocacy substantive hearing fee)', 'FIXED', 'IMMIGRATION_ASYLUM'),
+       ('IACC', 'Standard Fee - Asylum CLR (2c + advocacy substantive hearing fee)', 'FIXED', 'IMMIGRATION_ASYLUM'),
        ('IACE', 'Standard Fee - Asylum CLR 2d ', 'FIXED', 'IMMIGRATION_ASYLUM'),
-       ('IACF', 'Standard Fee - Asylum CLR (2e + advocacy substantive hearing fee)  ', 'FIXED', 'IMMIGRATION_ASYLUM'),
-       ('IALB', 'Standard Fee - Asylum LH ', 'FIXED', 'IMMIGRATION_ASYLUM'),
+       ('IACF', 'Standard Fee - Asylum CLR (2e + advocacy substantive hearing fee)', 'FIXED', 'IMMIGRATION_ASYLUM'),
+       ('IALB', 'Standard Fee - Asylum LH', 'FIXED', 'IMMIGRATION_ASYLUM'),
        ('IMCA', 'Standard Fee - Immigration CLR (2a)', 'FIXED', 'IMMIGRATION_ASYLUM'),
-       ('IMCB', 'Standard Fee - Immigration CLR (2b + advocacy substantive hearing fee) ', 'FIXED', 'IMMIGRATION_ASYLUM'),
-       ('IMCC', 'Standard Fee - Immigration CLR (2c + advocacy substantive hearing fee)  ', 'FIXED', 'IMMIGRATION_ASYLUM'),
-       ('IMCE', 'Standard Fee - Immigration CLR 2d ', 'FIXED', 'IMMIGRATION_ASYLUM'),
-       ('IMCF', 'Standard Fee - Immigration CLR (2e + advocacy substantive hearing fee) ', 'FIXED', 'IMMIGRATION_ASYLUM'),
-       ('IMLB', 'Standard Fee - Immigration LH ', 'FIXED', 'IMMIGRATION_ASYLUM'),
+       ('IMCB', 'Standard Fee - Immigration CLR (2b + advocacy substantive hearing fee)', 'FIXED', 'IMMIGRATION_ASYLUM'),
+       ('IMCC', 'Standard Fee - Immigration CLR (2c + advocacy substantive hearing fee)', 'FIXED', 'IMMIGRATION_ASYLUM'),
+       ('IMCE', 'Standard Fee - Immigration CLR 2d', 'FIXED', 'IMMIGRATION_ASYLUM'),
+       ('IMCF', 'Standard Fee - Immigration CLR (2e + advocacy substantive hearing fee)', 'FIXED', 'IMMIGRATION_ASYLUM'),
+       ('IMLB', 'Standard Fee - Immigration LH', 'FIXED', 'IMMIGRATION_ASYLUM'),
        ('IDAS1', 'Detained Duty Advice Scheme (1-4 clients seen)', 'FIXED', 'IMMIGRATION_ASYLUM'),
        ('IDAS2', 'Detained Duty Advice Scheme (5+ clients seen)', 'FIXED', 'IMMIGRATION_ASYLUM'),
        ('IAXL', 'LH Hourly Rates - Asylum - £800 PC and £400 disb', 'HOURLY', 'IMMIGRATION_ASYLUM'),
@@ -27,6 +28,7 @@ VALUES ('IACA', 'Standard Fee - Asylum CLR  (2a)', 'FIXED', 'IMMIGRATION_ASYLUM'
        ('ILHSD', 'LH Stage Disbursement', 'DISB_ONLY', 'IMMIGRATION_ASYLUM')
 ON CONFLICT (fee_code) DO NOTHING;
 
+-- mental health
 INSERT INTO fee_code_information (fee_code, fee_description, fee_type, category_type)
 VALUES ('MHL01', 'Non-Mental Health Tribunal Fee', 'FIXED', 'MENTAL_HEALTH'),
        ('MHL02', 'Mental Health Tribunal Fee - Level 1 only', 'FIXED', 'MENTAL_HEALTH'),
@@ -40,6 +42,7 @@ VALUES ('MHL01', 'Non-Mental Health Tribunal Fee', 'FIXED', 'MENTAL_HEALTH'),
        ('MHLDIS', 'Mental Health - Interim Claim for Disbursements', 'DISB_ONLY', 'MENTAL_HEALTH')
     ON CONFLICT (fee_code) DO NOTHING;
 
+-- family
 INSERT INTO fee_code_information (fee_code, fee_description, fee_type, category_type)
 VALUES ('FPB010', 'Public Family LH Fixed Fee', 'FIXED', 'FAMILY'),
        ('FPB020', 'Public Family FH Fixed Fee (Section 31 Pre-proceedings Only)', 'FIXED', 'FAMILY'),
@@ -59,11 +62,8 @@ VALUES ('FPB010', 'Public Family LH Fixed Fee', 'FIXED', 'FAMILY'),
        ('FVP170', 'Private Family FH Fixed Fee - Children & Finance (finance settled)', 'FIXED', 'FAMILY'),
        ('FVP190', 'Help with Mediation - Advice Only', 'FIXED', 'FAMILY'),
        ('FVP200', 'Help with Mediation - Finance Consent Order Only', 'FIXED', 'FAMILY'),
-       ('FVP210', 'Help with Mediation - Advice & Finance Consent Order', 'FIXED', 'FAMILY')
-    ON CONFLICT (fee_code) DO NOTHING;
-
-INSERT INTO fee_code_information (fee_code, fee_description, fee_type, category_type)
-VALUES ('FVP020', 'Private Family LH Fixed Fee (Children or Finance) + FH Fixed Fee - Children (settled)', 'FIXED', 'FAMILY'),
+       ('FVP210', 'Help with Mediation - Advice & Finance Consent Order', 'FIXED', 'FAMILY'),
+       ('FVP020', 'Private Family LH Fixed Fee (Children or Finance) + FH Fixed Fee - Children (settled)', 'FIXED', 'FAMILY'),
        ('FVP040', 'Private Family LH Fixed Fee (Children or Finance) + FH Fixed Fee - Children (not settled)', 'FIXED', 'FAMILY'),
        ('FVP030', 'Private Family LH Fixed Fee (Children or Finance) + FH Fixed Fee - Finance (settled)', 'FIXED', 'FAMILY'),
        ('FVP050', 'Private Family LH Fixed Fee (Children or Finance) + FH Fixed Fee - Finance (not settled)', 'FIXED', 'FAMILY'),
@@ -81,6 +81,7 @@ VALUES ('FVP020', 'Private Family LH Fixed Fee (Children or Finance) + FH Fixed 
        ('FVP081', 'Private Family LH Fixed Fee (DA Proceedings) + FH Fixed Fee - Children & Finance (finance settled)', 'FIXED', 'FAMILY')
     ON CONFLICT (fee_code) DO NOTHING;
 
+-- mediation
 INSERT INTO fee_code_information (fee_code, fee_description, fee_type, category_type)
 VALUES ('ASSA', 'Mediation Assesment (alone)', 'FIXED', 'MEDIATION'),
        ('ASSS', 'Mediation Assesment (separate)', 'FIXED', 'MEDIATION'),
@@ -100,11 +101,8 @@ VALUES ('ASSA', 'Mediation Assesment (alone)', 'FIXED', 'MEDIATION'),
        ('MDAC2P', 'All Issues Co-mediation - 2 parties eligible, agreement on P&F only', 'FIXED', 'MEDIATION'),
        ('MDAC1P', 'All Issues Co-mediation - 1 party eligible, agreement on P&F only', 'FIXED', 'MEDIATION'),
        ('MDAC2C', 'All Issues Co-mediation - 2 parties eligible, agreement on Child only ', 'FIXED', 'MEDIATION'),
-       ('MDAC1C', 'All Issues Co-mediation -  1 party eligible, agreement on Child only ', 'FIXED', 'MEDIATION')
-    ON CONFLICT (fee_code) DO NOTHING;
-
-INSERT INTO fee_code_information (fee_code, fee_description, fee_type, category_type)
-VALUES ('MDPS2B', 'Property & Finance Sole -  2 parties eligible, no agreement', 'FIXED', 'MEDIATION'),
+       ('MDAC1C', 'All Issues Co-mediation -  1 party eligible, agreement on Child only ', 'FIXED', 'MEDIATION'),
+       ('MDPS2B', 'Property & Finance Sole -  2 parties eligible, no agreement', 'FIXED', 'MEDIATION'),
        ('MDPS1B', 'Property & Finance Sole -  1 party eligible, no agreement', 'FIXED', 'MEDIATION'),
        ('MDPC2B', 'Property & Finance Co - 2 parties eligible, no agreement', 'FIXED', 'MEDIATION'),
        ('MDPC1B', 'Property & Finance Co - 1 party eligible, no agreement', 'FIXED', 'MEDIATION'),
@@ -122,6 +120,7 @@ VALUES ('MDPS2B', 'Property & Finance Sole -  2 parties eligible, no agreement',
        ('MDCC1S', 'Child only Co - 1 party eligible, with agreed proposal', 'FIXED', 'MEDIATION')
     ON CONFLICT (fee_code) DO NOTHING;
 
+-- other civil
 INSERT INTO fee_code_information (fee_code, fee_description, fee_type, category_type)
 VALUES ('COM', 'Community Care Legal Help Fixed Fee', 'FIXED', 'COMMUNITY_CARE'),
        ('CAPA', 'Claims Against Public Authorities Legal Help Fixed Fee', 'FIXED', 'CLAIMS_PUBLIC_AUTHORITIES'),
@@ -141,6 +140,7 @@ VALUES ('COM', 'Community Care Legal Help Fixed Fee', 'FIXED', 'COMMUNITY_CARE')
        ('WFB1', 'Welfare Benefits Controlled Work fee', 'FIXED', 'WELFARE_BENEFITS')
     ON CONFLICT (fee_code) DO NOTHING;
 
+-- police
 INSERT INTO fee_code_information (fee_code, fee_description, fee_type, category_type)
 VALUES ('INVC', 'Police station: attendance', 'FIXED', 'POLICE_STATION'),
        ('INVA', 'Advice and Assistance (not at the police station)', 'HOURLY', 'POLICE_STATION'),
@@ -148,12 +148,12 @@ VALUES ('INVC', 'Police station: attendance', 'FIXED', 'POLICE_STATION'),
        ('INVH', 'Police Station: Post-charge attendance', 'HOURLY', 'POLICE_STATION'),
        ('INVK', 'Advocacy Assistance in the magistrates’ court on applications to extend Pre-Charge Bail (Extension to Pre-Charge Bail)','HOURLY', 'POLICE_STATION'),
        ('INVL', 'Advocacy Assistance in the magistrates’ court on application to vary Pre-Charge Bail conditions (Varying Pre-Charge Bail)','HOURLY', 'POLICE_STATION'),
-       ('INVM', 'Pre-Charge Engagement Advice and Assistance ', 'HOURLY', 'POLICE_STATION'),
+       ('INVM', 'Pre-Charge Engagement Advice and Assistance', 'HOURLY', 'POLICE_STATION'),
        ('INVB1', 'Police station: telephone advice only (London)', 'FIXED', 'POLICE_STATION'),
        ('INVB2', 'Police station: telephone advice only (Outside of London)', 'FIXED', 'POLICE_STATION')
 ON CONFLICT (fee_code) DO NOTHING;
 
--- name
+-- other crime
 INSERT INTO fee_code_information (fee_code, fee_description, fee_type, category_type)
 VALUES ('PROT', 'Early Cover', 'FIXED', 'EARLY_COVER'),
        ('PROU', 'Refused means test – form completion fee', 'FIXED', 'REFUSED_MEANS_TEST'),
@@ -161,7 +161,12 @@ VALUES ('PROT', 'Early Cover', 'FIXED', 'EARLY_COVER'),
        ('PROD', 'Advice and Assistance and Advocacy Assistance by a court Duty Solicitor', 'FIXED', 'ADVICE_ASSISTANCE_ADVOCACY'),
        ('PROP1', 'Pre Order Cover - London', 'FIXED', 'PRE_ORDER_COVER'),
        ('PROP2', 'Pre Order Cover - National', 'FIXED', 'PRE_ORDER_COVER'),
-       ('PROH', 'Advocacy Assistance in the Crown Court', 'FIXED', 'ADVOCACY_APPEALS_REVIEWS')
+       ('PROH', 'Advocacy Assistance in the Crown Court', 'FIXED', 'ADVOCACY_APPEALS_REVIEWS'),
+       ('APPA', 'Advice and assistance in relation to an appeal (except CCRC)', 'FIXED', 'ADVOCACY_APPEALS_REVIEWS'),
+       ('APPB', 'Advice and assistance in relation to CCRC application', 'FIXED', 'ADVOCACY_APPEALS_REVIEWS'),
+       ('ASMS', 'Legal Help and Associated Civil Work – Miscellaneous', 'FIXED', 'ASSOCIATED_CIVIL'),
+       ('ASPL', 'Legal Help and Associated Civil Work – Public Law', 'FIXED', 'ASSOCIATED_CIVIL'),
+       ('ASAS', 'Part 1 injunction Anti-Social Behaviour Crime and Policing Act 2014', 'FIXED', 'ASSOCIATED_CIVIL')
 ON CONFLICT (fee_code) DO NOTHING;
 
 -- Magistrates court
@@ -194,30 +199,30 @@ VALUES ('PROE1', 'Representation in the Magistrates Court - category 1A -  lower
 
 -- Youth court
 INSERT INTO fee_code_information (fee_code, fee_description, fee_type, category_type, court_designation_type, fee_band_type)
-VALUES ('YOUE1', 'Youth Representation Order - category 1A - lower standard fee - undesignated area',   'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'LOWER'),
-       ('YOUE2', 'Youth Representation Order - category 1B - lower standard fee - undesignated area',    'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'LOWER'),
-       ('YOUE3', 'Youth Representation Order - category 2A - lower standard fee - undesignated area',   'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'LOWER'),
+VALUES ('YOUE1', 'Youth Representation Order - category 1A - lower standard fee - undesignated area', 'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'LOWER'),
+       ('YOUE2', 'Youth Representation Order - category 1B - lower standard fee - undesignated area', 'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'LOWER'),
+       ('YOUE3', 'Youth Representation Order - category 2A - lower standard fee - undesignated area', 'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'LOWER'),
        ('YOUE4', 'Youth Representation Order - category 2B - lower standard fee - undesignated area',   'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'LOWER'),
-       ('YOUF1', 'Youth Representation Order - category 1A - higher standard fee - undesignated area',  'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'HIGHER'),
-       ('YOUF2', 'Youth Representation Order - category 1B - higher standard fee - undesignated area',   'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'HIGHER'),
-       ('YOUF3', 'Youth Representation Order - category 2A - higher standard fee - undesignated area',   'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'HIGHER'),
-       ('YOUF4', 'Youth Representation Order - category 2B - higher standard fee - undesignated area',  'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'HIGHER'),
-       ('YOUK1', 'Youth Representation Order - category 1A - lower standard fee - designated area',   'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'LOWER'),
-       ('YOUK2', 'Youth Representation Order - category 1B - lower standard fee - designated area',  'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'LOWER'),
+       ('YOUF1', 'Youth Representation Order - category 1A - higher standard fee - undesignated area', 'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'HIGHER'),
+       ('YOUF2', 'Youth Representation Order - category 1B - higher standard fee - undesignated area', 'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'HIGHER'),
+       ('YOUF3', 'Youth Representation Order - category 2A - higher standard fee - undesignated area', 'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'HIGHER'),
+       ('YOUF4', 'Youth Representation Order - category 2B - higher standard fee - undesignated area', 'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'HIGHER'),
+       ('YOUK1', 'Youth Representation Order - category 1A - lower standard fee - designated area', 'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'LOWER'),
+       ('YOUK2', 'Youth Representation Order - category 1B - lower standard fee - designated area', 'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'LOWER'),
        ('YOUK3', 'Youth Representation Order - category 2A - lower standard fee - designated area', 'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'LOWER'),
-       ('YOUK4', 'Youth Representation Order - category 2B - lower standard fee - designated area',  'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'LOWER'),
+       ('YOUK4', 'Youth Representation Order - category 2B - lower standard fee - designated area', 'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'LOWER'),
        ('YOUL1', 'Youth Representation Order - category 1A - higher standard fee - designated area', 'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'HIGHER'),
        ('YOUL2', 'Youth Representation Order - category 1B - higher standard fee - designated area', 'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'HIGHER'),
-       ('YOUL3', 'Youth Representation Order - category 2A - higher standard fee - designated area',  'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'HIGHER'),
-       ('YOUL4', 'Youth Representation Order - category 2B - higher standard fee - designated area',   'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'HIGHER'),
-       ('YOUX1','Youth Representation Order - second claim for deferred sentence - category 1A - lower standard fee - undesignated area',   'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'LOWER'),
-       ('YOUX2','Youth Representation Order - second claim for deferred sentence - category 1B - lower standard fee - undesignated area',   'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'LOWER'),
+       ('YOUL3', 'Youth Representation Order - category 2A - higher standard fee - designated area', 'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'HIGHER'),
+       ('YOUL4', 'Youth Representation Order - category 2B - higher standard fee - designated area', 'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'HIGHER'),
+       ('YOUX1','Youth Representation Order - second claim for deferred sentence - category 1A - lower standard fee - undesignated area', 'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'LOWER'),
+       ('YOUX2','Youth Representation Order - second claim for deferred sentence - category 1B - lower standard fee - undesignated area', 'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'LOWER'),
        ('YOUX3','Youth Representation Order - second claim for deferred sentence - category 1A - higher standard fee - undesignated area', 'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'HIGHER'),
        ('YOUX4','Youth Representation Order - second claim for deferred sentence - category 1B - higher standard fee - undesignated area', 'FIXED', 'YOUTH_COURT', 'UNDESIGNATED', 'HIGHER'),
-       ('YOUY1','Youth Representation Order - second claim for deferred sentence - category 1A - lower standard fee - designated area',   'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'LOWER'),
-       ('YOUY2','Youth Representation Order - second claim for deferred sentence - category 1B - lower standard fee - designated area',  'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'LOWER'),
-       ('YOUY3','Youth Representation Order - second claim for deferred sentence - category 1A - higher standard fee - designated area',  'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'HIGHER'),
-       ('YOUY4','Youth Representation Order - second claim for deferred sentence - category 1B - higher standard fee - designated area',  'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'HIGHER')
+       ('YOUY1','Youth Representation Order - second claim for deferred sentence - category 1A - lower standard fee - designated area', 'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'LOWER'),
+       ('YOUY2','Youth Representation Order - second claim for deferred sentence - category 1B - lower standard fee - designated area', 'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'LOWER'),
+       ('YOUY3','Youth Representation Order - second claim for deferred sentence - category 1A - higher standard fee - designated area', 'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'HIGHER'),
+       ('YOUY4','Youth Representation Order - second claim for deferred sentence - category 1B - higher standard fee - designated area', 'FIXED', 'YOUTH_COURT', 'DESIGNATED', 'HIGHER')
     ON CONFLICT (fee_code) DO NOTHING;
 
 -- prison law
@@ -231,13 +236,4 @@ VALUES ('PRIA', 'Free Standing Advice and Assistance', 'FIXED', 'PRISON_LAW', 'S
        ('PRID2', 'Advocacy Assistance at Sentence Reviews - higher standard fee', 'FIXED', 'PRISON_LAW', 'HIGHER'),
        ('PRIE1', 'Advocacy Assistance at Parole Board Reconsideration Hearings - lower standard fee', 'FIXED', 'PRISON_LAW', 'LOWER'),
        ('PRIE2', 'Advocacy Assistance at Parole Board Reconsideration Hearings - higher standard fee', 'FIXED', 'PRISON_LAW', 'HIGHER')
-    ON CONFLICT (fee_code) DO NOTHING;
-
--- name
-INSERT INTO fee_code_information (fee_code, fee_description, fee_type, category_type)
-VALUES ('APPA', 'Advice and assistance in relation to an appeal (except CCRC)', 'FIXED', 'ADVOCACY_APPEALS_REVIEWS'),
-       ('APPB', 'Advice and assistance in relation to CCRC application', 'FIXED', 'ADVOCACY_APPEALS_REVIEWS'),
-       ('ASMS', 'Legal Help and Associated Civil Work – Miscellaneous', 'FIXED', 'ASSOCIATED_CIVIL'),
-       ('ASPL', 'Legal Help and Associated Civil Work – Public Law', 'FIXED', 'ASSOCIATED_CIVIL'),
-       ('ASAS', 'Part 1 injunction Anti-Social Behaviour Crime and Policing Act 2014', 'FIXED', 'ASSOCIATED_CIVIL')
     ON CONFLICT (fee_code) DO NOTHING;
