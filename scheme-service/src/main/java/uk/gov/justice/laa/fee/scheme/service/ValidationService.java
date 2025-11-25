@@ -99,7 +99,8 @@ public class ValidationService {
         throw new ValidationException(ERR_CRIME_UFN_MISSING, new FeeContext(feeCalculationRequest));
       }
     } else {
-      if (!isFeeCodeValidForRepOrderDate(feeCalculationRequest)) {
+      if (!feeCalculationRequest.getFeeCode().equals(FEE_CODE_PROD)
+          && !isFeeCodeValidForRepOrderDate(feeCalculationRequest)) {
         throw new ValidationException(ERR_CRIME_REP_ORDER_DATE, new FeeContext(feeCalculationRequest));
       }
     }

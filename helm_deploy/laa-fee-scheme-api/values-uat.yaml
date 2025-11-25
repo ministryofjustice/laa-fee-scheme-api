@@ -5,7 +5,11 @@
 replicaCount: 1
 
 ingress:
-    enabled: false
+  enabled: true
+  hosts:
+    - laa-fee-scheme-api-uat.apps.live.cloud-platform.service.justice.gov.uk
+  annotations:
+    external-dns.alpha.kubernetes.io/set-identifier: "laa-fee-scheme-api-ingress-laa-fee-scheme-api-uat-green"
 
 resources:
   limits:

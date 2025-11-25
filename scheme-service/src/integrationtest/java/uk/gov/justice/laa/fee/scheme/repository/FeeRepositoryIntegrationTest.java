@@ -30,7 +30,7 @@ class FeeRepositoryIntegrationTest extends PostgresContainerTestBase {
     FeeEntity entity = result.getFirst();
 
     assertThat(entity.getFeeCode()).isEqualTo("PUB");
-    assertThat(entity.getDescription()).isEqualTo("Public Law");
+    assertThat(entity.getDescription()).isEqualTo("Public Law Legal Help Fixed Fee");
     assertThat(entity.getFixedFee()).isEqualTo(new BigDecimal("259.00"));
     assertThat(entity.getEscapeThresholdLimit()).isEqualTo(new BigDecimal("777.00"));
     assertThat(entity.getFeeScheme().getSchemeCode()).isEqualTo("PUB_FS2013");
