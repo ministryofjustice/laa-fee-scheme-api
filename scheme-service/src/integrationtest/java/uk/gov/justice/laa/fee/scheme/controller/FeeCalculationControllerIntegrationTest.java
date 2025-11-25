@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -212,61 +213,97 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
             """, STRICT));
   }
 
-  @Test
-  void shouldGetFeeCalculation_immigrationAndAsylumFixedFee() throws Exception {
+  @ParameterizedTest
+  @CsvSource(value = {
+      // feeCode, startDate, feeScheme, total, vat, fixedFee, boltOn, boltOnFee
+      "IACA, 2022-09-30, IMM_ASYLM_FS2020, 785.13, 110.8, 227.0, CmrhOral, 166.0",
+      "IACB, 2022-09-30, IMM_ASYLM_FS2020, 1555.53, 239.2, 869.0, CmrhOral, 166.0",
+      "IACC, 2022-09-30, IMM_ASYLM_FS2020, 1627.53, 251.2, 929.0, CmrhOral, 166.0",
+      "IACE, 2025-12-22, IMM_ASYLM_FS2025, 1502.73, 230.4, 808.0, CmrhOral, 183.0", // uplift 2025
+      "IACF, 2025-12-22, IMM_ASYLM_FS2025, 2394.33, 379.0, 1551.0, CmrhOral, 183.0", // uplift 2025
+      "IALB, 2025-12-22, IMM_ASYLM_FS2025, 1416.33, 216.0, 559.0, HomeOfficeInterview, 360", // uplift 2025
+      "IMCA, 2022-09-30, IMM_ASYLM_FS2020, 785.13, 110.8, 227.0, CmrhOral, 166.0",
+      "IMCB, 2022-09-30, IMM_ASYLM_FS2020, 1341.93, 203.6, 691.0, CmrhOral, 166.0",
+      "IMCC, 2022-09-30, IMM_ASYLM_FS2020, 1429.53, 218.2, 764.0, CmrhOral, 166.0",
+      "IMCE, 2025-12-22, IMM_ASYLM_FS2025,  1443.93, 220.6, 759.0, CmrhOral, 183.0", // uplift 2025
+      "IMCF, 2025-12-22, IMM_ASYLM_FS2025, 2085.93, 327.6, 1294.0, CmrhOral, 183.0", // uplift 2025
+      "IMLB, 2025-12-22, IMM_ASYLM_FS2025, 1125.93, 167.6, 317.0, HomeOfficeInterview, 360", // uplift 2025
+      "IDAS1, 2025-12-22, IMM_ASYLM_FS2025, 612.33, 82.0, 249.0, null, 0", // uplift 2025
+      "IDAS2, 2025-12-22, IMM_ASYLM_FS2025, 909.93, 131.6, 497.0, null, 0" // uplift 2025
+  }, nullValues = {"null"})
+  void shouldGetFeeCalculation_immigrationAndAsylumFixedFee(String feeCode, LocalDate startDate, String feeScheme,
+                                                            double total, double vat, double fixedFee,
+                                                            String boltOn, double boltOnFee) throws Exception {
+
+    String expectedJson = """
+        {
+          "feeCode": "%s",
+          "schemeId": "%s",
+          "claimId": "claim_123",
+          "escapeCaseFlag": false,
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": %s,
+            "disbursementAmount": 100.21,
+            "requestedNetDisbursementAmount": 100.21,
+            "disbursementVatAmount": 20.12,
+            "fixedFeeAmount": %s,
+            "detentionTravelAndWaitingCostsAmount": 111.00,
+            "jrFormFillingAmount": 50
+          }
+        }
+        """.formatted(feeCode, feeScheme, total, vat, fixedFee);
+
+    String expectedJsonWithBoltOns = """
+        {
+          "feeCode": "%s",
+          "schemeId": "%s",
+          "claimId": "claim_123",
+          "escapeCaseFlag": false,
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": %s,
+            "disbursementAmount": 100.21,
+            "requestedNetDisbursementAmount": 100.21,
+            "disbursementVatAmount": 20.12,
+            "fixedFeeAmount": %s,
+            "detentionTravelAndWaitingCostsAmount": 111.00,
+            "jrFormFillingAmount": 50,
+            "boltOnFeeDetails": {
+               "boltOnTotalFeeAmount": %s,
+               "boltOn%sCount": 1,
+               "boltOn%sFee": %s
+            }
+          }
+        }
+        """.formatted(feeCode, feeScheme, total, vat, fixedFee, boltOnFee, boltOn, boltOn, boltOnFee);
+
+    String request = """
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "startDate": "%s",
+          "netDisbursementAmount": 100.21,
+          "disbursementVatAmount": 20.12,
+          "vatIndicator": true,
+          "detentionTravelAndWaitingCosts": 111.00,
+          "jrFormFilling": 50.00
+        """.formatted(feeCode, startDate);
+    request = (boltOn != null) ? request + ", \"boltOns\": { \"boltOn%s\": 1 }}".formatted(boltOn) : request + "}";
+
     mockMvc
         .perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "IMCF",
-                  "claimId": "claim_123",
-                  "startDate": "2024-09-30",
-                  "netDisbursementAmount": 100.21,
-                  "disbursementVatAmount": 20.12,
-                  "vatIndicator": true,
-                  "boltOns": {
-                        "boltOnAdjournedHearing": 2.00,
-                        "boltOnCmrhOral": 1.00,
-                        "boltOnCmrhTelephone": 3.00
-                  },
-                  "detentionTravelAndWaitingCosts": 111.00,
-                  "jrFormFilling": 50.00
-                }
-                """)
+            .content(request)
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "IMCF",
-              "schemeId": "IMM_ASYLM_FS2023",
-              "claimId": "claim_123",
-              "escapeCaseFlag": false,
-              "feeCalculation": {
-                "totalAmount": 2533.53,
-                "vatIndicator": true,
-                "vatRateApplied": 20.00,
-                "calculatedVatAmount": 402.20,
-                "disbursementAmount": 100.21,
-                "requestedNetDisbursementAmount": 100.21,
-                "disbursementVatAmount": 20.12,
-                "fixedFeeAmount": 1092.00,
-                "detentionTravelAndWaitingCostsAmount": 111.00,
-                "jrFormFillingAmount": 50,
-                "boltOnFeeDetails": {
-                  "boltOnTotalFeeAmount": 758.00,
-                  "boltOnAdjournedHearingCount": 2,
-                  "boltOnAdjournedHearingFee": 322.00,
-                  "boltOnCmrhOralCount": 1,
-                  "boltOnCmrhOralFee": 166.00,
-                  "boltOnCmrhTelephoneCount": 3,
-                  "boltOnCmrhTelephoneFee": 270.00
-                }
-              }
-            }
-            """, STRICT));
+        .andExpect(content().json(boltOn != null ? expectedJsonWithBoltOns : expectedJson, STRICT));
   }
 
   @Test
@@ -279,7 +316,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
                 {
                   "feeCode": "IMXL",
                   "claimId": "claim_123",
-                  "startDate": "2015-02-11",
+                  "startDate": "2024-02-11",
                   "netProfitCosts": 116.89,
                   "netDisbursementAmount": 125.70,
                   "disbursementVatAmount": 25.14,
@@ -292,7 +329,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         .andExpect(content().json("""
             {
               "feeCode": "IMXL",
-              "schemeId": "IMM_ASYLM_FS2013",
+              "schemeId": "IMM_ASYLM_FS2023",
               "claimId": "claim_123",
               "feeCalculation": {
                 "totalAmount": 291.11,
@@ -320,7 +357,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
                 {
                   "feeCode": "IAXC",
                   "claimId": "claim_123",
-                  "startDate": "2015-02-11",
+                  "startDate": "2024-02-11",
                   "netProfitCosts": 116.89,
                   "netCostOfCounsel": 356.90,
                   "netDisbursementAmount": 125.70,
@@ -334,7 +371,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         .andExpect(content().json("""
             {
               "feeCode": "IAXC",
-              "schemeId": "IMM_ASYLM_FS2013",
+              "schemeId": "IMM_ASYLM_FS2023",
               "claimId": "claim_123",
               "feeCalculation": {
                 "totalAmount": 719.39,
@@ -658,7 +695,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
               "schemeId": "POL_FS2022",
               "claimId": "claim_123",
               "feeCalculation": {
-                  "totalAmount": 208.72,
+                  "totalAmount": 158.22,
                   "vatIndicator": true,
                   "vatRateApplied": 20.0,
                   "calculatedVatAmount": 23.01,
@@ -762,18 +799,18 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
-              {
-                "feeCode": "%s",
-                "claimId": "claim_123",
-                "uniqueFileNumber": "121219/242",
-                "representationOrderDate": "2025-02-01",
-                "netDisbursementAmount": 123.38,
-                "disbursementVatAmount": 24.67,
-                "vatIndicator": true,
-                "netWaitingCosts": %s,
-                "netTravelCosts": %s
-              }
-              """.formatted(feeCode, netWaitingCosts, netTravelCosts))
+                {
+                  "feeCode": "%s",
+                  "claimId": "claim_123",
+                  "uniqueFileNumber": "121219/242",
+                  "representationOrderDate": "2025-02-01",
+                  "netDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "vatIndicator": true,
+                  "netWaitingCosts": %s,
+                  "netTravelCosts": %s
+                }
+                """.formatted(feeCode, netWaitingCosts, netTravelCosts))
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))

@@ -2,7 +2,6 @@ package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.YOUTH_COURT;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isCourtDesignated;
 
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -38,11 +37,10 @@ public class MagistratesYouthCourtFeeCalculator implements FeeCalculator {
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
-    if (isCourtDesignated(feeEntity.getCourtDesignationType())) {
-      return designatedCourtFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
-    } else {
-      return undesignatedCourtFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
-    }
+    return switch (feeEntity.getCourtDesignationType()) {
+      case DESIGNATED -> designatedCourtFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+      case UNDESIGNATED -> undesignatedCourtFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+    };
   }
 
 }
