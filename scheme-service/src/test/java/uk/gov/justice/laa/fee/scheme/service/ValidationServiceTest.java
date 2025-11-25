@@ -7,9 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CIVIL;
 import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CRIME;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVICE_ASSISTANCE_ADVOCACY;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVOCACY_APPEALS_REVIEWS;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.SENDING_HEARING;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE_TOO_OLD;
@@ -390,6 +392,57 @@ class ValidationServiceTest {
     }
 
     @Test
+    void getValidFeeEntity_whenAdviceAssistanceAdvocacyClaimSubmitted_shouldReturnValidResponse() {
+
+      FeeCalculationRequest feeCalculationRequest = getFeeCalculationRequest();
+      feeCalculationRequest.setFeeCode("PROD");
+      feeCalculationRequest.setCaseConcludedDate(LocalDate.of(2021, 12, 31));
+      FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("AAA_FS2016")
+          .validFrom(LocalDate.of(2021, 12, 31)).build();
+
+      FeeEntity feeEntity = FeeEntity.builder()
+          .feeCode("PROD")
+          .feeScheme(feeSchemesEntity)
+          .categoryType(ADVICE_ASSISTANCE_ADVOCACY)
+          .feeType(FeeType.HOURLY)
+          .build();
+
+      List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+      FeeEntity result = validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest, CRIME);
+
+      assertThat(result).isNotNull();
+      assertThat(result.getFeeCode()).isEqualTo("PROD");
+      assertThat(result.getFeeScheme().getSchemeCode()).isEqualTo("AAA_FS2016");
+    }
+
+    @Test
+    void test_whenClaimReceivedWithInvalidFeeCode_And_Valid_RepOrderDate_shouldThrowException() {
+
+      FeeCalculationRequest feeCalculationRequest = getFeeCalculationRequest();
+      feeCalculationRequest.setFeeCode("XYZ");
+      feeCalculationRequest.setRepresentationOrderDate(LocalDate.of(2022, 11, 1));
+      FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("SEND_HEAR_FS2022")
+          .validFrom(LocalDate.of(2021, 12, 31)).build();
+
+      FeeEntity feeEntity = FeeEntity.builder()
+          .feeCode("XYZ")
+          .feeScheme(feeSchemesEntity)
+          .fixedFee(new BigDecimal("208.61"))
+          .categoryType(SENDING_HEARING)
+          .feeType(FeeType.FIXED)
+          .build();
+
+      List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+      assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest, CRIME))
+          .isInstanceOf(ValidationException.class)
+          .hasFieldOrPropertyWithValue("error", ERR_CRIME_REP_ORDER_DATE)
+          .hasMessage("ERRCRM12 - Fee Code is not valid for the Representation Order Date provided.");
+    }
+
+
+    @Test
     void getValidFeeEntity_whenGivenInvalidFeeCode_throwsException() {
       List<FeeEntity> feeEntityList = List.of();
       FeeCalculationRequest feeCalculationRequest = getFeeCalculationRequest();
@@ -581,7 +634,7 @@ class ValidationServiceTest {
           .feeCode("PROH")
           .feeScheme(feeSchemesEntity)
           .fixedFee(new BigDecimal("200"))
-          .categoryType(ADVICE_ASSISTANCE_ADVOCACY)
+          .categoryType(ADVOCACY_APPEALS_REVIEWS)
           .feeType(FeeType.FIXED).build();
 
       List<FeeEntity> feeEntityList = List.of(feeEntity);
@@ -611,7 +664,7 @@ class ValidationServiceTest {
           .feeCode("PROH")
           .feeScheme(feeSchemesEntity)
           .fixedFee(new BigDecimal("200"))
-          .categoryType(ADVICE_ASSISTANCE_ADVOCACY)
+          .categoryType(ADVOCACY_APPEALS_REVIEWS)
           .feeType(FeeType.FIXED).build();
 
       List<FeeEntity> feeEntityList = List.of(feeEntity);
