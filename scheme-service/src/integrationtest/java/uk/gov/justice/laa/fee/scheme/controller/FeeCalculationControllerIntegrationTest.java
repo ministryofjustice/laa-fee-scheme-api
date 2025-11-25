@@ -325,194 +325,182 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         """.formatted(feeCode, total, vat, hourlyTotal, netProfitCosts, netProfitCosts));
   }
 
-  @Test
-  void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate_clr() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "IAXC",
-                  "claimId": "claim_123",
-                  "startDate": "2024-02-11",
-                  "netProfitCosts": 116.89,
-                  "netCostOfCounsel": 356.90,
-                  "netDisbursementAmount": 125.70,
-                  "disbursementVatAmount": 25.14,
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "IAXC",
-              "schemeId": "IMM_ASYLM_FS2023",
-              "claimId": "claim_123",
-              "feeCalculation": {
-                "totalAmount": 719.39,
-                "vatIndicator": true,
-                "vatRateApplied": 20.00,
-                "calculatedVatAmount": 94.76,
-                "disbursementAmount": 125.70,
-                "requestedNetDisbursementAmount": 125.70,
-                "disbursementVatAmount": 25.14,
-                "hourlyTotalAmount": 599.49,
-                "netProfitCostsAmount": 116.89,
-                "requestedNetProfitCostsAmount": 116.89,
-                "netCostOfCounselAmount": 356.90
-              }
-            }
-            """, STRICT));
+  @ParameterizedTest
+  @CsvSource({
+      "IAXC, IMM_ASYLM_FS2025",
+      "IMXC, IMM_ASYLM_FS2025",
+      "IRAR, IMM_ASYLM_FS2023"
+  })
+  void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate_clr(String feeCode, String feeScheme) throws Exception {
+    String request = """ 
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "startDate": "2025-12-22",
+          "netProfitCosts": 116.89,
+          "netCostOfCounsel": 356.90,
+          "netDisbursementAmount": 125.70,
+          "disbursementVatAmount": 25.14,
+          "vatIndicator": true
+        }
+        """.formatted(feeCode);
+
+    postAndExpect(request, """
+        {
+          "feeCode": "%s",
+          "schemeId": "%s",
+          "claimId": "claim_123",
+          "feeCalculation": {
+            "totalAmount": 719.39,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": 94.76,
+            "disbursementAmount": 125.70,
+            "requestedNetDisbursementAmount": 125.70,
+            "disbursementVatAmount": 25.14,
+            "hourlyTotalAmount": 599.49,
+            "netProfitCostsAmount": 116.89,
+            "requestedNetProfitCostsAmount": 116.89,
+            "netCostOfCounselAmount": 356.90
+          }
+        }
+        """.formatted(feeCode, feeScheme));
   }
 
-  @Test
-  void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate_clrInterim() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "IACD",
-                  "claimId": "claim_123",
-                  "startDate": "2021-02-11",
-                  "netProfitCosts": 116.89,
-                  "netCostOfCounsel": 356.90,
-                  "netDisbursementAmount": 125.70,
-                  "disbursementVatAmount": 25.14,
-                  "boltOns": {
-                      "boltOnAdjournedHearing": 1,
-                      "boltOnCmrhOral": 2,
-                      "boltOnCmrhTelephone": 1,
-                      "boltOnSubstantiveHearing": true
-                  },
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "IACD",
-              "schemeId": "IMM_ASYLM_FS2020",
-              "claimId": "claim_123",
-              "feeCalculation": {
-                "totalAmount": 1781.39,
-                "vatIndicator": true,
-                "vatRateApplied": 20.00,
-                "calculatedVatAmount": 271.76,
-                "disbursementAmount": 125.70,
-                "requestedNetDisbursementAmount": 125.70,
-                "disbursementVatAmount": 25.14,
-                "hourlyTotalAmount": 1484.49,
-                "netProfitCostsAmount": 116.89,
-                "requestedNetProfitCostsAmount": 116.89,
-                "netCostOfCounselAmount": 356.90,
-                "boltOnFeeDetails": {
-                      "boltOnTotalFeeAmount": 885.0,
-                      "boltOnAdjournedHearingCount": 1,
-                      "boltOnAdjournedHearingFee": 161.0,
-                      "boltOnCmrhTelephoneCount": 1,
-                      "boltOnCmrhTelephoneFee": 90.0,
-                      "boltOnCmrhOralCount": 2,
-                      "boltOnCmrhOralFee": 332.0,
-                      "boltOnSubstantiveHearingFee": 302.0
-                 }
-              }
-            }
-            """, STRICT));
+  @ParameterizedTest
+  @CsvSource(value = {
+      // feeCode, total, vat, hourlyTotal, boltOnTotal, boltOnSubHearing
+      "IACD, 1781.39, 271.76, 1484.49, 885.0, 302.0",
+      "IMCD, 1703.39, 258.76, 1419.49, 820.0, 237.0",
+  })
+  void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate_clrInterim(String feeCode, double total, double vat,
+                                                                         double hourlyTotal, double boltOnTotal,
+                                                                         double boltOnSubHearing) throws Exception {
+    String request = """ 
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "startDate": "2021-02-11",
+          "netProfitCosts": 116.89,
+          "netCostOfCounsel": 356.90,
+          "netDisbursementAmount": 125.70,
+          "disbursementVatAmount": 25.14,
+          "boltOns": {
+              "boltOnAdjournedHearing": 1,
+              "boltOnCmrhOral": 2,
+              "boltOnCmrhTelephone": 1,
+              "boltOnSubstantiveHearing": true
+          },
+          "vatIndicator": true
+        }
+        """.formatted(feeCode);
+
+    postAndExpect(request, """
+        {
+          "feeCode": "%s",
+          "schemeId": "IMM_ASYLM_FS2020",
+          "claimId": "claim_123",
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": %s,
+            "disbursementAmount": 125.70,
+            "requestedNetDisbursementAmount": 125.70,
+            "disbursementVatAmount": 25.14,
+            "hourlyTotalAmount": %s,
+            "netProfitCostsAmount": 116.89,
+            "requestedNetProfitCostsAmount": 116.89,
+            "netCostOfCounselAmount": 356.90,
+            "boltOnFeeDetails": {
+                  "boltOnTotalFeeAmount": %s,
+                  "boltOnAdjournedHearingCount": 1,
+                  "boltOnAdjournedHearingFee": 161.0,
+                  "boltOnCmrhTelephoneCount": 1,
+                  "boltOnCmrhTelephoneFee": 90.0,
+                  "boltOnCmrhOralCount": 2,
+                  "boltOnCmrhOralFee": 332.0,
+                  "boltOnSubstantiveHearingFee": %s
+             }
+          }
+        }
+        """.formatted(feeCode, total, vat, hourlyTotal, boltOnTotal, boltOnSubHearing));
+
   }
 
   @Test
   void shouldGetFeeCalculation_mediation() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "MDAS2B",
-                  "claimId": "claim_123",
-                  "startDate": "2019-09-30",
-                  "netDisbursementAmount": 100.21,
-                  "disbursementVatAmount": 20.12,
-                  "vatIndicator": true,
-                  "numberOfMediationSessions": 1
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "MDAS2B",
-              "schemeId": "MED_FS2013",
-              "claimId": "claim_123",
-              "escapeCaseFlag": false,
-              "feeCalculation": {
-                "totalAmount": 321.93,
-                "vatIndicator": true,
-                "vatRateApplied": 20.00,
-                "calculatedVatAmount": 33.60,
-                "disbursementAmount": 100.21,
-                "requestedNetDisbursementAmount": 100.21,
-                "disbursementVatAmount": 20.12,
-                "fixedFeeAmount": 168.00
-              }
-            }
-            """, STRICT));
+    String request = """ 
+        {
+          "feeCode": "MDAS2B",
+          "claimId": "claim_123",
+          "startDate": "2019-09-30",
+          "netDisbursementAmount": 100.21,
+          "disbursementVatAmount": 20.12,
+          "vatIndicator": true,
+          "numberOfMediationSessions": 1
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+         "feeCode": "MDAS2B",
+          "schemeId": "MED_FS2013",
+          "claimId": "claim_123",
+          "escapeCaseFlag": false,
+          "feeCalculation": {
+            "totalAmount": 321.93,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": 33.60,
+            "disbursementAmount": 100.21,
+            "requestedNetDisbursementAmount": 100.21,
+            "disbursementVatAmount": 20.12,
+            "fixedFeeAmount": 168.00
+          }
+        }
+        """);
   }
 
   @Test
   void shouldGetFeeCalculation_mentalHealth() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "MHL03",
-                  "claimId": "claim_123",
-                  "startDate": "2021-11-05",
-                  "netDisbursementAmount": 100.21,
-                  "disbursementVatAmount": 20.12,
-                  "vatIndicator": true,
-                  "boltOns": {
-                    "boltOnAdjournedHearing": 3.00
-                  }
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "MHL03",
-              "schemeId": "MHL_FS2013",
-              "claimId": "claim_123",
-              "escapeCaseFlag": false,
-              "feeCalculation": {
-                "totalAmount": 1081.53,
-                "vatIndicator": true,
-                "vatRateApplied": 20.00,
-                "calculatedVatAmount": 160.20,
-                "disbursementAmount": 100.21,
-                "requestedNetDisbursementAmount": 100.21,
-                "disbursementVatAmount": 20.12,
-                "fixedFeeAmount": 450.00,
-                "boltOnFeeDetails": {
-                  "boltOnTotalFeeAmount": 351.00,
-                  "boltOnAdjournedHearingCount": 3,
-                  "boltOnAdjournedHearingFee": 351.00
-                }
-              }
-            }
-            """, STRICT));
+    String request = """ 
+        {
+          "feeCode": "MHL03",
+          "claimId": "claim_123",
+          "startDate": "2021-11-05",
+          "netDisbursementAmount": 100.21,
+          "disbursementVatAmount": 20.12,
+          "vatIndicator": true,
+          "boltOns": {
+            "boltOnAdjournedHearing": 3.00
+          }
+        }
+        """;
 
+    postAndExpect(request, """
+        {
+          "feeCode": "MHL03",
+          "schemeId": "MHL_FS2013",
+          "claimId": "claim_123",
+          "escapeCaseFlag": false,
+          "feeCalculation": {
+            "totalAmount": 1081.53,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": 160.20,
+            "disbursementAmount": 100.21,
+            "requestedNetDisbursementAmount": 100.21,
+            "disbursementVatAmount": 20.12,
+            "fixedFeeAmount": 450.00,
+            "boltOnFeeDetails": {
+              "boltOnTotalFeeAmount": 351.00,
+              "boltOnAdjournedHearingCount": 3,
+              "boltOnAdjournedHearingFee": 351.00
+            }
+          }
+        }
+        """);
   }
 
   @ParameterizedTest
@@ -533,7 +521,19 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
                                                     String expectedTotal,
                                                     String expectedVatAmount,
                                                     String fixedFeeAmount) throws Exception {
-    String expectedJson = """
+    String request = """ 
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "startDate": "2025-02-01",
+          "netProfitCosts": 239.06,
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true
+        }
+        """.formatted(feeCode);
+
+    postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "%s",
@@ -550,26 +550,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
             "fixedFeeAmount": %s
           }
         }
-        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount);
-
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "%s",
-                  "claimId": "claim_123",
-                  "startDate": "2025-02-01",
-                  "netProfitCosts": 239.06,
-                  "netDisbursementAmount": 123.38,
-                  "disbursementVatAmount": 24.67,
-                  "vatIndicator": true
-                }
-                """.formatted(feeCode))
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(expectedJson, STRICT));
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount));
   }
 
   @Test
