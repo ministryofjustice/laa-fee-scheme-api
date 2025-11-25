@@ -1,3 +1,4 @@
+-- 2013 SCHEME (IMM_ASYLM_FS2013)
 INSERT INTO fee
 (fee_code, profit_cost_limit, disbursement_limit, total_limit, fee_scheme_code)
 VALUES ('IAXL', 800.00, 400.00, NULL, 'IMM_ASYLM_FS2013'),
@@ -8,7 +9,7 @@ VALUES ('IAXL', 800.00, 400.00, NULL, 'IMM_ASYLM_FS2013'),
        ('IRAR', NULL, NULL, NULL, 'IMM_ASYLM_FS2013')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
-
+-- 2020 SCHEME (IMM_ASYLM_FS2020)
 INSERT INTO fee
 (fee_code, profit_cost_limit, disbursement_limit, total_limit, fee_scheme_code)
 VALUES ('IAXL', 800.00, 400.00, NULL, 'IMM_ASYLM_FS2020'),
@@ -19,7 +20,7 @@ VALUES ('IAXL', 800.00, 400.00, NULL, 'IMM_ASYLM_FS2020'),
        ('IRAR', NULL, NULL, NULL, 'IMM_ASYLM_FS2020')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
-
+-- 2023 SCHEME (IMM_ASYLM_FS2023)
 INSERT INTO fee
 (fee_code, profit_cost_limit, disbursement_limit, total_limit, fee_scheme_code)
 VALUES ('IAXL', 800.00, 400.00, NULL, 'IMM_ASYLM_FS2023'),
@@ -30,6 +31,16 @@ VALUES ('IAXL', 800.00, 400.00, NULL, 'IMM_ASYLM_FS2023'),
        ('IRAR', NULL, NULL, NULL, 'IMM_ASYLM_FS2023')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
+-- 2025 SCHEME (IMM_ASYLM_FS2025)
+INSERT INTO fee
+(fee_code, profit_cost_limit, disbursement_limit, total_limit, fee_scheme_code)
+VALUES ('IAXL', 1100.00, 400.00, NULL, 'IMM_ASYLM_FS2025'),
+       ('IMXL', 700.00, 400.00, NULL, 'IMM_ASYLM_FS2025'),
+       ('IA100', NULL, NULL, 150.00, 'IMM_ASYLM_FS2025'),
+       ('IAXC', NULL, NULL, 2200.00, 'IMM_ASYLM_FS2025'),
+       ('IMXC', NULL, NULL, 1700.00, 'IMM_ASYLM_FS2025')
+ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
+    
 INSERT INTO fee
 (fee_code, profit_cost_limit, disbursement_limit, total_limit, adjorn_hearing_bolt_on, oral_cmrh_bolt_on, telephone_cmrh_bolt_on, substantive_hearing_bolt_on, fee_scheme_code)
 VALUES ('IACD', NULL, NULL, 1600.00, 161.00, 166.00, 90.00, 302.00, 'IMM_ASYLM_FS2020'),
