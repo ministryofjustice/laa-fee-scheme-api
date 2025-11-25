@@ -25,3 +25,12 @@ VALUES ('EDUFIN', 'Education Legal Help Fixed Fee', 272.00, 816.00, 'EDU_FS2013'
 ON CONFLICT (fee_code, fee_scheme_code) DO UPDATE
     SET
         fee_type = EXCLUDED.fee_type;
+
+-- Uplifted  Fixed Fees for Debt, Housing ELA and Housing
+INSERT INTO fee (fee_code, description, fixed_fee, escape_threshold_limit, fee_scheme_code, category_type, fee_type)
+VALUES ('DEBT', 'Debt Legal Help Fixed Fee', 256.00, 768.00, 'DEBT_FS2025', 'DEBT', 'FIXED'),
+       ('ELA', 'HLPAS Stage One: Early Legal Advice', 223.00, 669.00, 'ELA_FS2025', 'HOUSING_HLPAS', 'FIXED'),
+       ('HOUS', 'Housing Fixed Fee', 223.00, 669.00, 'HOUS_FS2025', 'HOUSING', 'FIXED')
+ON CONFLICT (fee_code, fee_scheme_code) DO UPDATE
+    SET
+        fee_type = EXCLUDED.fee_type;
