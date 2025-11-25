@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -18,7 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTestBase;
 
@@ -555,120 +553,102 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
 
   @Test
   void shouldGetFeeCalculation_policeStationFixedFee() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "INVC",
-                  "claimId": "claim_123",
-                  "uniqueFileNumber": "121219/242",
-                  "policeStationId": "NE001",
-                  "policeStationSchemeId": "1001",
-                  "vatIndicator": false
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "INVC",
-              "claimId": "claim_123",
-              "schemeId": "POL_FS2016",
-              "escapeCaseFlag": false,
-              "feeCalculation": {
-                "totalAmount": 131.40,
-                "vatIndicator": false,
-                "calculatedVatAmount": 0,
-                "fixedFeeAmount": 131.40
-              }
-            }
-            """, STRICT));
+    String request = """ 
+        {
+          "feeCode": "INVC",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "121219/242",
+          "policeStationId": "NE001",
+          "policeStationSchemeId": "1001",
+          "vatIndicator": false
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "INVC",
+          "claimId": "claim_123",
+          "schemeId": "POL_FS2016",
+          "escapeCaseFlag": false,
+          "feeCalculation": {
+            "totalAmount": 131.40,
+            "vatIndicator": false,
+            "calculatedVatAmount": 0,
+            "fixedFeeAmount": 131.40
+          }
+        }
+        """);
   }
 
   @Test
   void shouldGetFeeCalculation_policeOtherFixedFee() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "INVB1",
-                  "claimId": "claim_123",
-                  "uniqueFileNumber": "12122019/242",
-                  "policeStationId": "NE001",
-                  "policeStationSchemeId": "1001",
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "INVB1",
-              "claimId": "claim_123",
-              "schemeId": "POL_FS2016",
-              "escapeCaseFlag": false,
-              "feeCalculation": {
-              "totalAmount": 34.44,
-              "vatIndicator": true,
-              "vatRateApplied": 20.0,
-              "calculatedVatAmount": 5.74,
-              "fixedFeeAmount": 28.7
-              }
-            }
-            """, STRICT));
+    String request = """ 
+        {
+          "feeCode": "INVB1",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "12122019/242",
+          "policeStationId": "NE001",
+          "policeStationSchemeId": "1001",
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "INVB1",
+          "claimId": "claim_123",
+          "schemeId": "POL_FS2016",
+          "escapeCaseFlag": false,
+          "feeCalculation": {
+          "totalAmount": 34.44,
+          "vatIndicator": true,
+          "vatRateApplied": 20.0,
+          "calculatedVatAmount": 5.74,
+          "fixedFeeAmount": 28.7
+          }
+        }
+        """);
   }
 
   @Test
   void shouldGetFeeCalculation_policeStationHourlyRate() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "INVH",
-                  "claimId": "claim_123",
-                  "uniqueFileNumber": "041122/665",
-                  "policeStationId": "NE024",
-                  "policeStationSchemeId": "1007",
-                  "netProfitCosts": 34.56,
-                  "netDisbursementAmount": 50.5,
-                  "disbursementVatAmount": 20.15,
-                  "netTravelCosts": 20.0,
-                  "netWaitingCosts": 10.0,
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "INVH",
-              "schemeId": "POL_FS2022",
-              "claimId": "claim_123",
-              "feeCalculation": {
-                  "totalAmount": 158.22,
-                  "vatIndicator": true,
-                  "vatRateApplied": 20.0,
-                  "calculatedVatAmount": 23.01,
-                  "disbursementAmount": 50.5,
-                  "requestedNetDisbursementAmount": 50.5,
-                  "disbursementVatAmount": 20.15,
-                  "hourlyTotalAmount": 115.06,
-                  "netProfitCostsAmount": 34.56,
-                  "requestedNetProfitCostsAmount": 34.56,
-                  "netTravelCostsAmount": 20.0,
-                  "netWaitingCostsAmount": 10.0
-              }
-            }
-            """, STRICT));
+    String request = """ 
+        {
+          "feeCode": "INVH",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "041122/665",
+          "policeStationId": "NE024",
+          "policeStationSchemeId": "1007",
+          "netProfitCosts": 34.56,
+          "netDisbursementAmount": 50.5,
+          "disbursementVatAmount": 20.15,
+          "netTravelCosts": 20.0,
+          "netWaitingCosts": 10.0,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "INVH",
+          "schemeId": "POL_FS2022",
+          "claimId": "claim_123",
+          "feeCalculation": {
+            "totalAmount": 158.22,
+            "vatIndicator": true,
+            "vatRateApplied": 20.0,
+            "calculatedVatAmount": 23.01,
+            "disbursementAmount": 50.5,
+            "requestedNetDisbursementAmount": 50.5,
+            "disbursementVatAmount": 20.15,
+            "hourlyTotalAmount": 115.06,
+            "netProfitCostsAmount": 34.56,
+            "requestedNetProfitCostsAmount": 34.56,
+            "netTravelCostsAmount": 20.0,
+            "netWaitingCostsAmount": 10.0
+          }
+        }
+        """);
   }
 
   @ParameterizedTest
@@ -733,8 +713,21 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
       String netTravelCosts,
       String fixedFeeAmount
   ) throws Exception {
+    String request = """ 
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "121219/242",
+          "representationOrderDate": "2025-02-01",
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true,
+          "netWaitingCosts": %s,
+          "netTravelCosts": %s
+        }
+        """.formatted(feeCode, netWaitingCosts, netTravelCosts);
 
-    String expectedJson = """
+    postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "%s",
@@ -752,28 +745,8 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
             "fixedFeeAmount": %s
           }
         }
-        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, netWaitingCosts, netTravelCosts, fixedFeeAmount);
-
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "%s",
-                  "claimId": "claim_123",
-                  "uniqueFileNumber": "121219/242",
-                  "representationOrderDate": "2025-02-01",
-                  "netDisbursementAmount": 123.38,
-                  "disbursementVatAmount": 24.67,
-                  "vatIndicator": true,
-                  "netWaitingCosts": %s,
-                  "netTravelCosts": %s
-                }
-                """.formatted(feeCode, netWaitingCosts, netTravelCosts))
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(expectedJson, STRICT));
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount,
+        netWaitingCosts, netTravelCosts, fixedFeeAmount));
   }
 
   @ParameterizedTest
@@ -790,7 +763,20 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
                                                      String netProfitCostsAmount,
                                                      String requestedNetProfitCostsAmount
   ) throws Exception {
-    String expectedJson = """
+    String request = """ 
+        {
+          "feeCode": "%s",
+          "uniqueFileNumber": "110425/123",
+          "netProfitCosts": %s,
+          "netDisbursementAmount": 80,
+          "disbursementVatAmount": 10,
+          "vatIndicator": true,
+          "netTravelCosts": 50,
+          "netWaitingCosts": 50
+        }
+        """.formatted(feeCode, netProfitCostsAmount);
+
+    postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "%s",
@@ -806,294 +792,208 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
             "netProfitCostsAmount": %s,
             "requestedNetProfitCostsAmount": %s,
             "netTravelCostsAmount": 50,
-            "netWaitingCostsAmount": 50
-          }
+            "netWaitingCostsAmount": 50 
+          }  
         }
-        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, expectedHourlyTotalAmount, netProfitCostsAmount, requestedNetProfitCostsAmount);
-
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "%s",
-                  "uniqueFileNumber": "110425/123",
-                  "netProfitCosts": %s,
-                  "netDisbursementAmount": 80,
-                  "disbursementVatAmount": 10,
-                  "vatIndicator": true,
-                  "netTravelCosts": 50,
-                  "netWaitingCosts": 50
-                }
-                """.formatted(feeCode, netProfitCostsAmount))
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(expectedJson, STRICT));
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, expectedHourlyTotalAmount, netProfitCostsAmount, requestedNetProfitCostsAmount));
   }
 
   @Test
   void shouldGetFeeCalculation_educationDisbursementOnly() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "EDUDIS",
-                  "claimId": "claim_123",
-                  "startDate": "2025-02-01",
-                  "netDisbursementAmount": 123.38,
-                  "disbursementVatAmount": 24.67
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "EDUDIS",
-              "schemeId": "EDU_DISB_FS2024",
-              "claimId": "claim_123",
-              "feeCalculation": {
-                  "totalAmount": 148.05,
-                  "disbursementAmount": 123.38,
-                  "requestedNetDisbursementAmount": 123.38,
-                  "disbursementVatAmount": 24.67
-                }
-              }
-            """, STRICT));
+    String request = """ 
+        {
+          "feeCode": "EDUDIS",
+          "claimId": "claim_123",
+          "startDate": "2025-02-01",
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "EDUDIS",
+          "schemeId": "EDU_DISB_FS2024",
+          "claimId": "claim_123",
+          "feeCalculation": {
+            "totalAmount": 148.05,
+            "disbursementAmount": 123.38,
+            "requestedNetDisbursementAmount": 123.38,
+            "disbursementVatAmount": 24.67
+           }
+        }
+        """);
   }
 
   @Test
   void shouldGetFeeCalculation_immigrationDisbursementOnly() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "ICASD",
-                  "claimId": "claim_123",
-                  "startDate": "2021-09-30",
-                  "netDisbursementAmount": 55.35,
-                  "disbursementVatAmount": 11.07
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "ICASD",
-              "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2020",
-              "claimId": "claim_123",
-              "feeCalculation": {
-                "totalAmount": 66.42,
-                "disbursementAmount": 55.35,
-                "requestedNetDisbursementAmount": 55.35,
-                "disbursementVatAmount": 11.07
-                }
-              }
-            """, STRICT));
+    String request = """ 
+        {
+          "feeCode": "ICASD",
+          "claimId": "claim_123",
+          "startDate": "2021-09-30",
+          "netDisbursementAmount": 55.35,
+          "disbursementVatAmount": 11.07
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "ICASD",
+          "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2020",
+          "claimId": "claim_123",
+          "feeCalculation": {
+            "totalAmount": 66.42,
+            "disbursementAmount": 55.35,
+            "requestedNetDisbursementAmount": 55.35,
+            "disbursementVatAmount": 11.07
+            }
+          }
+        }
+        """);
   }
 
   @Test
   void shouldGetFeeCalculation_mentalHealthDisbursementOnly() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "MHLDIS",
-                  "claimId": "claim_123",
-                  "startDate": "2025-07-29",
-                  "netDisbursementAmount": 1200.0,
-                  "disbursementVatAmount": 150.0
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "MHLDIS",
-              "schemeId": "MHL_DISB_FS2020",
-              "claimId": "claim_123",
-              "feeCalculation": {
-                  "totalAmount": 1350.0,
-                  "disbursementAmount": 1200.0,
-                  "requestedNetDisbursementAmount": 1200.0,
-                  "disbursementVatAmount": 150.0
-                }
-              }
-            """, STRICT));
-  }
+    String request = """ 
+        {
+          "feeCode": "MHLDIS",
+          "claimId": "claim_123",
+          "startDate": "2025-07-29",
+          "netDisbursementAmount": 1200.0,
+          "disbursementVatAmount": 150.0
+        }
+        """;
 
-  @Test
-  void should_GetErrorCodeAndMessage_WhenLondonRateIsNotSupplied_InFamilyClaimRequest() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "FPB010",
-                  "startDate": "2022-02-01",
-                  "netDisbursementAmount": 123.38,
-                  "disbursementVatAmount": 24.67,
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "FPB010",
-              "validationMessages": [
-                   {
-                      "type": "ERROR",
-                      "code": "ERRFAM1",
-                      "message": "London/non-London rate must be entered for the Fee Code used."
-                    }
-                ]
-              }
-            """, STRICT));
+    postAndExpect(request, """
+        {
+          "feeCode": "MHLDIS",
+          "schemeId": "MHL_DISB_FS2020",
+          "claimId": "claim_123",
+          "feeCalculation": {
+            "totalAmount": 1350.0,
+            "disbursementAmount": 1200.0,
+            "requestedNetDisbursementAmount": 1200.0,
+            "disbursementVatAmount": 150.0
+            }
+          }
+        }
+        """);
   }
 
   @Test
   void shouldGetFeeCalculation_sendingHearing() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "PROW",
-                  "claimId": "claim_123",
-                  "representationOrderDate": "2025-02-01",
-                  "uniqueFileNumber": "010225/001",
-                  "netDisbursementAmount": 123.38,
-                  "disbursementVatAmount": 24.67,
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "PROW",
-              "schemeId": "SEND_HEAR_FS2022",
-              "claimId": "claim_123",
-              "feeCalculation": {
-                  "totalAmount": 398.38,
-                  "vatIndicator": true,
-                  "vatRateApplied": 20.0,
-                  "calculatedVatAmount": 41.72,
-                  "disbursementAmount": 123.38,
-                  "requestedNetDisbursementAmount": 123.38,
-                  "disbursementVatAmount": 24.67,
-                  "fixedFeeAmount": 208.61
-              }
-              }
-            """, STRICT));
+    String request = """ 
+        {
+          "feeCode": "PROW",
+          "claimId": "claim_123",
+          "representationOrderDate": "2025-02-01",
+          "uniqueFileNumber": "010225/001",
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "PROW",
+          "schemeId": "SEND_HEAR_FS2022",
+          "claimId": "claim_123",
+          "feeCalculation": {
+              "totalAmount": 398.38,
+              "vatIndicator": true,
+              "vatRateApplied": 20.0,
+              "calculatedVatAmount": 41.72,
+              "disbursementAmount": 123.38,
+              "requestedNetDisbursementAmount": 123.38,
+              "disbursementVatAmount": 24.67,
+              "fixedFeeAmount": 208.61
+          }
+        }
+        """);
   }
 
   @Test
   void shouldGetFeeCalculation_preOrderCover() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "PROP1",
-                  "claimId": "claim_123",
-                  "uniqueFileNumber": "110425/123",
-                  "netProfitCosts": 10.56,
-                  "netDisbursementAmount": 20.5,
-                  "disbursementVatAmount": 5.15,
-                  "netTravelCosts": 11.35,
-                  "netWaitingCosts": 12.22,
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-                "feeCode": "PROP1",
-                "schemeId": "POC_FS2022",
-                "claimId": "claim_123",
-                "feeCalculation": {
-                    "totalAmount": 66.61,
-                    "vatIndicator": true,
-                    "vatRateApplied": 20.0,
-                    "calculatedVatAmount": 6.83,
-                    "disbursementAmount": 20.5,
-                    "requestedNetDisbursementAmount": 20.5,
-                    "disbursementVatAmount": 5.15,
-                    "hourlyTotalAmount": 34.13,
-                    "netProfitCostsAmount": 10.56,
-                    "requestedNetProfitCostsAmount": 10.56,
-                    "netTravelCostsAmount": 11.35,
-                    "netWaitingCostsAmount": 12.22
-                }
-            }
-            """, STRICT));
+    String request = """ 
+        {
+          "feeCode": "PROP1",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "110425/123",
+          "netProfitCosts": 10.56,
+          "netDisbursementAmount": 20.5,
+          "disbursementVatAmount": 5.15,
+          "netTravelCosts": 11.35,
+          "netWaitingCosts": 12.22,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "PROP1",
+          "schemeId": "POC_FS2022",
+          "claimId": "claim_123",
+          "feeCalculation": {
+              "totalAmount": 66.61,
+              "vatIndicator": true,
+              "vatRateApplied": 20.0,
+              "calculatedVatAmount": 6.83,
+              "disbursementAmount": 20.5,
+              "requestedNetDisbursementAmount": 20.5,
+              "disbursementVatAmount": 5.15,
+              "hourlyTotalAmount": 34.13,
+              "netProfitCostsAmount": 10.56,
+              "requestedNetProfitCostsAmount": 10.56,
+              "netTravelCostsAmount": 11.35,
+              "netWaitingCostsAmount": 12.22
+          }
+        }
+        """);
   }
 
   @Test
   void shouldGetFeeCalculation_adviceAssistanceAdvocacy() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "PROD",
-                  "claimId": "claim_123",
-                  "caseConcludedDate": "2024-12-06",
-                  "netProfitCosts": 500,
-                  "netDisbursementAmount": 100,
-                  "disbursementVatAmount": 20,
-                  "vatIndicator": true,
-                  "netTravelCosts": 50,
-                  "netWaitingCosts": 50
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-                "feeCode": "PROD",
-                "schemeId": "AAA_FS2016",
-                "claimId": "claim_123",
-                "feeCalculation": {
-                    "totalAmount": 840.0,
-                    "vatIndicator": true,
-                    "vatRateApplied": 20.0,
-                    "calculatedVatAmount": 120.0,
-                    "disbursementAmount": 100.0,
-                    "requestedNetDisbursementAmount": 100.0,
-                    "disbursementVatAmount": 20.0,
-                    "hourlyTotalAmount": 600.0,
-                    "netProfitCostsAmount": 500.0,
-                    "requestedNetProfitCostsAmount": 500.0,
-                    "netTravelCostsAmount": 50.0,
-                    "netWaitingCostsAmount": 50.0
-                }
-            }
-            """, STRICT));
+    String request = """ 
+        {
+          "feeCode": "PROD",
+          "claimId": "claim_123",
+          "caseConcludedDate": "2024-12-06",
+          "netProfitCosts": 500,
+          "netDisbursementAmount": 100,
+          "disbursementVatAmount": 20,
+          "vatIndicator": true,
+          "netTravelCosts": 50,
+          "netWaitingCosts": 50
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "PROD",
+          "schemeId": "AAA_FS2016",
+          "claimId": "claim_123",
+          "feeCalculation": {
+              "totalAmount": 840.0,
+              "vatIndicator": true,
+              "vatRateApplied": 20.0,
+              "calculatedVatAmount": 120.0,
+              "disbursementAmount": 100.0,
+              "requestedNetDisbursementAmount": 100.0,
+              "disbursementVatAmount": 20.0,
+              "hourlyTotalAmount": 600.0,
+              "netProfitCostsAmount": 500.0,
+              "requestedNetProfitCostsAmount": 500.0,
+              "netTravelCostsAmount": 50.0,
+              "netWaitingCostsAmount": 50.0
+          }
+        }
+        """);
   }
 
-  private @NotNull ResultActions postAndExpect(String requestJson, String expectedResponseJson) throws Exception {
-    return mockMvc
+  private void postAndExpect(String requestJson, String expectedResponseJson) throws Exception {
+    mockMvc
         .perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)

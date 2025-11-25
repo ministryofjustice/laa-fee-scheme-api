@@ -301,6 +301,39 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
             """, STRICT));
   }
 
+  @Test
+  void should_GetErrorCodeAndMessage_WhenLondonRateIsNotSupplied_InFamilyClaimRequest() throws Exception {
+
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "FPB010",
+                  "startDate": "2022-02-01",
+                  "netDisbursementAmount": 123.38,
+                  "disbursementVatAmount": 24.67,
+                  "vatIndicator": true
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "feeCode": "FPB010",
+              "validationMessages": [
+                   {
+                      "type": "ERROR",
+                      "code": "ERRFAM1",
+                      "message": "London/non-London rate must be entered for the Fee Code used."
+                    }
+                ]
+              }
+            """, STRICT));
+  }
+
   @ParameterizedTest
   @CsvSource({
       "IMCF, WARIA1, Costs have been capped at £600 without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit., "
