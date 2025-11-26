@@ -557,7 +557,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         {
           "feeCode": "INVC",
           "claimId": "claim_123",
-          "uniqueFileNumber": "121219/242",
+          "uniqueFileNumber": "221225/242",
           "policeStationId": "NE001",
           "policeStationSchemeId": "1001",
           "vatIndicator": false
@@ -568,13 +568,13 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         {
           "feeCode": "INVC",
           "claimId": "claim_123",
-          "schemeId": "POL_FS2016",
+          "schemeId": "POL_FS2025",
           "escapeCaseFlag": false,
           "feeCalculation": {
-            "totalAmount": 131.40,
+            "totalAmount": 320.0,
             "vatIndicator": false,
             "calculatedVatAmount": 0,
-            "fixedFeeAmount": 131.40
+            "fixedFeeAmount": 320.0
           }
         }
         """);
