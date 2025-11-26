@@ -30,308 +30,269 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
 
   @Test
   void shouldReturnValidationError_whenFeeCodeIsInvalid() throws Exception {
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "BLAH",
-                  "claimId": "claim_123",
-                  "startDate": "2019-09-30",
-                  "netProfitCosts": 239.06,
-                  "netCostOfCounsel": 79.19,
-                  "netDisbursementAmount": 100.21,
-                  "disbursementVatAmount": 20.12,
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().json("""
+    String request = """ 
+        {
+          "feeCode": "BLAH",
+          "claimId": "claim_123",
+          "startDate": "2019-09-30",
+          "netProfitCosts": 239.06,
+          "netCostOfCounsel": 79.19,
+          "netDisbursementAmount": 100.21,
+          "disbursementVatAmount": 20.12,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "BLAH",
+          "claimId": "claim_123",
+          "validationMessages": [
             {
-              "feeCode": "BLAH",
-              "claimId": "claim_123",
-              "validationMessages": [
-                {
-                  "type":"ERROR",
-                  "code":"ERRALL1",
-                  "message":"Enter a valid Fee Code."
-                }
-              ]
+              "type":"ERROR",
+              "code":"ERRALL1",
+              "message":"Enter a valid Fee Code."
             }
-            """, STRICT));
+          ]
+        }
+        """);
   }
 
   @Test
   void shouldReturnValidationError_whenCivilFeeCodeAndStartDateIsTooFarInThePast() throws Exception {
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "DISC",
-                  "claimId": "claim_123",
-                  "startDate": "2012-09-30",
-                  "netProfitCosts": 239.06,
-                  "netCostOfCounsel": 79.19,
-                  "netDisbursementAmount": 100.21,
-                  "disbursementVatAmount": 20.12,
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().json("""
+    String request = """ 
+        {
+          "feeCode": "DISC",
+          "claimId": "claim_123",
+          "startDate": "2012-09-30",
+          "netProfitCosts": 239.06,
+          "netCostOfCounsel": 79.19,
+          "netDisbursementAmount": 100.21,
+          "disbursementVatAmount": 20.12,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "DISC",
+          "claimId": "claim_123",
+          "validationMessages": [
             {
-              "feeCode": "DISC",
-              "claimId": "claim_123",
-              "validationMessages": [
-                {
-                  "type":"ERROR",
-                  "code":"ERRCIV2",
-                  "message":"Case Start Date is too far in the past."
-                }
-              ]
+              "type":"ERROR",
+              "code":"ERRCIV2",
+              "message":"Case Start Date is too far in the past."
             }
-            """, STRICT));
+          ]
+        }
+        """);
   }
 
   @Test
   void shouldReturnValidationError_whenCrimeFeeCodeAndStartDateIsInvalid() throws Exception {
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "INVC",
-                  "claimId": "claim_123",
-                  "uniqueFileNumber": "121212/242",
-                  "policeStationId": "NE001",
-                  "policeStationSchemeId": "1001",
-                  "vatIndicator": false
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().json("""
+    String request = """ 
+        {
+          "feeCode": "INVC",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "121212/242",
+          "policeStationId": "NE001",
+          "policeStationSchemeId": "1001",
+          "vatIndicator": false
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "INVC",
+          "claimId": "claim_123",
+          "validationMessages": [
             {
-              "feeCode": "INVC",
-              "claimId": "claim_123",
-              "validationMessages": [
-                {
-                  "type":"ERROR",
-                  "code":"ERRCRM1",
-                  "message":"Fee Code is not valid for the Case Start Date."
-                }
-              ]
+              "type":"ERROR",
+              "code":"ERRCRM1",
+              "message":"Fee Code is not valid for the Case Start Date."
             }
-            """, STRICT));
+          ]
+        }
+        """);
   }
 
   @Test
   void shouldReturnValidationError_whenCrimeFeeCodeAndPoliceStationIdIsInvalid() throws Exception {
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "INVC",
-                  "claimId": "claim_123",
-                  "uniqueFileNumber": "121219/242",
-                  "policeStationId": "BLAH",
-                  "policeStationSchemeId": "1001",
-                  "vatIndicator": false
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().json("""
+    String request = """ 
+        {
+          "feeCode": "INVC",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "121219/242",
+          "policeStationId": "BLAH",
+          "policeStationSchemeId": "1001",
+          "vatIndicator": false
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "INVC",
+          "claimId": "claim_123",
+          "validationMessages": [
             {
-              "feeCode": "INVC",
-              "claimId": "claim_123",
-              "validationMessages": [
-                {
-                  "type":"ERROR",
-                  "code":"ERRCRM3",
-                  "message":"Enter a valid Police station ID, Court ID, or Prison ID."
-                }
-              ]
+              "type":"ERROR",
+              "code":"ERRCRM3",
+              "message":"Enter a valid Police station ID, Court ID, or Prison ID."
             }
-            """, STRICT));
+          ]
+        }
+        """);
   }
 
   @Test
   void shouldReturnValidationError_whenCrimeFeeCodeAndPoliceSchemeIdIsInvalid() throws Exception {
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "INVC",
-                  "claimId": "claim_123",
-                  "uniqueFileNumber": "121221/242",
-                  "policeStationSchemeId": "BLAH",
-                  "vatIndicator": false
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().json("""
+    String request = """ 
+        {
+          "feeCode": "INVC",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "121221/242",
+          "policeStationSchemeId": "BLAH",
+          "vatIndicator": false
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "INVC",
+          "claimId": "claim_123",
+          "validationMessages": [
             {
-              "feeCode": "INVC",
-              "claimId": "claim_123",
-              "validationMessages": [
-                {
-                  "type":"ERROR",
-                  "code":"ERRCRM4",
-                  "message":"Enter a valid Scheme ID."
-                }
-              ]
+              "type":"ERROR",
+              "code":"ERRCRM4",
+              "message":"Enter a valid Scheme ID."
             }
-            """, STRICT));
+          ]
+        }
+        """);
   }
 
   @Test
   void shouldReturnValidationError_whenCrimeFeeCodeAndUfnIsMissing() throws Exception {
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "INVK",
-                  "claimId": "claim_123",
-                  "policeStationId": "NE001",
-                  "policeStationSchemeId": "1001",
-                  "vatIndicator": false
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().json("""
+    String request = """ 
+        {
+          "feeCode": "INVK",
+          "claimId": "claim_123",
+          "policeStationId": "NE001",
+          "policeStationSchemeId": "1001",
+          "vatIndicator": false
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "INVK",
+          "claimId": "claim_123",
+          "validationMessages": [
             {
-              "feeCode": "INVK",
-              "claimId": "claim_123",
-              "validationMessages": [
-                {
-                  "type":"ERROR",
-                  "code":"ERRCRM7",
-                  "message":"Enter a UFN."
-                }
-              ]
+              "type":"ERROR",
+              "code":"ERRCRM7",
+              "message":"Enter a UFN."
             }
-            """, STRICT));
+          ]
+        }
+        """);
   }
 
   @Test
   void shouldReturnValidationError_whenCrimeFeeCodeAndRepOrderDateIsInvalid() throws Exception {
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "PROJ5",
-                  "claimId": "claim_123",
-                  "uniqueFileNumber": "010215/242",
-                  "representationOrderDate": "2015-02-01",
-                  "netDisbursementAmount": 123.38,
-                  "disbursementVatAmount": 24.67,
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().json("""
+    String request = """ 
+        {
+          "feeCode": "PROJ5",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "010215/242",
+          "representationOrderDate": "2015-02-01",
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "PROJ5",
+          "claimId": "claim_123",
+          "validationMessages": [
             {
-              "feeCode": "PROJ5",
-              "claimId": "claim_123",
-              "validationMessages": [
-                {
-                  "type":"ERROR",
-                  "code":"ERRCRM12",
-                  "message":"Fee Code is not valid for the Representation Order Date provided."
-                }
-              ]
+              "type":"ERROR",
+              "code":"ERRCRM12",
+              "message":"Fee Code is not valid for the Representation Order Date provided."
             }
-            """, STRICT));
+          ]
+        }
+        """);
   }
 
   @Test
   void shouldReturnValidationWarning_family() throws Exception {
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "FPB010",
-                  "startDate": "2023-04-01",
-                  "claimId": "claim_123",
-                  "netProfitCosts": 200.20,
-                  "netDisbursementAmount": 55.35,
-                  "disbursementVatAmount": 11.07,
-                  "londonRate": false,
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().json("""
+    String request = """ 
+        {
+          "feeCode": "FPB010",
+          "startDate": "2023-04-01",
+          "claimId": "claim_123",
+          "netProfitCosts": 200.20,
+          "netDisbursementAmount": 55.35,
+          "disbursementVatAmount": 11.07,
+          "londonRate": false,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "FPB010",
+          "claimId": "claim_123",
+          "schemeId": "FAM_NON_LON_FS2011",
+          "validationMessages": [
             {
-              "feeCode": "FPB010",
-              "claimId": "claim_123",
-              "schemeId": "FAM_NON_LON_FS2011",
-              "validationMessages": [
-                {
-                  "type": "WARNING",
-                  "code": "WARFAM1",
-                  "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
-                }
-              ],
-              "escapeCaseFlag": true,
-              "feeCalculation": {
-                "totalAmount": 224.82,
-                "vatIndicator": true,
-                "vatRateApplied": 20.0,
-                "calculatedVatAmount": 26.4,
-                "disbursementAmount": 55.35,
-                "requestedNetDisbursementAmount": 55.35,
-                "disbursementVatAmount": 11.07,
-                "fixedFeeAmount": 132.0
-              }
+              "type": "WARNING",
+              "code": "WARFAM1",
+              "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
             }
-            """, STRICT));
+          ],
+          "escapeCaseFlag": true,
+          "feeCalculation": {
+            "totalAmount": 224.82,
+            "vatIndicator": true,
+            "vatRateApplied": 20.0,
+            "calculatedVatAmount": 26.4,
+            "disbursementAmount": 55.35,
+            "requestedNetDisbursementAmount": 55.35,
+            "disbursementVatAmount": 11.07,
+            "fixedFeeAmount": 132.0
+          }
+        }
+        """);
   }
 
   @Test
   void should_GetErrorCodeAndMessage_WhenLondonRateIsNotSupplied_InFamilyClaimRequest() throws Exception {
+    String request = """ 
+        {
+          "feeCode": "FPB010",
+          "startDate": "2022-02-01",
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true
+        }
+        """;
 
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "FPB010",
-                  "startDate": "2022-02-01",
-                  "netDisbursementAmount": 123.38,
-                  "disbursementVatAmount": 24.67,
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
+    postAndExpect(request, """
+        {
+          "feeCode": "FPB010",
+          "validationMessages": [
             {
-              "feeCode": "FPB010",
-              "validationMessages": [
-                   {
-                      "type": "ERROR",
-                      "code": "ERRFAM1",
-                      "message": "London/non-London rate must be entered for the Fee Code used."
-                    }
-                ]
-              }
-            """, STRICT));
+              "type": "ERROR",
+              "code": "ERRFAM1",
+              "message": "London/non-London rate must be entered for the Fee Code used."
+            }
+          ]
+        }
+        """);
   }
 
   @ParameterizedTest
@@ -355,561 +316,494 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
       double fixedFeeAmount,
       double netProfitCosts
   ) throws Exception {
-
-    String expectedJson = """
+    String request = """ 
         {
-            "feeCode": "%s",
-            "schemeId": "IMM_ASYLM_FS2023",
-            "claimId": "claim_123",
-            "validationMessages": [
-                {
-                    "type": "WARNING",
-                    "code": "%s",
-                    "message": "%s"
-                }
-            ],
-            "escapeCaseFlag": %s,
-            "feeCalculation": {
-                "totalAmount": %s,
-                "vatIndicator": true,
-                "vatRateApplied": 20.0,
-                "calculatedVatAmount": %s,
-                "requestedNetDisbursementAmount": %s,
-                "disbursementAmount": %s,
-                "disbursementVatAmount": 70.12,
-                "fixedFeeAmount": %s,
-                "detentionTravelAndWaitingCostsAmount": 111.0,
-                "jrFormFillingAmount": 50.0
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "startDate": "2024-09-30",
+          "netDisbursementAmount": %s,
+          "disbursementVatAmount": 70.12,
+          "vatIndicator": true,
+          "detentionTravelAndWaitingCosts": 111.00,
+          "jrFormFilling": 50.00,
+          "netProfitCosts": "%s"
+        }
+        """.formatted(feeCode, requestedDisbursementAmount, netProfitCosts);
+
+    postAndExpect(request, """
+        {
+          "feeCode": "%s",
+          "schemeId": "IMM_ASYLM_FS2023",
+          "claimId": "claim_123",
+          "validationMessages": [
+            {
+              "type": "WARNING",
+              "code": "%s",
+              "message": "%s"
             }
+          ],
+          "escapeCaseFlag": %s,
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.0,
+            "calculatedVatAmount": %s,
+            "requestedNetDisbursementAmount": %s,
+            "disbursementAmount": %s,
+            "disbursementVatAmount": 70.12,
+            "fixedFeeAmount": %s,
+            "detentionTravelAndWaitingCostsAmount": 111.0,
+            "jrFormFillingAmount": 50.0
+          }
         }
         """.formatted(feeCode, warningType, warningMessage, escapeFlag, totalAmount, calculatedVatAmount, requestedDisbursementAmount, disbursementAmount,
-        fixedFeeAmount, netProfitCosts);
-
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "%s",
-                  "claimId": "claim_123",
-                  "startDate": "2024-09-30",
-                  "netDisbursementAmount": %s,
-                  "disbursementVatAmount": 70.12,
-                  "vatIndicator": true,
-                  "detentionTravelAndWaitingCosts": 111.00,
-                  "jrFormFilling": 50.00,
-                  "netProfitCosts": "%s"
-                }
-                """.formatted(feeCode, requestedDisbursementAmount, netProfitCosts))
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().json(expectedJson, STRICT));
+        fixedFeeAmount, netProfitCosts));
   }
 
   @Test
   void shouldReturnValidationWarning_immigrationAndAsylumHourlyRate_legalHelpIA100() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "IA100",
-                  "claimId": "claim_123",
-                  "startDate": "2015-02-11",
-                  "netProfitCosts": 1160.89,
-                  "netDisbursementAmount": 825.70,
-                  "disbursementVatAmount": 25.14,
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
+    String request = """ 
+        {
+          "feeCode": "IA100",
+          "claimId": "claim_123",
+          "startDate": "2015-02-11",
+          "netProfitCosts": 1160.89,
+          "netDisbursementAmount": 825.70,
+          "disbursementVatAmount": 25.14,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "IA100",
+          "schemeId": "IMM_ASYLM_FS2013",
+          "claimId": "claim_123",
+          "validationMessages": [
             {
-                "feeCode": "IA100",
-                "schemeId": "IMM_ASYLM_FS2013",
-                "claimId": "claim_123",
-                "validationMessages": [
-                    {
-                        "type": "WARNING",
-                        "code": "WARIA8",
-                        "message": "Costs have been capped. Costs for the Fee Code used cannot exceed £100."
-                    }
-                ],
-                "feeCalculation": {
-                  "totalAmount": 357.32,
-                  "vatIndicator": true,
-                  "vatRateApplied": 20.0,
-                  "calculatedVatAmount": 232.18,
-                  "disbursementAmount": 825.7,
-                  "requestedNetDisbursementAmount": 825.7,
-                  "disbursementVatAmount": 25.14,
-                  "hourlyTotalAmount": 100.0,
-                  "netProfitCostsAmount": 1160.89,
-                  "requestedNetProfitCostsAmount": 1160.89
-                }
+              "type": "WARNING",
+              "code": "WARIA8",
+              "message": "Costs have been capped. Costs for the Fee Code used cannot exceed £100."
             }
-            """, STRICT));
+          ],
+          "feeCalculation": {
+            "totalAmount": 357.32,
+            "vatIndicator": true,
+            "vatRateApplied": 20.0,
+            "calculatedVatAmount": 232.18,
+            "disbursementAmount": 825.7,
+            "requestedNetDisbursementAmount": 825.7,
+            "disbursementVatAmount": 25.14,
+            "hourlyTotalAmount": 100.0,
+            "netProfitCostsAmount": 1160.89,
+            "requestedNetProfitCostsAmount": 1160.89
+          }
+        }
+        """);
   }
 
   @Test
   void shouldReturnValidationWarning_immigrationAndAsylumHourlyRate_legalHelp() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "IMXL",
-                  "claimId": "claim_123",
-                  "startDate": "2015-02-11",
-                  "netProfitCosts": 1160.89,
-                  "netDisbursementAmount": 825.70,
-                  "disbursementVatAmount": 25.14,
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
+    String request = """ 
+        {
+          "feeCode": "IMXL",
+          "claimId": "claim_123",
+          "startDate": "2015-02-11",
+          "netProfitCosts": 1160.89,
+          "netDisbursementAmount": 825.70,
+          "disbursementVatAmount": 25.14,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "IMXL",
+          "schemeId": "IMM_ASYLM_FS2013",
+          "claimId": "claim_123",
+          "validationMessages": [
             {
-                "feeCode": "IMXL",
-                "schemeId": "IMM_ASYLM_FS2013",
-                "claimId": "claim_123",
-                "validationMessages": [
-                    {
-                        "type": "WARNING",
-                        "code": "WARIA6",
-                        "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
-                    },
-                    {
-                        "type": "WARNING",
-                        "code": "WARIA7",
-                        "message": "Costs have been capped without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit."
-                    }
-                ],
-                "feeCalculation": {
-                    "totalAmount": 1025.14,
-                    "vatIndicator": true,
-                    "vatRateApplied": 20.0,
-                    "calculatedVatAmount": 100.0,
-                    "disbursementAmount": 400.0,
-                    "requestedNetDisbursementAmount": 825.7,
-                    "disbursementVatAmount": 25.14,
-                    "hourlyTotalAmount": 900.0,
-                    "netProfitCostsAmount": 500.0,
-                    "requestedNetProfitCostsAmount": 1160.89
-                }
+              "type": "WARNING",
+              "code": "WARIA6",
+              "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
+            },
+            {
+              "type": "WARNING",
+              "code": "WARIA7",
+              "message": "Costs have been capped without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit."
             }
-            """, STRICT));
+          ],
+          "feeCalculation": {
+            "totalAmount": 1025.14,
+            "vatIndicator": true,
+            "vatRateApplied": 20.0,
+            "calculatedVatAmount": 100.0,
+            "disbursementAmount": 400.0,
+            "requestedNetDisbursementAmount": 825.7,
+            "disbursementVatAmount": 25.14,
+            "hourlyTotalAmount": 900.0,
+            "netProfitCostsAmount": 500.0,
+            "requestedNetProfitCostsAmount": 1160.89
+          }
+        }
+        """);
   }
 
   @Test
   void shouldReturnValidationWarning_immigrationAndAsylumHourlyRate_clr() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "IAXC",
-                  "claimId": "claim_123",
-                  "startDate": "2015-02-11",
-                  "netProfitCosts": 1160.89,
-                  "netDisbursementAmount": 825.70,
-                  "disbursementVatAmount": 25.14,
-                  "vatIndicator": true
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
+    String request = """ 
+        {
+          "feeCode": "IAXC",
+          "claimId": "claim_123",
+          "startDate": "2015-02-11",
+          "netProfitCosts": 1160.89,
+          "netDisbursementAmount": 825.70,
+          "disbursementVatAmount": 25.14,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "IAXC",
+          "schemeId": "IMM_ASYLM_FS2013",
+          "claimId": "claim_123",
+          "validationMessages": [
             {
-                "feeCode": "IAXC",
-                "schemeId": "IMM_ASYLM_FS2013",
-                "claimId": "claim_123",
-                "validationMessages": [
-                    {
-                        "type": "WARNING",
-                        "code": "WARIA4",
-                        "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
-                    }
-                ],
-                "feeCalculation": {
-                  "totalAmount": 1857.32,
-                  "vatIndicator": true,
-                  "vatRateApplied": 20.0,
-                  "calculatedVatAmount": 232.18,
-                  "disbursementAmount": 825.7,
-                  "requestedNetDisbursementAmount": 825.7,
-                  "disbursementVatAmount": 25.14,
-                  "hourlyTotalAmount": 1600.0,
-                  "netProfitCostsAmount": 1160.89,
-                  "requestedNetProfitCostsAmount": 1160.89
-                }
+              "type": "WARNING",
+              "code": "WARIA4",
+              "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
             }
-            """, STRICT));
+          ],
+          "feeCalculation": {
+            "totalAmount": 1857.32,
+            "vatIndicator": true,
+            "vatRateApplied": 20.0,
+            "calculatedVatAmount": 232.18,
+            "disbursementAmount": 825.7,
+            "requestedNetDisbursementAmount": 825.7,
+            "disbursementVatAmount": 25.14,
+            "hourlyTotalAmount": 1600.0,
+            "netProfitCostsAmount": 1160.89,
+            "requestedNetProfitCostsAmount": 1160.89
+          }
+        }
+        """);
   }
 
   @Test
   void shouldReturnValidationWarning_immigrationAndAsylumHourlyRate_clrInterim() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "IACD",
-                  "claimId": "claim_123",
-                  "startDate": "2021-02-11",
-                  "netProfitCosts": 1116.89,
-                   "netCostOfCounsel": 706.90,
-                  "netDisbursementAmount": 125.70,
-                  "disbursementVatAmount": 25.14,
-                  "boltOns": {
-                      "boltOnAdjournedHearing": 1,
-                      "boltOnCmrhOral": 2,
-                      "boltOnCmrhTelephone": 1,
-                      "boltOnSubstantiveHearing": true
-                  },
-                  "vatIndicator": true,
-                  "detentionTravelAndWaitingCosts": 111.00,
-                  "jrFormFilling": 50.00
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
+    String request = """ 
+        {
+          "feeCode": "IACD",
+          "claimId": "claim_123",
+          "startDate": "2021-02-11",
+          "netProfitCosts": 1116.89,
+           "netCostOfCounsel": 706.90,
+          "netDisbursementAmount": 125.70,
+          "disbursementVatAmount": 25.14,
+          "boltOns": {
+            "boltOnAdjournedHearing": 1,
+            "boltOnCmrhOral": 2,
+            "boltOnCmrhTelephone": 1,
+            "boltOnSubstantiveHearing": true
+          },
+          "vatIndicator": true,
+          "detentionTravelAndWaitingCosts": 111.00,
+          "jrFormFilling": 50.00
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "IACD",
+          "schemeId": "IMM_ASYLM_FS2020",
+          "claimId": "claim_123",
+          "validationMessages": [
             {
-                "feeCode": "IACD",
-                "schemeId": "IMM_ASYLM_FS2020",
-                "claimId": "claim_123",
-                "validationMessages": [
-                    {
-                        "type": "WARNING",
-                        "code": "WARIA5",
-                        "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
-                    },
-                    {
-                        "type": "WARNING",
-                        "code": "WARIA9",
-                        "message": "Costs not included. Detention Travel and Waiting costs on hourly rates cases should be reported as Profit Costs."
-                    },
-                    {
-                        "type": "WARNING",
-                        "code": "WARIA10",
-                        "message": "Costs have been included. JR/ form filling costs should only be completed for standard fee cases. Hourly rates costs should be reported in the Profit Costs."
-                    }
-                ],
-                "feeCalculation": {
-                    "totalAmount": 3051.9,
-                    "vatIndicator": true,
-                    "vatRateApplied": 20.0,
-                    "calculatedVatAmount": 541.76,
-                    "disbursementAmount": 125.7,
-                    "requestedNetDisbursementAmount": 125.7,
-                    "disbursementVatAmount": 25.14,
-                    "hourlyTotalAmount": 2485.0,
-                    "netProfitCostsAmount": 1116.89,
-                    "requestedNetProfitCostsAmount": 1116.89,
-                    "netCostOfCounselAmount": 706.9,
-                    "boltOnFeeDetails": {
-                        "boltOnTotalFeeAmount": 885.0,
-                        "boltOnAdjournedHearingCount": 1,
-                        "boltOnAdjournedHearingFee": 161.0,
-                        "boltOnCmrhTelephoneCount": 1,
-                        "boltOnCmrhTelephoneFee": 90.0,
-                        "boltOnCmrhOralCount": 2,
-                        "boltOnCmrhOralFee": 332.0,
-                        "boltOnSubstantiveHearingFee": 302.0
-                    }
-                }
+              "type": "WARNING",
+              "code": "WARIA5",
+              "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
+            },
+            {
+              "type": "WARNING",
+              "code": "WARIA9",
+              "message": "Costs not included. Detention Travel and Waiting costs on hourly rates cases should be reported as Profit Costs."
+            },
+            {
+              "type": "WARNING",
+              "code": "WARIA10",
+              "message": "Costs have been included. JR/ form filling costs should only be completed for standard fee cases. Hourly rates costs should be reported in the Profit Costs."
             }
-            """, STRICT));
+          ],
+          "feeCalculation": {
+            "totalAmount": 3051.9,
+            "vatIndicator": true,
+            "vatRateApplied": 20.0,
+            "calculatedVatAmount": 541.76,
+            "disbursementAmount": 125.7,
+            "requestedNetDisbursementAmount": 125.7,
+            "disbursementVatAmount": 25.14,
+            "hourlyTotalAmount": 2485.0,
+            "netProfitCostsAmount": 1116.89,
+            "requestedNetProfitCostsAmount": 1116.89,
+            "netCostOfCounselAmount": 706.9,
+            "boltOnFeeDetails": {
+              "boltOnTotalFeeAmount": 885.0,
+              "boltOnAdjournedHearingCount": 1,
+              "boltOnAdjournedHearingFee": 161.0,
+              "boltOnCmrhTelephoneCount": 1,
+              "boltOnCmrhTelephoneFee": 90.0,
+              "boltOnCmrhOralCount": 2,
+              "boltOnCmrhOralFee": 332.0,
+              "boltOnSubstantiveHearingFee": 302.0
+            }
+          }
+        }
+        """);
   }
 
   @Test
   void shouldReturnValidationWarning_immigrationAndAsylumDisbursementOnly() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "ICASD",
-                  "claimId": "claim_123",
-                  "startDate": "2021-09-30",
-                  "netDisbursementAmount": 2000,
-                  "disbursementVatAmount": 400
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
+    String request = """ 
+        {
+          "feeCode": "ICASD",
+          "claimId": "claim_123",
+          "startDate": "2021-09-30",
+          "netDisbursementAmount": 2000,
+          "disbursementVatAmount": 400
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "ICASD",
+          "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2020",
+          "claimId": "claim_123",
+          "validationMessages": [
             {
-                "feeCode": "ICASD",
-                "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2020",
-                "claimId": "claim_123",
-                "validationMessages": [
-                    {
-                        "type": "WARNING",
-                        "code": "WARIA11",
-                        "message": "Costs have been capped without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit."
-                    }
-                ],
-                "feeCalculation": {
-                    "totalAmount": 2000.0,
-                    "disbursementAmount": 1600.0,
-                    "requestedNetDisbursementAmount": 2000.0,
-                    "disbursementVatAmount": 400.0
-                }
+              "type": "WARNING",
+              "code": "WARIA11",
+              "message": "Costs have been capped without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit."
             }
-            """, STRICT));
+          ],
+          "feeCalculation": {
+            "totalAmount": 2000.0,
+            "disbursementAmount": 1600.0,
+            "requestedNetDisbursementAmount": 2000.0,
+            "disbursementVatAmount": 400.0
+          }
+        }
+        """);
   }
 
   @Test
   void shouldReturnValidationWarningForEscapeCase_policeStations() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                      {
-                          "feeCode": "INVC",
-                          "claimId": "claim_123",
-                          "uniqueFileNumber": "12122019/242",
-                          "policeStationId": "NE001",
-                          "policeStationSchemeId": "1001",
-                          "netDisbursementAmount": 600,
-                          "disbursementVatAmount": 120,
-                          "vatIndicator": true
-                      }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "INVC",
-              "schemeId": "POL_FS2016",
-              "claimId": "claim_123",
-              "validationMessages": [
-                  {
-                      "type": "WARNING",
-                      "code": "WARCRM8",
-                      "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
-                  }
-              ],
-              "escapeCaseFlag": true,
-              "feeCalculation": {
-                  "totalAmount": 877.68,
-                  "vatIndicator": true,
-                  "vatRateApplied": 20.0,
-                  "calculatedVatAmount": 26.28,
-                  "disbursementAmount": 600.0,
-                  "requestedNetDisbursementAmount": 600.0,
-                  "disbursementVatAmount": 120.0,
-                  "fixedFeeAmount": 131.4
+    String request = """ 
+        {
+          "feeCode": "INVC",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "12122019/242",
+          "policeStationId": "NE001",
+          "policeStationSchemeId": "1001",
+          "netDisbursementAmount": 600,
+          "disbursementVatAmount": 120,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "INVC",
+          "schemeId": "POL_FS2016",
+          "claimId": "claim_123",
+          "validationMessages": [
+              {
+                  "type": "WARNING",
+                  "code": "WARCRM8",
+                  "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
               }
-            }
-            """, STRICT));
+          ],
+          "escapeCaseFlag": true,
+          "feeCalculation": {
+              "totalAmount": 877.68,
+              "vatIndicator": true,
+              "vatRateApplied": 20.0,
+              "calculatedVatAmount": 26.28,
+              "disbursementAmount": 600.0,
+              "requestedNetDisbursementAmount": 600.0,
+              "disbursementVatAmount": 120.0,
+              "fixedFeeAmount": 131.4
+          }
+        }
+        """);
   }
 
   @Test
   void shouldReturnValidationWarning_policeOther() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                      {
-                          "feeCode": "INVA",
-                          "claimId": "claim_123",
-                          "uniqueFileNumber": "12122019/242",
-                          "netProfitCosts": 50,
-                          "netTravelCosts": 20,
-                          "netWaitingCosts": 10,
-                          "netDisbursementAmount": 600,
-                          "disbursementVatAmount": 120,
-                          "vatIndicator": true
-                      }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "INVA",
-              "schemeId": "POL_FS2016",
-              "claimId": "claim_123",
-              "validationMessages": [
-                  {
-                      "type": "WARNING",
-                      "code": "WARCRM7",
-                      "message": "Costs have been included. Net Costs exceed the Upper Cost Limitation."
-                  }
-              ],
-              "feeCalculation": {
-                  "totalAmount": 936.0,
-                  "vatIndicator": true,
-                  "vatRateApplied": 20.0,
-                  "calculatedVatAmount": 136.0,
-                  "disbursementAmount": 600.0,
-                  "requestedNetDisbursementAmount": 600.0,
-                  "disbursementVatAmount": 120.0,
-                  "hourlyTotalAmount": 680.0,
-                  "netProfitCostsAmount": 50.0,
-                  "requestedNetProfitCostsAmount": 50.0,
-                  "netTravelCostsAmount": 20.0,
-                  "netWaitingCostsAmount": 10.0
+    String request = """ 
+        {
+          "feeCode": "INVA",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "12122019/242",
+          "netProfitCosts": 50,
+          "netTravelCosts": 20,
+          "netWaitingCosts": 10,
+          "netDisbursementAmount": 600,
+          "disbursementVatAmount": 120,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "INVA",
+          "schemeId": "POL_FS2016",
+          "claimId": "claim_123",
+          "validationMessages": [
+              {
+                  "type": "WARNING",
+                  "code": "WARCRM7",
+                  "message": "Costs have been included. Net Costs exceed the Upper Cost Limitation."
               }
-            }
-            """, STRICT));
+          ],
+          "feeCalculation": {
+              "totalAmount": 936.0,
+              "vatIndicator": true,
+              "vatRateApplied": 20.0,
+              "calculatedVatAmount": 136.0,
+              "disbursementAmount": 600.0,
+              "requestedNetDisbursementAmount": 600.0,
+              "disbursementVatAmount": 120.0,
+              "hourlyTotalAmount": 680.0,
+              "netProfitCostsAmount": 50.0,
+              "requestedNetProfitCostsAmount": 50.0,
+              "netTravelCostsAmount": 20.0,
+              "netWaitingCostsAmount": 10.0
+          }
+        }
+        """);
   }
 
   @Test
   void shouldReturnWithoutValidationWarningForDisbursements_policeStations() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                      {
-                        "feeCode": "INVB1",
-                        "claimId": "claim_123",
-                        "uniqueFileNumber": "12122019/242",
-                        "policeStationId": "NE001",
-                        "policeStationSchemeId": "1001",
-                        "netDisbursementAmount": 600,
-                        "disbursementVatAmount": 120,
-                        "vatIndicator": true
-                      }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-              "feeCode": "INVB1",
-              "schemeId": "POL_FS2016",
-              "claimId": "claim_123",
-              "escapeCaseFlag": false,
-              "feeCalculation": {
-                  "totalAmount": 34.44,
-                  "vatIndicator": true,
-                  "vatRateApplied": 20.0,
-                  "calculatedVatAmount": 5.74,
-                  "fixedFeeAmount": 28.7
-              }
-            }
-            """, STRICT));
+    String request = """ 
+        {
+          "feeCode": "INVB1",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "12122019/242",
+          "policeStationId": "NE001",
+          "policeStationSchemeId": "1001",
+          "netDisbursementAmount": 600,
+          "disbursementVatAmount": 120,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "INVB1",
+          "schemeId": "POL_FS2016",
+          "claimId": "claim_123",
+          "escapeCaseFlag": false,
+          "feeCalculation": {
+            "totalAmount": 34.44,
+            "vatIndicator": true,
+            "vatRateApplied": 20.0,
+            "calculatedVatAmount": 5.74,
+            "fixedFeeAmount": 28.7
+          }
+        }
+        """);
   }
 
   @Test
   void shouldReturnValidationWarning_associatedCivil() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                      {
-                          "feeCode": "ASMS",
-                          "claimId": "claim_123",
-                          "uniqueFileNumber": "020416/001",
-                          "netProfitCosts": 200.0,
-                          "netTravelCosts": 57.0,
-                          "netWaitingCosts": 70.0,
-                          "netDisbursementAmount": 55.35,
-                          "disbursementVatAmount": 11.07,
-                          "vatIndicator": true
-                      }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
+    String request = """ 
+        {
+          "feeCode": "ASMS",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "020416/001",
+          "netProfitCosts": 200.0,
+          "netTravelCosts": 57.0,
+          "netWaitingCosts": 70.0,
+          "netDisbursementAmount": 55.35,
+          "disbursementVatAmount": 11.07,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "ASMS",
+          "schemeId": "ASSOC_FS2016",
+          "claimId": "claim_123",
+          "validationMessages": [
             {
-                "feeCode": "ASMS",
-                "schemeId": "ASSOC_FS2016",
-                "claimId": "claim_123",
-                "validationMessages": [
-                    {
-                        "type": "WARNING",
-                        "code": "WARCRM4",
-                        "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
-                    }
-                ],
-                "escapeCaseFlag": true,
-                "feeCalculation": {
-                    "totalAmount": 161.22,
-                    "vatIndicator": true,
-                    "vatRateApplied": 20.0,
-                    "calculatedVatAmount": 15.8,
-                    "disbursementAmount": 55.35,
-                    "requestedNetDisbursementAmount": 55.35,
-                    "disbursementVatAmount": 11.07,
-                    "fixedFeeAmount": 79.0
-                }
+              "type": "WARNING",
+              "code": "WARCRM4",
+              "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
             }
-            """, STRICT));
+          ],
+          "escapeCaseFlag": true,
+          "feeCalculation": {
+            "totalAmount": 161.22,
+            "vatIndicator": true,
+            "vatRateApplied": 20.0,
+            "calculatedVatAmount": 15.8,
+            "disbursementAmount": 55.35,
+            "requestedNetDisbursementAmount": 55.35,
+            "disbursementVatAmount": 11.07,
+            "fixedFeeAmount": 79.0
+          }
+        }
+        """);
   }
 
   @Test
   void shouldReturnValidationWarning_advocacyAppealsReviews() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                      {
-                          "feeCode": "PROH",
-                          "claimId": "claim_123",
-                          "uniqueFileNumber": "020416/001",
-                          "netProfitCosts": 1200.0,
-                          "netTravelCosts": 57.0,
-                          "netWaitingCosts": 70.0,
-                          "netDisbursementAmount": 55.35,
-                          "disbursementVatAmount": 11.07,
-                          "vatIndicator": true
-                      }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
+    String request = """ 
+        {
+          "feeCode": "PROH",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "020416/001",
+          "netProfitCosts": 1200.0,
+          "netTravelCosts": 57.0,
+          "netWaitingCosts": 70.0,
+          "netDisbursementAmount": 55.35,
+          "disbursementVatAmount": 11.07,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "PROH",
+          "schemeId": "AAR_FS2016",
+          "claimId": "claim_123",
+          "validationMessages": [
             {
-                "feeCode": "PROH",
-                "schemeId": "AAR_FS2016",
-                "claimId": "claim_123",
-                "validationMessages": [
-                    {
-                      "type": "WARNING",
-                      "code": "WARCRM3",
-                      "message": "Costs are included. The Net Costs exceeds the Upper Costs Limitation."
-                    }
-                ],
-                "feeCalculation": {
-                    "totalAmount": 1658.82,
-                    "vatIndicator": true,
-                    "vatRateApplied": 20.0,
-                    "calculatedVatAmount": 265.4,
-                    "disbursementAmount": 55.35,
-                    "requestedNetDisbursementAmount": 55.35,
-                    "disbursementVatAmount": 11.07,
-                    "hourlyTotalAmount": 1327.0,
-                    "netProfitCostsAmount": 1200.0,
-                    "requestedNetProfitCostsAmount": 1200.0,
-                    "netTravelCostsAmount": 57.0,
-                    "netWaitingCostsAmount": 70.0
-                }
+              "type": "WARNING",
+              "code": "WARCRM3",
+              "message": "Costs are included. The Net Costs exceeds the Upper Costs Limitation."
             }
-            """, STRICT));
+          ],
+          "feeCalculation": {
+            "totalAmount": 1658.82,
+            "vatIndicator": true,
+            "vatRateApplied": 20.0,
+            "calculatedVatAmount": 265.4,
+            "disbursementAmount": 55.35,
+            "requestedNetDisbursementAmount": 55.35,
+            "disbursementVatAmount": 11.07,
+            "hourlyTotalAmount": 1327.0,
+            "netProfitCostsAmount": 1200.0,
+            "requestedNetProfitCostsAmount": 1200.0,
+            "netTravelCostsAmount": 57.0,
+            "netWaitingCostsAmount": 70.0
+          }
+        }
+        """);
   }
 
   @ParameterizedTest
@@ -928,142 +822,125 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
       double calculatedVatAmount,
       double fixedFeeAmount
   ) throws Exception {
-
-    String expectedJson = """
+    String request = """ 
         {
-            "feeCode": "%s",
-            "schemeId": "PRISON_FS2016",
-            "claimId": "claim_123",
-            "validationMessages": [
-                {
-                    "type": "WARNING",
-                    "code": "%s",
-                    "message": "%s"
-                }
-            ],
-            "escapeCaseFlag": %s,
-            "feeCalculation": {
-                "totalAmount": %s,
-                "vatIndicator": true,
-                "vatRateApplied": 20.0,
-                "calculatedVatAmount": %s,
-                "requestedNetDisbursementAmount": 100.0,
-                "disbursementAmount": 100.0,
-                "disbursementVatAmount": 20.0,
-                "fixedFeeAmount": %s
-            }
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "110425/123",
+          "netProfitCosts": 500,
+          "netDisbursementAmount": 100,
+          "disbursementVatAmount": 20,
+          "vatIndicator": true,
+          "netWaitingCosts": 150
         }
-        """.formatted(feeCode, warningType, warningMessage, escapeFlag, totalAmount, calculatedVatAmount, fixedFeeAmount);
+        """.formatted(feeCode);
 
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "%s",
-                  "claimId": "claim_123",
-                  "uniqueFileNumber": "110425/123",
-                  "netProfitCosts": 500,
-                  "netDisbursementAmount": 100,
-                  "disbursementVatAmount": 20,
-                  "vatIndicator": true,
-                  "netWaitingCosts": 150
-                }
-                """.formatted(feeCode))
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().json(expectedJson, STRICT));
+    postAndExpect(request, """
+        {
+          "feeCode": "%s",
+          "schemeId": "PRISON_FS2016",
+          "claimId": "claim_123",
+          "validationMessages": [
+            {
+              "type": "WARNING",
+              "code": "%s",
+              "message": "%s"
+            }
+          ],
+          "escapeCaseFlag": %s,
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.0,
+            "calculatedVatAmount": %s,
+            "requestedNetDisbursementAmount": 100.0,
+            "disbursementAmount": 100.0,
+            "disbursementVatAmount": 20.0,
+            "fixedFeeAmount": %s
+          }
+        }
+        """.formatted(feeCode, warningType, warningMessage, escapeFlag, totalAmount, calculatedVatAmount, fixedFeeAmount));
   }
 
   @Test
   void shouldReturnValidationWarning_preOrderCover() throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                      {
-                          "feeCode": "PROP1",
-                          "claimId": "claim_123",
-                          "uniqueFileNumber": "020416/001",
-                          "netProfitCosts": 10.0,
-                          "netTravelCosts": 57.0,
-                          "netWaitingCosts": 70.0,
-                          "netDisbursementAmount": 55.35,
-                          "disbursementVatAmount": 11.07,
-                          "vatIndicator": true
-                      }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
+    String request = """ 
+        {
+          "feeCode": "PROP1",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "020416/001",
+          "netProfitCosts": 10.0,
+          "netTravelCosts": 57.0,
+          "netWaitingCosts": 70.0,
+          "netDisbursementAmount": 55.35,
+          "disbursementVatAmount": 11.07,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "PROP1",
+          "claimId": "claim_123",
+          "validationMessages": [
             {
-                "feeCode": "PROP1",
-                "claimId": "claim_123",
-                "validationMessages": [
-                  {
-                      "type": "ERROR",
-                      "code": "ERRCRM10",
-                      "message": "Net Cost is more than the Upper Cost Limitation."
-                  }
-                ]
+              "type": "ERROR",
+              "code": "ERRCRM10",
+              "message": "Net Cost is more than the Upper Cost Limitation."
             }
-            """, STRICT));
+          ]
+        }
+        """);
   }
 
   @Test
   void shouldReturnValidationWarning_mentalHealth() throws Exception {
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "MHL03",
-                  "claimId": "claim_123",
-                  "startDate": "2025-02-01",
-                  "netDisbursementAmount": 123.38,
-                  "disbursementVatAmount": 24.67,
-                  "netProfitCosts": 1000,
-                  "netCostOfCounsel": 500,
-                  "vatIndicator": true,
-                  "boltOns": {
-                      "boltOnAdjournedHearing": 1
-                  }
-                }
-                """)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().json("""
-            {
-              "feeCode": "MHL03",
-              "claimId": "claim_123",
-              "schemeId": "MHL_FS2013",
-              "validationMessages": [
-                  {
-                      "type": "WARNING",
-                      "code": "WARMH1",
-                      "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
-                  }
-              ],
-              "escapeCaseFlag": true,
-              "feeCalculation": {
-                  "totalAmount": 828.45,
-                  "vatIndicator": true,
-                  "vatRateApplied": 20.0,
-                  "calculatedVatAmount": 113.4,
-                  "disbursementAmount": 123.38,
-                  "requestedNetDisbursementAmount": 123.38,
-                  "disbursementVatAmount": 24.67,
-                  "fixedFeeAmount": 450.0,
-                  "boltOnFeeDetails": {
-                      "boltOnTotalFeeAmount": 117.0,
-                      "boltOnAdjournedHearingCount": 1,
-                      "boltOnAdjournedHearingFee": 117.0
-                  }
+    String request = """ 
+        {
+          "feeCode": "MHL03",
+          "claimId": "claim_123",
+          "startDate": "2025-02-01",
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "netProfitCosts": 1000,
+          "netCostOfCounsel": 500,
+          "vatIndicator": true,
+          "boltOns": {
+              "boltOnAdjournedHearing": 1
+          }
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "MHL03",
+          "claimId": "claim_123",
+          "schemeId": "MHL_FS2013",
+          "validationMessages": [
+              {
+                  "type": "WARNING",
+                  "code": "WARMH1",
+                  "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
               }
-            }
-            """, STRICT));
+          ],
+          "escapeCaseFlag": true,
+          "feeCalculation": {
+              "totalAmount": 828.45,
+              "vatIndicator": true,
+              "vatRateApplied": 20.0,
+              "calculatedVatAmount": 113.4,
+              "disbursementAmount": 123.38,
+              "requestedNetDisbursementAmount": 123.38,
+              "disbursementVatAmount": 24.67,
+              "fixedFeeAmount": 450.0,
+              "boltOnFeeDetails": {
+                  "boltOnTotalFeeAmount": 117.0,
+                  "boltOnAdjournedHearingCount": 1,
+                  "boltOnAdjournedHearingFee": 117.0
+              }
+          }
+        }
+        """);
   }
 
   @ParameterizedTest
@@ -1073,7 +950,18 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
       "PROW, SEND_HEAR_FS2022",
   })
   void shouldReturnValidationError_criminalProceedings_missingRepOrderDate(String feeCode) throws Exception {
-    String expectedJson = """
+    String request = """ 
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "121219/242",
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true
+        }
+        """.formatted(feeCode);
+
+    postAndExpect(request, """
         {
           "feeCode": "%s",
           "claimId": "claim_123",
@@ -1085,25 +973,7 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
               }
           ]
         }
-        """.formatted(feeCode);
-
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "%s",
-                  "claimId": "claim_123",
-                  "uniqueFileNumber": "121219/242",
-                  "netDisbursementAmount": 123.38,
-                  "disbursementVatAmount": 24.67,
-                  "vatIndicator": true
-                }
-                """.formatted(feeCode))
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(expectedJson, STRICT));
+        """.formatted(feeCode));
   }
 
   @ParameterizedTest
@@ -1120,102 +990,101 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
       "WFB1, WB_FS2025, WAROTH11, 397.65, 41.6, 208.0"
   })
   void shouldReturnValidationWarning_otherCivilCategories(String feeCode, String schemeId, String warningCode,
-                                                                 String expectedTotal, String expectedVatAmount,
-                                                                 String expectedFixedFeeAmount) throws Exception {
-    String expectedJson = """
+                                                          String expectedTotal, String expectedVatAmount,
+                                                          String expectedFixedFeeAmount) throws Exception {
+    String request = """ 
         {
-            "feeCode": "%s",
-            "schemeId": "%s",
-            "claimId": "claim_123",
-            "validationMessages": [
-                {
-                    "type": "WARNING",
-                    "code": "%s",
-                    "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
-                }
-            ],
-            "escapeCaseFlag": true,
-            "feeCalculation": {
-                "totalAmount": %s,
-                "vatIndicator": true,
-                "vatRateApplied": 20.0,
-                "calculatedVatAmount": %s,
-                "disbursementAmount": 123.38,
-                "requestedNetDisbursementAmount": 123.38,
-                "disbursementVatAmount": 24.67,
-                "fixedFeeAmount": %s
-            }
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "startDate": "2025-06-01",
+          "netProfitCosts": 1000.0,
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true
         }
-        """.formatted(feeCode, schemeId, warningCode, expectedTotal, expectedVatAmount, expectedFixedFeeAmount);
+        """.formatted(feeCode);
 
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "%s",
-                  "claimId": "claim_123",
-                  "startDate": "2025-06-01",
-                  "netProfitCosts": 1000.0,
-                  "netDisbursementAmount": 123.38,
-                  "disbursementVatAmount": 24.67,
-                  "vatIndicator": true
-                }
-                """.formatted(feeCode))
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(expectedJson, STRICT));
+    postAndExpect(request, """
+        {
+          "feeCode": "%s",
+          "schemeId": "%s",
+          "claimId": "claim_123",
+          "validationMessages": [
+            {
+              "type": "WARNING",
+              "code": "%s",
+              "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
+            }
+          ],
+          "escapeCaseFlag": true,
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.0,
+            "calculatedVatAmount": %s,
+            "disbursementAmount": 123.38,
+            "requestedNetDisbursementAmount": 123.38,
+            "disbursementVatAmount": 24.67,
+            "fixedFeeAmount": %s
+          }
+        }
+        """.formatted(feeCode, schemeId, warningCode, expectedTotal, expectedVatAmount, expectedFixedFeeAmount));
   }
 
   @Test
   void shouldReturnValidationWarning_discrimination() throws Exception {
+    String request = """ 
+        {
+          "feeCode": "DISC",
+          "claimId": "claim_123",
+          "startDate": "2019-09-30",
+          "netProfitCosts": 900,
+          "netCostOfCounsel": 79.19,
+          "netDisbursementAmount": 100.21,
+          "disbursementVatAmount": 20.12,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "DISC",
+          "schemeId": "DISC_FS2013",
+          "claimId": "claim_123",
+          "validationMessages": [
+            {
+              "type": "WARNING",
+              "code": "WAROTH1",
+              "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
+            }
+          ],
+          "escapeCaseFlag": true,
+          "feeCalculation": {
+            "totalAmount": 960.33,
+            "vatIndicator": true,
+            "vatRateApplied": 20.0,
+            "calculatedVatAmount": 140.0,
+            "disbursementAmount": 100.21,
+            "requestedNetDisbursementAmount": 100.21,
+            "disbursementVatAmount": 20.12,
+            "hourlyTotalAmount": 700.0,
+            "netProfitCostsAmount": 900.0,
+            "requestedNetProfitCostsAmount": 900.0,
+            "netCostOfCounselAmount": 79.19
+          }
+        }
+        """);
+  }
+
+  private void postAndExpect(String requestJson, String expectedResponseJson) throws Exception {
     mockMvc
         .perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "DISC",
-                  "claimId": "claim_123",
-                  "startDate": "2019-09-30",
-                  "netProfitCosts": 900,
-                  "netCostOfCounsel": 79.19,
-                  "netDisbursementAmount": 100.21,
-                  "disbursementVatAmount": 20.12,
-                  "vatIndicator": true
-                }
-                """)
+            .content(requestJson)
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
-            {
-                "feeCode": "DISC",
-                "schemeId": "DISC_FS2013",
-                "claimId": "claim_123",
-                "validationMessages": [
-                    {
-                        "type": "WARNING",
-                        "code": "WAROTH1",
-                        "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
-                    }
-                ],
-                "escapeCaseFlag": true,
-                "feeCalculation": {
-                    "totalAmount": 960.33,
-                    "vatIndicator": true,
-                    "vatRateApplied": 20.0,
-                    "calculatedVatAmount": 140.0,
-                    "disbursementAmount": 100.21,
-                    "requestedNetDisbursementAmount": 100.21,
-                    "disbursementVatAmount": 20.12,
-                    "hourlyTotalAmount": 700.0,
-                    "netProfitCostsAmount": 900.0,
-                    "requestedNetProfitCostsAmount": 900.0,
-                    "netCostOfCounselAmount": 79.19
-                }
-            }
-            """, STRICT));
+        .andExpect(content().json(expectedResponseJson, STRICT));
   }
 }
