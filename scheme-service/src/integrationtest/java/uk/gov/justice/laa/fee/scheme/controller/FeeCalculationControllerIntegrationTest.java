@@ -92,15 +92,15 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
   void shouldGetFeeCalculation_associatedCivil() throws Exception {
     String request = """ 
         {
-         "feeCode": "ASMS",
-         "claimId": "claim_123",
-         "uniqueFileNumber": "020416/001",
-         "netProfitCosts": 27.8,
-         "netTravelCosts": 10.0,
-         "netWaitingCosts": 11.5,
-         "netDisbursementAmount": 55.35,
-         "disbursementVatAmount": 11.07,
-         "vatIndicator": true
+          "feeCode": "ASMS",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "020416/001",
+          "netProfitCosts": 27.8,
+          "netTravelCosts": 10.0,
+          "netWaitingCosts": 11.5,
+          "netDisbursementAmount": 55.35,
+          "disbursementVatAmount": 11.07,
+          "vatIndicator": true
         }
         """;
 
