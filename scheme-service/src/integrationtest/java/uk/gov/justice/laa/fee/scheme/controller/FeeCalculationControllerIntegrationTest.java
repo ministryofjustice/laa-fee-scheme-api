@@ -653,15 +653,32 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
 
   @ParameterizedTest
   @CsvSource({
-      "PROJ5, MAGS_COURT_FS2022, 491.27, 57.2, 286.02",
-      "YOUK2, YOUTH_COURT_FS2024, 427.09, 46.51, 232.53",
+      "PROJ5, 2025-12-21, MAGS_COURT_FS2022, 491.27, 57.2, 286.02",
+      "YOUK2, 2025-12-21, YOUTH_COURT_FS2024, 427.09, 46.51, 232.53",
+      "PROJ5, 2025-12-22, MAGS_COURT_FS2025, 525.59, 62.92, 314.62",
+      "YOUK2, 2025-12-22, YOUTH_COURT_FS2025, 454.99, 51.16, 255.78"
   })
-  void shouldGetFeeCalculation_designatedMagsOrYouthCourt(String feeCode,
-                                                          String schemeId,
-                                                          String expectedTotal,
-                                                          String expectedVatAmount,
-                                                          String fixedFeeAmount) throws Exception {
-    String expectedJson = """
+  void shouldGetFeeCalculation_designatedMagsOrYouthCourt(
+      String feeCode,
+      String repOrderDate,
+      String schemeId,
+      String expectedTotal,
+      String expectedVatAmount,
+      String fixedFeeAmount
+  ) throws Exception {
+    LocalDate representationOrderDate = LocalDate.parse(repOrderDate);
+    String request = """
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "representationOrderDate": "%s",
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true
+        }
+        """.formatted(feeCode, representationOrderDate);
+
+    postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "%s",
@@ -677,35 +694,20 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
             "fixedFeeAmount": %s
           }
         }
-        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount);
-
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "feeCode": "%s",
-                  "claimId": "claim_123",
-                  "uniqueFileNumber": "121219/242",
-                  "representationOrderDate": "2025-02-01",
-                  "netDisbursementAmount": 123.38,
-                  "disbursementVatAmount": 24.67,
-                  "vatIndicator": true
-                }
-                """.formatted(feeCode))
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(expectedJson, STRICT));
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount)
+    );
   }
 
   @ParameterizedTest
   @CsvSource({
-      "PROE1, MAGS_COURT_FS2022, 669.91, 86.98, 100, 111, 223.88",
-      "YOUE1, YOUTH_COURT_FS2024, 1388.21, 206.69, 100, 111, 822.47",
+      "PROE1, 2025-12-21, MAGS_COURT_FS2022, 669.91, 86.98, 100, 111, 223.88",
+      "YOUE1, 2025-12-21, YOUTH_COURT_FS2024, 1388.21, 206.69, 100, 111, 822.47",
+      "PROE1, 2025-12-22, MAGS_COURT_FS2025, 696.77, 91.45, 100, 111, 246.27",
+      "YOUE1, 2025-12-22, YOUTH_COURT_FS2025, 1486.91, 223.14, 100, 111, 904.72",
   })
   void shouldGetFeeCalculation_undesignatedMagsOrYouthCourt(
       String feeCode,
+      String repOrderDate,
       String schemeId,
       String expectedTotal,
       String expectedVatAmount,
@@ -713,19 +715,19 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
       String netTravelCosts,
       String fixedFeeAmount
   ) throws Exception {
+    LocalDate representationOrderDate = LocalDate.parse(repOrderDate);
     String request = """ 
         {
           "feeCode": "%s",
           "claimId": "claim_123",
-          "uniqueFileNumber": "121219/242",
-          "representationOrderDate": "2025-02-01",
+          "representationOrderDate": "%s",
           "netDisbursementAmount": 123.38,
           "disbursementVatAmount": 24.67,
           "vatIndicator": true,
           "netWaitingCosts": %s,
           "netTravelCosts": %s
         }
-        """.formatted(feeCode, netWaitingCosts, netTravelCosts);
+        """.formatted(feeCode, representationOrderDate, netWaitingCosts, netTravelCosts);
 
     postAndExpect(request, """
         {

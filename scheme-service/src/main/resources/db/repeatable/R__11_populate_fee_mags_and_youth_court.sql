@@ -113,6 +113,20 @@ VALUES ('PROE1', 246.27, 'MAGS_COURT_FS2025'),
        ('PROJ4', 481.59, 'MAGS_COURT_FS2025')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
+-- designated magistrates court uplift 2025
+INSERT INTO fee (fee_code, fixed_fee, fee_scheme_code)
+VALUES ('PROJ5', 314.62, 'MAGS_COURT_FS2025'),
+       ('PROJ6', 255.78, 'MAGS_COURT_FS2025'),
+       ('PROJ7', 596.84, 'MAGS_COURT_FS2025'),
+       ('PROJ8', 551.09, 'MAGS_COURT_FS2025'),
+       ('PROK1', 314.62, 'MAGS_COURT_FS2025'),
+       ('PROK2', 255.78, 'MAGS_COURT_FS2025'),
+       ('PROK3', 436.85, 'MAGS_COURT_FS2025'),
+       ('PROL1', 596.84, 'MAGS_COURT_FS2025'),
+       ('PROL2', 551.09, 'MAGS_COURT_FS2025'),
+       ('PROL3', 915.04, 'MAGS_COURT_FS2025')
+ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
+
 -- undesignated youth court uplift 2025
 INSERT INTO fee (fee_code, fixed_fee, fee_scheme_code)
 VALUES ('YOUE1', 904.72, 'YOUTH_COURT_FS2025'),
@@ -128,3 +142,27 @@ VALUES ('YOUE1', 904.72, 'YOUTH_COURT_FS2025'),
        ('YOUX3', 1180.01, 'YOUTH_COURT_FS2025'),
        ('YOUX4', 481.59, 'YOUTH_COURT_FS2025')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
+
+-- designated youth court uplift 2025
+INSERT INTO fee (fee_code, fixed_fee, fee_scheme_code)
+VALUES ('YOUK1', 973.07, 'YOUTH_COURT_FS2025'),
+       ('YOUK2', 255.78, 'YOUTH_COURT_FS2025'),
+       ('YOUK3', 1095.30, 'YOUTH_COURT_FS2025'),
+       ('YOUK4', 436.85, 'YOUTH_COURT_FS2025'),
+       ('YOUL1', 1255.29, 'YOUTH_COURT_FS2025'),
+       ('YOUL2', 551.09, 'YOUTH_COURT_FS2025'),
+       ('YOUL3', 1573.48, 'YOUTH_COURT_FS2025'),
+       ('YOUL4', 915.04, 'YOUTH_COURT_FS2025'),
+       ('YOUY1', 973.07, 'YOUTH_COURT_FS2025'),
+       ('YOUY2', 255.78, 'YOUTH_COURT_FS2025'),
+       ('YOUY3', 1255.29, 'YOUTH_COURT_FS2025'),
+       ('YOUY4', 551.09, 'YOUTH_COURT_FS2025')
+    ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
+
+-- prov1, prov2, prov3, prov4 court uplift 2025, no change in value
+INSERT INTO fee (fee_code, fixed_fee, fee_scheme_code)
+VALUES ('PROV1', 182.01, 'MAGS_COURT_FS2025'),
+       ('PROV2', 437.81, 'MAGS_COURT_FS2025'),
+       ('PROV3', 321.37, 'MAGS_COURT_FS2025'),
+       ('PROV4', 737.08, 'MAGS_COURT_FS2025')
+    ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
