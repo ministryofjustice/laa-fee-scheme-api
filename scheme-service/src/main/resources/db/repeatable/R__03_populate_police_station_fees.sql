@@ -285,14 +285,14 @@ VALUES ('Newark', '8013', 180.17, 540.52, 'POL_FS2016'),
 ON CONFLICT (ps_scheme_id, fee_scheme_code) DO NOTHING;
 
 INSERT INTO police_station_fees (ps_scheme_name, ps_scheme_id, fixed_fee, escape_threshold, fee_scheme_code)
-VALUES ('March & Wisbech', 'March & Wisbech', '9006', 171.63, 514.90, 'POL_FS2016'),
+VALUES ('March & Wisbech', '9006', 171.63, 514.90, 'POL_FS2016'),
        ('Peterborough', '9007', 142.90, 428.69, 'POL_FS2016'),
        ('Basildon', '9008', 177.94, 549.83, 'POL_FS2016'),
        ('Brentwood', '9009', 249.11, 845.72, 'POL_FS2016'),
        ('Braintree', '9010', 198.93, 673.32, 'POL_FS2016'),
        ('Clacton & Harwich / Colchester', '9011', 177.94, 563.82, 'POL_FS2016'),
        ('Grays', '9012', 232.69, 789.80, 'POL_FS2016'),
-       ('Harlow & Loughton', 'Harlow & Loughton', '9013', 232.69, 789.80, 'POL_FS2016'),
+       ('Harlow & Loughton', '9013', 232.69, 789.80, 'POL_FS2016'),
        ('Stansted', '9014', 257.33, 873.67, 'POL_FS2016'),
        ('Rayleigh / Southend On Sea', '9015', 166.97, 500.91, 'POL_FS2016')
 ON CONFLICT (ps_scheme_id, fee_scheme_code) DO NOTHING;
@@ -351,11 +351,11 @@ ON CONFLICT (ps_scheme_id, fee_scheme_code) DO NOTHING;
 
 INSERT INTO police_station_fees (ps_scheme_name, ps_scheme_id, fixed_fee, escape_threshold, fee_scheme_code)
 VALUES ('Andover / Basingstoke / Winchester (NW Hants)', '1141', 242.03, 726.09, 'POL_FS2022'),
-       ('Isle Of Wight', 'Isle Of Wight', '1142', 197.37, 592.14, 'POL_FS2022'),
+       ('Isle Of Wight', '1142', 197.37, 592.14, 'POL_FS2022'),
        ('Portsmouth / Waterlooville (South East Hampshire)', '1143', 202.73, 608.19, 'POL_FS2022'),
        ('Gosport & Fareham', '1144', 247.38, 742.14, 'POL_FS2022'),
        ('Southampton (South West Hampshire)', '1145', 228.63, 685.88, 'POL_FS2022'),
-       ('Grimsby & Cleethorpes' '1201', 154.50, 463.50, 'POL_FS2022'),
+       ('Grimsby & Cleethorpes', '1201', 154.50, 463.50, 'POL_FS2022'),
        ('Scunthorpe', '1202', 165.81, 511.73, 'POL_FS2022'),
        ('Hull', '1203', 176.30, 541.19, 'POL_FS2022'),
        ('Beverley / Bridlington', '1204', 204.63, 675.18, 'POL_FS2022'),
@@ -467,15 +467,15 @@ VALUES ('East Cornwall', '2020', 228.77, 776.99, 'POL_FS2022'),
 ON CONFLICT (ps_scheme_id, fee_scheme_code) DO NOTHING;
 
 INSERT INTO police_station_fees (ps_scheme_name, ps_scheme_id, fixed_fee, escape_threshold, fee_scheme_code)
-VALUES ('Telford', 'Telford', '3008', 198.33, 610.86, 'POL_FS2022'),
-       ('Worcester', 'Worcester', '3009', 208.09, 624.28, 'POL_FS2022'),
-       ('Sandwell', 'Sandwell', '3010', 202.53, 621.60, 'POL_FS2022'),
-       ('Wolverhampton & Seisdon', 'Wolverhampton & Seisdon', '3011', 202.53, 621.60, 'POL_FS2022'),
-       ('Dudley & Halesowen', 'Dudley & Halesowen', '3012', 199.16, 597.48, 'POL_FS2022'),
-       ('Walsall', 'Walsall', '3013', 204.63, 632.30, 'POL_FS2022'),
-       ('Birmingham', 'Birmingham', '3014', 204.63, 651.06, 'POL_FS2022'),
-       ('Solihull', 'Solihull', '3015', 215.23, 645.71, 'POL_FS2022'),
-       ('Coventry', 'Coventry', '3016', 176.84, 530.50, 'POL_FS2022'),
+VALUES ('Telford', '3008', 198.33, 610.86, 'POL_FS2022'),
+       ('Worcester', '3009', 208.09, 624.28, 'POL_FS2022'),
+       ('Sandwell', '3010', 202.53, 621.60, 'POL_FS2022'),
+       ('Wolverhampton & Seisdon', '3011', 202.53, 621.60, 'POL_FS2022'),
+       ('Dudley & Halesowen', '3012', 199.16, 597.48, 'POL_FS2022'),
+       ('Walsall', '3013', 204.63, 632.30, 'POL_FS2022'),
+       ('Birmingham', '3014', 204.63, 651.06, 'POL_FS2022'),
+       ('Solihull', '3015', 215.23, 645.71, 'POL_FS2022'),
+       ('Coventry', '3016', 176.84, 530.50, 'POL_FS2022'),
        ('Amman Valley', '4001', 204.63, 656.42, 'POL_FS2022')
 ON CONFLICT (ps_scheme_id, fee_scheme_code) DO NOTHING;
 
@@ -498,11 +498,11 @@ VALUES ('Colwyn Bay', '4012', 199.39, 613.54, 'POL_FS2022'),
        ('Dolgellau', '4014', 217.02, 651.06, 'POL_FS2022'),
        ('Mold & Hawarden', '4015', 204.63, 637.65, 'POL_FS2022'),
        ('North Anglesey', '4016', 226.85, 680.54, 'POL_FS2022'),
-       ('Pwllheli', 'Pwllheli', '4017', 153.61, 460.83, 'POL_FS2022'),
-       ('Wrexham', 'Wrexham', '4018', 185.76, 557.28, 'POL_FS2022'),
-       ('Cardiff', 'Cardiff', '4019', 204.63, 675.18, 'POL_FS2022'),
+       ('Pwllheli', '4017', 153.61, 460.83, 'POL_FS2022'),
+       ('Wrexham', '4018', 185.76, 557.28, 'POL_FS2022'),
+       ('Cardiff', '4019', 204.63, 675.18, 'POL_FS2022'),
        ('Vale of Glamorgan', '4020', 239.35, 718.06, 'POL_FS2022'),
-       ('Cynon Valley', 'Cynon Valley', '4021', 204.63, 648.39, 'POL_FS2022')
+       ('Cynon Valley', '4021', 204.63, 648.39, 'POL_FS2022')
 ON CONFLICT (ps_scheme_id, fee_scheme_code) DO NOTHING;
 
 INSERT INTO police_station_fees (ps_scheme_name, ps_scheme_id, fixed_fee, escape_threshold, fee_scheme_code)
@@ -602,7 +602,7 @@ VALUES ('Bedford', '9001', 193.09, 594.80, 'POL_FS2022'),
        ('Cambridge', '9003', 186.79, 576.05, 'POL_FS2022'),
        ('Ely', '9004', 204.63, 661.77, 'POL_FS2022'),
        ('Huntingdon', '9005', 199.16, 597.48, 'POL_FS2022'),
-       ('March & Wisbech', 'March & Wisbech', '9006', 197.37, 592.14, 'POL_FS2022'),
+       ('March & Wisbech', '9006', 197.37, 592.14, 'POL_FS2022'),
        ('Peterborough', '9007', 164.34, 492.99, 'POL_FS2022'),
        ('Basildon', '9008', 204.63, 632.30, 'POL_FS2022'),
        ('Brentwood', '9009', 286.48, 972.58, 'POL_FS2022'),
@@ -612,7 +612,7 @@ ON CONFLICT (ps_scheme_id, fee_scheme_code) DO NOTHING;
 INSERT INTO police_station_fees (ps_scheme_name, ps_scheme_id, fixed_fee, escape_threshold, fee_scheme_code)
 VALUES ('Clacton & Harwich / Colchester', '9011', 204.63, 648.39, 'POL_FS2022'),
        ('Grays', '9012', 267.59, 908.27, 'POL_FS2022'),
-       ('Harlow & Loughton', 'Harlow & Loughton', '9013', 267.59, 908.27, 'POL_FS2022'),
+       ('Harlow & Loughton', '9013', 267.59, 908.27, 'POL_FS2022'),
        ('Stansted', '9014', 295.93, 1004.72, 'POL_FS2022'),
        ('Rayleigh / Southend On Sea', '9015', 192.02, 576.05, 'POL_FS2022'),
        ('Chelmsford / Witham', '9016', 202.53, 624.28, 'POL_FS2022'),
@@ -668,14 +668,14 @@ VALUES ('Oxford', '1136', 223.52, 588.99, 'POL_FS2024'),
        ('West Berkshire (Newbury Etc)', '1139', 223.52, 588.99, 'POL_FS2024'),
        ('Aldershot / Petersfield (North East Hampshire)', '1140', 229.82, 779.67, 'POL_FS2024'),
        ('Andover / Basingstoke / Winchester (NW Hants)', '1141', 242.03, 726.09, 'POL_FS2024'),
-       ('Isle Of Wight', 'Isle Of Wight', '1142', 223.52, 588.99, 'POL_FS2024'),
+       ('Isle Of Wight', '1142', 223.52, 588.99, 'POL_FS2024'),
        ('Portsmouth / Waterlooville (South East Hampshire)', '1143', 223.52, 588.99, 'POL_FS2024'),
        ('Gosport & Fareham', '1144', 247.38, 742.14, 'POL_FS2024'),
        ('Southampton (South West Hampshire)', '1145', 228.63, 685.88, 'POL_FS2024')
 ON CONFLICT (ps_scheme_id, fee_scheme_code) DO NOTHING;
 
 INSERT INTO police_station_fees (ps_scheme_name, ps_scheme_id, fixed_fee, escape_threshold, fee_scheme_code)
-VALUES ('Grimsby & Cleethorpes' '1201', 223.52, 588.99, 'POL_FS2024'),
+VALUES ('Grimsby & Cleethorpes', '1201', 223.52, 588.99, 'POL_FS2024'),
        ('Scunthorpe', '1202', 223.52, 588.99, 'POL_FS2024'),
        ('Hull', '1203', 223.52, 588.99, 'POL_FS2024'),
        ('Beverley / Bridlington', '1204', 223.52, 588.99, 'POL_FS2024'),
@@ -783,18 +783,18 @@ VALUES ('Lichfield & Tamworth / Burton Upon Trent / Uttoxeter', '3003', 223.52, 
        ('Hereford / Leominster', '3005', 223.52, 588.99, 'POL_FS2024'),
        ('Kidderminster / Redditch', '3006', 228.63, 685.88, 'POL_FS2024'),
        ('Shrewsbury', '3007', 223.52, 588.99, 'POL_FS2024'),
-       ('Telford', 'Telford', '3008', 223.52, 588.99, 'POL_FS2024'),
-       ('Worcester', 'Worcester', '3009', 223.52, 588.99, 'POL_FS2024'),
-       ('Sandwell', 'Sandwell', '3010', 223.52, 588.99, 'POL_FS2024'),
-       ('Wolverhampton & Seisdon', 'Wolverhampton & Seisdon', '3011', 223.52, 588.99, 'POL_FS2024'),
-       ('Dudley & Halesowen', 'Dudley & Halesowen', '3012', 223.52, 588.99, 'POL_FS2024')
+       ('Telford', '3008', 223.52, 588.99, 'POL_FS2024'),
+       ('Worcester', '3009', 223.52, 588.99, 'POL_FS2024'),
+       ('Sandwell', '3010', 223.52, 588.99, 'POL_FS2024'),
+       ('Wolverhampton & Seisdon', '3011', 223.52, 588.99, 'POL_FS2024'),
+       ('Dudley & Halesowen', '3012', 223.52, 588.99, 'POL_FS2024')
 ON CONFLICT (ps_scheme_id, fee_scheme_code) DO NOTHING;
 
 INSERT INTO police_station_fees (ps_scheme_name, ps_scheme_id, fixed_fee, escape_threshold, fee_scheme_code)
-VALUES ('Walsall', 'Walsall', '3013', 223.52, 588.99, 'POL_FS2024'),
-       ('Birmingham', 'Birmingham', '3014', 223.52, 588.99, 'POL_FS2024'),
-       ('Solihull', 'Solihull', '3015', 223.52, 588.99, 'POL_FS2024'),
-       ('Coventry', 'Coventry', '3016', 223.52, 588.99, 'POL_FS2024'),
+VALUES ('Walsall', '3013', 223.52, 588.99, 'POL_FS2024'),
+       ('Birmingham', '3014', 223.52, 588.99, 'POL_FS2024'),
+       ('Solihull', '3015', 223.52, 588.99, 'POL_FS2024'),
+       ('Coventry', '3016', 223.52, 588.99, 'POL_FS2024'),
        ('Amman Valley', '4001', 223.52, 588.99, 'POL_FS2024'),
        ('Carmarthen East Dyfed', '4002', 232.21, 696.61, 'POL_FS2024'),
        ('Llanelli', '4003', 223.52, 588.99, 'POL_FS2024'),
@@ -817,11 +817,11 @@ VALUES ('Pembrokeshire', '4007', 223.52, 588.99, 'POL_FS2024'),
 ON CONFLICT (ps_scheme_id, fee_scheme_code) DO NOTHING;
 
 INSERT INTO police_station_fees (ps_scheme_name, ps_scheme_id, fixed_fee, escape_threshold, fee_scheme_code)
-VALUES ('Pwllheli', 'Pwllheli', '4017', 223.52, 588.99, 'POL_FS2024'),
-       ('Wrexham', 'Wrexham', '4018', 223.52, 588.99, 'POL_FS2024'),
-       ('Cardiff', 'Cardiff', '4019', 223.52, 588.99, 'POL_FS2024'),
+VALUES ('Pwllheli', '4017', 223.52, 588.99, 'POL_FS2024'),
+       ('Wrexham', '4018', 223.52, 588.99, 'POL_FS2024'),
+       ('Cardiff', '4019', 223.52, 588.99, 'POL_FS2024'),
        ('Vale of Glamorgan', '4020', 239.35, 718.06, 'POL_FS2024'),
-       ('Cynon Valley', 'Cynon Valley', '4021', 223.52, 588.99, 'POL_FS2024'),
+       ('Cynon Valley', '4021', 223.52, 588.99, 'POL_FS2024'),
        ('Mid Glamorgan & Miskin', '4022', 223.52, 588.99, 'POL_FS2024'),
        ('Merthyr Tydfil', '4023', 223.52, 588.99, 'POL_FS2024'),
        ('Port Talbot', '4024', 251.85, 852.01, 'POL_FS2024'),
@@ -922,14 +922,14 @@ ON CONFLICT (ps_scheme_id, fee_scheme_code) DO NOTHING;
 INSERT INTO police_station_fees (ps_scheme_name, ps_scheme_id, fixed_fee, escape_threshold, fee_scheme_code)
 VALUES ('Ely', '9004', 223.52, 588.99, 'POL_FS2024'),
        ('Huntingdon', '9005', 223.52, 588.99, 'POL_FS2024'),
-       ('March & Wisbech', 'March & Wisbech', '9006', 223.52, 588.99, 'POL_FS2024'),
+       ('March & Wisbech', '9006', 223.52, 588.99, 'POL_FS2024'),
        ('Peterborough', '9007', 223.52, 588.99, 'POL_FS2024'),
        ('Basildon', '9008', 223.52, 588.99, 'POL_FS2024'),
        ('Brentwood', '9009', 286.48, 972.58, 'POL_FS2024'),
        ('Braintree', '9010', 228.77, 774.32, 'POL_FS2024'),
        ('Clacton & Harwich / Colchester', '9011', 223.52, 588.99, 'POL_FS2024'),
        ('Grays', '9012', 267.59, 908.27, 'POL_FS2024'),
-       ('Harlow & Loughton', 'Harlow & Loughton', '9013', 267.59, 908.27, 'POL_FS2024')
+       ('Harlow & Loughton', '9013', 267.59, 908.27, 'POL_FS2024')
 ON CONFLICT (ps_scheme_id, fee_scheme_code) DO NOTHING;
 
 INSERT INTO police_station_fees (ps_scheme_name, ps_scheme_id, fixed_fee, escape_threshold, fee_scheme_code)
@@ -988,11 +988,11 @@ INSERT INTO police_station_fees (ps_scheme_name, ps_scheme_id, fixed_fee, escape
 VALUES ('West Berkshire (Newbury Etc)', '1139', 320.00, 650.00, 'POL_FS2025'),
        ('Aldershot / Petersfield (North East Hampshire)', '1140', 320.00, 650.00, 'POL_FS2025'),
        ('Andover / Basingstoke / Winchester (NW Hants)', '1141', 320.00, 650.00, 'POL_FS2025'),
-       ('Isle Of Wight', 'Isle Of Wight', '1142', 320.00, 650.00, 'POL_FS2025'),
+       ('Isle Of Wight', '1142', 320.00, 650.00, 'POL_FS2025'),
        ('Portsmouth / Waterlooville (South East Hampshire)', '1143', 320.00, 650.00, 'POL_FS2025'),
        ('Gosport & Fareham', '1144', 320.00, 650.00, 'POL_FS2025'),
        ('Southampton (South West Hampshire)', '1145', 320.00, 650.00, 'POL_FS2025'),
-       ('Grimsby & Cleethorpes' '1201', 320.00, 650.00, 'POL_FS2025'),
+       ('Grimsby & Cleethorpes', '1201', 320.00, 650.00, 'POL_FS2025'),
        ('Scunthorpe', '1202', 320.00, 650.00, 'POL_FS2025'),
        ('Hull', '1203', 320.00, 650.00, 'POL_FS2025')
 ON CONFLICT (ps_scheme_id, fee_scheme_code) DO NOTHING;
@@ -1103,15 +1103,15 @@ ON CONFLICT (ps_scheme_id, fee_scheme_code) DO NOTHING;
 
 INSERT INTO police_station_fees (ps_scheme_name, ps_scheme_id, fixed_fee, escape_threshold, fee_scheme_code)
 VALUES ('Shrewsbury', '3007', 320.00, 650.00, 'POL_FS2025'),
-       ('Telford', 'Telford', '3008', 320.00, 650.00, 'POL_FS2025'),
-       ('Worcester', 'Worcester', '3009', 320.00, 650.00, 'POL_FS2025'),
-       ('Sandwell', 'Sandwell', '3010', 320.00, 650.00, 'POL_FS2025'),
-       ('Wolverhampton & Seisdon', 'Wolverhampton & Seisdon', '3011', 320.00, 650.00, 'POL_FS2025'),
-       ('Dudley & Halesowen', 'Dudley & Halesowen', '3012', 320.00, 650.00, 'POL_FS2025'),
-       ('Walsall', 'Walsall', '3013', 320.00, 650.00, 'POL_FS2025'),
-       ('Birmingham', 'Birmingham', '3014', 320.00, 650.00, 'POL_FS2025'),
-       ('Solihull', 'Solihull', '3015', 320.00, 650.00, 'POL_FS2025'),
-       ('Coventry', 'Coventry', '3016', 320.00, 650.00, 'POL_FS2025')
+       ('Telford', '3008', 320.00, 650.00, 'POL_FS2025'),
+       ('Worcester', '3009', 320.00, 650.00, 'POL_FS2025'),
+       ('Sandwell', '3010', 320.00, 650.00, 'POL_FS2025'),
+       ('Wolverhampton & Seisdon', '3011', 320.00, 650.00, 'POL_FS2025'),
+       ('Dudley & Halesowen', '3012', 320.00, 650.00, 'POL_FS2025'),
+       ('Walsall', '3013', 320.00, 650.00, 'POL_FS2025'),
+       ('Birmingham', '3014', 320.00, 650.00, 'POL_FS2025'),
+       ('Solihull', '3015', 320.00, 650.00, 'POL_FS2025'),
+       ('Coventry', '3016', 320.00, 650.00, 'POL_FS2025')
 ON CONFLICT (ps_scheme_id, fee_scheme_code) DO NOTHING;
 
 INSERT INTO police_station_fees (ps_scheme_name, ps_scheme_id, fixed_fee, escape_threshold, fee_scheme_code)
@@ -1134,14 +1134,14 @@ VALUES ('Bangor & Caernarfon', '4011', 320.00, 650.00, 'POL_FS2025'),
        ('Dolgellau', '4014', 320.00, 650.00, 'POL_FS2025'),
        ('Mold & Hawarden', '4015', 320.00, 650.00, 'POL_FS2025'),
        ('North Anglesey', '4016', 320.00, 650.00, 'POL_FS2025'),
-       ('Pwllheli', 'Pwllheli', '4017', 320.00, 650.00, 'POL_FS2025'),
-       ('Wrexham', 'Wrexham', '4018', 320.00, 650.00, 'POL_FS2025'),
-       ('Cardiff', 'Cardiff', '4019', 320.00, 650.00, 'POL_FS2025'),
+       ('Pwllheli', '4017', 320.00, 650.00, 'POL_FS2025'),
+       ('Wrexham', '4018', 320.00, 650.00, 'POL_FS2025'),
+       ('Cardiff', '4019', 320.00, 650.00, 'POL_FS2025'),
        ('Vale of Glamorgan', '4020', 320.00, 650.00, 'POL_FS2025')
 ON CONFLICT (ps_scheme_id, fee_scheme_code) DO NOTHING;
 
 INSERT INTO police_station_fees (ps_scheme_name, ps_scheme_id, fixed_fee, escape_threshold, fee_scheme_code)
-VALUES ('Cynon Valley', 'Cynon Valley', '4021', 320.00, 650.00, 'POL_FS2025'),
+VALUES ('Cynon Valley', '4021', 320.00, 650.00, 'POL_FS2025'),
        ('Mid Glamorgan & Miskin', '4022', 320.00, 650.00, 'POL_FS2025'),
        ('Merthyr Tydfil', '4023', 320.00, 650.00, 'POL_FS2025'),
        ('Port Talbot', '4024', 320.00, 650.00, 'POL_FS2025'),
@@ -1239,7 +1239,7 @@ VALUES ('Bedford', '9001', 320.00, 650.00, 'POL_FS2025'),
        ('Cambridge', '9003', 320.00, 650.00, 'POL_FS2025'),
        ('Ely', '9004', 320.00, 650.00, 'POL_FS2025'),
        ('Huntingdon', '9005', 320.00, 650.00, 'POL_FS2025'),
-       ('March & Wisbech', 'March & Wisbech', '9006', 320.00, 650.00, 'POL_FS2025'),
+       ('March & Wisbech', '9006', 320.00, 650.00, 'POL_FS2025'),
        ('Peterborough', '9007', 320.00, 650.00, 'POL_FS2025'),
        ('Basildon', '9008', 320.00, 650.00, 'POL_FS2025'),
        ('Brentwood', '9009', 320.00, 650.00, 'POL_FS2025'),
@@ -1249,7 +1249,7 @@ ON CONFLICT (ps_scheme_id, fee_scheme_code) DO NOTHING;
 INSERT INTO police_station_fees (ps_scheme_name, ps_scheme_id, fixed_fee, escape_threshold, fee_scheme_code)
 VALUES ('Clacton & Harwich / Colchester', '9011', 320.00, 650.00, 'POL_FS2025'),
        ('Grays', '9012', 320.00, 650.00, 'POL_FS2025'),
-       ('Harlow & Loughton', 'Harlow & Loughton', '9013', 320.00, 650.00, 'POL_FS2025'),
+       ('Harlow & Loughton', '9013', 320.00, 650.00, 'POL_FS2025'),
        ('Stansted', '9014', 320.00, 650.00, 'POL_FS2025'),
        ('Rayleigh / Southend On Sea', '9015', 320.00, 650.00, 'POL_FS2025'),
        ('Chelmsford / Witham', '9016', 320.00, 650.00, 'POL_FS2025'),
