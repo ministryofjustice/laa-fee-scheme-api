@@ -52,8 +52,10 @@ ON CONFLICT (scheme_code) DO NOTHING;
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('EC_RMT_FS2016', 'Early Cover or Refused Means Test Fee Scheme 2016', '2016-04-01', '2022-09-29'),
-    ('EC_RMT_FS2022', 'Early Cover or Refused Means Test Fee Scheme 2022', '2022-09-30', NULL)
-    ON CONFLICT (scheme_code) DO NOTHING;
+    ('EC_RMT_FS2022', 'Early Cover or Refused Means Test Fee Scheme 2022', '2022-09-30', '2025-12-21'),
+    ('EC_RMT_FS2025', 'Early Cover or Refused Means Test Fee Scheme 2025', '2025-12-22', NULL)
+ON CONFLICT (scheme_code) DO UPDATE SET
+    valid_to = EXCLUDED.valid_to;
 
 -- Fee Scheme for 'Education' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
