@@ -128,7 +128,8 @@ ON CONFLICT (scheme_code) DO NOTHING;
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('POC_FS2016', 'Pre Order Cover Fee Scheme 2016', '2016-04-01', '2022-09-29'),
-    ('POC_FS2022', 'Pre Order Cover Fee Scheme 2022', '2022-09-30', NULL)
+    ('POC_FS2022', 'Pre Order Cover Fee Scheme 2022', '2022-09-30', '2025-12-21'),
+    ('POC_FS2025', 'Pre Order Cover Fee Scheme 2025', '2025-12-22', NULL)
     ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Police Station' category

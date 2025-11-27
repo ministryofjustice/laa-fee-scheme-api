@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -916,13 +917,14 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         """);
   }
 
-  @Test
-  void shouldGetFeeCalculation_preOrderCover() throws Exception {
+  @ParameterizedTest
+  @ValueSource(strings = {"PROP1", "PROP2"})
+  void shouldGetFeeCalculation_preOrderCover(String feeCode) throws Exception {
     String request = """ 
         {
-          "feeCode": "PROP1",
+          "feeCode": "%s",
           "claimId": "claim_123",
-          "uniqueFileNumber": "110425/123",
+          "uniqueFileNumber": "221225/123",
           "netProfitCosts": 10.56,
           "netDisbursementAmount": 20.5,
           "disbursementVatAmount": 5.15,
@@ -930,12 +932,12 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
           "netWaitingCosts": 12.22,
           "vatIndicator": true
         }
-        """;
+        """.formatted(feeCode);
 
     postAndExpect(request, """
         {
-          "feeCode": "PROP1",
-          "schemeId": "POC_FS2022",
+          "feeCode": "%s",
+          "schemeId": "POC_FS2025",
           "claimId": "claim_123",
           "feeCalculation": {
               "totalAmount": 66.61,
@@ -952,7 +954,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
               "netWaitingCostsAmount": 12.22
           }
         }
-        """);
+        """.formatted(feeCode));
   }
 
   @Test

@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -862,13 +863,14 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
         """.formatted(feeCode, warningType, warningMessage, escapeFlag, totalAmount, calculatedVatAmount, fixedFeeAmount));
   }
 
-  @Test
-  void shouldReturnValidationWarning_preOrderCover() throws Exception {
+  @ParameterizedTest
+  @ValueSource(strings = {"PROP1", "PROP2"})
+  void shouldReturnValidationWarning_preOrderCover(String feeCode) throws Exception {
     String request = """ 
         {
-          "feeCode": "PROP1",
+          "feeCode": "%s",
           "claimId": "claim_123",
-          "uniqueFileNumber": "020416/001",
+          "uniqueFileNumber": "221225/123",
           "netProfitCosts": 10.0,
           "netTravelCosts": 57.0,
           "netWaitingCosts": 70.0,
@@ -876,11 +878,11 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
           "disbursementVatAmount": 11.07,
           "vatIndicator": true
         }
-        """;
+        """.formatted(feeCode);
 
     postAndExpect(request, """
         {
-          "feeCode": "PROP1",
+          "feeCode": "%s",
           "claimId": "claim_123",
           "validationMessages": [
             {
@@ -890,7 +892,7 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
             }
           ]
         }
-        """);
+        """.formatted(feeCode));
   }
 
   @Test
