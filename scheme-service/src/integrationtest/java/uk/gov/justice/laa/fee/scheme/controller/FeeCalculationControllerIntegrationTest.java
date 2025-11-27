@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -551,33 +552,37 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount));
   }
 
-  @Test
-  void shouldGetFeeCalculation_policeStationFixedFee() throws Exception {
+  @ParameterizedTest
+  @CsvSource({
+      "211225/242, POL_FS2024, 223.52",
+      "221225/242, POL_FS2025, 320.0"
+  })
+  void shouldGetFeeCalculation_policeStationFixedFee(String ufn, String feeScheme, double feeTotal) throws Exception {
     String request = """ 
         {
           "feeCode": "INVC",
           "claimId": "claim_123",
-          "uniqueFileNumber": "221225/242",
+          "uniqueFileNumber": "%s",
           "policeStationId": "NE001",
           "policeStationSchemeId": "1001",
           "vatIndicator": false
         }
-        """;
+        """.formatted(ufn);
 
     postAndExpect(request, """
         {
           "feeCode": "INVC",
           "claimId": "claim_123",
-          "schemeId": "POL_FS2025",
+          "schemeId": "%s",
           "escapeCaseFlag": false,
           "feeCalculation": {
-            "totalAmount": 320.0,
+            "totalAmount": %s,
             "vatIndicator": false,
             "calculatedVatAmount": 0,
-            "fixedFeeAmount": 320.0
+            "fixedFeeAmount": %s
           }
         }
-        """);
+        """.formatted(feeScheme, feeTotal, feeTotal));
   }
 
   @Test
@@ -916,35 +921,41 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         """);
   }
 
-  @Test
-  void shouldGetFeeCalculation_preOrderCover() throws Exception {
+  @ParameterizedTest
+  @CsvSource({
+      "PROP1, 211225/123, POC_FS2022",
+      "PROP1, 221225/123, POC_FS2025",
+      "PROP2, 211225/123, POC_FS2022",
+      "PROP2, 221225/123, POC_FS2025",
+  })
+  void shouldGetFeeCalculation_preOrderCover(String feeCode, String ufn, String feeScheme) throws Exception {
     String request = """ 
         {
-          "feeCode": "PROP1",
+          "feeCode": "%s",
           "claimId": "claim_123",
-          "uniqueFileNumber": "110425/123",
+          "uniqueFileNumber": "%s",
           "netProfitCosts": 10.56,
-          "netDisbursementAmount": 20.5,
-          "disbursementVatAmount": 5.15,
+          "netDisbursementAmount": 10.5,
+          "disbursementVatAmount": 2.1,
           "netTravelCosts": 11.35,
           "netWaitingCosts": 12.22,
           "vatIndicator": true
         }
-        """;
+        """.formatted(feeCode, ufn);
 
     postAndExpect(request, """
         {
-          "feeCode": "PROP1",
-          "schemeId": "POC_FS2022",
+          "feeCode": "%s",
+          "schemeId": "%s",
           "claimId": "claim_123",
           "feeCalculation": {
-              "totalAmount": 66.61,
+              "totalAmount": 53.56,
               "vatIndicator": true,
               "vatRateApplied": 20.0,
               "calculatedVatAmount": 6.83,
-              "disbursementAmount": 20.5,
-              "requestedNetDisbursementAmount": 20.5,
-              "disbursementVatAmount": 5.15,
+              "disbursementAmount": 10.5,
+              "requestedNetDisbursementAmount": 10.5,
+              "disbursementVatAmount": 2.1,
               "hourlyTotalAmount": 34.13,
               "netProfitCostsAmount": 10.56,
               "requestedNetProfitCostsAmount": 10.56,
@@ -952,7 +963,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
               "netWaitingCostsAmount": 12.22
           }
         }
-        """);
+        """.formatted(feeCode, feeScheme));
   }
 
   @Test
