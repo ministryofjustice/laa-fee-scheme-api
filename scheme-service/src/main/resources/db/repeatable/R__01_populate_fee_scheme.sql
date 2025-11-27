@@ -1,4 +1,4 @@
--- Fee Scheme for 'Advice and Assistance and Advocacy Assistance by a court Duty Solicitor'' category
+-- Fee Scheme for 'Advice and Assistance and Advocacy Assistance by a court Duty Solicitor' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('AAA_FS2016', 'Advocacy Assistance in the Crown Court or Appeals & Reviews Fee Scheme 2016', '2016-04-01', NULL)
@@ -38,11 +38,7 @@ ON CONFLICT (scheme_code) DO NOTHING;
 -- Fee Scheme for 'Debt' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
-    ('DEBT_FS2013', 'Debt Fee Scheme 2013', '2013-04-01', NULL)
-ON CONFLICT (scheme_code) DO NOTHING;
-
-INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
-VALUES
+    ('DEBT_FS2013', 'Debt Fee Scheme 2013', '2013-04-01', NULL),
     ('DEBT_FS2025', 'Debt Fee Scheme 2025', '2025-12-22', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
@@ -52,42 +48,38 @@ VALUES
     ('DISC_FS2013', 'Discrimination Scheme 2013', '2013-04-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
+-- Fee Scheme for 'Early Cover or Refused Means Test' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('EC_RMT_FS2016', 'Early Cover or Refused Means Test Fee Scheme 2016', '2016-04-01', '2022-09-29'),
+    ('EC_RMT_FS2022', 'Early Cover or Refused Means Test Fee Scheme 2022', '2022-09-30', NULL)
+    ON CONFLICT (scheme_code) DO NOTHING;
+
 -- Fee Scheme for 'Education' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
+    ('EDU_DISB_FS2024', 'Education - Disbursement Fee Scheme 2024', '2024-09-01', NULL),
     ('EDU_FS2013', 'Education Fee Scheme 2013', '2013-04-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Housing - HLPAS' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
-    ('ELA_FS2024', 'Housing - HLPAS Fee Scheme 2024', '2024-09-01', NULL)
-ON CONFLICT (scheme_code) DO NOTHING;
-
-INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
-VALUES
+    ('ELA_FS2024', 'Housing - HLPAS Fee Scheme 2024', '2024-09-01', NULL),
     ('ELA_FS2025', 'Housing - HLPAS Fee Scheme 2025', '2025-12-22', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Family' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
-    ('FAM_LON_FS2011', 'Family London Rate Fee Scheme 2011', '2011-01-03', NULL)
-ON CONFLICT (scheme_code) DO NOTHING;
-
-INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
-VALUES
+    ('FAM_LON_FS2011', 'Family London Rate Fee Scheme 2011', '2011-01-03', NULL),
     ('FAM_NON_LON_FS2011', 'Family Non London Rate Fee Scheme 2011', '2011-01-03', NULL)
-    ON CONFLICT (scheme_code) DO NOTHING;
+ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Housing' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
-    ('HOUS_FS2013', 'Housing Fee Scheme 2013', '2013-04-01', NULL)
-ON CONFLICT (scheme_code) DO NOTHING;
-
-INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
-VALUES
+    ('HOUS_FS2013', 'Housing Fee Scheme 2013', '2013-04-01', NULL),
     ('HOUS_FS2025', 'Housing Fee Scheme 2025', '2025-12-22', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
@@ -121,6 +113,7 @@ ON CONFLICT (scheme_code) DO NOTHING;
 -- Fee Scheme for 'Mental Health' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
+    ('MHL_DISB_FS2020', 'Mental Health - Disbursement Fee Scheme 2020', '2020-10-08', NULL),
     ('MHL_FS2013', 'Mental Health Fee Scheme 2013', '2013-04-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
@@ -131,22 +124,22 @@ VALUES
     ('MISC_FS2015', 'Miscellaneous Fee Scheme 2015', '2015-03-23', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
+-- Fee Scheme for 'Pre Order Cover' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('POC_FS2016', 'Pre Order Cover Fee Scheme 2016', '2016-04-01', '2022-09-29'),
+    ('POC_FS2022', 'Pre Order Cover Fee Scheme 2022', '2022-09-30', NULL)
+    ON CONFLICT (scheme_code) DO NOTHING;
+
 -- Fee Scheme for 'Police Station' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES ('POL_FS2016', 'Police Station Work 2016', '2016-04-01', NULL),
        ('POL_FS2021', 'Police Station Work 2021', '2021-06-07', NULL),
        ('POL_FS2022', 'Police Station Work 2022', '2022-09-30', NULL),
        ('POL_FS2024', 'Police Station Work 2024', '2024-12-06', NULL),
-       ('TBD', 'Police Station Work -TBD', '2028-08-04', NULL)
+       ('POL_FS2025', 'Police Station Work 2025', '2025-12-22', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 /** '2028-08-04' set temporarily, Valid from date needs to be updated once it is confirmed **/
-
--- Fee Scheme for 'Pre Order Cover' category
-INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
-VALUES
-    ('POC_FS2016', 'Pre Order Cover Fee Scheme 2016', '2016-04-01', '2022-09-29'),
-    ('POC_FS2022', 'Pre Order Cover Fee Scheme 2022', '2022-09-30', NULL)
-ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Prison Law' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
@@ -182,22 +175,3 @@ VALUES
 ON CONFLICT (scheme_code) DO UPDATE SET
     valid_to = EXCLUDED.valid_to,
     scheme_name = EXCLUDED.scheme_name;
-
--- Fee Scheme for 'Education - Interim Disbursement' category
-INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
-VALUES
-    ('EDU_DISB_FS2024', 'Education - Disbursement Fee Scheme 2024', '2024-09-01', NULL)
-ON CONFLICT (scheme_code) DO NOTHING;
-
--- Fee Scheme for 'Mental Health - Interim Disbursement' category
-INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
-VALUES
-    ('MHL_DISB_FS2020', 'Mental Health - Disbursement Fee Scheme 2020', '2020-10-08', NULL)
-ON CONFLICT (scheme_code) DO NOTHING;
-
--- Fee Scheme for 'Early Cover or Refused Means Test' category
-INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
-VALUES
-    ('EC_RMT_FS2016', 'Early Cover or Refused Means Test Fee Scheme 2016', '2016-04-01', '2022-09-29'),
-    ('EC_RMT_FS2022', 'Early Cover or Refused Means Test Fee Scheme 2022', '2022-09-30', NULL)
-ON CONFLICT (scheme_code) DO NOTHING;

@@ -8,7 +8,6 @@ VALUES ('INVA', 'POL_FS2016', NULL, 273.75),
        ('INVE', 'POL_FS2022', NULL, 1574.06)
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
-
 INSERT INTO fee (fee_code, fee_scheme_code, fixed_fee, upper_cost_limit)
 VALUES ('INVH', 'POL_FS2022', NULL, 1574.06),
        ('INVK', 'POL_FS2022', NULL, 1574.06),
@@ -19,7 +18,6 @@ VALUES ('INVH', 'POL_FS2022', NULL, 1574.06),
        ('INVC', 'POL_FS2016', NULL, NULL)
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
-
 INSERT INTO fee (fee_code, fee_scheme_code, fixed_fee, upper_cost_limit)
 VALUES ('INVB1', 'POL_FS2022', 33.00, NULL),
        ('INVB2', 'POL_FS2022', 31.74, NULL),
@@ -29,8 +27,7 @@ VALUES ('INVB1', 'POL_FS2022', 33.00, NULL),
        ('INVB2', 'POL_FS2024', 31.74, NULL)
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
-
 INSERT INTO fee (fee_code, fee_scheme_code, fixed_fee, upper_cost_limit)
 VALUES  ('INVC', 'POL_FS2024', NULL, NULL),
-        ('INVC', 'TBD', NULL, NULL)
+        ('INVC', 'POL_FS2025', NULL, NULL)
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
