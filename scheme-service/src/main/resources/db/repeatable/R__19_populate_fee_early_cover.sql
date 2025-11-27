@@ -14,3 +14,11 @@ VALUES
     ('PROT', 78.71, 'EC_RMT_FS2022'),
     ('PROU', 26.23, 'EC_RMT_FS2022')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
+
+-- Fee Scheme for 2025 uplift 'Early Cover or Refused Means Test' category
+INSERT INTO fee
+(fee_code, fixed_fee, fee_scheme_code)
+VALUES
+    ('PROT', 86.58, 'EC_RMT_FS2025'),
+    ('PROU', 28.85, 'EC_RMT_FS2025')
+    ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
