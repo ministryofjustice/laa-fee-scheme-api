@@ -1005,4 +1005,45 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json(expectedResponseJson, STRICT));
   }
+
+  @ParameterizedTest
+  @CsvSource({
+      "PROU, 211225/456, EC_RMT_FS2022, 31.48, 5.25, 26.23",
+      "PROU, 221225/456, EC_RMT_FS2025, 34.62, 5.77, 28.85"
+  })
+  void shouldGetFeeCalculation_earlyCoverOrRefusedMeans(
+      String feeCode,
+      String uniqueFileNumber,
+      String schemeId,
+      String expectedTotal,
+      String expectedVatAmount,
+      String fixedFeeAmount
+  ) throws Exception {
+    String request = """
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "%s",
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true
+        }
+        """.formatted(feeCode, uniqueFileNumber);
+
+    postAndExpect(request, """
+        {
+          "feeCode": "%s",
+          "schemeId": "%s",
+          "claimId": "claim_123",
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": %s,
+            "fixedFeeAmount": %s
+          }
+        }
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount)
+    );
+  }
 }
