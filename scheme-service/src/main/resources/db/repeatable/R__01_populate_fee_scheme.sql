@@ -107,8 +107,10 @@ ON CONFLICT (scheme_code) DO UPDATE
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('MAGS_COURT_FS2016', 'Criminal proceedings - Magistrates court 2016', '2016-04-01', '2022-09-29'),
-    ('MAGS_COURT_FS2022', 'Criminal proceedings - Magistrates court 2022', '2022-09-30', NULL)
-ON CONFLICT (scheme_code) DO NOTHING;
+    ('MAGS_COURT_FS2022', 'Criminal proceedings - Magistrates court 2022', '2022-09-30', '2025-12-21'),
+    ('MAGS_COURT_FS2025', 'Criminal proceedings - Magistrates court 2025', '2025-12-22', NULL)
+ON CONFLICT (scheme_code) DO UPDATE SET
+    valid_to = EXCLUDED.valid_to;
 
 -- Fee Scheme for 'Mediation' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
@@ -175,8 +177,11 @@ ON CONFLICT (scheme_code) DO NOTHING;
 -- Fee Scheme for 'Criminal proceedings - Youth court' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
-    ('YOUTH_COURT_FS2024', 'Criminal proceedings - Youth court 2022', '2024-12-06', NULL)
-ON CONFLICT (scheme_code) DO NOTHING;
+    ('YOUTH_COURT_FS2024', 'Criminal proceedings - Youth court 2024', '2024-12-06', '2025-12-21'),
+    ('YOUTH_COURT_FS2025', 'Criminal proceedings - Youth court 2025', '2025-12-22', NULL)
+ON CONFLICT (scheme_code) DO UPDATE SET
+    valid_to = EXCLUDED.valid_to,
+    scheme_name = EXCLUDED.scheme_name;
 
 -- Fee Scheme for 'Education - Interim Disbursement' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
