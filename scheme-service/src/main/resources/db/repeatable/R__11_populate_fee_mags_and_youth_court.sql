@@ -96,7 +96,8 @@ VALUES ('YOUY3', 1141.17, 'YOUTH_COURT_FS2024'),
 
 INSERT INTO fee (fee_code, fixed_fee, fee_scheme_code)
 VALUES ('PROW', 181.40, 'SEND_HEAR_FS2020'),
-       ('PROW', 208.61, 'SEND_HEAR_FS2022')
+       ('PROW', 208.61, 'SEND_HEAR_FS2022'),
+       ('PROW', 229.47, 'SEND_HEAR_FS2025')
     ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
 -- undesignated magistrates court uplift 2025
