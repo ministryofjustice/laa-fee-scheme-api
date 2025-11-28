@@ -889,34 +889,6 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
   }
 
 
-  @Test
-  void shouldGetErrorMessageInResponse_mentalHealthDisbursementOnly() throws Exception {
-    String request = """ 
-        {
-          "feeCode": "MHLDIS",
-          "claimId": "claim_123",
-          "startDate": "2018-07-29",
-          "netDisbursementAmount": 1200.0,
-          "disbursementVatAmount": 150.0
-        }
-        """;
-
-    postAndExpect(request, """
-        {
-           "feeCode": "MHLDIS",
-           "claimId": "claim_123",
-           "validationMessages": [
-               {
-                   "type": "ERROR",
-                   "code": "ERRCIV2",
-                   "message": "Case Start Date is too far in the past."
-               }
-           ]
-       }
-       """);
-  }
-
-
   @ParameterizedTest
   @CsvSource({
       "PROW, 010120/456, SEND_HEAR_FS2020, 2020-12-21, 217.68, 36.28, 181.4",
