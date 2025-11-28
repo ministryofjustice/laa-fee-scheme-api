@@ -140,13 +140,13 @@ VALUES ('POL_FS2016', 'Police Station Work 2016', '2016-04-01', NULL),
        ('POL_FS2024', 'Police Station Work 2024', '2024-12-06', NULL),
        ('POL_FS2025', 'Police Station Work 2025', '2025-12-22', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
-/** '2028-08-04' set temporarily, Valid from date needs to be updated once it is confirmed **/
 
 -- Fee Scheme for 'Prison Law' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
-VALUES
-    ('PRISON_FS2016', 'Prison Law 2016', '2016-04-01', NULL)
-    ON CONFLICT (scheme_code) DO NOTHING;
+VALUES ('PRISON_FS2016', 'Prison Law Fee Scheme 2016', '2016-04-01', '2025-12-21'),
+       ('PRISON_FS2025', 'Prison Law Fee Scheme 2025', '2025-12-22', NULL)
+ON CONFLICT (scheme_code) DO UPDATE SET
+    valid_to = EXCLUDED.valid_to;
 
 -- Fee Scheme for 'Public Law' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
