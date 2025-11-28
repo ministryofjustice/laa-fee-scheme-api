@@ -952,7 +952,7 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
         {
           "feeCode": "MHLDIS",
           "claimId": "claim_123",
-          "startDate": "2018-07-29",
+          "startDate": "2012-07-29",
           "netDisbursementAmount": 1200.0,
           "disbursementVatAmount": 150.0
         }

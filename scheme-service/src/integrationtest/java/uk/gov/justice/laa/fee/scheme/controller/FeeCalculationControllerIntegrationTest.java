@@ -866,7 +866,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         {
           "feeCode": "MHLDIS",
           "claimId": "claim_123",
-          "startDate": "2025-07-29",
+          "startDate": "2022-07-29",
           "netDisbursementAmount": 1200.0,
           "disbursementVatAmount": 150.0
         }
@@ -875,7 +875,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
     postAndExpect(request, """
         {
           "feeCode": "MHLDIS",
-          "schemeId": "MHL_DISB_FS2020",
+          "schemeId": "MHL_DISB_FS2013",
           "claimId": "claim_123",
           "feeCalculation": {
             "totalAmount": 1350.0,
