@@ -847,7 +847,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
     postAndExpect(request, """
         {
           "feeCode": "ICASD",
-          "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2020",
+          "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2013",
           "claimId": "claim_123",
           "feeCalculation": {
             "totalAmount": 66.42,

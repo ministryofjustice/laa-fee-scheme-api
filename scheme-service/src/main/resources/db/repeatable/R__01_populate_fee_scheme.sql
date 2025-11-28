@@ -91,7 +91,6 @@ DELETE FROM fee_schemes WHERE scheme_code = 'IMM_ASYLM_DISBURSEMENT_FS2020';
 -- Fee Scheme for 'Immigration and Asylum' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
-    ('IMM_ASYLM_DISBURSEMENT_FS2020', 'Immigration and Asylum Disbursement Scheme 2013', '2020-08-10', NULL),
     ('IMM_ASYLM_DISBURSEMENT_FS2013', 'Immigration and Asylum Disbursement Scheme 2013', '2013-04-01', NULL),
     ('IMM_ASYLM_FS2013', 'Immigration and Asylum Scheme 2013', '2013-04-01', '2020-06-07'),
     ('IMM_ASYLM_FS2020', 'Immigration and Asylum Scheme 2020', '2020-06-08', '2023-03-31'),
