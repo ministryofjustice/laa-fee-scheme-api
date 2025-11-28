@@ -1025,7 +1025,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
       "PRIE2, 221225/123, PRISON_FS2025, 2284.21, 360.7, 1803.51",
   })
   void shouldGetFeeCalculation_prisonLaw(String feeCode, String ufn, String feeScheme,
-                                         double total, double vat, double fixedFee)throws Exception {
+                                         double total, double vat, double fixedFee) throws Exception {
     String request = """ 
         {
           "feeCode": "%s",
