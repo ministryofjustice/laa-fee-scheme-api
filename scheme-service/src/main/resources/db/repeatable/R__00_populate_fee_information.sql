@@ -161,13 +161,16 @@ VALUES ('PROT', 'Early Cover', 'FIXED', 'EARLY_COVER'),
        ('PROD', 'Advice and Assistance and Advocacy Assistance by a court Duty Solicitor', 'FIXED', 'ADVICE_ASSISTANCE_ADVOCACY'),
        ('PROP1', 'Pre Order Cover - London', 'FIXED', 'PRE_ORDER_COVER'),
        ('PROP2', 'Pre Order Cover - National', 'FIXED', 'PRE_ORDER_COVER'),
-       ('PROH', 'Advocacy Assistance in the Crown Court', 'FIXED', 'ADVOCACY_APPEALS_REVIEWS'),
-       ('APPA', 'Advice and assistance in relation to an appeal (except CCRC)', 'FIXED', 'ADVOCACY_APPEALS_REVIEWS'),
-       ('APPB', 'Advice and assistance in relation to CCRC application', 'FIXED', 'ADVOCACY_APPEALS_REVIEWS'),
+       ('PROH', 'Advocacy Assistance in the Crown Court', 'HOURLY', 'ADVOCACY_APPEALS_REVIEWS'),
+       ('PROH1', 'Prescribed Proceedings Representation in the Crown Court - appeals from the magistrates'' court', 'HOURLY', 'ADVOCACY_APPEALS_REVIEWS'),
+       ('PROH2', 'Prescribed Proceedings Representation in the Crown Court - appeals from the magistrates'' court', 'HOURLY', 'ADVOCACY_APPEALS_REVIEWS'),
+       ('APPA', 'Advice and assistance in relation to an appeal (except CCRC)', 'HOURLY', 'ADVOCACY_APPEALS_REVIEWS'),
+       ('APPB', 'Advice and assistance in relation to CCRC application', 'HOURLY', 'ADVOCACY_APPEALS_REVIEWS'),
        ('ASMS', 'Legal Help and Associated Civil Work – Miscellaneous', 'FIXED', 'ASSOCIATED_CIVIL'),
        ('ASPL', 'Legal Help and Associated Civil Work – Public Law', 'FIXED', 'ASSOCIATED_CIVIL'),
        ('ASAS', 'Part 1 injunction Anti-Social Behaviour Crime and Policing Act 2014', 'FIXED', 'ASSOCIATED_CIVIL')
-ON CONFLICT (fee_code) DO NOTHING;
+ON CONFLICT (fee_code) DO UPDATE SET
+    fee_type = EXCLUDED.fee_type;
 
 -- Magistrates court
 INSERT INTO fee_code_information (fee_code, fee_description, fee_type, category_type, court_designation_type, fee_band_type)
