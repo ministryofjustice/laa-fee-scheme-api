@@ -838,7 +838,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         {
           "feeCode": "ICASD",
           "claimId": "claim_123",
-          "startDate": "2021-09-30",
+          "startDate": "2013-04-01",
           "netDisbursementAmount": 55.35,
           "disbursementVatAmount": 11.07
         }
