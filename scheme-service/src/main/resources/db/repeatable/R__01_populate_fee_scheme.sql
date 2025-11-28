@@ -162,8 +162,8 @@ VALUES
     ('SEND_HEAR_FS2020', 'Sending Hearing 2020', '2020-10-19', '2022-09-29'),
     ('SEND_HEAR_FS2022', 'Sending Hearing 2022', '2022-09-30', '2025-12-21'),
     ('SEND_HEAR_FS2025', 'Sending Hearing 2025', '2025-12-22', NULL)
-
-ON CONFLICT (scheme_code) DO NOTHING;
+ON CONFLICT (scheme_code) DO UPDATE SET
+    valid_to = EXCLUDED.valid_to;
 
 -- Fee Scheme for 'Welfare Benefits' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
