@@ -8,8 +8,10 @@ ON CONFLICT (scheme_code) DO NOTHING;
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('AAR_FS2016', 'Advocacy Assistance in the Crown Court or Appeals & Reviews Fee Scheme 2016', '2016-04-01', '2022-09-29'),
-    ('AAR_FS2022', 'Advocacy Assistance in the Crown Court or Appeals & Reviews Fee Scheme 2022', '2022-09-30', NULL)
-ON CONFLICT (scheme_code) DO NOTHING;
+    ('AAR_FS2022', 'Advocacy Assistance in the Crown Court or Appeals & Reviews Fee Scheme 2022', '2022-09-30', '2025-12-21'),
+    ('AAR_FS2025', 'Advocacy Assistance in the Crown Court or Appeals & Reviews Fee Scheme 2025', '2025-12-22', NULL)
+ON CONFLICT (scheme_code) DO UPDATE SET
+    valid_to = EXCLUDED.valid_to;
 
 -- Fee Scheme for 'Associated Civil' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
