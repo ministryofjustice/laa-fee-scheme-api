@@ -89,6 +89,7 @@ ON CONFLICT (scheme_code) DO NOTHING;
 
 DELETE FROM fee WHERE fee_scheme_code LIKE 'I&A_FS%';
 
+DELETE FROM fee WHERE fee_scheme_code = 'IMM_ASYLM_DISBURSEMENT_FS2020';
 DELETE FROM fee_schemes WHERE scheme_code = 'IMM_ASYLM_DISBURSEMENT_FS2020';
 -- Fee Scheme for 'Immigration and Asylum' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)

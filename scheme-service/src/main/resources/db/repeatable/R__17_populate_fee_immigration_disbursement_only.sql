@@ -1,4 +1,3 @@
-DELETE FROM fee WHERE fee_scheme_code = 'IMM_ASYLM_DISBURSEMENT_FS2020';
 INSERT INTO fee (fee_code, disbursement_limit, fee_scheme_code)
 VALUES ('ICASD', 1600.00, 'IMM_ASYLM_DISBURSEMENT_FS2013'),
        ('ICISD', 1200.00, 'IMM_ASYLM_DISBURSEMENT_FS2013'),
