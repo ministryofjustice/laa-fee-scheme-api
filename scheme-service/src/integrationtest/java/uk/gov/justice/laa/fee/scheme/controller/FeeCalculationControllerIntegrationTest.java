@@ -892,37 +892,46 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         """);
   }
 
-  @Test
-  void shouldGetFeeCalculation_sendingHearing() throws Exception {
-    String request = """ 
+  @ParameterizedTest
+  @CsvSource({
+      "PROW, 010120/456, SEND_HEAR_FS2020, 2020-12-21, 217.68, 36.28, 181.4",
+      "PROW, 051222/678, SEND_HEAR_FS2022, 2022-12-21, 250.33, 41.72, 208.61",
+      "PROW, 261225/934, SEND_HEAR_FS2025, 2025-12-26, 275.36, 45.89, 229.47"
+  })
+  void shouldGetFeeCalculation_sendingHearing(
+      String feeCode,
+      String uniqueFileNumber,
+      String schemeId,
+      String representationOrderDate,
+      String expectedTotal,
+      String expectedVatAmount,
+      String fixedFeeAmount
+  ) throws Exception {
+    String request = """
         {
-          "feeCode": "PROW",
+          "feeCode": "%s",
           "claimId": "claim_123",
-          "representationOrderDate": "2025-02-01",
-          "uniqueFileNumber": "010225/001",
-          "netDisbursementAmount": 123.38,
-          "disbursementVatAmount": 24.67,
+          "uniqueFileNumber": "%s",
+          "representationOrderDate": "%s",
           "vatIndicator": true
         }
-        """;
+        """.formatted(feeCode, uniqueFileNumber, representationOrderDate);
 
     postAndExpect(request, """
         {
-          "feeCode": "PROW",
-          "schemeId": "SEND_HEAR_FS2022",
+          "feeCode": "%s",
+          "schemeId": "%s",
           "claimId": "claim_123",
           "feeCalculation": {
-              "totalAmount": 398.38,
-              "vatIndicator": true,
-              "vatRateApplied": 20.0,
-              "calculatedVatAmount": 41.72,
-              "disbursementAmount": 123.38,
-              "requestedNetDisbursementAmount": 123.38,
-              "disbursementVatAmount": 24.67,
-              "fixedFeeAmount": 208.61
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": %s,
+            "fixedFeeAmount": %s
           }
         }
-        """);
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount)
+    );
   }
 
   @ParameterizedTest
@@ -1007,6 +1016,61 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
           }
         }
         """);
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "PRIA, 211225/123, PRISON_FS2016, 360.9, 40.15, 200.75",
+      "PRIA, 221225/123, PRISON_FS2025, 418.72, 49.79, 248.93",
+      "PRIB1, 211225/123, PRISON_FS2016, 364.72, 40.79, 203.93",
+      "PRIB1, 221225/123, PRISON_FS2025, 423.44, 50.57, 252.87",
+      "PRIB2, 211225/123, PRISON_FS2016, 796.99, 112.83, 564.16",
+      "PRIB2, 221225/123, PRISON_FS2025, 959.47, 139.91, 699.56",
+      "PRIC1, 211225/123, PRISON_FS2016, 644.65, 87.44, 437.21",
+      "PRIC1, 221225/123, PRISON_FS2025, 770.57, 108.43, 542.14",
+      "PRIC2, 211225/123, PRISON_FS2016, 1865.33, 290.89, 1454.44",
+      "PRIC2, 221225/123, PRISON_FS2025, 2284.21, 360.7, 1803.51",
+      "PRID1, 211225/123, PRISON_FS2016, 644.65, 87.44, 437.21",
+      "PRID1, 221225/123, PRISON_FS2025, 423.44, 50.57, 252.87",
+      "PRID2, 211225/123, PRISON_FS2016, 796.99, 112.83, 564.16",
+      "PRID2, 221225/123, PRISON_FS2025, 959.47, 139.91, 699.56",
+      "PRIE1, 211225/123, PRISON_FS2016, 364.72, 40.79, 203.93",
+      "PRIE2, 221225/123, PRISON_FS2025, 2284.21, 360.7, 1803.51",
+  })
+  void shouldGetFeeCalculation_prisonLaw(String feeCode, String ufn, String feeScheme,
+                                         double total, double vat, double fixedFee) throws Exception {
+    String request = """ 
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "%s",
+          "netProfitCosts": 100,
+          "netTravelCosts": 200,
+          "netWaitingCosts": 200,
+          "netDisbursementAmount": 100,
+          "disbursementVatAmount": 20,
+          "vatIndicator": true
+        }
+        """.formatted(feeCode, ufn);
+
+    postAndExpect(request, """
+        {
+          "feeCode": "%s",
+          "schemeId": "%s",
+          "claimId": "claim_123",
+          "escapeCaseFlag": false,
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.0,
+            "calculatedVatAmount": %s,
+            "disbursementAmount": 100.0,
+            "requestedNetDisbursementAmount": 100.0,
+            "disbursementVatAmount": 20.0,
+            "fixedFeeAmount": %s
+          }
+        }
+        """.formatted(feeCode, feeScheme, total, vat, fixedFee));
   }
 
   private void postAndExpect(String requestJson, String expectedResponseJson) throws Exception {
