@@ -888,37 +888,46 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         """);
   }
 
-  @Test
-  void shouldGetFeeCalculation_sendingHearing() throws Exception {
-    String request = """ 
+  @ParameterizedTest
+  @CsvSource({
+      "PROW, 010120/456, SEND_HEAR_FS2020, 2020-12-21, 217.68, 36.28, 181.4",
+      "PROW, 051222/678, SEND_HEAR_FS2022, 2022-12-21, 250.33, 41.72, 208.61",
+      "PROW, 261225/934, SEND_HEAR_FS2025, 2025-12-26, 275.36, 45.89, 229.47"
+  })
+  void shouldGetFeeCalculation_sendingHearing(
+      String feeCode,
+      String uniqueFileNumber,
+      String schemeId,
+      String representationOrderDate,
+      String expectedTotal,
+      String expectedVatAmount,
+      String fixedFeeAmount
+  ) throws Exception {
+    String request = """
         {
-          "feeCode": "PROW",
+          "feeCode": "%s",
           "claimId": "claim_123",
-          "representationOrderDate": "2025-02-01",
-          "uniqueFileNumber": "010225/001",
-          "netDisbursementAmount": 123.38,
-          "disbursementVatAmount": 24.67,
+          "uniqueFileNumber": "%s",
+          "representationOrderDate": "%s",
           "vatIndicator": true
         }
-        """;
+        """.formatted(feeCode, uniqueFileNumber, representationOrderDate);
 
     postAndExpect(request, """
         {
-          "feeCode": "PROW",
-          "schemeId": "SEND_HEAR_FS2022",
+          "feeCode": "%s",
+          "schemeId": "%s",
           "claimId": "claim_123",
           "feeCalculation": {
-              "totalAmount": 398.38,
-              "vatIndicator": true,
-              "vatRateApplied": 20.0,
-              "calculatedVatAmount": 41.72,
-              "disbursementAmount": 123.38,
-              "requestedNetDisbursementAmount": 123.38,
-              "disbursementVatAmount": 24.67,
-              "fixedFeeAmount": 208.61
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": %s,
+            "fixedFeeAmount": %s
           }
         }
-        """);
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount)
+    );
   }
 
   @ParameterizedTest
