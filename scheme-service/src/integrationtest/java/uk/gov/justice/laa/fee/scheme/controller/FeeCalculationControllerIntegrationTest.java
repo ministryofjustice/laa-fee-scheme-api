@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -758,11 +757,16 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
 
   @ParameterizedTest
   @CsvSource({
-      "PROH, AAR_FS2022, 810.0, 120.0, 600.0, 500.0, 500.0",
-      "APPA, AAR_FS2022, 261.6, 28.6, 143.0, 43.0, 43.0",
-      "APPB, AAR_FS2022, 354.0, 44.0, 220.0, 120.0, 120.0",
+      "PROH, 211225/456, AAR_FS2022, 810.0, 120.0, 600.0, 500.0, 500.0",
+      "APPA, 211225/456, AAR_FS2022, 261.6, 28.6, 143.0, 43.0, 43.0",
+      "APPB, 211225/456, AAR_FS2022, 354.0, 44.0, 220.0, 120.0, 120.0",
+      "PROH1, 221225/456, AAR_FS2025, 810.0, 120.0, 600.0, 500.0, 500.0",
+      "PROH2, 221225/456, AAR_FS2025, 810.0, 120.0, 600.0, 500.0, 500.0",
+      "APPA, 221225/456, AAR_FS2025, 261.6, 28.6, 143.0, 43.0, 43.0",
+      "APPB, 221225/456, AAR_FS2025, 354.0, 44.0, 220.0, 120.0, 120.0"
   })
   void shouldGetFeeCalculation_advocacyAppealsReview(String feeCode,
+                                                     String uniqueFileNumber,
                                                      String schemeId,
                                                      String expectedTotal,
                                                      String expectedVatAmount,
@@ -773,7 +777,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
     String request = """ 
         {
           "feeCode": "%s",
-          "uniqueFileNumber": "110425/123",
+          "uniqueFileNumber": "%s",
           "netProfitCosts": %s,
           "netDisbursementAmount": 80,
           "disbursementVatAmount": 10,
@@ -781,7 +785,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
           "netTravelCosts": 50,
           "netWaitingCosts": 50
         }
-        """.formatted(feeCode, netProfitCostsAmount);
+        """.formatted(feeCode, uniqueFileNumber, netProfitCostsAmount);
 
     postAndExpect(request, """
         {
@@ -799,8 +803,8 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
             "netProfitCostsAmount": %s,
             "requestedNetProfitCostsAmount": %s,
             "netTravelCostsAmount": 50,
-            "netWaitingCostsAmount": 50 
-          }  
+            "netWaitingCostsAmount": 50
+          }
         }
         """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, expectedHourlyTotalAmount, netProfitCostsAmount, requestedNetProfitCostsAmount));
   }
@@ -838,7 +842,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         {
           "feeCode": "ICASD",
           "claimId": "claim_123",
-          "startDate": "2021-09-30",
+          "startDate": "2013-04-01",
           "netDisbursementAmount": 55.35,
           "disbursementVatAmount": 11.07
         }
@@ -847,7 +851,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
     postAndExpect(request, """
         {
           "feeCode": "ICASD",
-          "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2020",
+          "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2013",
           "claimId": "claim_123",
           "feeCalculation": {
             "totalAmount": 66.42,
