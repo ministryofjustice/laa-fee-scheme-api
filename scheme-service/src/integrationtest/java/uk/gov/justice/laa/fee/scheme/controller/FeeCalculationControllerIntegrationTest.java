@@ -842,7 +842,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         {
           "feeCode": "ICASD",
           "claimId": "claim_123",
-          "startDate": "2021-09-30",
+          "startDate": "2013-04-01",
           "netDisbursementAmount": 55.35,
           "disbursementVatAmount": 11.07
         }
@@ -851,7 +851,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
     postAndExpect(request, """
         {
           "feeCode": "ICASD",
-          "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2020",
+          "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2013",
           "claimId": "claim_123",
           "feeCalculation": {
             "totalAmount": 66.42,
@@ -870,7 +870,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         {
           "feeCode": "MHLDIS",
           "claimId": "claim_123",
-          "startDate": "2025-07-29",
+          "startDate": "2022-07-29",
           "netDisbursementAmount": 1200.0,
           "disbursementVatAmount": 150.0
         }
@@ -879,7 +879,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
     postAndExpect(request, """
         {
           "feeCode": "MHLDIS",
-          "schemeId": "MHL_DISB_FS2020",
+          "schemeId": "MHL_DISB_FS2013",
           "claimId": "claim_123",
           "feeCalculation": {
             "totalAmount": 1350.0,
@@ -891,6 +891,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
         }
         """);
   }
+
 
   @ParameterizedTest
   @CsvSource({

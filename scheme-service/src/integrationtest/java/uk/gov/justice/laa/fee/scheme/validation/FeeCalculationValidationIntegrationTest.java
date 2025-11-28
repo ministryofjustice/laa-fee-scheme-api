@@ -579,7 +579,7 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
     postAndExpect(request, """
         {
           "feeCode": "ICASD",
-          "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2020",
+          "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2013",
           "claimId": "claim_123",
           "validationMessages": [
             {
@@ -944,6 +944,35 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
         }
         """);
   }
+
+
+  @Test
+  void shouldGetErrorMessageInResponse_mentalHealthDisbursementOnly() throws Exception {
+    String request = """ 
+        {
+          "feeCode": "MHLDIS",
+          "claimId": "claim_123",
+          "startDate": "2012-07-29",
+          "netDisbursementAmount": 1200.0,
+          "disbursementVatAmount": 150.0
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+           "feeCode": "MHLDIS",
+           "claimId": "claim_123",
+           "validationMessages": [
+               {
+                   "type": "ERROR",
+                   "code": "ERRCIV2",
+                   "message": "Case Start Date is too far in the past."
+               }
+           ]
+       }
+       """);
+  }
+
 
   @ParameterizedTest
   @CsvSource({

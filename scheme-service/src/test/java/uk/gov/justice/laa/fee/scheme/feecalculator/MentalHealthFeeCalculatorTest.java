@@ -97,7 +97,7 @@ class MentalHealthFeeCalculatorTest {
 
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode("MHLDIS")
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("MHL_FS2013").build())
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("MHL_DISB_FS2013").build())
         .categoryType(MENTAL_HEALTH)
         .feeType(DISB_ONLY)
         .disbursementLimit(new BigDecimal("400.00"))
@@ -109,7 +109,7 @@ class MentalHealthFeeCalculatorTest {
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode("MHLDIS")
-        .schemeId("MHL_FS2013")
+        .schemeId("MHL_DISB_FS2013")
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();

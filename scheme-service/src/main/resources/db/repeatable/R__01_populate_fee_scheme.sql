@@ -90,7 +90,7 @@ ON CONFLICT (scheme_code) DO NOTHING;
 -- Fee Scheme for 'Immigration and Asylum' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
-    ('IMM_ASYLM_DISBURSEMENT_FS2020', 'Immigration and Asylum Disbursement Scheme 2013', '2020-08-10', NULL),
+    ('IMM_ASYLM_DISBURSEMENT_FS2013', 'Immigration and Asylum Disbursement Scheme 2013', '2013-04-01', NULL),
     ('IMM_ASYLM_FS2013', 'Immigration and Asylum Scheme 2013', '2013-04-01', '2020-06-07'),
     ('IMM_ASYLM_FS2020', 'Immigration and Asylum Scheme 2020', '2020-06-08', '2023-03-31'),
     ('IMM_ASYLM_FS2023', 'Immigration and Asylum Scheme 2023', '2023-04-01', NULL),
@@ -117,7 +117,7 @@ ON CONFLICT (scheme_code) DO NOTHING;
 -- Fee Scheme for 'Mental Health' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
-    ('MHL_DISB_FS2020', 'Mental Health - Disbursement Fee Scheme 2020', '2020-10-08', NULL),
+    ('MHL_DISB_FS2013', 'Mental Health - Disbursement Fee Scheme 2013', '2013-04-01', NULL),
     ('MHL_FS2013', 'Mental Health Fee Scheme 2013', '2013-04-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
