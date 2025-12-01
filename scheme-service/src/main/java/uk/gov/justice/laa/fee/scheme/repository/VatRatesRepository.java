@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.repository;
 
 import java.time.LocalDate;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import uk.gov.justice.laa.fee.scheme.entity.VatRatesEntity;
@@ -10,5 +11,6 @@ import uk.gov.justice.laa.fee.scheme.entity.VatRatesEntity;
  */
 @Repository
 public interface VatRatesRepository extends JpaRepository<VatRatesEntity, Long> {
+  @Cacheable(cacheNames = "vatRates", key = "#date")
   VatRatesEntity findTopByStartDateLessThanEqualOrderByStartDateDesc(LocalDate date);
 }

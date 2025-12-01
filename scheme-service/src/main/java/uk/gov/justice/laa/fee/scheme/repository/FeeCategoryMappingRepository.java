@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.repository;
 
 import java.util.Optional;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,7 @@ public interface FeeCategoryMappingRepository extends JpaRepository<FeeCategoryM
       "categoryOfLawType.areaOfLawType",
       "categoryOfLawType.areaOfLawType.caseType"
   })
+  @Cacheable(cacheNames = "feeCategoryMapping", key = "#feeCode")
   Optional<FeeCategoryMappingEntity> findByFeeCodeFeeCode(String feeCode);
 
 }
