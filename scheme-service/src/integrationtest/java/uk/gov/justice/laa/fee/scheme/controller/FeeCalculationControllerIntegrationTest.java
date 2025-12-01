@@ -824,7 +824,7 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
     postAndExpect(request, """
         {
           "feeCode": "EDUDIS",
-          "schemeId": "EDU_DISB_FS2024",
+          "schemeId": "EDU_DISB_FS2013",
           "claimId": "claim_123",
           "feeCalculation": {
             "totalAmount": 148.05,

@@ -18,7 +18,7 @@ VALUES ('CAPA', 239.00, 717.00, 'CAPA_FS2013'),
 
 INSERT INTO fee (fee_code, fixed_fee, escape_threshold_limit, fee_scheme_code)
 VALUES ('EDUFIN', 272.00, 816.00, 'EDU_FS2013'),
-       ('EDUDIS', NULL, NULL, 'EDU_DISB_FS2024')
+       ('EDUDIS', NULL, NULL, 'EDU_DISB_FS2013')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
 -- Uplifted  Fixed Fees for Debt, Housing ELA and Housing
