@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
@@ -39,6 +40,7 @@ public class DesignatedCourtFixedFeeCalculator implements FeeCalculator {
    * Calculated fee based on the provided fee entity and fee calculation request.
    *
    * @param feeCalculationRequest the request containing fee calculation data
+   * @param feeEntity             the fee entity containing fee details
    * @return FeeCalculationResponse with calculated fee
    */
   @Override
@@ -63,21 +65,17 @@ public class DesignatedCourtFixedFeeCalculator implements FeeCalculator {
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount,
         requestedNetDisbursementAmount, requestedDisbursementVatAmount);
 
-    log.info("Build fee calculation response");
-    return FeeCalculationResponse.builder()
-        .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(feeEntity.getFeeScheme().getSchemeCode())
-        .claimId(feeCalculationRequest.getClaimId())
-        .feeCalculation(FeeCalculation.builder()
-            .totalAmount(toDouble(totalAmount))
-            .vatIndicator(vatIndicator)
-            .vatRateApplied(toDoubleOrNull(vatRate))
-            .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
-            .fixedFeeAmount(toDouble(fixedFeeAmount))
-            .build())
+    FeeCalculation feeCalculation = FeeCalculation.builder()
+        .totalAmount(toDouble(totalAmount))
+        .vatIndicator(vatIndicator)
+        .vatRateApplied(toDoubleOrNull(vatRate))
+        .calculatedVatAmount(toDouble(calculatedVatAmount))
+        .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+        .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .fixedFeeAmount(toDouble(fixedFeeAmount))
         .build();
+
+    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation);
   }
 }

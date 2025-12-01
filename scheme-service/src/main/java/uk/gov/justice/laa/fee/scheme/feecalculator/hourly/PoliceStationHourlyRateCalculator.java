@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_POLICE_OTHER_UPPER_LIMIT;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
@@ -82,28 +83,23 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
     // Calculate total amount
     BigDecimal totalAmount = feeTotal.add(calculatedVatAmount).add(disbursementVatAmount);
 
-    log.info("Build fee calculation response");
-    return new FeeCalculationResponse().toBuilder()
-        .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(feeEntity.getFeeScheme().getSchemeCode())
-        .claimId(feeCalculationRequest.getClaimId())
-        .validationMessages(validationMessages)
-        .feeCalculation(FeeCalculation.builder()
-            .totalAmount(toDouble(totalAmount))
-            .vatIndicator(feeCalculationRequest.getVatIndicator())
-            .vatRateApplied(toDoubleOrNull(vatRate))
-            .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-            // disbursement not capped, so requested and calculated will be same
-            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
-            .hourlyTotalAmount(toDouble(feeTotal))
-            .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())
-            .netWaitingCostsAmount(feeCalculationRequest.getNetWaitingCosts())
-            .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
-            // net profit cost not capped, so requested and calculated will be same
-            .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
-            .build())
+    FeeCalculation feeCalculation = FeeCalculation.builder()
+        .totalAmount(toDouble(totalAmount))
+        .vatIndicator(feeCalculationRequest.getVatIndicator())
+        .vatRateApplied(toDoubleOrNull(vatRate))
+        .calculatedVatAmount(toDouble(calculatedVatAmount))
+        .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+        // disbursement not capped, so requested and calculated will be same
+        .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .hourlyTotalAmount(toDouble(feeTotal))
+        .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())
+        .netWaitingCostsAmount(feeCalculationRequest.getNetWaitingCosts())
+        .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+        // net profit cost not capped, so requested and calculated will be same
+        .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
         .build();
+
+    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, validationMessages);
   }
 }

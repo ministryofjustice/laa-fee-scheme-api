@@ -36,7 +36,6 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.repository.PoliceStationFeesRepository;
-import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 @ExtendWith(MockitoExtension.class)
 class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
@@ -270,8 +269,6 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode(feeCode)
         .schemeId(feeSchemeCode)
-        .validationMessages(new ArrayList<>())
-        .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();
 
@@ -452,7 +449,6 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .feeCode("INVB1")
         .schemeId("POL_FS2022")
         .claimId("claim_123")
-        .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();
 

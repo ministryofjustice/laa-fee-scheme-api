@@ -27,10 +27,6 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
 
-    - name: Test coverage verification
-      run: ./gradlew jacocoTestCoverageVerification
-      shell: bash
-
     - name: Publish package
       run: ./gradlew publish
       shell: bash

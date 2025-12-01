@@ -15,13 +15,16 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.exception.CaseConcludedDateRequiredException;
 import uk.gov.justice.laa.fee.scheme.exception.StartDateRequiredException;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.util.DateUtil;
 
@@ -48,8 +51,8 @@ public final class FeeCalculationUtil {
   /**
    * Check if amount exceeds limit without authority and cap to limit if exceeded.
    *
-   * @param amount          the amount to check
-   * @param limitContext    the limit context containing limit details
+   * @param amount             the amount to check
+   * @param limitContext       the limit context containing limit details
    * @param validationMessages the list to add validation messages to
    * @return the capped amount if limit exceeded without authority, otherwise the original amount
    */
@@ -178,8 +181,8 @@ public final class FeeCalculationUtil {
 
   private static boolean isOverLimitWithoutAuthority(BigDecimal amount, LimitContext limitContext) {
     return limitContext.limit() != null
-        && amount.compareTo(limitContext.limit()) > 0
-        && StringUtils.isBlank(limitContext.authority());
+           && amount.compareTo(limitContext.limit()) > 0
+           && StringUtils.isBlank(limitContext.authority());
   }
 
   /**
@@ -192,4 +195,78 @@ public final class FeeCalculationUtil {
     return boltOnFeeDetails;
   }
 
+  /**
+   * Returns fee calculation response for the given parameters.
+   *
+   * @param feeCalculationRequest the fee calculation request
+   * @param feeEntity             the fee entity
+   * @param feeCalculation        the fee calculation
+   * @return the fee calculation response
+   */
+  public static FeeCalculationResponse buildFeeCalculationResponse(FeeCalculationRequest feeCalculationRequest,
+                                                                   FeeEntity feeEntity,
+                                                                   FeeCalculation feeCalculation) {
+    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, List.of(), null);
+  }
+
+  /**
+   * Returns fee calculation response for the given parameters.
+   *
+   * @param feeCalculationRequest the fee calculation request
+   * @param feeEntity             the fee entity
+   * @param feeCalculation        the fee calculation
+   * @param validationMessages    the list of validation messages
+   * @return the fee calculation response
+   */
+  public static FeeCalculationResponse buildFeeCalculationResponse(FeeCalculationRequest feeCalculationRequest,
+                                                                   FeeEntity feeEntity,
+                                                                   FeeCalculation feeCalculation,
+                                                                   List<ValidationMessagesInner> validationMessages) {
+    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, validationMessages, null);
+  }
+
+  /**
+   * Returns fee calculation response for the given parameters.
+   *
+   * @param feeCalculationRequest the fee calculation request
+   * @param feeEntity             the fee entity
+   * @param feeCalculation        the fee calculation
+   * @param validationMessages    the list of validation messages
+   * @param escapeCaseFlag        the escape case flag
+   * @return the fee calculation response
+   */
+  public static FeeCalculationResponse buildFeeCalculationResponse(FeeCalculationRequest feeCalculationRequest,
+                                                                   FeeEntity feeEntity,
+                                                                   FeeCalculation feeCalculation,
+                                                                   List<ValidationMessagesInner> validationMessages,
+                                                                   Boolean escapeCaseFlag) {
+    return buildFeeCalculationResponse(feeCalculationRequest, feeCalculation, validationMessages, escapeCaseFlag,
+        feeEntity.getFeeScheme().getSchemeCode());
+  }
+
+  /**
+   * Builds fee calculation response for the given parameters.
+   *
+   * @param feeCalculationRequest the fee calculation request
+   * @param feeCalculation        the fee calculation
+   * @param validationMessages    the list of validation messages
+   * @param escapeCaseFlag        the escape case flag
+   * @param schemeId              the fee scheme id
+   * @return the fee calculation response
+   */
+  public static FeeCalculationResponse buildFeeCalculationResponse(FeeCalculationRequest feeCalculationRequest,
+                                                                   FeeCalculation feeCalculation,
+                                                                   List<ValidationMessagesInner> validationMessages,
+                                                                   Boolean escapeCaseFlag,
+                                                                   String schemeId) {
+    log.info("Build fee calculation response");
+    return FeeCalculationResponse.builder()
+        .feeCode(feeCalculationRequest.getFeeCode())
+        .schemeId(schemeId)
+        .claimId(feeCalculationRequest.getClaimId())
+        .escapeCaseFlag(escapeCaseFlag)
+        .validationMessages(validationMessages)
+        .feeCalculation(feeCalculation)
+        .build();
+  }
 }

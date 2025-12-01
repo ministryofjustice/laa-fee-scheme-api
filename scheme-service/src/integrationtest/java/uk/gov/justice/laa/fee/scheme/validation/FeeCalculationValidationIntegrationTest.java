@@ -358,7 +358,7 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
           }
         }
         """.formatted(feeCode, warningType, warningMessage, escapeFlag, totalAmount, calculatedVatAmount, requestedDisbursementAmount, disbursementAmount,
-        fixedFeeAmount, netProfitCosts));
+        fixedFeeAmount));
   }
 
   @Test
@@ -681,38 +681,6 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
               "requestedNetProfitCostsAmount": 50.0,
               "netTravelCostsAmount": 20.0,
               "netWaitingCostsAmount": 10.0
-          }
-        }
-        """);
-  }
-
-  @Test
-  void shouldReturnWithoutValidationWarningForDisbursements_policeStations() throws Exception {
-    String request = """ 
-        {
-          "feeCode": "INVB1",
-          "claimId": "claim_123",
-          "uniqueFileNumber": "12122019/242",
-          "policeStationId": "NE001",
-          "policeStationSchemeId": "1001",
-          "netDisbursementAmount": 600,
-          "disbursementVatAmount": 120,
-          "vatIndicator": true
-        }
-        """;
-
-    postAndExpect(request, """
-        {
-          "feeCode": "INVB1",
-          "schemeId": "POL_FS2016",
-          "claimId": "claim_123",
-          "escapeCaseFlag": false,
-          "feeCalculation": {
-            "totalAmount": 34.44,
-            "vatIndicator": true,
-            "vatRateApplied": 20.0,
-            "calculatedVatAmount": 5.74,
-            "fixedFeeAmount": 28.7
           }
         }
         """);

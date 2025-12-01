@@ -7,7 +7,6 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_MEDIATION_SESSIO
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -114,8 +113,6 @@ class MediationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .feeCode(feeCode)
         .schemeId("MED_FS2013")
         .claimId("claim_123")
-        .validationMessages(new ArrayList<>())
-        .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();
 
