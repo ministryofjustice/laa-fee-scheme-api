@@ -30,7 +30,7 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
   private MockMvc mockMvc;
 
   @Test
-  void shouldReturnValidationError_ERRALL1_whenFeeCodeIsInvalid() throws Exception {
+  void shouldReturnValidationError_whenFeeCodeIsInvalid() throws Exception {
     String request = """ 
         {
           "feeCode": "BLAH",
@@ -60,7 +60,7 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
   }
 
   @Test
-  void shouldReturnValidationError_ERRCIV1_whenCivilFeeCodeAndStartDateIsTooFarInThePast() throws Exception {
+  void shouldReturnValidationError_whenCivilFeeCodeAndStartDateIsTooFarInThePast() throws Exception {
     String request = """ 
         {
           "feeCode": "DISC",

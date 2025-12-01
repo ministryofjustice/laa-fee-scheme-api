@@ -196,7 +196,7 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Returns fee calculation response for given parameters.
+   * Returns fee calculation response for the given parameters.
    *
    * @param feeCalculationRequest the fee calculation request
    * @param feeEntity             the fee entity
@@ -210,7 +210,7 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Returns fee calculation response for given parameters.
+   * Returns fee calculation response for the given parameters.
    *
    * @param feeCalculationRequest the fee calculation request
    * @param feeEntity             the fee entity
@@ -226,7 +226,7 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Returns fee calculation response for given parameters.
+   * Returns fee calculation response for the given parameters.
    *
    * @param feeCalculationRequest the fee calculation request
    * @param feeEntity             the fee entity
@@ -245,7 +245,7 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Builds fee calculation response for given parameters.
+   * Builds fee calculation response for the given parameters.
    *
    * @param feeCalculationRequest the fee calculation request
    * @param feeCalculation        the fee calculation
