@@ -62,7 +62,7 @@ ON CONFLICT (scheme_code) DO UPDATE SET
 -- Fee Scheme for 'Education' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
-    ('EDU_DISB_FS2024', 'Education - Disbursement Fee Scheme 2024', '2024-09-01', NULL),
+    ('EDU_DISB_FS2013', 'Education - Disbursement Fee Scheme 2013', '2013-04-01', NULL),
     ('EDU_FS2013', 'Education Fee Scheme 2013', '2013-04-01', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
 
