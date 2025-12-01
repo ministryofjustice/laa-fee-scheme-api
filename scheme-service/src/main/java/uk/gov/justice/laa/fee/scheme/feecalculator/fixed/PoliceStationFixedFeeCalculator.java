@@ -3,6 +3,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_POLICE_SCHEME_ID;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_POLICE_STATION_ID;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_POLICE_STATIONS_ESCAPE_THRESHOLD;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
@@ -105,24 +106,19 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
           "Fee total exceeds escape threshold limit"));
     }
 
-    log.info("Build fee calculation response");
-    return FeeCalculationResponse.builder()
-        .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(policeStationFeesEntity.getFeeSchemeCode())
-        .claimId(feeCalculationRequest.getClaimId())
-        .escapeCaseFlag(isEscaped)
-        .validationMessages(validationMessages)
-        .feeCalculation(FeeCalculation.builder()
-            .totalAmount(toDouble(totalAmount))
-            .vatIndicator(vatIndicator)
-            .vatRateApplied(toDoubleOrNull(vatRate))
-            .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
-            .fixedFeeAmount(toDouble(fixedFeeAmount))
-            .build())
+    FeeCalculation feeCalculation = FeeCalculation.builder()
+        .totalAmount(toDouble(totalAmount))
+        .vatIndicator(vatIndicator)
+        .vatRateApplied(toDoubleOrNull(vatRate))
+        .calculatedVatAmount(toDouble(calculatedVatAmount))
+        .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+        .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .fixedFeeAmount(toDouble(fixedFeeAmount))
         .build();
+
+    return buildFeeCalculationResponse(feeCalculationRequest, feeCalculation, validationMessages,
+            isEscaped, policeStationFeesEntity.getFeeSchemeCode());
   }
 
   private FeeCalculationResponse calculateFeesUsingFeeCode(FeeEntity feeEntity,
@@ -141,19 +137,15 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
 
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount);
 
-    log.info("Build fee calculation response");
-    return FeeCalculationResponse.builder()
-        .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(feeEntity.getFeeScheme().getSchemeCode())
-        .claimId(feeCalculationRequest.getClaimId())
-        .escapeCaseFlag(false)
-        .feeCalculation(FeeCalculation.builder()
-            .totalAmount(toDouble(totalAmount))
-            .vatIndicator(vatIndicator)
-            .vatRateApplied(toDoubleOrNull(vatRate))
-            .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .fixedFeeAmount(toDouble(fixedFeeAmount))
-            .build()).build();
+    FeeCalculation feeCalculation = FeeCalculation.builder()
+        .totalAmount(toDouble(totalAmount))
+        .vatIndicator(vatIndicator)
+        .vatRateApplied(toDoubleOrNull(vatRate))
+        .calculatedVatAmount(toDouble(calculatedVatAmount))
+        .fixedFeeAmount(toDouble(fixedFeeAmount))
+        .build();
+
+    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation);
   }
 
   /**

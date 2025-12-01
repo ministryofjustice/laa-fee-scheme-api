@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
@@ -89,23 +90,17 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
           "Fee total exceeds escape threshold limit"));
     }
 
-    log.info("Build fee calculation response");
-    return FeeCalculationResponse.builder()
-        .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(feeEntity.getFeeScheme().getSchemeCode())
-        .claimId(feeCalculationRequest.getClaimId())
-        .validationMessages(validationMessages)
-        .escapeCaseFlag(isEscaped)
-        .feeCalculation(FeeCalculation.builder()
-            .totalAmount(toDouble(totalAmount))
-            .vatIndicator(vatIndicator)
-            .vatRateApplied(toDoubleOrNull(vatRate))
-            .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
-            .fixedFeeAmount(toDouble(fixedFeeAmount))
-            .build())
+    FeeCalculation feeCalculation = FeeCalculation.builder()
+        .totalAmount(toDouble(totalAmount))
+        .vatIndicator(vatIndicator)
+        .vatRateApplied(toDoubleOrNull(vatRate))
+        .calculatedVatAmount(toDouble(calculatedVatAmount))
+        .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+        .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .fixedFeeAmount(toDouble(fixedFeeAmount))
         .build();
+
+    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, validationMessages, isEscaped);
   }
 }

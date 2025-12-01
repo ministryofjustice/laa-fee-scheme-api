@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -79,26 +80,21 @@ public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator
     BigDecimal totalAmount = calculateTotalAmount(profitAndAdditionalCosts,
         calculatedVatAmount, requestedNetDisbursementAmount, requestedNetDisbursementVatAmount);
 
-    log.info("Build fee calculation response");
-    return new FeeCalculationResponse().toBuilder()
-        .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(feeEntity.getFeeScheme().getSchemeCode())
-        .claimId(feeCalculationRequest.getClaimId())
-        .validationMessages(validationMessages)
-        .feeCalculation(FeeCalculation.builder()
-            .totalAmount(toDouble(totalAmount))
-            .vatIndicator(vatIndicator)
-            .vatRateApplied(toDoubleOrNull(vatRate))
-            .calculatedVatAmount(toDouble(calculatedVatAmount))
-            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-            .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
-            .hourlyTotalAmount(toDouble(profitAndAdditionalCosts))
-            .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
-            .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
-            .netWaitingCostsAmount(feeCalculationRequest.getNetWaitingCosts())
-            .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())
-            .build())
+    FeeCalculation feeCalculation = FeeCalculation.builder()
+        .totalAmount(toDouble(totalAmount))
+        .vatIndicator(vatIndicator)
+        .vatRateApplied(toDoubleOrNull(vatRate))
+        .calculatedVatAmount(toDouble(calculatedVatAmount))
+        .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+        .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .hourlyTotalAmount(toDouble(profitAndAdditionalCosts))
+        .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+        .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+        .netWaitingCostsAmount(feeCalculationRequest.getNetWaitingCosts())
+        .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())
         .build();
+
+    return FeeCalculationUtil.buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, validationMessages);
   }
 }

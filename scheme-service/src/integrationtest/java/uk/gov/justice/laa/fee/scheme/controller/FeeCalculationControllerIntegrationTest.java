@@ -445,7 +445,6 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
          "feeCode": "MDAS2B",
           "schemeId": "MED_FS2013",
           "claimId": "claim_123",
-          "escapeCaseFlag": false,
           "feeCalculation": {
             "totalAmount": 321.93,
             "vatIndicator": true,
@@ -602,7 +601,6 @@ class FeeCalculationControllerIntegrationTest extends PostgresContainerTestBase 
           "feeCode": "INVB1",
           "claimId": "claim_123",
           "schemeId": "POL_FS2016",
-          "escapeCaseFlag": false,
           "feeCalculation": {
           "totalAmount": 34.44,
           "vatIndicator": true,

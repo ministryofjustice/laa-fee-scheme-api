@@ -11,6 +11,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRI
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.checkLimitAndCapIfExceeded;
@@ -144,7 +145,7 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
     FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, vatRate,
         calculatedVatAmount, netDisbursementAmount, feeTotal, netProfitCosts, false, null);
 
-    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, validationMessages, feeCalculation);
+    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, validationMessages);
   }
 
   /**
@@ -189,7 +190,7 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
     FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, vatRate,
         calculatedVatAmount, netDisbursementAmount, feeTotal, netProfitCosts, true, null);
 
-    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, validationMessages, feeCalculation);
+    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity,  feeCalculation, validationMessages);
   }
 
   /**
@@ -247,7 +248,7 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
     FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, vatRate,
         calculatedVatAmount, netDisbursementAmount, feeTotalWithBoltsOn, netProfitCosts, true, boltOnFeeDetails);
 
-    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, validationMessages, feeCalculation);
+    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity,  feeCalculation, validationMessages);
   }
 
   private boolean isLegalHelp(String feeCode) {
@@ -280,19 +281,6 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
     }
   }
 
-  private FeeCalculationResponse buildFeeCalculationResponse(FeeCalculationRequest feeCalculationRequest,
-                                                                    FeeEntity feeEntity,
-                                                                    List<ValidationMessagesInner> validationMessages,
-                                                                    FeeCalculation feeCalculation) {
-    return new FeeCalculationResponse().toBuilder()
-        .feeCode(feeCalculationRequest.getFeeCode())
-        .schemeId(feeEntity.getFeeScheme().getSchemeCode())
-        .claimId(feeCalculationRequest.getClaimId())
-        .validationMessages(validationMessages)
-        .feeCalculation(feeCalculation)
-        .build();
-  }
-
   private FeeCalculation buildFeeCalculation(FeeCalculationRequest feeCalculationRequest,
                                                     BigDecimal totalAmount,
                                                     BigDecimal vatRate,
@@ -301,8 +289,7 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
                                                     BigDecimal hourlyTotalAmount,
                                                     BigDecimal netProfitCostsAmount,
                                                     boolean includeCostOfCounsel,
-                                                    BoltOnFeeDetails boltOnFeeDetails
-  ) {
+                                                    BoltOnFeeDetails boltOnFeeDetails) {
     return FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
         .vatIndicator(feeCalculationRequest.getVatIndicator())

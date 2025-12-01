@@ -102,12 +102,6 @@ class FeeCalculationServiceTest {
     when(feeDataService.getFeeEntities("FEE123")).thenReturn(feeEntityList);
     when(feeDetailsService.getCaseType(feeCalculationRequest)).thenReturn(CIVIL);
     when(validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest, CIVIL)).thenReturn(feeEntity);
-    when(validationService.checkForWarnings(feeCalculationRequest, CIVIL))
-        .thenReturn(List.of(ValidationMessagesInner.builder()
-        .type(ValidationMessagesInner.TypeEnum.WARNING)
-        .code("WARCIV2")
-        .message("error message")
-        .build()));
     when(feeCalculatorFactory.getCalculator(category)).thenReturn(immigrationCalculator);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
