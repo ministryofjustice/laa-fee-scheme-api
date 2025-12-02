@@ -33,11 +33,12 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   FamilyFixedFeeCalculator familyFixedFeeCalculator;
 
   @ParameterizedTest
-  @CsvSource({
-      "false, 170.33", // No VAT
-      "true, 180.33" // VAT applied
-  })
-  void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double expectedTotal) {
+  @CsvSource(value = {
+      "false, 500, 170.33", // No VAT
+      "true, 500, 180.33", // VAT applied
+      "true, null, 180.33" // No escape threshold limit
+  }, nullValues = "null")
+  void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, String escapeThreshold, double expectedTotal) {
     mockVatRatesService(vatIndicator);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
@@ -52,6 +53,7 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .feeCode("COM")
         .feeScheme(FeeSchemesEntity.builder().schemeCode("COM_FS2013").build())
         .fixedFee(new BigDecimal("50.00"))
+        .escapeThresholdLimit(escapeThreshold != null ? new BigDecimal(escapeThreshold) : null)
         .categoryType(COMMUNITY_CARE)
         .build();
 
