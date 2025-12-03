@@ -2,6 +2,7 @@ package uk.gov.justice.laa.fee.scheme.api.feecalculation;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.json.JsonCompareMode.LENIENT;
+import static org.springframework.test.json.JsonCompareMode.STRICT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -75,6 +76,67 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         .andExpect(result ->
             assertTrue(result.getResponse().getContentAsString().contains("default message [feeCode]]; default message [must not be null]]"))
         );
+  }
+
+  @Test
+  void shouldGetUnauthorizedResponse_whenMissingAuthorizationHeader() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "ASMS",
+                  "claimId": "claim_123",
+                  "uniqueFileNumber": "020416/001",
+                  "netProfitCosts": 27.8,
+                  "netTravelCosts": 10.0,
+                  "netWaitingCosts": 11.5,
+                  "netDisbursementAmount": 55.35,
+                  "disbursementVatAmount": 11.07,
+                  "vatIndicator": true
+                   }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "code": 401,
+              "status": "UNAUTHORIZED",
+              "message": "No API access token provided."
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldGetUnauthorizedResponse_whenAuthTokenIsInvalid() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, "BLAH")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "ASMS",
+                  "claimId": "claim_123",
+                  "uniqueFileNumber": "020416/001",
+                  "netProfitCosts": 27.8,
+                  "netTravelCosts": 10.0,
+                  "netWaitingCosts": 11.5,
+                  "netDisbursementAmount": 55.35,
+                  "disbursementVatAmount": 11.07,
+                  "vatIndicator": true
+                   }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "code": 401,
+              "status": "UNAUTHORIZED",
+              "message": "Invalid API access token provided."
+            }
+            """, STRICT));
   }
 
   @Test
@@ -346,6 +408,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
     String request = """ 
         {
           "feeCode": "FPB010",
+          "claimId": "claim_123",
           "startDate": "2022-02-01",
           "netDisbursementAmount": 123.38,
           "disbursementVatAmount": 24.67,
@@ -356,6 +419,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
     postAndExpect(request, """
         {
           "feeCode": "FPB010",
+          "claimId": "claim_123",
           "validationMessages": [
             {
               "type": "ERROR",
@@ -368,12 +432,39 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
+  void shouldReturnValidationError_WhenMediationFeeCodeAndNoOfMediationSessionsIsMissing() throws Exception {
+    String request = """ 
+        {
+          "feeCode": "MDAS2B",
+          "claimId": "claim_123",
+          "startDate": "2019-09-30",
+          "netDisbursementAmount": 100.21,
+          "disbursementVatAmount": 20.12,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "MDAS2B",
+          "validationMessages": [
+            {
+              "type": "ERROR",
+              "code": "ERRMED1",
+              "message": "Number of Mediation Sessions must be entered for this fee code."
+            }
+          ]
+        }
+        """);
+  }
+
+  @Test
   void shouldReturnValidationWarning_family() throws Exception {
     String request = """ 
         {
           "feeCode": "FPB010",
-          "startDate": "2023-04-01",
           "claimId": "claim_123",
+          "startDate": "2023-04-01",
           "netProfitCosts": 200.20,
           "netDisbursementAmount": 55.35,
           "disbursementVatAmount": 11.07,
@@ -944,8 +1035,6 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         """.formatted(feeCode, warningType, warningMessage, escapeFlag, totalAmount, calculatedVatAmount, fixedFeeAmount));
   }
 
-
-
   @Test
   void shouldReturnValidationWarning_mentalHealth() throws Exception {
     String request = """ 
@@ -995,8 +1084,6 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """);
   }
-
-
 
   @ParameterizedTest
   @CsvSource({
