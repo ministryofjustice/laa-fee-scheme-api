@@ -325,13 +325,46 @@ public class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationInt
         """);
   }
 
+  @Test
+  void shouldGetFeeCalculation_educationFixedFee() throws Exception {
+    String request = """ 
+        {
+          "feeCode": "EDUFIN",
+          "claimId": "claim_123",
+          "startDate": "2025-02-01",
+          "netProfitCosts": 239.06,
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "EDUFIN",
+          "schemeId": "EDU_FS2013",
+          "claimId": "claim_123",
+          "escapeCaseFlag": false,
+          "feeCalculation": {
+            "totalAmount": 474.45,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": 54.4,
+            "disbursementAmount": 123.38,
+            "requestedNetDisbursementAmount": 123.38,
+            "disbursementVatAmount": 24.67,
+            "fixedFeeAmount": 272.0
+          }
+        }
+        """);
+  }
+
   @ParameterizedTest
   @CsvSource({
       "CAPA, CAPA_FS2013, 434.85, 47.8, 239.0",
       "CLIN, CLIN_FS2013, 382.05, 39.0, 195.0",
       "COM, COM_FS2013, 467.25, 53.2, 266.0",
       "DEBT, DEBT_FS2013, 364.05, 36.0, 180.0",
-      "EDUFIN, EDU_FS2013, 474.45, 54.4, 272.0",
       "ELA, ELA_FS2024, 336.45, 31.4, 157.0",
       "HOUS, HOUS_FS2013, 336.45, 31.4, 157.0",
       "MISCCON, MISC_FS2013, 338.85, 31.8, 159.0",
@@ -534,8 +567,6 @@ public class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationInt
     );
   }
 
-
-
   @ParameterizedTest
   @CsvSource({
       "PROE1, 2025-12-21, MAGS_COURT_FS2022, 669.91, 86.98, 100, 111, 223.88",
@@ -543,16 +574,14 @@ public class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationInt
       "PROE1, 2025-12-22, MAGS_COURT_FS2025, 696.77, 91.45, 100, 111, 246.27",
       "YOUE1, 2025-12-22, YOUTH_COURT_FS2025, 1486.91, 223.14, 100, 111, 904.72",
   })
-  void shouldGetFeeCalculation_undesignatedMagsOrYouthCourt(
-      String feeCode,
-      String repOrderDate,
-      String schemeId,
-      String expectedTotal,
-      String expectedVatAmount,
-      String netWaitingCosts,
-      String netTravelCosts,
-      String fixedFeeAmount
-  ) throws Exception {
+  void shouldGetFeeCalculation_undesignatedMagsOrYouthCourt(String feeCode,
+                                                            String repOrderDate,
+                                                            String schemeId,
+                                                            String expectedTotal,
+                                                            String expectedVatAmount,
+                                                            String netWaitingCosts,
+                                                            String netTravelCosts,
+                                                            String fixedFeeAmount) throws Exception {
     LocalDate representationOrderDate = LocalDate.parse(repOrderDate);
     String request = """ 
         {

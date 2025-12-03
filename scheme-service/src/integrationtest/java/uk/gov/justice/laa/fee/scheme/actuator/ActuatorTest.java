@@ -19,7 +19,6 @@ import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTest
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(properties = {
     "management.endpoints.web.exposure.include=health,metrics,prometheus",
-    "management.endpoint.health.show-details=always",
 })
 class ActuatorTest extends PostgresContainerTestBase {
 
