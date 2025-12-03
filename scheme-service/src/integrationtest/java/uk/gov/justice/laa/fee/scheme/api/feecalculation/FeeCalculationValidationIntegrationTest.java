@@ -447,6 +447,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
     postAndExpect(request, """
         {
           "feeCode": "MDAS2B",
+          "claimId": "claim_123",
           "validationMessages": [
             {
               "type": "ERROR",
