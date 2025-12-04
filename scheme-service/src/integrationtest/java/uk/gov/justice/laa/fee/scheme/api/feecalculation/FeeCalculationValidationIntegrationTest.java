@@ -589,7 +589,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARIA8",
-              "message": "Costs have been capped. Costs for the Fee Code used cannot exceed £100."
+              "message": "Costs have been capped. Costs for the Fee Code used cannot exceed the specified limit."
             }
           ],
           "feeCalculation": {
