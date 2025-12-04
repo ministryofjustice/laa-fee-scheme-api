@@ -1,5 +1,7 @@
-package uk.gov.justice.laa.fee.scheme.validation;
+package uk.gov.justice.laa.fee.scheme.api.feecalculation;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.json.JsonCompareMode.LENIENT;
 import static org.springframework.test.json.JsonCompareMode.STRICT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -9,25 +11,133 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTestBase;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase {
+class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrationTest {
+  @Test
+  void shouldGetBadResponse_whenDuplicateField() throws Exception {
 
-  private static final String AUTH_TOKEN = "int-test-token";
-  private static final String URI = "/api/v1/fee-calculation";
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "MDAS2B",
+                  "feeCode": "MDAS2B",
+                  "claimId": "claim_123",
+                  "startDate": "2019-09-30",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true,
+                  "numberOfMediationSessions": 1
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().json("""
+            {
+              "status": 400,
+              "error": "Bad Request",
+              "message": "JSON parse error: Duplicate field 'feeCode'"
+            }
+            """, LENIENT));
+  }
 
-  @Autowired
-  private MockMvc mockMvc;
+  @Test
+  void shouldGetBadResponse_whenMissingField() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "claimId": "claim_123",
+                  "startDate": "2019-09-30",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true,
+                  "numberOfMediationSessions": 1
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().json("""
+            {
+              "status": 400,
+              "error": "Bad Request"
+            }
+            """, LENIENT))
+        .andExpect(result ->
+            assertTrue(result.getResponse().getContentAsString().contains("default message [feeCode]]; default message [must not be null]]"))
+        );
+  }
+
+  @Test
+  void shouldGetUnauthorizedResponse_whenMissingAuthorizationHeader() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "ASMS",
+                  "claimId": "claim_123",
+                  "uniqueFileNumber": "020416/001",
+                  "netProfitCosts": 27.8,
+                  "netTravelCosts": 10.0,
+                  "netWaitingCosts": 11.5,
+                  "netDisbursementAmount": 55.35,
+                  "disbursementVatAmount": 11.07,
+                  "vatIndicator": true
+                   }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "code": 401,
+              "status": "UNAUTHORIZED",
+              "message": "No API access token provided."
+            }
+            """, STRICT));
+  }
+
+  @Test
+  void shouldGetUnauthorizedResponse_whenAuthTokenIsInvalid() throws Exception {
+    mockMvc
+        .perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, "BLAH")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "ASMS",
+                  "claimId": "claim_123",
+                  "uniqueFileNumber": "020416/001",
+                  "netProfitCosts": 27.8,
+                  "netTravelCosts": 10.0,
+                  "netWaitingCosts": 11.5,
+                  "netDisbursementAmount": 55.35,
+                  "disbursementVatAmount": 11.07,
+                  "vatIndicator": true
+                   }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "code": 401,
+              "status": "UNAUTHORIZED",
+              "message": "Invalid API access token provided."
+            }
+            """, STRICT));
+  }
 
   @Test
   void shouldReturnValidationError_whenFeeCodeIsInvalid() throws Exception {
@@ -199,6 +309,71 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
         """);
   }
 
+  @ParameterizedTest
+  @CsvSource({
+      "PROJ5, MAGS_COURT_FS2022",
+      "YOUK2, YOUTH_COURT_FS2024",
+      "PROW, SEND_HEAR_FS2022",
+  })
+  void shouldReturnValidationError_criminalProceedings_missingRepOrderDate(String feeCode) throws Exception {
+    String request = """ 
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "121219/242",
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true
+        }
+        """.formatted(feeCode);
+
+    postAndExpect(request, """
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "validationMessages": [
+              {
+                  "type": "ERROR",
+                  "code": "ERRCRM8",
+                  "message": "Enter a representation order date."
+              }
+          ]
+        }
+        """.formatted(feeCode));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"PROP1", "PROP2"})
+  void shouldReturnValidationWarning_preOrderCover_netCostOverUpperCostLimit(String feeCode) throws Exception {
+    String request = """ 
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "221225/123",
+          "netProfitCosts": 10.0,
+          "netTravelCosts": 57.0,
+          "netWaitingCosts": 70.0,
+          "netDisbursementAmount": 55.35,
+          "disbursementVatAmount": 11.07,
+          "vatIndicator": true
+        }
+        """.formatted(feeCode);
+
+    postAndExpect(request, """
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "validationMessages": [
+            {
+              "type": "ERROR",
+              "code": "ERRCRM10",
+              "message": "Net Cost is more than the Upper Cost Limitation."
+            }
+          ]
+        }
+        """.formatted(feeCode));
+  }
+
   @Test
   void shouldReturnValidationError_whenCrimeFeeCodeAndRepOrderDateIsInvalid() throws Exception {
     String request = """ 
@@ -229,12 +404,68 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
   }
 
   @Test
+  void shouldReturnValidationError_WhenFamilyFeeCodeAndLondonRateIsMissing() throws Exception {
+    String request = """ 
+        {
+          "feeCode": "FPB010",
+          "claimId": "claim_123",
+          "startDate": "2022-02-01",
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "FPB010",
+          "claimId": "claim_123",
+          "validationMessages": [
+            {
+              "type": "ERROR",
+              "code": "ERRFAM1",
+              "message": "London/non-London rate must be entered for the Fee Code used."
+            }
+          ]
+        }
+        """);
+  }
+
+  @Test
+  void shouldReturnValidationError_WhenMediationFeeCodeAndNoOfMediationSessionsIsMissing() throws Exception {
+    String request = """ 
+        {
+          "feeCode": "MDAS2B",
+          "claimId": "claim_123",
+          "startDate": "2019-09-30",
+          "netDisbursementAmount": 100.21,
+          "disbursementVatAmount": 20.12,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "MDAS2B",
+          "claimId": "claim_123",
+          "validationMessages": [
+            {
+              "type": "ERROR",
+              "code": "ERRMED1",
+              "message": "Number of Mediation Sessions must be entered for this fee code."
+            }
+          ]
+        }
+        """);
+  }
+
+  @Test
   void shouldReturnValidationWarning_family() throws Exception {
     String request = """ 
         {
           "feeCode": "FPB010",
-          "startDate": "2023-04-01",
           "claimId": "claim_123",
+          "startDate": "2023-04-01",
           "netProfitCosts": 200.20,
           "netDisbursementAmount": 55.35,
           "disbursementVatAmount": 11.07,
@@ -266,32 +497,6 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
             "disbursementVatAmount": 11.07,
             "fixedFeeAmount": 132.0
           }
-        }
-        """);
-  }
-
-  @Test
-  void should_GetErrorCodeAndMessage_WhenLondonRateIsNotSupplied_InFamilyClaimRequest() throws Exception {
-    String request = """ 
-        {
-          "feeCode": "FPB010",
-          "startDate": "2022-02-01",
-          "netDisbursementAmount": 123.38,
-          "disbursementVatAmount": 24.67,
-          "vatIndicator": true
-        }
-        """;
-
-    postAndExpect(request, """
-        {
-          "feeCode": "FPB010",
-          "validationMessages": [
-            {
-              "type": "ERROR",
-              "code": "ERRFAM1",
-              "message": "London/non-London rate must be entered for the Fee Code used."
-            }
-          ]
         }
         """);
   }
@@ -831,38 +1036,6 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
         """.formatted(feeCode, warningType, warningMessage, escapeFlag, totalAmount, calculatedVatAmount, fixedFeeAmount));
   }
 
-  @ParameterizedTest
-  @ValueSource(strings = {"PROP1", "PROP2"})
-  void shouldReturnValidationWarning_preOrderCover(String feeCode) throws Exception {
-    String request = """ 
-        {
-          "feeCode": "%s",
-          "claimId": "claim_123",
-          "uniqueFileNumber": "221225/123",
-          "netProfitCosts": 10.0,
-          "netTravelCosts": 57.0,
-          "netWaitingCosts": 70.0,
-          "netDisbursementAmount": 55.35,
-          "disbursementVatAmount": 11.07,
-          "vatIndicator": true
-        }
-        """.formatted(feeCode);
-
-    postAndExpect(request, """
-        {
-          "feeCode": "%s",
-          "claimId": "claim_123",
-          "validationMessages": [
-            {
-              "type": "ERROR",
-              "code": "ERRCRM10",
-              "message": "Net Cost is more than the Upper Cost Limitation."
-            }
-          ]
-        }
-        """.formatted(feeCode));
-  }
-
   @Test
   void shouldReturnValidationWarning_mentalHealth() throws Exception {
     String request = """ 
@@ -911,68 +1084,6 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
           }
         }
         """);
-  }
-
-
-  @Test
-  void shouldGetErrorMessageInResponse_mentalHealthDisbursementOnly() throws Exception {
-    String request = """ 
-        {
-          "feeCode": "MHLDIS",
-          "claimId": "claim_123",
-          "startDate": "2012-07-29",
-          "netDisbursementAmount": 1200.0,
-          "disbursementVatAmount": 150.0
-        }
-        """;
-
-    postAndExpect(request, """
-        {
-           "feeCode": "MHLDIS",
-           "claimId": "claim_123",
-           "validationMessages": [
-               {
-                   "type": "ERROR",
-                   "code": "ERRCIV2",
-                   "message": "Case Start Date is too far in the past."
-               }
-           ]
-       }
-       """);
-  }
-
-
-  @ParameterizedTest
-  @CsvSource({
-      "PROJ5, MAGS_COURT_FS2022",
-      "YOUK2, YOUTH_COURT_FS2024",
-      "PROW, SEND_HEAR_FS2022",
-  })
-  void shouldReturnValidationError_criminalProceedings_missingRepOrderDate(String feeCode) throws Exception {
-    String request = """ 
-        {
-          "feeCode": "%s",
-          "claimId": "claim_123",
-          "uniqueFileNumber": "121219/242",
-          "netDisbursementAmount": 123.38,
-          "disbursementVatAmount": 24.67,
-          "vatIndicator": true
-        }
-        """.formatted(feeCode);
-
-    postAndExpect(request, """
-        {
-          "feeCode": "%s",
-          "claimId": "claim_123",
-          "validationMessages": [
-              {
-                  "type": "ERROR",
-                  "code": "ERRCRM8",
-                  "message": "Enter a representation order date."
-              }
-          ]
-        }
-        """.formatted(feeCode));
   }
 
   @ParameterizedTest
@@ -1073,17 +1184,5 @@ class FeeCalculationValidationIntegrationTest extends PostgresContainerTestBase 
           }
         }
         """);
-  }
-
-  private void postAndExpect(String requestJson, String expectedResponseJson) throws Exception {
-    mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestJson)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(expectedResponseJson, STRICT));
   }
 }

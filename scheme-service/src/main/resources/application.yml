@@ -33,11 +33,6 @@ management:
       exposure:
         include: health,metrics,prometheus
 
-  # show detailed health status
-  endpoint:
-    health:
-      show-details: always
-
 logging:
   level:
     root: ${ROOT_LOGGING_LEVEL:info}
