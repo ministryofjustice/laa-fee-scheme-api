@@ -48,8 +48,8 @@ public enum WarningType {
       + " Total Cost Limit. An Immigration Prior Authority number must be entered."),
   WARN_IMM_ASYLM_DISB_LEGAL_HELP("WARIA7", "Costs have been capped without an Immigration Priority Authority"
       + " Number. Disbursement costs exceed the Disbursement Limit."),
-  WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP("WARIA8", "Costs have been capped. Costs for the Fee Code used "
-      + "cannot exceed £100."),
+  WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP("WARIA8", "Costs have been capped. Costs for the Fee Code used cannot "
+      + "exceed the specified limit."),
   WARN_IMM_ASYLM_DETENTION_TRAVEL("WARIA9", "Costs not included. Detention Travel and Waiting costs on hourly"
       + " rates cases should be reported as Profit Costs."),
   WARN_IMM_ASYLM_JR_FORM_FILLING("WARIA10", "Costs have been included. JR/ form filling costs should only be completed "
