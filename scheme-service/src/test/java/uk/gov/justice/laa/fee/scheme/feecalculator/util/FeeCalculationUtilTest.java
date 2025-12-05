@@ -181,9 +181,9 @@ class FeeCalculationUtilTest {
 
   @ParameterizedTest
   @MethodSource("limitTestData")
-  void checkLimitAndCapIfExceeded_returnsResult(BigDecimal amount, String authority, BigDecimal expectedAmount,
+  void checkLimitAndCapIfExceeded_returnsResult(BigDecimal amount, BigDecimal limitAmount, String authority, BigDecimal expectedAmount,
                                                 List<ValidationMessagesInner> expectedMessages) {
-    LimitContext limitContext = new LimitContext(LimitType.TOTAL, new BigDecimal("100"), authority, null);
+    LimitContext limitContext = new LimitContext(LimitType.TOTAL, limitAmount, authority, null);
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
     BigDecimal result = FeeCalculationUtil.checkLimitAndCapIfExceeded(amount, limitContext, validationMessages);
@@ -195,9 +195,9 @@ class FeeCalculationUtilTest {
 
   public static Stream<Arguments> limitTestData() {
     return Stream.of(
-        arguments(new BigDecimal("90"), null, new BigDecimal("90"), List.of()),
-        arguments(new BigDecimal("200"), "priorAuth", new BigDecimal("200"), List.of()),
-        arguments(new BigDecimal("200"), null, new BigDecimal("100"), List.of())
+        arguments(new BigDecimal("90"), new BigDecimal("100"), null,  new BigDecimal("90"), List.of()),
+        arguments(new BigDecimal("200"), null, "priorAuth", new BigDecimal("200"), List.of()),
+        arguments(new BigDecimal("200"), new BigDecimal("90"), null, new BigDecimal("90"), List.of())
     );
   }
 

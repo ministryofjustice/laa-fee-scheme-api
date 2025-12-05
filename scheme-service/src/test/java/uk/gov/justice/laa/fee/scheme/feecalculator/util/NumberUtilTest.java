@@ -1,6 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
@@ -41,6 +44,19 @@ class NumberUtilTest {
     Double result = NumberUtil.toDoubleOrNull(BigDecimal.ZERO);
 
     assertThat(result).isNull();
+  }
+
+  @Test
+  void toDoubleOrNull_shouldReturnNull_whenValueIsNull() {
+    Double result = NumberUtil.toDoubleOrNull(null);
+    assertNull(result);
+  }
+
+  @Test
+  void toDoubleOrNull_shouldReturnDouble_whenValueIsNonZero() {
+    Double result = NumberUtil.toDoubleOrNull(new BigDecimal("12.34"));
+    assertNotNull(result);
+    assertEquals(12.34, result);
   }
 
   @Test

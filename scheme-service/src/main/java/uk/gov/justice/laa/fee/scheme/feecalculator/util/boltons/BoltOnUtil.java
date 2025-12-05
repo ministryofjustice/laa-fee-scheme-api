@@ -29,6 +29,7 @@ public class BoltOnUtil {
    * Multiply count by bolt on fee for boltOnXXXXXXFee
    * Add each boltOnXXXXXXFee for a total, boltOnTotalFeeAmount 
    */
+  @SuppressWarnings("checkstyle:MissingSwitchDefault")
   public static BoltOnFeeDetails calculateBoltOnAmounts(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     BoltOnFeeDetails boltOnFeeDetails = BoltOnFeeDetails.builder().build();
 
@@ -36,16 +37,7 @@ public class BoltOnUtil {
 
       log.info("Calculate bolt on amounts for fee calculation");
 
-      List<BoltOnCalculation> calculations = Arrays.asList(
-          new BoltOnCalculation(ADJOURNED_HEARING, feeCalculationRequest.getBoltOns().getBoltOnAdjournedHearing(),
-              feeEntity.getAdjornHearingBoltOn()),
-          new BoltOnCalculation(HOME_OFFICE_INTERVIEW, feeCalculationRequest.getBoltOns().getBoltOnHomeOfficeInterview(),
-              feeEntity.getHoInterviewBoltOn()),
-          new BoltOnCalculation(CMRH_ORAL, feeCalculationRequest.getBoltOns().getBoltOnCmrhOral(),
-              feeEntity.getOralCmrhBoltOn()),
-          new BoltOnCalculation(CMRH_TELEPHONE, feeCalculationRequest.getBoltOns().getBoltOnCmrhTelephone(),
-              feeEntity.getTelephoneCmrhBoltOn())
-      );
+      List<BoltOnCalculation> calculations = getBoltOnCalculations(feeCalculationRequest, feeEntity);
 
       BigDecimal totalFee = calculations.stream()
           .filter(i -> i.requested() != null && i.amount() != null)
@@ -69,7 +61,6 @@ public class BoltOnUtil {
                 boltOnFeeDetails.setBoltOnCmrhTelephoneCount(i.requested());
                 boltOnFeeDetails.setBoltOnCmrhTelephoneFee(toDouble(total));
               }
-              default -> throw new IllegalStateException("Unexpected bolt on type: " + i.type());
             }
             return total;
           })
@@ -79,6 +70,19 @@ public class BoltOnUtil {
     }
 
     return boltOnFeeDetails;
+  }
+
+  private static List<BoltOnCalculation> getBoltOnCalculations(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+    return Arrays.asList(
+        new BoltOnCalculation(ADJOURNED_HEARING, feeCalculationRequest.getBoltOns().getBoltOnAdjournedHearing(),
+            feeEntity.getAdjornHearingBoltOn()),
+        new BoltOnCalculation(HOME_OFFICE_INTERVIEW, feeCalculationRequest.getBoltOns().getBoltOnHomeOfficeInterview(),
+            feeEntity.getHoInterviewBoltOn()),
+        new BoltOnCalculation(CMRH_ORAL, feeCalculationRequest.getBoltOns().getBoltOnCmrhOral(),
+            feeEntity.getOralCmrhBoltOn()),
+        new BoltOnCalculation(CMRH_TELEPHONE, feeCalculationRequest.getBoltOns().getBoltOnCmrhTelephone(),
+            feeEntity.getTelephoneCmrhBoltOn())
+    );
   }
 
 }

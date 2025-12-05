@@ -60,6 +60,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           .boltOns(BoltOnType.builder()
               .boltOnCmrhOral(2)
               .boltOnCmrhTelephone(2)
+              .boltOnSubstantiveHearing(Boolean.TRUE)
               .build())
           .detentionTravelAndWaitingCosts(detentionTravelAndWaitingCosts)
           .jrFormFilling(jrFormFilling)
@@ -67,7 +68,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     }
 
     private FeeEntity buildFeeEntity(String feeCode, BigDecimal fixedFee, BigDecimal disbursementLimit, BigDecimal oralBoltOn,
-                                     BigDecimal telephoneBoltOn) {
+                                     BigDecimal telephoneBoltOn, BigDecimal substantiveHearingBoltOn) {
       return FeeEntity.builder()
           .feeCode(feeCode)
           .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
@@ -77,6 +78,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           .disbursementLimit(disbursementLimit)
           .oralCmrhBoltOn(oralBoltOn)
           .telephoneCmrhBoltOn(telephoneBoltOn)
+          .substantiveHearingBoltOn(substantiveHearingBoltOn)
           .build();
     }
 
@@ -97,6 +99,14 @@ class ImmigrationAsylumFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           arguments("IACA, No Vat, eligible for disbursement, above limit, with prior auth",
               "IACA", false, "hasPriorAuth", 800, 100, BigDecimal.valueOf(600),
               50, 50, 1587.50, 800, 512,
+              0, 75.5),
+          arguments("IACB, No Vat, eligible for disbursement, above limit, with prior auth",
+              "IACB", false, "hasPriorAuth", 800, 100, BigDecimal.valueOf(600),
+              50, 50, 1587.50, 800, 512,
+              0, 75.5),
+          arguments("IACB, No Vat, eligible for disbursement, below limit",
+              "IACB", false, null, 399, 50, BigDecimal.valueOf(600),
+              50, 50, 1136.50, 399, 512,
               0, 75.5)
       );
     }
@@ -135,7 +145,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           immigrationPriorityAuthority, detentionTravelAndWaitingCosts, jrFormfilling);
 
       FeeEntity feeEntity = buildFeeEntity(feeCode, BigDecimal.valueOf(expectedFixedFee), netDisbursementLimit,
-          BigDecimal.valueOf(166), BigDecimal.valueOf(90));
+          BigDecimal.valueOf(166), BigDecimal.valueOf(90), BigDecimal.valueOf(302));
 
       FeeCalculationResponse response = immigrationAsylumFixedFeeCalculator.calculate(feeData, feeEntity);
 
@@ -187,7 +197,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           true, null, 0.0, 0.0
       );
 
-      FeeEntity feeEntity = buildFeeEntity(feeCode, BigDecimal.valueOf(75.5), null, null, null);
+      FeeEntity feeEntity = buildFeeEntity(feeCode, BigDecimal.valueOf(75.5), null, null, null, null);
 
       FeeCalculationResponse response = immigrationAsylumFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
@@ -213,7 +223,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           true, null, 0.0, 0.0);
 
       FeeEntity feeEntity = buildFeeEntity(feeCode, BigDecimal.valueOf(75.5), BigDecimal.valueOf(disbursementLimit),
-          null, null);
+          null, null, null);
 
       FeeCalculationResponse response = immigrationAsylumFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
@@ -252,6 +262,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           .netCostOfCounsel(requestedNetCounselCosts)
           .boltOns(BoltOnType.builder()
               .boltOnCmrhOral(4)
+              .boltOnSubstantiveHearing(Boolean.TRUE)
               .build())
           .build();
     }

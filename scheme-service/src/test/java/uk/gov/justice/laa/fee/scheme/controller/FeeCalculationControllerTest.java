@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.List;
@@ -22,6 +23,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.slf4j.MDC;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -137,6 +139,33 @@ class FeeCalculationControllerTest {
 
     listAppender.stop();
     feeLogger.detachAppender(listAppender);
+  }
+
+  @Test
+  void shouldNotPutStartDateInMdc_whenStartDateIsNull() throws Exception {
+
+    feeCalculationRequest.setPoliceStationId("PS1");
+    feeCalculationRequest.setPoliceStationSchemeId("PSS1");
+    feeCalculationRequest.setUniqueFileNumber("UFN1");
+    feeCalculationRequest.setStartDate(null);
+    FeeCalculationResponse responseDto = FeeCalculationResponse.builder()
+        .feeCode("FEE123")
+        .feeCalculation(FeeCalculation.builder()
+            .totalAmount(1500.12)
+            .build())
+        .build();
+
+    when(feeCalculationService.calculateFee(feeCalculationRequest))
+        .thenReturn(responseDto);
+
+    mockMvc.perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(feeCalculationRequest)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.feeCode").value("FEE123"))
+        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(1500));
+
+    assertThat(MDC.get("startDate")).isNull();
   }
 
 }
