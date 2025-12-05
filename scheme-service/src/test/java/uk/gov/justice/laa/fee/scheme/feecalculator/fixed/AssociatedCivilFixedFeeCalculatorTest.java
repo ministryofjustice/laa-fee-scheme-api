@@ -1,11 +1,16 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ASSOCIATED_CIVIL;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
+import java.util.Set;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -13,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -138,5 +144,15 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(100.11);
     assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.22);
     assertThat(feeCalculation.getFixedFeeAmount()).isEqualTo(50);
+  }
+
+  @Test
+  void getSupportedCategories_shouldReturnAssociatedCivilOnly() {
+
+    Set<CategoryType> result = associatedCivilFixedFeeCalculator.getSupportedCategories();
+
+    assertNotNull(result);
+    assertEquals(1, result.size());
+    assertTrue(result.contains(CategoryType.ASSOCIATED_CIVIL));
   }
 }

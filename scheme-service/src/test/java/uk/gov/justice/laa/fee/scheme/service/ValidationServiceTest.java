@@ -553,7 +553,7 @@ class ValidationServiceTest {
     }
 
     @Test
-    void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndRepOrderDateUFN_NotSupplied_shouldThrowException() {
+    void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndRepOrderDateUFN_null_shouldThrowException() {
       FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
           .feeCode("PROH")
           .representationOrderDate(null)
@@ -580,6 +580,40 @@ class ValidationServiceTest {
           .hasFieldOrPropertyWithValue("error", ERR_CRIME_UFN_MISSING)
           .hasMessage("ERRCRM7 - Enter a UFN.");
     }
+
+    @ParameterizedTest
+    @CsvSource({  // null → blank
+        "''",       // empty → blank
+        "'   '",   // non-blank → false
+    })
+    void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndRepOrderDateUFN_EmptyValueSupplied_shouldThrowException(String ufn) {
+      FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+          .feeCode("PROH")
+          .representationOrderDate(null)
+          .uniqueFileNumber(ufn)
+          .vatIndicator(Boolean.TRUE)
+          .netDisbursementAmount(50.50)
+          .disbursementVatAmount(20.15)
+          .build();
+
+      FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2025")
+          .validFrom(LocalDate.of(2025, 10, 1)).build();
+
+      FeeEntity feeEntity = FeeEntity.builder()
+          .feeCode("PROH")
+          .feeScheme(feeSchemesEntity)
+          .fixedFee(new BigDecimal("200"))
+          .categoryType(ADVOCACY_APPEALS_REVIEWS)
+          .feeType(FeeType.FIXED).build();
+
+      List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+      assertThatThrownBy(() -> validationService.getValidFeeEntity(feeEntityList, feeCalculationRequest, CRIME))
+          .isInstanceOf(ValidationException.class)
+          .hasFieldOrPropertyWithValue("error", ERR_CRIME_UFN_MISSING)
+          .hasMessage("ERRCRM7 - Enter a UFN.");
+    }
+
 
     @Test
     void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndRepOrderDateSupplied_shouldReturnValidResponse() {

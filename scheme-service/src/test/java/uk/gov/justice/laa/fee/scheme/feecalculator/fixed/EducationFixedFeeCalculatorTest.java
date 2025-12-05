@@ -1,10 +1,15 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Set;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -113,5 +118,14 @@ class EducationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(100.11);
     assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.22);
     assertThat(feeCalculation.getFixedFeeAmount()).isEqualTo(250);
+  }
+
+  @Test
+  void getSupportedCategories_shouldReturnEmpty() {
+
+    Set<CategoryType> result = educationFixedFeeCalculator.getSupportedCategories();
+
+    assertNotNull(result);
+    assertEquals(0, result.size());
   }
 }

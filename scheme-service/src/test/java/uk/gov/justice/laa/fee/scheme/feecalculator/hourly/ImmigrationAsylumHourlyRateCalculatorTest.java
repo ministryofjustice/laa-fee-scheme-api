@@ -2,6 +2,8 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DETENTION_TRAVEL;
@@ -138,6 +140,10 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
 
         // IMXL
         Arguments.of("IMXL", NO_VAT, NO_AUTHORITY, 166.25, 123.38, 24.67,
+            314.3, 0, 289.63, 166.25, 123.38, List.of()),
+
+        // IA100
+        Arguments.of("IA100", NO_VAT, NO_AUTHORITY, 166.25, 123.38, 24.67,
             314.3, 0, 289.63, 166.25, 123.38, List.of())
     );
   }
@@ -522,4 +528,26 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .boltOnTotalFeeAmount(boltOnTotalFeeAmount)
         .build();
   }
+
+  @Test
+  void shouldThrowExceptionForUnsupportedFeeCode_whenNoFeeTypeMatches() {
+    // Arrange
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("ZZZZ")   // not a LegalHelp, CLR, or CLR Interim code
+        .startDate(LocalDate.of(2025, 1, 1))
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("ZZZZ")   // must match request
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
+        .categoryType(IMMIGRATION_ASYLUM)
+        .feeType(HOURLY)
+        .build();
+
+    // Act + Assert
+    assertThatThrownBy(() -> immigrationAsylumHourlyRateCalculator.calculate(request, feeEntity))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Fee code not supported: ZZZZ");
+  }
+
 }

@@ -1,8 +1,13 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
+import java.util.Set;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -68,5 +73,16 @@ class EarlyCoverFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThat(feeCalculation.getVatRateApplied()).isEqualTo(vatIndicator ? 20.0 : null);
     assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(vat);
     assertThat(feeCalculation.getFixedFeeAmount()).isEqualTo(fixedFees);
+  }
+
+  @Test
+  void getSupportedCategories_shouldReturnEarlyCoverAndRefusedMeans() {
+
+    Set<CategoryType> result = earlyCoverFixedFeeCalculator.getSupportedCategories();
+
+    assertNotNull(result);
+    assertEquals(2, result.size());
+    assertTrue(result.contains(CategoryType.EARLY_COVER));
+    assertTrue(result.contains(CategoryType.REFUSED_MEANS_TEST));
   }
 }
