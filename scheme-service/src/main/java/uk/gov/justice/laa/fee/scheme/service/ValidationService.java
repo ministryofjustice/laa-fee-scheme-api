@@ -43,7 +43,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 public class ValidationService {
 
   private static final String FEE_CODE_PROD = "PROD";
-  private static final List<String> FEE_CODE_PROH_TYPE = new ArrayList<>(List.of("PROH", "PROH1", "PROH2"));
+  public static final List<String> FEE_CODE_PROH_TYPE = new ArrayList<>(List.of("PROH", "PROH1", "PROH2"));
 
   private static final LocalDate CIVIL_START_DATE = LocalDate.of(2013, 4, 1);
 

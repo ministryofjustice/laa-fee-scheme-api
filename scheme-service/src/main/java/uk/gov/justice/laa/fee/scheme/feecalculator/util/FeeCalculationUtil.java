@@ -6,11 +6,11 @@ import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.CASE_START_
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.REP_ORDER_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.UFN;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
+import static uk.gov.justice.laa.fee.scheme.service.ValidationService.FEE_CODE_PROH_TYPE;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -37,8 +37,6 @@ public final class FeeCalculationUtil {
 
   private FeeCalculationUtil() {
   }
-
-  private static final List<String> FEE_CODE_PROH_TYPE = new ArrayList<>(List.of("PROH", "PROH1", "PROH2"));
 
   /**
    * Determine if escaped case when the amount exceeds the escape threshold limit.
