@@ -84,7 +84,7 @@ class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .type(WARNING)
         .build();
 
-    assertThat(result.getValidationMessages()).size().isEqualTo(1);
+    assertThat(result.getValidationMessages()).hasSize(1);
     assertThat(result.getValidationMessages().getFirst()).isEqualTo(validationMessage);
   }
 
@@ -121,8 +121,9 @@ class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   void getSupportedCategories_shouldReturnExpectedCategories() {
     Set<CategoryType> result = feeCalculator.getSupportedCategories();
 
-    assertThat(result).isEqualTo(Set.of(CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT,
-        HOUSING, HOUSING_HLPAS, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS));
+    assertThat(result).isNotNull();
+    assertThat(result).containsExactlyInAnyOrder(CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT,
+        HOUSING, HOUSING_HLPAS, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS);
   }
 
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netProfitCosts) {

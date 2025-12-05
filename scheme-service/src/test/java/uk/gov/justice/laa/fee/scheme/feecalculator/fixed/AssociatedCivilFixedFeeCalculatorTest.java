@@ -97,7 +97,7 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .type(WARNING)
         .build();
 
-    assertThat(result.getValidationMessages()).size().isEqualTo(1);
+    assertThat(result.getValidationMessages()).hasSize(1);
     assertThat(result.getValidationMessages().getFirst()).isEqualTo(validationMessage);
   }
 
@@ -151,8 +151,7 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     Set<CategoryType> result = associatedCivilFixedFeeCalculator.getSupportedCategories();
 
-    assertNotNull(result);
-    assertEquals(1, result.size());
-    assertTrue(result.contains(CategoryType.ASSOCIATED_CIVIL));
+    assertThat(result).hasSize(1);
+    assertThat(result).containsExactly(CategoryType.ASSOCIATED_CIVIL);
   }
 }

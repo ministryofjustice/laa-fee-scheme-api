@@ -85,7 +85,8 @@ class DiscriminationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
   void getSupportedCategories_shouldReturnDiscriminationCategory() {
     Set<CategoryType> result = discriminationHourlyRateCalculator.getSupportedCategories();
 
-    assertThat(result).isEqualTo(Set.of(DISCRIMINATION));
+    assertThat(result).isNotNull();
+    assertThat(result).containsExactly(DISCRIMINATION);
   }
 
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netProfitCosts,

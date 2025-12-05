@@ -83,8 +83,7 @@ class SendingHearingFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     Set<CategoryType> result = calculator.getSupportedCategories();
 
-    assertNotNull(result);
-    assertEquals(1, result.size());
-    assertTrue(result.contains(SENDING_HEARING));
+    assertThat(result).hasSize(1);
+    assertThat(result).containsExactly(SENDING_HEARING);
   }
 }

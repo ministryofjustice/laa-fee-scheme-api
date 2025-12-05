@@ -198,8 +198,7 @@ class UndesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     Set<CategoryType> result = calculator.getSupportedCategories();
 
-    assertNotNull(result);
-    assertEquals(0, result.size());
+    assertThat(result).isEmpty();
   }
 
 }

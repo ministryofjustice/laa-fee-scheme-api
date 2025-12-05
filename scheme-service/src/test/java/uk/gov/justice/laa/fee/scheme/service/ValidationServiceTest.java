@@ -47,9 +47,6 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @ExtendWith(MockitoExtension.class)
 class ValidationServiceTest {
 
-  @Mock
-  FeeDetailsService feeDetailsService;
-
   @InjectMocks
   private ValidationService validationService;
 
@@ -582,10 +579,11 @@ class ValidationServiceTest {
     }
 
     @ParameterizedTest
-    @CsvSource({  // null → blank
+    @CsvSource(value = {
+        "null",     // null → blank
         "''",       // empty → blank
-        "'   '",   // non-blank → false
-    })
+        "'   '",    // non-blank → false
+    }, nullValues = "null")
     void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndRepOrderDateUFN_EmptyValueSupplied_shouldThrowException(String ufn) {
       FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
           .feeCode("PROH")
@@ -685,14 +683,13 @@ class ValidationServiceTest {
       assertTrue(validationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "PROH, 2025-10-12, 2025-11-12",
-    })
-    void testValidAdvocacyAssistanceFeeCode(String feeCode, String caseConcludedDate) {
+    @Test
+    void testValidAdvocacyAssistanceFeeCode() {
       FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-          .feeCode(feeCode).caseConcludedDate(LocalDate.parse(caseConcludedDate)).build();
-      assertTrue(validationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
+          .feeCode("PROH").caseConcludedDate(LocalDate.of(2025, 10, 12)).build();
+
+      boolean result = validationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest);
+      assertThat(result).isTrue();
     }
   }
 }

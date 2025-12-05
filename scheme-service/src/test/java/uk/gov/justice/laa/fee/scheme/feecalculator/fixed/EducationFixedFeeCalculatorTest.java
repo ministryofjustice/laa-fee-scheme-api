@@ -74,7 +74,7 @@ class EducationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .type(WARNING)
         .build();
 
-    assertThat(result.getValidationMessages()).size().isEqualTo(1);
+    assertThat(result.getValidationMessages()).hasSize(1);
     assertThat(result.getValidationMessages().getFirst()).isEqualTo(validationMessage);
   }
 
@@ -125,7 +125,6 @@ class EducationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     Set<CategoryType> result = educationFixedFeeCalculator.getSupportedCategories();
 
-    assertNotNull(result);
-    assertEquals(0, result.size());
+    assertThat(result).isEmpty();
   }
 }

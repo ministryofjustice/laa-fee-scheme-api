@@ -80,8 +80,7 @@ class EarlyCoverFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     Set<CategoryType> result = earlyCoverFixedFeeCalculator.getSupportedCategories();
 
-    assertNotNull(result);
-    assertEquals(2, result.size());
+    assertThat(result).hasSize(2);
     assertTrue(result.contains(CategoryType.EARLY_COVER));
     assertTrue(result.contains(CategoryType.REFUSED_MEANS_TEST));
   }

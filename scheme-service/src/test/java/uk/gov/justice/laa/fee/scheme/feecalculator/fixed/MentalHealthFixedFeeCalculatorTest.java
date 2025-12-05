@@ -241,8 +241,7 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     Set<CategoryType> result = mentalhealthFixedFeeCalculator.getSupportedCategories();
 
-    assertNotNull(result);
-    assertEquals(0, result.size());
+    assertThat(result).isEmpty();
   }
 
 }

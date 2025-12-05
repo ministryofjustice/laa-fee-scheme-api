@@ -153,6 +153,7 @@ class MediationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   void getSupportedCategories_shouldReturnMediationCategory() {
     Set<CategoryType> result = mediationFeeCalculator.getSupportedCategories();
 
-    assertThat(result).isEqualTo(Set.of(MEDIATION));
+    assertThat(result).isNotNull();
+    assertThat(result).containsExactly(MEDIATION);
   }
 }

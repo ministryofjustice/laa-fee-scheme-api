@@ -31,8 +31,6 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @ExtendWith(MockitoExtension.class)
 class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
 
-  private static final String FEE_CODE = "INVM";
-  private static final String FEE_SCHEME_CODE = "POL_2023";
   private static final String UFN = "041223/665";
 
   @InjectMocks

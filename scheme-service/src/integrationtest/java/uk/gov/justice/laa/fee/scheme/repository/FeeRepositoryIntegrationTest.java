@@ -25,7 +25,7 @@ class FeeRepositoryIntegrationTest extends PostgresContainerTestBase {
     feeSchemesEntity.setSchemeCode("PUB_FS2013");
 
     List<FeeEntity> result = repository.findByFeeCode("PUB");
-    assertThat(result).size().isEqualTo(1);
+    assertThat(result).hasSize(1);
 
     FeeEntity entity = result.getFirst();
 

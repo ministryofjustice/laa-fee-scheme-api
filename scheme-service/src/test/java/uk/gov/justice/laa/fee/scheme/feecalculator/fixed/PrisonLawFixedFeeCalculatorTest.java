@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -41,8 +42,10 @@ class PrisonLawFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @Test
   void testGetSupportedCategories() {
-    assertTrue(prisonLawFeeCalculator.getSupportedCategories().contains(CategoryType.PRISON_LAW));
-    assertEquals(1, prisonLawFeeCalculator.getSupportedCategories().size());
+    Set<CategoryType> result = prisonLawFeeCalculator.getSupportedCategories();
+
+    assertThat(result).hasSize(1);
+    assertThat(result).containsExactly(CategoryType.PRISON_LAW);
   }
 
   private FeeEntity buildFeeEntity(String feeCode, double fixedFeeAmount, Double escapeThreshold, Double feeLimit) {
