@@ -10,6 +10,7 @@ import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEn
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -36,6 +37,8 @@ public final class FeeCalculationUtil {
 
   private FeeCalculationUtil() {
   }
+
+  private static final List<String> FEE_CODE_PROH_TYPE = new ArrayList<>(List.of("PROH", "PROH1", "PROH2"));
 
   /**
    * Determine if escaped case when the amount exceeds the escape threshold limit.
@@ -133,11 +136,11 @@ public final class FeeCalculationUtil {
 
   /**
    * Calculate start date to use for Advocacy Assistance in the Crown Court or Appeals & Reviews,
-   * PROH will use representation order date if present, falls back to UFN if not.
+   * PROH, PROH1, PROH2 will use representation order date if present, falls back to UFN if not.
    */
   private static ClaimStartDateType getFeeClaimStartDateAdvocacyAppealsReviews(FeeCalculationRequest feeCalculationRequest) {
-    if (feeCalculationRequest.getFeeCode().equals("PROH") && nonNull(feeCalculationRequest.getRepresentationOrderDate())) {
-      log.info("Determining fee start date for PROH, using Representation Order Date");
+    if (FEE_CODE_PROH_TYPE.contains(feeCalculationRequest.getFeeCode()) && nonNull(feeCalculationRequest.getRepresentationOrderDate())) {
+      log.info("Determining fee start date for PROH, PROH1, PROH2, using Representation Order Date");
       return REP_ORDER_DATE;
     } else {
       log.info("Determining fee start date, using Unique File Number");

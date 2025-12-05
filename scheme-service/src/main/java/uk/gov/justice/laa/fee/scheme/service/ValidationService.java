@@ -16,6 +16,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_FAMILY_LONDON_RA
 
 import io.micrometer.common.util.StringUtils;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -42,7 +43,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 public class ValidationService {
 
   private static final String FEE_CODE_PROD = "PROD";
-  private static final String FEE_CODE_PROH = "PROH";
+  private static final List<String> FEE_CODE_PROH_TYPE = new ArrayList<>(List.of("PROH", "PROH1", "PROH2"));
 
   private static final LocalDate CIVIL_START_DATE = LocalDate.of(2013, 4, 1);
 
@@ -82,7 +83,7 @@ public class ValidationService {
   private void validateCrimeFee(FeeCalculationRequest feeCalculationRequest, CategoryType categoryType) {
     ClaimStartDateType claimStartDateType = FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeCalculationRequest);
 
-    if (feeCalculationRequest.getFeeCode().equals(FEE_CODE_PROH)) {
+    if (FEE_CODE_PROH_TYPE.contains(feeCalculationRequest.getFeeCode())) {
       if (feeCalculationRequest.getRepresentationOrderDate() == null
           && StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber())) {
         throw new ValidationException(ERR_CRIME_UFN_MISSING, new FeeContext(feeCalculationRequest));
@@ -100,7 +101,7 @@ public class ValidationService {
       }
     } else if (StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber())
                && !(feeCalculationRequest.getFeeCode().equals(FEE_CODE_PROD)
-                    || feeCalculationRequest.getFeeCode().equals(FEE_CODE_PROH))) {
+                    || FEE_CODE_PROH_TYPE.contains(feeCalculationRequest.getFeeCode()))) {
       throw new ValidationException(ERR_CRIME_UFN_MISSING, new FeeContext(feeCalculationRequest));
     }
   }
