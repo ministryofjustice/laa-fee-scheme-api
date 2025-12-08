@@ -54,6 +54,7 @@ class ImmigrationAsylumFeeCalculatorTest {
       case FIXED -> verify(immigrationAsylumFixedFeeCalculator).calculate(feeCalculationRequest, feeEntity);
       case HOURLY -> verify(immigrationAsylumHourlyRateCalculator).calculate(feeCalculationRequest, feeEntity);
       case DISB_ONLY -> verify(immigrationAsylumDisbursementOnlyCalculator).calculate(feeCalculationRequest, feeEntity);
+      default -> throw new IllegalArgumentException("Unsupported fee type: " + feeType);
     }
   }
 

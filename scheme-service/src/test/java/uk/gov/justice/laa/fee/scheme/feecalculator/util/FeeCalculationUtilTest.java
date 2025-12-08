@@ -84,7 +84,7 @@ class FeeCalculationUtilTest {
 
   @ParameterizedTest
   @EnumSource(value = CategoryType.class, names = {
-      "MAGISTRATES_COURT","YOUTH_COURT"
+      "MAGISTRATES_COURT", "YOUTH_COURT"
   })
   void calculate_ReturnRepresentationOrderDate_forMagistratesAndYouthCourts(CategoryType categoryType) {
     FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();

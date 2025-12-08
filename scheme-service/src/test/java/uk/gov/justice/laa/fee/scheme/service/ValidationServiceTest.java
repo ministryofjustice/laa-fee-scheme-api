@@ -153,9 +153,12 @@ class ValidationServiceTest {
         "IACE, IMMIGRATION_ASYLUM, IMM_ASYLM_FS2023, 2023-04-01, 2011-04-29, ERR_CIVIL_START_DATE_TOO_OLD",
         "IDAS2, IMMIGRATION_ASYLUM, IMM_ASYLM_FS2013, 2013-04-01, 2011-04-29, ERR_CIVIL_START_DATE_TOO_OLD",
     })
-    void getValidFeeEntity_whenCivilImmigrationAsylumFeeCodeAndDateTooFarInPast_shouldThrowException(String feeCode, CategoryType categoryType,
-                                                                                                     String feeScheme, LocalDate feeSchemeDate,
-                                                                                                     LocalDate claimStartDate, ErrorType expectedError) {
+    void getValidFeeEntity_whenCivilImmigrationAsylumFeeCodeAndDateTooFarInPast_shouldThrowException(String feeCode,
+                                                                                                     CategoryType categoryType,
+                                                                                                     String feeScheme,
+                                                                                                     LocalDate feeSchemeDate,
+                                                                                                     LocalDate claimStartDate,
+                                                                                                     ErrorType expectedError) {
       FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
           .feeCode(feeCode)
           .startDate(claimStartDate)
@@ -181,10 +184,13 @@ class ValidationServiceTest {
         "IACC, IMMIGRATION_ASYLUM, IMM_ASYLM_FS2020, 2020-04-01, 2023-04-29, 2024-04-29, ERR_IMM_ASYLUM_BETWEEN_DATE",
         "IACA, IMMIGRATION_ASYLUM, IMM_ASYLM_FS2020, 2020-04-01, 2023-04-29, 2024-04-29, ERR_IMM_ASYLUM_BEFORE_DATE",
     })
-    void getValidFeeEntity_whenCivilImmigrationAsylumFeeCodeAndStartDateIsInvalid_shouldThrowException(String feeCode, CategoryType categoryType,
-                                                                                                       String feeScheme, LocalDate feeSchemeStartDate,
+    void getValidFeeEntity_whenCivilImmigrationAsylumFeeCodeAndStartDateIsInvalid_shouldThrowException(String feeCode,
+                                                                                                       CategoryType categoryType,
+                                                                                                       String feeScheme,
+                                                                                                       LocalDate feeSchemeStartDate,
                                                                                                        LocalDate feeSchemeEndDate,
-                                                                                                       LocalDate claimStartDate, ErrorType expectedError) {
+                                                                                                       LocalDate claimStartDate,
+                                                                                                       ErrorType expectedError) {
       FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
           .feeCode(feeCode)
           .startDate(claimStartDate)
@@ -556,7 +562,7 @@ class ValidationServiceTest {
     }
 
     @Test
-    void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndRepOrderDateUFN_null_shouldThrowException() {
+    void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndRepOrderDateUfn_null_shouldThrowException() {
       FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
           .feeCode("PROH")
           .representationOrderDate(null)
@@ -593,7 +599,8 @@ class ValidationServiceTest {
         "PROH2,''",       // empty → blank
         "PROH2, '   '"   // non-blank → false
     })
-    void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndRepOrderDateUFN_EmptyValueSupplied_shouldThrowException(String feeCode, String ufn) {
+    void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndRepOrderDateUfn_EmptyValueSupplied_shouldThrowException(String feeCode,
+                                                                                                                   String ufn) {
       FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
           .feeCode(feeCode)
           .representationOrderDate(null)

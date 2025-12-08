@@ -479,10 +479,10 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     return Stream.of(
         arguments("INVB1 Police Fee Code, VAT applied", "INVB1", "NE001",
             "1001", "121221/7899", true, 17.28,
-            new BigDecimal("14.4"), "POL_2016", 2.88,14.4),
+            new BigDecimal("14.4"), "POL_2016", 2.88, 14.4),
         arguments("INVB1 Police Fee Code, VAT applied", "INVB1", "NE001",
             "1001", "121221/7899", true, 17.28,
-            new BigDecimal("14.4"), "POL_2016", 2.88,14.4),
+            new BigDecimal("14.4"), "POL_2016", 2.88, 14.4),
 
         arguments("INVB1 Police Fee Code, VAT not applied", "INVB1", "NE013",
             "1004", "121223/6655", false, 14.4,
@@ -498,11 +498,11 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
         arguments("INVB1 Police Fee Code, Police Station Id Not Provided ", "INVB1", null,
             "1004", "121223/6655", true, 20.74,
-            new BigDecimal("17.28"),  "POL_2023", 3.46,17.28),
+            new BigDecimal("17.28"),  "POL_2023", 3.46, 17.28),
 
         arguments("INVB2 Police Fee Code, Police Station Scheme Id Not Provided", "INVB2", "NE001",
             null, "121221/7899", true, 17.28,
-            new BigDecimal("14.4"), "POL_2016", 2.88,14.4)
+            new BigDecimal("14.4"), "POL_2016", 2.88, 14.4)
     );
   }
 
