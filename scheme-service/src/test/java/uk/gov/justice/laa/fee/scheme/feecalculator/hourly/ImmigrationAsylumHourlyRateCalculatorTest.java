@@ -147,11 +147,12 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
   }
 
   @ParameterizedTest
-  @MethodSource("feeTestDataIA100")
-  void calculateFee_whenLegalHelpIA100_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority,
-                                                                          double netProfitCosts, double netDisbursement, double disbursementVat,
-                                                                          double expectedTotal, double expectedCalculatedVat,
-                                                                          double expectedHourlyTotal, List<WarningType> expectedWarnings) {
+  @MethodSource("feeTestDataIa100")
+  void calculateFee_whenLegalHelpIa100_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority,
+                                                                          double netProfitCosts, double netDisbursement,
+                                                                          double disbursementVat, double expectedTotal,
+                                                                          double expectedCalculatedVat, double expectedHourlyTotal,
+                                                                          List<WarningType> expectedWarnings) {
 
     mockVatRatesService(vatIndicator);
 
@@ -185,7 +186,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         expectedHourlyTotal, netProfitCosts, null, null);
   }
 
-  static Stream<Arguments> feeTestDataIA100() {
+  static Stream<Arguments> feeTestDataIa100() {
     return Stream.of(
         // IA100 under total limit (No VAT)
         Arguments.of("IA100", false, null, 23.99, 55.60, 11.12,
@@ -213,7 +214,8 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
   @ParameterizedTest
   @MethodSource("warningTestDataLegalHelp")
   void calculateFee_whenLegalHelpFeeCodeAndGivenUnexpectedField_shouldReturnWarning(Double detentionTravelAndWaitingCosts,
-                                                                                    Double jrFormFilling, List<WarningType> expectedWarnings) {
+                                                                                    Double jrFormFilling,
+                                                                                    List<WarningType> expectedWarnings) {
     mockVatRatesService(false);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
@@ -359,10 +361,12 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
 
   @ParameterizedTest
   @MethodSource("feeTestDataClrInterim")
-  void calculateFee_whenClrInterim_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority, BoltOnType requestedBoltOns,
-                                                                      double netProfitCosts, double netCostOfCounsel, double netDisbursement,
-                                                                      double disbursementVat, double expectedTotal, double expectedCalculatedVat,
-                                                                      double expectedHourlyTotal, List<WarningType> expectedWarnings) {
+  void calculateFee_whenClrInterim_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority,
+                                                                      BoltOnType requestedBoltOns, double netProfitCosts,
+                                                                      double netCostOfCounsel, double netDisbursement,
+                                                                      double disbursementVat, double expectedTotal,
+                                                                      double expectedCalculatedVat, double expectedHourlyTotal,
+                                                                      List<WarningType> expectedWarnings) {
 
     mockVatRatesService(vatIndicator);
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
@@ -510,8 +514,9 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
   }
 
   private static BoltOnFeeDetails expectedBoltOnFeeDetails(Boolean substantiveHearing) {
-    return Boolean.TRUE.equals(substantiveHearing) ?
-       expectedBoltOnFeeDetails(302.0, 774.0) : expectedBoltOnFeeDetails(null, 472.0) ;
+    return Boolean.TRUE.equals(substantiveHearing)
+        ? expectedBoltOnFeeDetails(302.0, 774.0)
+        : expectedBoltOnFeeDetails(null, 472.0);
   }
 
   private static BoltOnFeeDetails expectedBoltOnFeeDetails(Double boltOnSubstantiveHearingFee, Double boltOnTotalFeeAmount) {

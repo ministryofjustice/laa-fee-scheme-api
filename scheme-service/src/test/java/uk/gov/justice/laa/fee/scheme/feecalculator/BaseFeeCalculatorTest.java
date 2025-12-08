@@ -9,6 +9,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
+/**
+ * Helper test class for Vat service.
+ */
 @ExtendWith(MockitoExtension.class)
 public abstract class BaseFeeCalculatorTest {
 
