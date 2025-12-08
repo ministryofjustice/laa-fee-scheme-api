@@ -34,7 +34,8 @@ import uk.gov.justice.laa.fee.scheme.util.DateUtil;
 @Slf4j
 public final class FeeCalculationUtil {
 
-
+  private FeeCalculationUtil() {
+  }
 
   /**
    * Return the appropriate date based on Category Type of the claim request.
