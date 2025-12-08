@@ -121,7 +121,6 @@ class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   void getSupportedCategories_shouldReturnExpectedCategories() {
     Set<CategoryType> result = feeCalculator.getSupportedCategories();
 
-    assertThat(result).isNotNull();
     assertThat(result).containsExactlyInAnyOrder(CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT,
         HOUSING, HOUSING_HLPAS, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS);
   }

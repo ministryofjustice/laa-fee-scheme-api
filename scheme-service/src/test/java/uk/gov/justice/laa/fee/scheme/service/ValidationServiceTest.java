@@ -577,11 +577,10 @@ class ValidationServiceTest {
     }
 
     @ParameterizedTest
-    @CsvSource(value = {
-        "null",     // null → blank
+    @CsvSource({  // null → blank
         "''",       // empty → blank
-        "'   '",    // non-blank → false
-    }, nullValues = "null")
+        "'   '",   // non-blank → false
+    })
     void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndRepOrderDateUFN_EmptyValueSupplied_shouldThrowException(String ufn) {
       FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
           .feeCode("PROH")

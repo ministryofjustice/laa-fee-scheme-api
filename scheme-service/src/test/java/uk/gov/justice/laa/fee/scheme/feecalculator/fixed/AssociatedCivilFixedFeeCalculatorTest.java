@@ -94,8 +94,7 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .type(WARNING)
         .build();
 
-    assertThat(result.getValidationMessages()).hasSize(1);
-    assertThat(result.getValidationMessages().getFirst()).isEqualTo(validationMessage);
+    assertThat(result.getValidationMessages()).containsExactly(validationMessage);
   }
 
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netTravelCosts,
@@ -148,7 +147,6 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     Set<CategoryType> result = associatedCivilFixedFeeCalculator.getSupportedCategories();
 
-    assertThat(result).hasSize(1);
     assertThat(result).containsExactly(CategoryType.ASSOCIATED_CIVIL);
   }
 }

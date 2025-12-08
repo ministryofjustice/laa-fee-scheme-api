@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.FAMILY;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MEDIATION;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
@@ -38,7 +39,7 @@ public class MediationFixedFeeCalculator implements FeeCalculator {
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
-    return Set.of(MEDIATION);
+    return Set.of();
   }
 
   /**

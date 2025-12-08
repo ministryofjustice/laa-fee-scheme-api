@@ -69,7 +69,9 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   void getSupportedCategories_ShouldReturnAllExpectedCategories() {
     Set<CategoryType> categories = familyFixedFeeCalculator.getSupportedCategories();
 
-    assertThat(categories).hasSize(1).containsExactly(CategoryType.FAMILY); // make sure the total count matches
+    assertThat(categories)
+        .hasSize(1)
+        .containsExactly(CategoryType.FAMILY);
   }
 
   @Test
