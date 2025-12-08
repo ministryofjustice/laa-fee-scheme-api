@@ -190,7 +190,7 @@ public class ValidationService {
    */
   public boolean isFeeCodeValidForRepOrderDate(FeeCalculationRequest feeCalculationRequest) {
     final Pattern repOrderDtPattern = Pattern.compile(
-        "^(PRO[EFKLV][1-4]|PROJ[1-8]|YOU[EF][1-3]|YOU[XKLY][1-4]|APP[AB]|PROW)$");
+        "^(PRO[EFKLV][1-4]|PROJ[1-8]|YOU[EFXKLY][1-4]|APP[AB]|PROW)$");
 
     if (feeCalculationRequest.getRepresentationOrderDate() != null) {
       return repOrderDtPattern.matcher(feeCalculationRequest.getFeeCode()).matches();

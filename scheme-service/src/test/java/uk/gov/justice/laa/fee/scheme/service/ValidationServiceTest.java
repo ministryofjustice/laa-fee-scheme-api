@@ -496,21 +496,29 @@ class ValidationServiceTest {
           .hasMessage("ERRCRM7 - Enter a UFN.");
     }
 
-    @Test
-    void getValidFeeEntity_whenCriminalProceedingsAndRepOrderDateIsMissing_shouldThrowException() {
+    @ParameterizedTest
+    @CsvSource({
+        "PROE1, MAGISTRATES_COURT",
+        "PROF1, MAGISTRATES_COURT",
+        "YOUE4, YOUTH_COURT",
+        "YOUF4, YOUTH_COURT"
+    })
+    void getValidFeeEntity_whenCriminalProceedingsAndRepOrderDateIsMissing_shouldThrowException(String feeCode, String categoryType) {
       FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-          .feeCode("PROJ4")
+          .feeCode(feeCode)
           .startDate(LocalDate.of(2025, 1, 1))
           .vatIndicator(Boolean.TRUE)
           .netDisbursementAmount(50.50)
           .disbursementVatAmount(20.15)
           .build();
 
+      CategoryType courtCategoryType = CategoryType.valueOf(categoryType);
+
       FeeEntity feeEntity = FeeEntity.builder()
-          .feeCode("PROJ4")
+          .feeCode(feeCode)
           .feeScheme(FeeSchemesEntity.builder().build())
           .fixedFee(new BigDecimal("200"))
-          .categoryType(MAGISTRATES_COURT)
+          .categoryType(courtCategoryType)
           .courtDesignationType(CourtDesignationType.DESIGNATED)
           .feeType(FeeType.FIXED).build();
 
@@ -653,6 +661,8 @@ class ValidationServiceTest {
         "PROF4, 2025-11-12",
         "PROJ3, 2025-11-12",
         "YOUE2, 2025-11-12",
+        "YOUE4, 2025-11-12",
+        "YOUF4, 2025-11-12",
         "APPB, 2025-11-12",
         "PROW, 2025-11-12"
     })
