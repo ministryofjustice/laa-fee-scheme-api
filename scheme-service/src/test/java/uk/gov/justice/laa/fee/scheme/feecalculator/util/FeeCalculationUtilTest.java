@@ -4,7 +4,6 @@ import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVICE_ASSISTANCE_ADVOCACY;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
@@ -13,23 +12,16 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
-import uk.gov.justice.laa.fee.scheme.enums.LimitType;
 import uk.gov.justice.laa.fee.scheme.exception.CaseConcludedDateRequiredException;
 import uk.gov.justice.laa.fee.scheme.exception.StartDateRequiredException;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
-import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 class FeeCalculationUtilTest {
 
@@ -165,42 +157,6 @@ class FeeCalculationUtilTest {
         new BigDecimal("24.10"));
 
     assertThat(totalAmount).isEqualTo(new BigDecimal("144.60"));
-  }
-
-  @ParameterizedTest
-  @CsvSource(value = {
-      "99, null, false",
-      "99, 100, false",
-      "100, 100, false",
-      "101, null, false",
-      "101, 100, true",
-  }, nullValues = {"null" })
-  void isEscapedCase_returnsResult(BigDecimal amount, BigDecimal limit, boolean expected) {
-    boolean result = FeeCalculationUtil.isEscapedCase(amount, limit);
-
-    assertThat(result).isEqualTo(expected);
-  }
-
-  @ParameterizedTest
-  @MethodSource("limitTestData")
-  void checkLimitAndCapIfExceeded_returnsResult(BigDecimal amount, BigDecimal limitAmount, String authority, BigDecimal expectedAmount,
-                                                List<ValidationMessagesInner> expectedMessages) {
-    LimitContext limitContext = new LimitContext(LimitType.TOTAL, limitAmount, authority, null);
-    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-
-    BigDecimal result = FeeCalculationUtil.checkLimitAndCapIfExceeded(amount, limitContext, validationMessages);
-
-    assertThat(result).isEqualTo(expectedAmount);
-
-    assertThat(validationMessages).isEqualTo(expectedMessages);
-  }
-
-  public static Stream<Arguments> limitTestData() {
-    return Stream.of(
-        arguments(new BigDecimal("90"), new BigDecimal("100"), null,  new BigDecimal("90"), List.of()),
-        arguments(new BigDecimal("200"), null, "priorAuth", new BigDecimal("200"), List.of()),
-        arguments(new BigDecimal("200"), new BigDecimal("90"), null, new BigDecimal("90"), List.of())
-    );
   }
 
   @Test

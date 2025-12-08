@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
@@ -36,47 +35,6 @@ import uk.gov.justice.laa.fee.scheme.util.DateUtil;
 public final class FeeCalculationUtil {
 
   private FeeCalculationUtil() {
-  }
-
-  /**
-   * Determine if escaped case when the amount exceeds the escape threshold limit.
-   *
-   * @param amount               the amount to compare
-   * @param escapeThresholdLimit the escape threshold limit
-   * @return true if the amount exceeds the escape threshold limit, false otherwise
-   */
-  public static boolean isEscapedCase(BigDecimal amount, BigDecimal escapeThresholdLimit) {
-    return escapeThresholdLimit != null && amount.compareTo(escapeThresholdLimit) > 0;
-  }
-
-  /**
-   * Check if amount exceeds limit without authority and cap to limit if exceeded.
-   *
-   * @param amount             the amount to check
-   * @param limitContext       the limit context containing limit details
-   * @param validationMessages the list to add validation messages to
-   * @return the capped amount if limit exceeded without authority, otherwise the original amount
-   */
-  public static BigDecimal checkLimitAndCapIfExceeded(BigDecimal amount, LimitContext limitContext,
-                                                      List<ValidationMessagesInner> validationMessages) {
-    log.info("Check {} is below limit for fee calculation", limitContext.limitType().getDisplayName());
-    BigDecimal limit = limitContext.limit();
-
-    if (isOverLimitWithoutAuthority(amount, limitContext)) {
-      log.warn("{} limit exceeded without prior authority capping to limit: {}",
-          limitContext.limitType().getDisplayName(), limitContext.limit());
-
-      WarningType warning = limitContext.warning();
-      if (warning != null) {
-        validationMessages.add(ValidationMessagesInner.builder()
-            .message(warning.getMessage())
-            .code(warning.getCode())
-            .type(WARNING)
-            .build());
-      }
-      return limit;
-    }
-    return amount;
   }
 
   /**
@@ -180,11 +138,7 @@ public final class FeeCalculationUtil {
         .add(disbursementVatAmount);
   }
 
-  private static boolean isOverLimitWithoutAuthority(BigDecimal amount, LimitContext limitContext) {
-    return limitContext.limit() != null
-           && amount.compareTo(limitContext.limit()) > 0
-           && StringUtils.isBlank(limitContext.authority());
-  }
+
 
   /**
    * If bolts ons are null, return null for request.

@@ -7,7 +7,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUti
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
@@ -98,14 +98,13 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
   }
 
   /**
-   * Calculate if the has escaped using EscapeThresholdLimit,
+   * Calculate if the fee has escaped using EscapeThresholdLimit,
    * escape flag will be true when it has.
    */
   private boolean escapeCaseValidation(FeeEntity feeEntity, List<ValidationMessagesInner> validationMessages,
                                        BigDecimal totalAmount) {
 
-    BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
-    if (isEscapedCase(totalAmount, escapeThresholdLimit)) {
+    if (isEscapedCase(totalAmount, feeEntity)) {
       validationMessages.add(buildValidationWarning(WARN_PRISON_HAS_ESCAPED,
           "Case has escaped"));
       return true;

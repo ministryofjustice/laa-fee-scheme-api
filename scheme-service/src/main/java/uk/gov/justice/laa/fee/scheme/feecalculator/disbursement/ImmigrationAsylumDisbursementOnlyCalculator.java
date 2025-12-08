@@ -1,11 +1,11 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.disbursement;
 
 import static java.util.Objects.nonNull;
-import static uk.gov.justice.laa.fee.scheme.enums.LimitType.DISBURSEMENT;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_ONLY;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.checkLimitAndCapIfExceeded;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitType.DISBURSEMENT;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.checkLimitAndCapIfExceeded;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
-import uk.gov.justice.laa.fee.scheme.feecalculator.util.LimitContext;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitContext;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;

@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.enums;
+package uk.gov.justice.laa.fee.scheme.feecalculator.util.limit;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

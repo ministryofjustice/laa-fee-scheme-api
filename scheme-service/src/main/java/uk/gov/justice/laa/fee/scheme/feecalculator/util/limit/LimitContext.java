@@ -1,7 +1,6 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.util;
+package uk.gov.justice.laa.fee.scheme.feecalculator.util.limit;
 
 import java.math.BigDecimal;
-import uk.gov.justice.laa.fee.scheme.enums.LimitType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 
 /**

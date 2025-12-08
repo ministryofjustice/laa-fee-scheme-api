@@ -6,6 +6,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUti
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isOverUpperCostLimit;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
@@ -53,7 +54,6 @@ public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator
     log.info("Calculate Advocacy Assistance in the Crown Court or Appeals & Reviews hourly rate fee");
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    BigDecimal upperCostLimit = toBigDecimal(feeEntity.getUpperCostLimit());
 
     BigDecimal requestedNetProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
@@ -65,7 +65,7 @@ public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator
         .add(requestedTravelCosts)
         .add(requestedWaitingCosts);
 
-    if (profitAndAdditionalCosts.add(requestedNetDisbursementAmount).compareTo(upperCostLimit) > 0) {
+    if (isOverUpperCostLimit(profitAndAdditionalCosts.add(requestedNetDisbursementAmount), feeEntity)) {
       validationMessages.add(buildValidationWarning(WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT,
           "Profit and Additional Costs have exceeded upper cost limit"));
     }

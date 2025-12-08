@@ -2,8 +2,6 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DETENTION_TRAVEL;
