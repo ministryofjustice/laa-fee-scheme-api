@@ -51,7 +51,7 @@ public final class NumberUtil {
    * @return the original value or BigDecimal.ZERO if null
    */
   public static BigDecimal defaultToZeroIfNull(BigDecimal value) {
-    return value != null ? value : BigDecimal.ZERO;
+    return value == null ? BigDecimal.ZERO : value;
   }
 
 }

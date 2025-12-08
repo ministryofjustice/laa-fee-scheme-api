@@ -6,7 +6,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUti
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isEscapedCase;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -76,7 +76,7 @@ public class EducationFixedFeeCalculator implements FeeCalculator {
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    boolean isEscaped = isEscapedCase(netProfitCosts, feeEntity.getEscapeThresholdLimit());
+    boolean isEscaped = isEscapedCase(netProfitCosts, feeEntity);
 
     if (isEscaped) {
       validationMessages.add(buildValidationWarning(WARN_EDUCATION_ESCAPE_THRESHOLD,

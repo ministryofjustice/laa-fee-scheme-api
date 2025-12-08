@@ -1,14 +1,10 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MENTAL_HEALTH;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.YOUTH_COURT;
-import static uk.gov.justice.laa.fee.scheme.enums.FeeType.DISB_ONLY;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
-import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

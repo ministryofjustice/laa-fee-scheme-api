@@ -5,6 +5,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUti
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isOverUpperCostLimit;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
@@ -54,8 +55,6 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
-    BigDecimal upperCostLimit = feeEntity.getUpperCostLimit();
-
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
 
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
@@ -67,7 +66,7 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
     log.info("Calculate hourly rate and costs");
     BigDecimal feeTotal = netProfitCosts.add(netDisbursementAmount).add(travelCosts).add(waitingCosts);
 
-    if (feeTotal.compareTo(upperCostLimit) > 0) {
+    if (isOverUpperCostLimit(feeTotal, feeEntity)) {
       validationMessages.add(buildValidationWarning(WARN_POLICE_OTHER_UPPER_LIMIT,
           "Fee total exceeds upper cost limit"));
     }

@@ -11,7 +11,7 @@ import java.time.format.DateTimeParseException;
 
 public final class DateUtil {
 
-  public static final String DD_MM_MYY = "ddMMyy";
+  private static final String DATE_FORMAT = "ddMMyy";
 
   private DateUtil() {
   }
@@ -24,14 +24,11 @@ public final class DateUtil {
    */
   @NotNull
   public static @NotNull LocalDate toLocalDate(String inputStr) throws DateTimeParseException {
-    LocalDate localDate;
-
     String strDate = inputStr.substring(0, 6); // "120325"
     // Define formatter for ddMMyy
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DD_MM_MYY);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
     // Parse into LocalDate
-    localDate = LocalDate.parse(strDate, formatter);
-    return localDate;
+    return LocalDate.parse(strDate, formatter);
   }
 
 }

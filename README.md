@@ -1,5 +1,5 @@
 # laa-fee-scheme-api
-[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/laa-spring-boot-microservice-template/badge)](https://github-community.service.justice.gov.uk/repository-standards/laa-spring-boot-microservice-template)
+[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/laa-fee-scheme-api/badge)](https://github-community.service.justice.gov.uk/repository-standards/laa-fee-scheme-api)
 
 ## Overview
 
