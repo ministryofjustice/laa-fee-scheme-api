@@ -6,6 +6,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.CASE_START_
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.REP_ORDER_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.UFN;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
+import static uk.gov.justice.laa.fee.scheme.service.ValidationService.FEE_CODE_PROH_TYPE;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -133,11 +134,11 @@ public final class FeeCalculationUtil {
 
   /**
    * Calculate start date to use for Advocacy Assistance in the Crown Court or Appeals & Reviews,
-   * PROH will use representation order date if present, falls back to UFN if not.
+   * PROH, PROH1, PROH2 will use representation order date if present, falls back to UFN if not.
    */
   private static ClaimStartDateType getFeeClaimStartDateAdvocacyAppealsReviews(FeeCalculationRequest feeCalculationRequest) {
-    if (feeCalculationRequest.getFeeCode().equals("PROH") && nonNull(feeCalculationRequest.getRepresentationOrderDate())) {
-      log.info("Determining fee start date for PROH, using Representation Order Date");
+    if (FEE_CODE_PROH_TYPE.contains(feeCalculationRequest.getFeeCode()) && nonNull(feeCalculationRequest.getRepresentationOrderDate())) {
+      log.info("Determining fee start date for PROH, PROH1, PROH2, using Representation Order Date");
       return REP_ORDER_DATE;
     } else {
       log.info("Determining fee start date, using Unique File Number");

@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.api.feecalculation;
 
+import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -50,6 +51,7 @@ public class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationI
         }
         """);
   }
+
   @ParameterizedTest
   @CsvSource({
       "PROH, 211225/456, AAR_FS2022, 810.0, 120.0, 600.0, 500.0, 500.0",
@@ -81,6 +83,60 @@ public class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationI
           "netWaitingCosts": 50
         }
         """.formatted(feeCode, uniqueFileNumber, netProfitCostsAmount);
+
+    postAndExpect(request, """
+        {
+          "feeCode": "%s",
+          "schemeId": "%s",
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": %s,
+            "disbursementAmount": 80.0,
+            "requestedNetDisbursementAmount": 80.0,
+            "disbursementVatAmount": 10.0,
+            "hourlyTotalAmount": %s,
+            "netProfitCostsAmount": %s,
+            "requestedNetProfitCostsAmount": %s,
+            "netTravelCostsAmount": 50,
+            "netWaitingCostsAmount": 50
+          }
+        }
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, expectedHourlyTotalAmount, netProfitCostsAmount, requestedNetProfitCostsAmount));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "PROH, 2025-12-21, 111111/456, AAR_FS2022, 810.0, 120.0, 600.0, 500.0, 500.0",
+      "PROH1, 2025-12-22, 111111/456, AAR_FS2025, 810.0, 120.0, 600.0, 500.0, 500.0",
+      "PROH2, 2025-12-22, 111111/456, AAR_FS2025, 810.0, 120.0, 600.0, 500.0, 500.0"
+  })
+  void shouldGetFeeCalculation_advocacyAppealsReviewHourlyRate_PROH_repOrderDate(String feeCode,
+                                                               String repOrderDate,
+                                                               String uniqueFileNumber,
+                                                               String schemeId,
+                                                               String expectedTotal,
+                                                               String expectedVatAmount,
+                                                               String expectedHourlyTotalAmount,
+                                                               String netProfitCostsAmount,
+                                                               String requestedNetProfitCostsAmount
+  ) throws Exception {
+    LocalDate representationOrderDate = LocalDate.parse(repOrderDate);
+
+    String request = """ 
+        {
+          "feeCode": "%s",
+          "representationOrderDate": "%s",
+          "uniqueFileNumber": "%s",
+          "netProfitCosts": %s,
+          "netDisbursementAmount": 80,
+          "disbursementVatAmount": 10,
+          "vatIndicator": true,
+          "netTravelCosts": 50,
+          "netWaitingCosts": 50
+        }
+        """.formatted(feeCode, representationOrderDate, uniqueFileNumber, netProfitCostsAmount);
 
     postAndExpect(request, """
         {
