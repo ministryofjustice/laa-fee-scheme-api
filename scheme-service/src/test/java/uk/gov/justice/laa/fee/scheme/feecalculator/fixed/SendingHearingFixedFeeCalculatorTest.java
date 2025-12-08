@@ -1,9 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.SENDING_HEARING;
 
 import java.math.BigDecimal;
@@ -83,8 +80,6 @@ class SendingHearingFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     Set<CategoryType> result = calculator.getSupportedCategories();
 
-    assertNotNull(result);
-    assertEquals(1, result.size());
-    assertTrue(result.contains(SENDING_HEARING));
+    assertThat(result).containsExactly(SENDING_HEARING);
   }
 }

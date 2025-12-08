@@ -1,9 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ASSOCIATED_CIVIL;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
@@ -97,8 +94,7 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .type(WARNING)
         .build();
 
-    assertThat(result.getValidationMessages()).size().isEqualTo(1);
-    assertThat(result.getValidationMessages().getFirst()).isEqualTo(validationMessage);
+    assertThat(result.getValidationMessages()).containsExactly(validationMessage);
   }
 
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netTravelCosts,
@@ -151,8 +147,6 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     Set<CategoryType> result = associatedCivilFixedFeeCalculator.getSupportedCategories();
 
-    assertNotNull(result);
-    assertEquals(1, result.size());
-    assertTrue(result.contains(CategoryType.ASSOCIATED_CIVIL));
+    assertThat(result).containsExactly(CategoryType.ASSOCIATED_CIVIL);
   }
 }

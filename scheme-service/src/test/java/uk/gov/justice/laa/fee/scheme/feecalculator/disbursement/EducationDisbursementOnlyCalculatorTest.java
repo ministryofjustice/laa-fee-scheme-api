@@ -22,7 +22,7 @@ class EducationDisbursementOnlyCalculatorTest {
   EducationDisbursementOnlyCalculator educationDisbursementOnlyCalculator;
 
   @Test
-  void calculate_whenMentalHealthClaimSubmittedOnlyForDisbursement_returnSuccess() {
+  void calculate_whenEducationClaimSubmittedOnlyForDisbursement_returnSuccess() {
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("EDUDIS")

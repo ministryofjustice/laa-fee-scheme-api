@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.controller;
 
+import static java.util.Objects.nonNull;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -47,19 +49,19 @@ public class FeeCalculationController implements FeeCalculationApi {
   private void setUpMdc(FeeCalculationRequest feeCalculationRequest) {
     MDC.put("feeCode", feeCalculationRequest.getFeeCode());
 
-    if (feeCalculationRequest.getStartDate() != null) {
+    if (nonNull(feeCalculationRequest.getStartDate())) {
       MDC.put("startDate", feeCalculationRequest.getStartDate().toString());
     }
 
-    if (feeCalculationRequest.getPoliceStationId() != null) {
+    if (nonNull(feeCalculationRequest.getPoliceStationId())) {
       MDC.put("policeStationId", feeCalculationRequest.getPoliceStationId());
     }
 
-    if (feeCalculationRequest.getPoliceStationSchemeId() != null) {
+    if (nonNull(feeCalculationRequest.getPoliceStationSchemeId())) {
       MDC.put("policeStationSchemeId", feeCalculationRequest.getPoliceStationSchemeId());
     }
 
-    if (feeCalculationRequest.getUniqueFileNumber() != null) {
+    if (nonNull(feeCalculationRequest.getUniqueFileNumber())) {
       MDC.put("uniqueFileNumber", feeCalculationRequest.getUniqueFileNumber());
     }
   }
@@ -71,6 +73,4 @@ public class FeeCalculationController implements FeeCalculationApi {
       log.warn("FeeCalculation request received, but could not serialize object", e);
     }
   }
-
-
 }

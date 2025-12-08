@@ -77,15 +77,14 @@ class DiscriminationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .type(WARNING)
         .build();
 
-    assertThat(result.getValidationMessages()).size().isEqualTo(1);
-    assertThat(result.getValidationMessages().getFirst()).isEqualTo(validationMessage);
+    assertThat(result.getValidationMessages()).containsExactly(validationMessage);
   }
 
   @Test
   void getSupportedCategories_shouldReturnDiscriminationCategory() {
     Set<CategoryType> result = discriminationHourlyRateCalculator.getSupportedCategories();
 
-    assertThat(result).isEqualTo(Set.of(DISCRIMINATION));
+    assertThat(result).containsExactly(DISCRIMINATION);
   }
 
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netProfitCosts,

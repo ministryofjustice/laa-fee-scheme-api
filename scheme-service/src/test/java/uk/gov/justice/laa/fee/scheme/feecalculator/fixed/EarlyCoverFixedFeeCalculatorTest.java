@@ -1,8 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
@@ -80,9 +78,6 @@ class EarlyCoverFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     Set<CategoryType> result = earlyCoverFixedFeeCalculator.getSupportedCategories();
 
-    assertNotNull(result);
-    assertEquals(2, result.size());
-    assertTrue(result.contains(CategoryType.EARLY_COVER));
-    assertTrue(result.contains(CategoryType.REFUSED_MEANS_TEST));
+    assertThat(result).containsExactlyInAnyOrder(CategoryType.EARLY_COVER, CategoryType.REFUSED_MEANS_TEST);
   }
 }

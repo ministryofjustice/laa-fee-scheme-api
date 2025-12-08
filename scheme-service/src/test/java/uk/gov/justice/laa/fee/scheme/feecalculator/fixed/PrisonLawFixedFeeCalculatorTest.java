@@ -2,8 +2,6 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PRISON_LAW;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_PRISON_HAS_ESCAPED;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_PRISON_MAY_HAVE_ESCAPED;
@@ -13,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -41,8 +40,9 @@ class PrisonLawFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @Test
   void testGetSupportedCategories() {
-    assertTrue(prisonLawFeeCalculator.getSupportedCategories().contains(CategoryType.PRISON_LAW));
-    assertEquals(1, prisonLawFeeCalculator.getSupportedCategories().size());
+    Set<CategoryType> result = prisonLawFeeCalculator.getSupportedCategories();
+
+    assertThat(result).containsExactly(CategoryType.PRISON_LAW);
   }
 
   private FeeEntity buildFeeEntity(String feeCode, double fixedFeeAmount, Double escapeThreshold, Double feeLimit) {

@@ -31,7 +31,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
@@ -42,13 +41,9 @@ import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.Region;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
-import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
 class ValidationServiceTest {
-
-  @Mock
-  FeeDetailsService feeDetailsService;
 
   @InjectMocks
   private ValidationService validationService;
@@ -698,7 +693,9 @@ class ValidationServiceTest {
     void testValidAdvocacyAssistanceFeeCode(String feeCode, String caseConcludedDate) {
       FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
           .feeCode(feeCode).caseConcludedDate(LocalDate.parse(caseConcludedDate)).build();
-      assertTrue(validationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
+
+      boolean result = validationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest);
+      assertThat(result).isTrue();
     }
   }
 }

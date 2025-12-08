@@ -1,9 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -74,8 +71,7 @@ class EducationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .type(WARNING)
         .build();
 
-    assertThat(result.getValidationMessages()).size().isEqualTo(1);
-    assertThat(result.getValidationMessages().getFirst()).isEqualTo(validationMessage);
+    assertThat(result.getValidationMessages()).containsExactly(validationMessage);
   }
 
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netProfitCosts) {
@@ -125,7 +121,6 @@ class EducationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     Set<CategoryType> result = educationFixedFeeCalculator.getSupportedCategories();
 
-    assertNotNull(result);
-    assertEquals(0, result.size());
+    assertThat(result).isEmpty();
   }
 }

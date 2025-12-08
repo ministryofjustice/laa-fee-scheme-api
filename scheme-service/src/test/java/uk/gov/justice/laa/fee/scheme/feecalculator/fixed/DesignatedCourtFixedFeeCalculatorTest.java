@@ -1,9 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.YOUTH_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
@@ -102,7 +99,7 @@ class DesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     @ParameterizedTest()
     @MethodSource("testDataMagsDesignated")
-    void calculate_when_MagistratesCourt_Undesignated(
+    void calculate_when_MagistratesCourt_designated(
         String description,
         String feeCode,
         boolean vatIndicator,
@@ -132,7 +129,7 @@ class DesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     @ParameterizedTest()
     @MethodSource("testDataYouthDesignated")
-    void calculate_when_YouthCourt_Undesignated(
+    void calculate_when_YouthCourt_designated(
         String description,
         String feeCode,
         boolean vatIndicator,
@@ -162,12 +159,10 @@ class DesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   }
 
   @Test
-  void getSupportedCategories_shouldReturnAssociatedCivilOnly() {
+  void getSupportedCategories_shouldReturnEmptySet() {
 
     Set<CategoryType> result = calculator.getSupportedCategories();
 
-    assertNotNull(result);
-    assertEquals(0, result.size());
+    assertThat(result).isEmpty();
   }
-
 }
