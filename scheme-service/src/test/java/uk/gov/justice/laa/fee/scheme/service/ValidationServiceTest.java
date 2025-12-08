@@ -583,12 +583,16 @@ class ValidationServiceTest {
 
     @ParameterizedTest
     @CsvSource({  // null → blank
-        "''",       // empty → blank
-        "'   '",   // non-blank → false
+        "PROH,''",       // empty → blank
+        "PROH, '   '",   // non-blank → false
+        "PROH1,''",       // empty → blank
+        "PROH1, '   '",   // non-blank → false
+        "PROH2,''",       // empty → blank
+        "PROH2, '   '"   // non-blank → false
     })
-    void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndRepOrderDateUFN_EmptyValueSupplied_shouldThrowException(String ufn) {
+    void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndRepOrderDateUFN_EmptyValueSupplied_shouldThrowException(String feeCode, String ufn) {
       FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-          .feeCode("PROH")
+          .feeCode(feeCode)
           .representationOrderDate(null)
           .uniqueFileNumber(ufn)
           .vatIndicator(Boolean.TRUE)
@@ -600,7 +604,7 @@ class ValidationServiceTest {
           .validFrom(LocalDate.of(2025, 10, 1)).build();
 
       FeeEntity feeEntity = FeeEntity.builder()
-          .feeCode("PROH")
+          .feeCode(feeCode)
           .feeScheme(feeSchemesEntity)
           .fixedFee(new BigDecimal("200"))
           .categoryType(ADVOCACY_APPEALS_REVIEWS)
@@ -688,6 +692,8 @@ class ValidationServiceTest {
     @ParameterizedTest
     @CsvSource({
         "PROH, 2025-10-12, 2025-11-12",
+        "PROH1, 2025-10-12, 2025-11-12",
+        "PROH2, 2025-10-12, 2025-11-12",
     })
     void testValidAdvocacyAssistanceFeeCode(String feeCode, String caseConcludedDate) {
       FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
