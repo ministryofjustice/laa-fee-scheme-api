@@ -71,8 +71,7 @@ class EducationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .type(WARNING)
         .build();
 
-    assertThat(result.getValidationMessages()).hasSize(1);
-    assertThat(result.getValidationMessages().getFirst()).isEqualTo(validationMessage);
+    assertThat(result.getValidationMessages()).containsExactly(validationMessage);
   }
 
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netProfitCosts) {

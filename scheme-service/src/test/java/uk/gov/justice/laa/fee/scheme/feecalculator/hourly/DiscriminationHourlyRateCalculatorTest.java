@@ -77,8 +77,7 @@ class DiscriminationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .type(WARNING)
         .build();
 
-    assertThat(result.getValidationMessages()).size().isEqualTo(1);
-    assertThat(result.getValidationMessages().getFirst()).isEqualTo(validationMessage);
+    assertThat(result.getValidationMessages()).containsExactly(validationMessage);
   }
 
   @Test
