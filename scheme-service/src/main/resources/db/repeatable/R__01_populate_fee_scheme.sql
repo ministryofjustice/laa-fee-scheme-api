@@ -10,8 +10,7 @@ VALUES
     ('AAR_FS2016', 'Advocacy Assistance in the Crown Court or Appeals & Reviews Fee Scheme 2016', '2016-04-01', '2022-09-29'),
     ('AAR_FS2022', 'Advocacy Assistance in the Crown Court or Appeals & Reviews Fee Scheme 2022', '2022-09-30', '2025-12-21'),
     ('AAR_FS2025', 'Advocacy Assistance in the Crown Court or Appeals & Reviews Fee Scheme 2025', '2025-12-22', NULL)
-ON CONFLICT (scheme_code) DO UPDATE SET
-    valid_to = EXCLUDED.valid_to;
+ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Associated Civil' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
@@ -56,8 +55,7 @@ VALUES
     ('EC_RMT_FS2016', 'Early Cover or Refused Means Test Fee Scheme 2016', '2016-04-01', '2022-09-29'),
     ('EC_RMT_FS2022', 'Early Cover or Refused Means Test Fee Scheme 2022', '2022-09-30', '2025-12-21'),
     ('EC_RMT_FS2025', 'Early Cover or Refused Means Test Fee Scheme 2025', '2025-12-22', NULL)
-ON CONFLICT (scheme_code) DO UPDATE SET
-    valid_to = EXCLUDED.valid_to;
+ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Education' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
@@ -95,9 +93,7 @@ VALUES
     ('IMM_ASYLM_FS2020', 'Immigration and Asylum Scheme 2020', '2020-06-08', '2023-03-31'),
     ('IMM_ASYLM_FS2023', 'Immigration and Asylum Scheme 2023', '2023-04-01', NULL),
     ('IMM_ASYLM_FS2025', 'Immigration and Asylum Scheme 2025', '2025-12-22', NULL)
-ON CONFLICT (scheme_code) DO UPDATE
-    SET
-        valid_to = EXCLUDED.valid_to;
+ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Criminal proceedings - Magistrates court' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
@@ -105,8 +101,7 @@ VALUES
     ('MAGS_COURT_FS2016', 'Criminal proceedings - Magistrates court 2016', '2016-04-01', '2022-09-29'),
     ('MAGS_COURT_FS2022', 'Criminal proceedings - Magistrates court 2022', '2022-09-30', '2025-12-21'),
     ('MAGS_COURT_FS2025', 'Criminal proceedings - Magistrates court 2025', '2025-12-22', NULL)
-ON CONFLICT (scheme_code) DO UPDATE SET
-    valid_to = EXCLUDED.valid_to;
+ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Mediation' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
@@ -149,8 +144,7 @@ ON CONFLICT (scheme_code) DO NOTHING;
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES ('PRISON_FS2016', 'Prison Law Fee Scheme 2016', '2016-04-01', '2025-12-21'),
        ('PRISON_FS2025', 'Prison Law Fee Scheme 2025', '2025-12-22', NULL)
-ON CONFLICT (scheme_code) DO UPDATE SET
-    valid_to = EXCLUDED.valid_to;
+ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Public Law' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
@@ -164,8 +158,7 @@ VALUES
     ('SEND_HEAR_FS2020', 'Sending Hearing 2020', '2020-10-19', '2022-09-29'),
     ('SEND_HEAR_FS2022', 'Sending Hearing 2022', '2022-09-30', '2025-12-21'),
     ('SEND_HEAR_FS2025', 'Sending Hearing 2025', '2025-12-22', NULL)
-ON CONFLICT (scheme_code) DO UPDATE SET
-    valid_to = EXCLUDED.valid_to;
+ON CONFLICT (scheme_code) DO NOTHING;
 
 -- Fee Scheme for 'Welfare Benefits' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
@@ -179,6 +172,4 @@ INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
     ('YOUTH_COURT_FS2024', 'Criminal proceedings - Youth court 2024', '2024-12-06', '2025-12-21'),
     ('YOUTH_COURT_FS2025', 'Criminal proceedings - Youth court 2025', '2025-12-22', NULL)
-ON CONFLICT (scheme_code) DO UPDATE SET
-    valid_to = EXCLUDED.valid_to,
-    scheme_name = EXCLUDED.scheme_name;
+ON CONFLICT (scheme_code) DO NOTHING;

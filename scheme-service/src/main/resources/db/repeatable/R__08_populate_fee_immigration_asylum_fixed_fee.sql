@@ -1,7 +1,7 @@
 -- 2013 SCHEME (IMM_ASYLM_FS2013)
 INSERT INTO fee
 (fee_code, fixed_fee, escape_threshold_limit, disbursement_limit, fee_scheme_code, ho_interview_bolt_on, adjorn_hearing_bolt_on, oral_cmrh_bolt_on, telephone_cmrh_bolt_on, substantive_hearing_bolt_on)
-VALUES ('IACA', 227, 681, 6, 'IMM_ASYLM_FS2013', NULL, NULL, 166, 90, NULL),
+VALUES ('IACA', 227, 681, 600, 'IMM_ASYLM_FS2013', NULL, NULL, 166, 90, NULL),
        ('IACB', 869, 1701, 600, 'IMM_ASYLM_FS2013', NULL, 161, 166, 90, 302),
        ('IALB', 413, 1239, 400, 'IMM_ASYLM_FS2013', 266, NULL, NULL, NULL, NULL),
        ('IMCA',  227, 681, 600, 'IMM_ASYLM_FS2013', NULL, NULL, 166, 90, NULL),

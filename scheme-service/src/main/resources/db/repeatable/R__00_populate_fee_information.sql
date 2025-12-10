@@ -169,8 +169,7 @@ VALUES ('PROT', 'Early Cover', 'FIXED', 'EARLY_COVER'),
        ('ASMS', 'Legal Help and Associated Civil Work – Miscellaneous', 'FIXED', 'ASSOCIATED_CIVIL'),
        ('ASPL', 'Legal Help and Associated Civil Work – Public Law', 'FIXED', 'ASSOCIATED_CIVIL'),
        ('ASAS', 'Part 1 injunction Anti-Social Behaviour Crime and Policing Act 2014', 'FIXED', 'ASSOCIATED_CIVIL')
-ON CONFLICT (fee_code) DO UPDATE SET
-    fee_type = EXCLUDED.fee_type;
+ON CONFLICT (fee_code) DO NOTHING;
 
 -- Magistrates court
 INSERT INTO fee_code_information (fee_code, fee_description, fee_type, category_type, court_designation_type, fee_band_type)
