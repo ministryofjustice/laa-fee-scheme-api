@@ -49,6 +49,9 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
   private static final Set<String> FEE_CODES_WITH_SUBSTANTIVE_HEARING = Set.of("IACB", "IACC", "IACF", "IMCB", "IMCC", "IMCD");
   private static final Set<String> NO_COUNSEL_FEE_CODES = Set.of("IALB", "IMLB");
 
+  private static final String FEE_CODE_IALB = "IALB";
+  private static final String FEE_CODE_IMLB = "IMLB";
+
   private final VatRatesService vatRatesService;
 
   @Override
@@ -59,6 +62,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
   /**
    * Calculated fee for Immigration and asylum fee based on the provided fee entity and fee calculation request.
    */
+  @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
     log.info("Calculate Immigration and Asylum fixed fee");
@@ -85,9 +89,10 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     } else {
       log.info("Check disbursement for fee calculation");
 
-      WarningType warning = (("IALB".equals(feeCalculationRequest.getFeeCode()) || "IMLB".equals(feeCalculationRequest.getFeeCode()))
+      WarningType warning = FEE_CODE_IALB.equals(feeCalculationRequest.getFeeCode())
+                            || FEE_CODE_IMLB.equals(feeCalculationRequest.getFeeCode())
           ? WARN_IMM_ASYLM_DISB_400_LEGAL_HELP
-          : WARN_IMM_ASYLM_DISB_600_CLR);
+          : WARN_IMM_ASYLM_DISB_600_CLR;
       LimitContext disbursementLimitContext = new LimitContext(DISBURSEMENT, feeEntity.getDisbursementLimit(),
           immigrationPriorAuthorityNumber, warning);
 

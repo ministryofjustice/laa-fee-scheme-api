@@ -8,7 +8,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-public class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIntegrationTest {
+class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIntegrationTest {
 
   @Test
   void shouldGetFeeCalculation_educationDisbursementOnly() throws Exception {

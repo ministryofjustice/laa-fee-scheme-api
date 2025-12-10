@@ -52,24 +52,24 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
 
   private final VatRatesService vatRatesService;
 
+  // Legal Help fee codes
+  private static final String FEE_CODE_IAXL = "IAXL";
+  private static final String FEE_CODE_IMXL = "IMXL";
+  private static final String FEE_CODE_IA100 = "IA100";
+
+  // CLR fee codes
+  private static final String FEE_CODE_IAXC = "IAXC";
+  private static final String FEE_CODE_IMXC = "IMXC";
+  private static final String FEE_CODE_IRAR = "IRAR";
+
+  // CLR Interim fee codes
+  private static final String FEE_CODE_IACD = "IACD";
+  private static final String FEE_CODE_IMCD = "IMCD";
+
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of(); // Only used by ImmigrationAsylumFeeCalculator and not available via FeeCalculatorFactory
   }
-
-  // Legal Help fee codes
-  private static final String IAXL = "IAXL";
-  private static final String IMXL = "IMXL";
-  private static final String IA100 = "IA100";
-
-  // CLR fee codes
-  private static final String IAXC = "IAXC";
-  private static final String IMXC = "IMXC";
-  private static final String IRAR = "IRAR";
-
-  // CLR Interim fee codes
-  private static final String IACD = "IACD";
-  private static final String IMCD = "IMCD";
 
   /**
    * Calculate fee based on the provided fee calculation request and fee entity.
@@ -78,6 +78,7 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
    * @param feeEntity             the fee entity containing fee details
    * @return FeeCalculationResponse with calculated fee
    */
+  @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     String feeCode = feeEntity.getFeeCode();
 
@@ -105,7 +106,7 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
     String immigrationPriorAuthorityNumber = feeCalculationRequest.getImmigrationPriorAuthorityNumber();
 
     String feeCode = feeEntity.getFeeCode();
-    if (IAXL.equals(feeCode) || IMXL.equals(feeCode)) {
+    if (FEE_CODE_IAXL.equals(feeCode) || FEE_CODE_IMXL.equals(feeCode)) {
       // Check profit costs limit
       LimitContext profitCostsLimitContext = new LimitContext(PROFIT_COST, feeEntity.getProfitCostLimit(),
           immigrationPriorAuthorityNumber, WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP);
@@ -120,7 +121,7 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
     // total = net profit costs + net disbursements
     BigDecimal feeTotal = netProfitCosts.add(netDisbursementAmount);
 
-    if (IA100.equals(feeCode)) {
+    if (FEE_CODE_IA100.equals(feeCode)) {
       // Check total limit
       LimitContext totalLimitContext = new LimitContext(TOTAL, feeEntity.getTotalLimit(),
           immigrationPriorAuthorityNumber, WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP);
@@ -164,7 +165,7 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
     BigDecimal feeTotal = netProfitCosts.add(netCostOfCounsel).add(netDisbursementAmount);
 
     String feeCode = feeEntity.getFeeCode();
-    if (IAXC.equals(feeCode) || IMXC.equals(feeCode)) {
+    if (FEE_CODE_IAXC.equals(feeCode) || FEE_CODE_IMXC.equals(feeCode)) {
       // Check total limit
       LimitContext totalLimitContext = new LimitContext(TOTAL, feeEntity.getTotalLimit(),
           feeCalculationRequest.getImmigrationPriorAuthorityNumber(), WARN_IMM_ASYLM_PRIOR_AUTH_CLR);
@@ -252,15 +253,15 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
   }
 
   private boolean isLegalHelp(String feeCode) {
-    return IAXL.equals(feeCode) || IMXL.equals(feeCode) || IA100.equals(feeCode);
+    return FEE_CODE_IAXL.equals(feeCode) || FEE_CODE_IMXL.equals(feeCode) || FEE_CODE_IA100.equals(feeCode);
   }
 
   private boolean isClr(String feeCode) {
-    return IAXC.equals(feeCode) || IMXC.equals(feeCode) || IRAR.equals(feeCode);
+    return FEE_CODE_IAXC.equals(feeCode) || FEE_CODE_IMXC.equals(feeCode) || FEE_CODE_IRAR.equals(feeCode);
   }
 
   private boolean isClrInterim(String feeCode) {
-    return IACD.equals(feeCode) || IMCD.equals(feeCode);
+    return FEE_CODE_IACD.equals(feeCode) || FEE_CODE_IMCD.equals(feeCode);
   }
 
   private void checkFieldsAreEmpty(FeeCalculationRequest feeCalculationRequest,

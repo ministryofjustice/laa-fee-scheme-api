@@ -14,7 +14,7 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
  * Utility class for fee related limits.
  */
 @Slf4j
-public class LimitUtil {
+public final class LimitUtil {
 
   private LimitUtil() {
   }

@@ -11,7 +11,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-public class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegrationTest {
+class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegrationTest {
 
   @Test
   void shouldGetFeeCalculation_associatedCivilFixedFee() throws Exception {
