@@ -100,11 +100,11 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     public static Stream<Arguments> testData() {
       return Stream.of(
-          arguments("MHL01, with Vat, no bolt ons", "MHL01", 263.0, true, 52.6, null,
-              0.0, null, 386.25),
+          arguments("MHL01, with Vat, no bolt ons", "MHL01", 253.0, true, 50.6, null,
+              0.0, null, 374.25),
 
-          arguments("MHL01, without vat, no bolt ons", "MHL01", 263.0, false, 0.0, null,
-              0.0, null, 333.65),
+          arguments("MHL01, without vat, no bolt ons", "MHL01", 253.0, false, 0.0, null,
+              0.0, null, 323.65),
 
           arguments("MHL05, with Vat, has bolt ons", "MHL05", 263.0, true, 112.6, 3,
               300.0, 300.0, 746.25),
