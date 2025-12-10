@@ -99,11 +99,11 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
 
     // Calculate Amount for Escape case
 
-    BigDecimal netProfitCosts  = defaultToZeroIfNull(toBigDecimal(feeCalculationRequest.getNetProfitCosts()));
+    BigDecimal netProfitCosts  = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
 
-    BigDecimal netTravelCosts = defaultToZeroIfNull(toBigDecimal(feeCalculationRequest.getNetTravelCosts()));
+    BigDecimal netTravelCosts = toBigDecimal(feeCalculationRequest.getNetTravelCosts());
 
-    BigDecimal netWaitingCosts = defaultToZeroIfNull(toBigDecimal(feeCalculationRequest.getNetWaitingCosts()));
+    BigDecimal netWaitingCosts = toBigDecimal(feeCalculationRequest.getNetWaitingCosts());
 
     BigDecimal escapeTotalAmount = netProfitCosts.add(netTravelCosts).add(netWaitingCosts);
 
