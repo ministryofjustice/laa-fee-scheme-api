@@ -47,6 +47,9 @@ public class ValidationService {
 
   private static final LocalDate CIVIL_START_DATE = LocalDate.of(2013, 4, 1);
 
+  private static final Pattern REP_ORDER_DATE_PATTERN = Pattern.compile(
+      "^(PRO[EFKLV][1-4]|PROJ[1-8]|YOU[EFXKLY][1-4]|APP[AB]|PROW)$");
+
   /**
    * Validates the fee code and claim start date and returns the valid Fee entity.
    *
@@ -191,9 +194,7 @@ public class ValidationService {
    */
   public boolean isFeeCodeValidForRepOrderDate(FeeCalculationRequest feeCalculationRequest) {
     if (feeCalculationRequest.getRepresentationOrderDate() != null) {
-      final Pattern repOrderDtPattern = Pattern.compile(
-          "^(PRO[EFKLV][1-4]|PROJ[1-8]|YOU[EFXKLY][1-4]|APP[AB]|PROW)$");
-      return repOrderDtPattern.matcher(feeCalculationRequest.getFeeCode()).matches();
+      return REP_ORDER_DATE_PATTERN.matcher(feeCalculationRequest.getFeeCode()).matches();
     }
     return true;
   }
