@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.util;
+package uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,7 +8,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.util.boltons.BoltOnUtil;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
