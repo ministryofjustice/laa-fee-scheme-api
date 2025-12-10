@@ -87,7 +87,7 @@ class PreOrderCoverHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .feeScheme(FeeSchemesEntity.builder().schemeCode("POC_FS2022").build())
         .categoryType(PRE_ORDER_COVER)
         .feeType(HOURLY)
-        .upperCostLimit(new BigDecimal(upperCostLimit))
+        .upperCostLimit(BigDecimal.valueOf(upperCostLimit))
         .build();
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()

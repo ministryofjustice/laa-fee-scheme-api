@@ -49,6 +49,7 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
    * @param feeEntity             the fee entity containing fee details
    * @return FeeCalculationResponse with calculated fee
    */
+  @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
     log.info("Calculate Police Station hourly rate fee");

@@ -51,7 +51,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     return Set.of(); // Only used by PoliceStationFeeCalculator and not available via FeeCalculatorFactory
   }
 
-  private static final String INVC = "INVC";
+  private static final String FEE_CODE_INVC = "INVC";
 
   private final PoliceStationFeesRepository policeStationFeesRepository;
 
@@ -60,11 +60,12 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
   /**
    * Determines the calculation based on police fee code.
    */
+  @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
     log.info("Calculate Police Station fixed fee");
 
-    if (feeCalculationRequest.getFeeCode().equals(INVC)) {
+    if (FEE_CODE_INVC.equals(feeCalculationRequest.getFeeCode())) {
       PoliceStationFeesEntity policeStationFeesEntity = getPoliceStationFeesEntity(feeCalculationRequest, feeEntity);
       return calculateFeesUsingPoliceStation(policeStationFeesEntity, feeCalculationRequest);
     } else {

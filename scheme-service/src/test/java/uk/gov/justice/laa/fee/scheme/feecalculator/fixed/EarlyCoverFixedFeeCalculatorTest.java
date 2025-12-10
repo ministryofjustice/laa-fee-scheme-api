@@ -46,7 +46,7 @@ class EarlyCoverFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     FeeEntity feeEntity = FeeEntity.builder()
         .feeCode(feeCode)
         .feeScheme(FeeSchemesEntity.builder().schemeCode("EC_RMT_FS2022").build())
-        .fixedFee(new BigDecimal(fixedFees))
+        .fixedFee(BigDecimal.valueOf(fixedFees))
         .categoryType(CategoryType.valueOf(categoryType))
         .build();
 

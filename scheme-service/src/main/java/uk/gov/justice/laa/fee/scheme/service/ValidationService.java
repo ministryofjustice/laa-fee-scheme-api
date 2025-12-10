@@ -13,10 +13,10 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_REP_ORDER_
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_MISSING;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_FAMILY_LONDON_RATE;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.findByFeeCode;
 
 import io.micrometer.common.util.StringUtils;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -43,9 +43,12 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 public class ValidationService {
 
   private static final String FEE_CODE_PROD = "PROD";
-  public static final List<String> FEE_CODE_PROH_TYPE = new ArrayList<>(List.of("PROH", "PROH1", "PROH2"));
+  public static final List<String> FEE_CODE_PROH_TYPE = List.of("PROH", "PROH1", "PROH2");
 
   private static final LocalDate CIVIL_START_DATE = LocalDate.of(2013, 4, 1);
+
+  private static final Pattern REP_ORDER_DATE_PATTERN = Pattern.compile(
+      "^(PRO[EFKLV][1-4]|PROJ[1-8]|YOU[EFXKLY][1-4]|APP[AB]|PROW)$");
 
   /**
    * Validates the fee code and claim start date and returns the valid Fee entity.
@@ -89,7 +92,7 @@ public class ValidationService {
         throw new ValidationException(ERR_CRIME_UFN_MISSING, new FeeContext(feeCalculationRequest));
       }
     } else {
-      if (!feeCalculationRequest.getFeeCode().equals(FEE_CODE_PROD)
+      if (!FEE_CODE_PROD.equals(feeCalculationRequest.getFeeCode())
           && !isFeeCodeValidForRepOrderDate(feeCalculationRequest)) {
         throw new ValidationException(ERR_CRIME_REP_ORDER_DATE, new FeeContext(feeCalculationRequest));
       }
@@ -100,7 +103,7 @@ public class ValidationService {
         throw new ValidationException(ERR_CRIME_REP_ORDER_DATE_MISSING, new FeeContext(feeCalculationRequest));
       }
     } else if (StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber())
-               && !(feeCalculationRequest.getFeeCode().equals(FEE_CODE_PROD)
+               && !(FEE_CODE_PROD.equals(feeCalculationRequest.getFeeCode())
                     || FEE_CODE_PROH_TYPE.contains(feeCalculationRequest.getFeeCode()))) {
       throw new ValidationException(ERR_CRIME_UFN_MISSING, new FeeContext(feeCalculationRequest));
     }
@@ -120,9 +123,9 @@ public class ValidationService {
 
     if (claimStartDate.isBefore(earliestFeeSchemeDate)) {
       if (categoryType == IMMIGRATION_ASYLUM) {
-        ErrorType error = ErrorType.findByFeeCode(feeCalculationRequest.getFeeCode())
+        ErrorType error = findByFeeCode(feeCalculationRequest.getFeeCode())
             .filter(e -> !claimStartDate.isBefore(CIVIL_START_DATE))
-            .orElse(ErrorType.ERR_CIVIL_START_DATE_TOO_OLD);
+            .orElse(ERR_CIVIL_START_DATE_TOO_OLD);
         throw new ValidationException(error, new FeeContext(feeCalculationRequest));
       } else {
         // find by fee code or default to generic civil error
@@ -171,7 +174,7 @@ public class ValidationService {
           if (caseType == CIVIL) {
             if (categoryType == IMMIGRATION_ASYLUM) {
               // find by fee code or default to generic civil error
-              error = ErrorType.findByFeeCode(feeCalculationRequest.getFeeCode()).orElse(ErrorType.ERR_CIVIL_START_DATE);
+              error = findByFeeCode(feeCalculationRequest.getFeeCode()).orElse(ERR_CIVIL_START_DATE);
             } else {
               error = ERR_CIVIL_START_DATE;
             }
@@ -190,11 +193,8 @@ public class ValidationService {
    * @return boolean
    */
   public boolean isFeeCodeValidForRepOrderDate(FeeCalculationRequest feeCalculationRequest) {
-    final Pattern repOrderDtPattern = Pattern.compile(
-        "^(PRO[EFKLV][1-4]|PROJ[1-8]|YOU[EFXKLY][1-4]|APP[AB]|PROW)$");
-
     if (feeCalculationRequest.getRepresentationOrderDate() != null) {
-      return repOrderDtPattern.matcher(feeCalculationRequest.getFeeCode()).matches();
+      return REP_ORDER_DATE_PATTERN.matcher(feeCalculationRequest.getFeeCode()).matches();
     }
     return true;
   }

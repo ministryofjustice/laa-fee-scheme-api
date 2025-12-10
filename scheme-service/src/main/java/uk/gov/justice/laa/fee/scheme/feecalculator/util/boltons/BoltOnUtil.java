@@ -18,7 +18,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
  * Class for calculating bolt ons amount details.
  */
 @Slf4j
-public class BoltOnUtil {
+public final class BoltOnUtil {
 
   private BoltOnUtil() {
   }

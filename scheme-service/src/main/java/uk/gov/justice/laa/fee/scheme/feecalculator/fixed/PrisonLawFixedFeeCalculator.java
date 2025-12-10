@@ -50,6 +50,7 @@ public class PrisonLawFixedFeeCalculator implements FeeCalculator {
   /**
    * Determines the calculation based on prison law fee code.
    */
+  @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
     log.info("Calculate Prison Law fixed fee");

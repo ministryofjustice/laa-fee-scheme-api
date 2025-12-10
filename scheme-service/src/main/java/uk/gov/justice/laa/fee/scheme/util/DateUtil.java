@@ -3,7 +3,6 @@ package uk.gov.justice.laa.fee.scheme.util;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 /**
  * Utility class for Date string conversions.
@@ -23,7 +22,7 @@ public final class DateUtil {
    * @return the converted LocalDate
    */
   @NotNull
-  public static @NotNull LocalDate toLocalDate(String inputStr) throws DateTimeParseException {
+  public static @NotNull LocalDate toLocalDate(String inputStr) {
     String strDate = inputStr.substring(0, 6); // "120325"
     // Define formatter for ddMMyy
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);

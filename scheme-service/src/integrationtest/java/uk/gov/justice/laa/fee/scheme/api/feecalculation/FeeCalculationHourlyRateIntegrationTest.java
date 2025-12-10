@@ -11,7 +11,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-public class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrationTest {
+class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrationTest {
 
   @Test
   void shouldGetFeeCalculation_adviceAssistanceAdvocacyHourlyRate() throws Exception {
@@ -241,7 +241,7 @@ public class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationI
   }
 
   @ParameterizedTest
-  @CsvSource(value = {
+  @CsvSource({
       // feeCode, total, vat, hourlyTotal, boltOnTotal, boltOnSubHearing
       "IACD, 1781.39, 271.76, 1484.49, 885.0, 302.0",
       "IMCD, 1703.39, 258.76, 1419.49, 820.0, 237.0",
