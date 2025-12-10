@@ -812,6 +812,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "uniqueFileNumber": "12122019/242",
           "policeStationId": "NE001",
           "policeStationSchemeId": "1001",
+          "netProfitCosts": 1600,
+          "netTravelCosts": 120,
+          "netWaitingCosts": 32,
           "netDisbursementAmount": 600,
           "disbursementVatAmount": 120,
           "vatIndicator": true
