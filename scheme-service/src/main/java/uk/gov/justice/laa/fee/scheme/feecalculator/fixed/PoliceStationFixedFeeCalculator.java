@@ -97,9 +97,19 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount,
         requestedNetDisbursementAmount, disbursementVatAmount);
 
+    // Calculate Amount for Escape case
+
+    BigDecimal netProfitCosts  = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
+
+    BigDecimal netTravelCosts = toBigDecimal(feeCalculationRequest.getNetTravelCosts());
+
+    BigDecimal netWaitingCosts = toBigDecimal(feeCalculationRequest.getNetWaitingCosts());
+
+    BigDecimal escapeTotalAmount = netProfitCosts.add(netTravelCosts).add(netWaitingCosts);
+
     // Escape case logic
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    boolean isEscaped = isEscapedCase(totalAmount, policeStationFeesEntity.getEscapeThreshold());
+    boolean isEscaped = isEscapedCase(escapeTotalAmount, policeStationFeesEntity.getEscapeThreshold());
 
     if (isEscaped) {
       validationMessages.add(buildValidationWarning(WARN_POLICE_STATIONS_ESCAPE_THRESHOLD,

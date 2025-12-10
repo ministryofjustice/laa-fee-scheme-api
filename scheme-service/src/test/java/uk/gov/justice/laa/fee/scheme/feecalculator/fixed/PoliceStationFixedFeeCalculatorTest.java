@@ -286,6 +286,9 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .policeStationSchemeId("1001")
         .policeStationId("NE001")
         .uniqueFileNumber("121222/789")
+        .netProfitCosts(3000.0)
+        .netTravelCosts(59.0)
+        .netWaitingCosts(40.0)
         .netDisbursementAmount(300.0)
         .disbursementVatAmount(60.0)
         .build();
