@@ -1,15 +1,13 @@
-package uk.gov.justice.laa.fee.scheme.service;
+package uk.gov.justice.laa.fee.scheme.service.validation;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.FAMILY;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE_TOO_OLD;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_FAMILY_LONDON_RATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.findByFeeCode;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,19 +15,18 @@ import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
-import uk.gov.justice.laa.fee.scheme.enums.Region;
 import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 
 /**
- * Service for performing validations.
+ * Service for performing civil validations.
  */
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class CivilValidationService {
+public class CivilFeeValidationService extends AbstractFeeValidationService {
 
   private static final LocalDate CIVIL_START_DATE = LocalDate.of(2013, 4, 1);
 
@@ -44,10 +41,7 @@ public class CivilValidationService {
 
     log.info("Getting valid fee entity");
 
-    if (feeEntityList.isEmpty()) {
-      throw new ValidationException(ERR_ALL_FEE_CODE, new FeeContext(feeCalculationRequest));
-    }
-
+    validateEmptyFeeList(feeEntityList, feeCalculationRequest);
     CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
     validateCivilStartDate(feeEntityList, feeCalculationRequest, categoryType);
 
@@ -96,38 +90,12 @@ public class CivilValidationService {
         .min(LocalDate::compareTo).orElse(null);
   }
 
-  private boolean filterByRegion(FeeEntity fee, Boolean isLondonRate) {
-    if (fee.getCategoryType() != FAMILY) {
-      return true;
+  @Override
+  protected ErrorType getErrorType(FeeCalculationRequest request, CategoryType categoryType) {
+    if (categoryType == IMMIGRATION_ASYLUM) {
+      return findByFeeCode(request.getFeeCode()).orElse(ERR_CIVIL_START_DATE);
     }
-
-    return isLondonRate != null && fee.getRegion() == (isLondonRate ? Region.LONDON : Region.NON_LONDON);
+    return ERR_CIVIL_START_DATE;
   }
 
-  private boolean isValidFee(FeeEntity fee, LocalDate claimStartDate) {
-    LocalDate validFrom = fee.getFeeScheme().getValidFrom();
-    LocalDate validTo = fee.getFeeScheme().getValidTo();
-
-    return !validFrom.isAfter(claimStartDate) && (validTo == null || !claimStartDate.isAfter(validTo));
-  }
-
-  private FeeEntity getFeeEntityForStartDate(List<FeeEntity> feeEntityList, FeeCalculationRequest feeCalculationRequest,
-                                             LocalDate claimStartDate) {
-
-    CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
-    return feeEntityList.stream()
-        .filter(fee -> filterByRegion(fee, feeCalculationRequest.getLondonRate()))
-        .filter(fee -> isValidFee(fee, claimStartDate)) // startDate <= inputDate
-        .max(Comparator.comparing(fee -> fee.getFeeScheme().getValidFrom()))
-        .orElseThrow(() -> {
-          ErrorType error;
-          if (categoryType == IMMIGRATION_ASYLUM) {
-            // find by fee code or default to generic civil error
-            error = findByFeeCode(feeCalculationRequest.getFeeCode()).orElse(ERR_CIVIL_START_DATE);
-          } else {
-            error = ERR_CIVIL_START_DATE;
-          }
-          return new ValidationException(error, new FeeContext(feeCalculationRequest));
-        });
-  }
 }

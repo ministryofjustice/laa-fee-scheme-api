@@ -1,7 +1,6 @@
-package uk.gov.justice.laa.fee.scheme.service;
+package uk.gov.justice.laa.fee.scheme.service.validation;
 
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.REP_ORDER_DATE;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_REP_ORDER_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_REP_ORDER_DATE_MISSING;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_DATE;
@@ -9,7 +8,6 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_MISSIN
 
 import io.micrometer.common.util.StringUtils;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +23,12 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 
 /**
- * Service for performing validations.
+ * Service for performing crime validations.
  */
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class CrimeValidationService {
+public class CrimeFeeValidationService extends AbstractFeeValidationService {
 
   private static final String FEE_CODE_PROD = "PROD";
   public static final List<String> FEE_CODE_PROH_TYPE = List.of("PROH", "PROH1", "PROH2");
@@ -48,9 +46,7 @@ public class CrimeValidationService {
 
     log.info("Getting valid fee entity");
 
-    if (feeEntityList.isEmpty()) {
-      throw new ValidationException(ERR_ALL_FEE_CODE, new FeeContext(feeCalculationRequest));
-    }
+    validateEmptyFeeList(feeEntityList, feeCalculationRequest);
 
     CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
     validateCrimeFee(feeCalculationRequest, categoryType);
@@ -85,26 +81,10 @@ public class CrimeValidationService {
     }
   }
 
-  private boolean isValidFee(FeeEntity fee, LocalDate claimStartDate) {
-    LocalDate validFrom = fee.getFeeScheme().getValidFrom();
-    LocalDate validTo = fee.getFeeScheme().getValidTo();
-
-    return !validFrom.isAfter(claimStartDate) && (validTo == null || !claimStartDate.isAfter(validTo));
-  }
-
-  private FeeEntity getFeeEntityForStartDate(List<FeeEntity> feeEntityList, FeeCalculationRequest feeCalculationRequest,
-                                             LocalDate claimStartDate) {
-
-    CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
-    return feeEntityList.stream()
-        .filter(fee -> isValidFee(fee, claimStartDate)) // startDate <= inputDate
-        .max(Comparator.comparing(fee -> fee.getFeeScheme().getValidFrom()))
-        .orElseThrow(() -> {
-          ErrorType error;
-          ClaimStartDateType claimStartDateType = FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeCalculationRequest);
-          error = (claimStartDateType == REP_ORDER_DATE) ? ERR_CRIME_REP_ORDER_DATE : ERR_CRIME_UFN_DATE;
-          return new ValidationException(error, new FeeContext(feeCalculationRequest));
-        });
+  @Override
+  protected ErrorType getErrorType(FeeCalculationRequest feeCalculationRequest, CategoryType categoryType) {
+    ClaimStartDateType claimStartDateType = FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeCalculationRequest);
+    return  claimStartDateType == REP_ORDER_DATE ? ERR_CRIME_REP_ORDER_DATE : ERR_CRIME_UFN_DATE;
   }
 
   /**

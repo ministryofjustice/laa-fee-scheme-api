@@ -21,6 +21,8 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculatorFactory;
 import uk.gov.justice.laa.fee.scheme.feecalculator.ImmigrationAsylumFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.PrisonLawFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
+import uk.gov.justice.laa.fee.scheme.service.validation.CivilFeeValidationService;
+import uk.gov.justice.laa.fee.scheme.service.validation.CrimeFeeValidationService;
 
 @ExtendWith(MockitoExtension.class)
 class FeeCalculationServiceTest {
@@ -35,10 +37,10 @@ class FeeCalculationServiceTest {
   FeeDetailsService feeDetailsService;
 
   @Mock
-  CivilValidationService civilValidationService;
+  CivilFeeValidationService civilFeeValidationService;
 
   @Mock
-  CrimeValidationService crimeValidationService;
+  CrimeFeeValidationService crimeFeeValidationService;
 
   @Mock
   ImmigrationAsylumFeeCalculator immigrationCalculator;
@@ -68,12 +70,12 @@ class FeeCalculationServiceTest {
 
     when(feeDetailsService.getCaseType(feeCalculationRequest)).thenReturn(CIVIL);
     when(feeDataService.getFeeEntities("FEE123")).thenReturn(List.of(feeEntity));
-    when(civilValidationService.getValidFeeEntity(List.of(feeEntity), feeCalculationRequest)).thenReturn(feeEntity);
+    when(civilFeeValidationService.getValidFeeEntity(List.of(feeEntity), feeCalculationRequest)).thenReturn(feeEntity);
     when(feeCalculatorFactory.getCalculator(IMMIGRATION_ASYLUM)).thenReturn(immigrationCalculator);
 
     feeCalculationService.calculateFee(feeCalculationRequest);
 
-    verify(civilValidationService).getValidFeeEntity(List.of(feeEntity), feeCalculationRequest);
+    verify(civilFeeValidationService).getValidFeeEntity(List.of(feeEntity), feeCalculationRequest);
     verify(feeCalculatorFactory).getCalculator(IMMIGRATION_ASYLUM);
     verify(immigrationCalculator).calculate(feeCalculationRequest, feeEntity);
   }
@@ -97,12 +99,12 @@ class FeeCalculationServiceTest {
 
     when(feeDetailsService.getCaseType(feeCalculationRequest)).thenReturn(CRIME);
     when(feeDataService.getFeeEntities("FEE123")).thenReturn(List.of(feeEntity));
-    when(crimeValidationService.getValidFeeEntity(List.of(feeEntity), feeCalculationRequest)).thenReturn(feeEntity);
+    when(crimeFeeValidationService.getValidFeeEntity(List.of(feeEntity), feeCalculationRequest)).thenReturn(feeEntity);
     when(feeCalculatorFactory.getCalculator(PRISON_LAW)).thenReturn(prisonLawFixedFeeCalculator);
 
     feeCalculationService.calculateFee(feeCalculationRequest);
 
-    verify(crimeValidationService).getValidFeeEntity(List.of(feeEntity), feeCalculationRequest);
+    verify(crimeFeeValidationService).getValidFeeEntity(List.of(feeEntity), feeCalculationRequest);
     verify(feeCalculatorFactory).getCalculator(PRISON_LAW);
     verify(prisonLawFixedFeeCalculator).calculate(feeCalculationRequest, feeEntity);
   }

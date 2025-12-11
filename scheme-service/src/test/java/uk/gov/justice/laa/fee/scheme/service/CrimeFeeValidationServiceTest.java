@@ -32,12 +32,13 @@ import uk.gov.justice.laa.fee.scheme.enums.CourtDesignationType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
+import uk.gov.justice.laa.fee.scheme.service.validation.CrimeFeeValidationService;
 
 @ExtendWith(MockitoExtension.class)
-class CrimeValidationServiceTest {
+class CrimeFeeValidationServiceTest {
 
   @InjectMocks
-  private CrimeValidationService crimeValidationService;
+  private CrimeFeeValidationService crimeFeeValidationService;
 
   private static FeeCalculationRequest getFeeCalculationRequest() {
     return FeeCalculationRequest.builder()
@@ -72,7 +73,7 @@ class CrimeValidationServiceTest {
 
     List<FeeEntity> feeEntityList = List.of(policeStationFeeEntity(feeSchemesEntity));
 
-    FeeEntity result = crimeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest);
+    FeeEntity result = crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("INVC");
@@ -111,7 +112,7 @@ class CrimeValidationServiceTest {
 
     List<FeeEntity> feeEntityList = List.of(feeEntity1, feeEntity2);
 
-    FeeEntity result = crimeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest);
+    FeeEntity result = crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("INVC");
@@ -136,7 +137,7 @@ class CrimeValidationServiceTest {
 
     List<FeeEntity> feeEntityList = List.of(feeEntity1, feeEntity2);
 
-    FeeEntity result = crimeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest);
+    FeeEntity result = crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("INVC");
@@ -163,7 +164,7 @@ class CrimeValidationServiceTest {
 
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
-    FeeEntity result = crimeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest);
+    FeeEntity result = crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("INVC");
@@ -189,7 +190,7 @@ class CrimeValidationServiceTest {
 
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
-    FeeEntity result = crimeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest);
+    FeeEntity result = crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("PROD");
@@ -215,7 +216,7 @@ class CrimeValidationServiceTest {
 
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
-    assertThatThrownBy(() -> crimeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+    assertThatThrownBy(() -> crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CRIME_REP_ORDER_DATE)
         .hasMessage("ERRCRM12 - Fee Code is not valid for the Representation Order Date provided.");
@@ -227,7 +228,7 @@ class CrimeValidationServiceTest {
     List<FeeEntity> feeEntityList = List.of();
     FeeCalculationRequest feeCalculationRequest = getFeeCalculationRequest();
 
-    assertThatThrownBy(() -> crimeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+    assertThatThrownBy(() -> crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_ALL_FEE_CODE)
         .hasMessage("ERRALL1 - Enter a valid Fee Code.");
@@ -245,7 +246,7 @@ class CrimeValidationServiceTest {
 
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
-    assertThatThrownBy(() -> crimeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+    assertThatThrownBy(() -> crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CRIME_UFN_DATE)
         .hasMessage("ERRCRM1 - Fee Code is not valid for the Case Start Date.");
@@ -270,7 +271,7 @@ class CrimeValidationServiceTest {
 
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
-    assertThatThrownBy(() -> crimeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+    assertThatThrownBy(() -> crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CRIME_UFN_MISSING)
         .hasMessage("ERRCRM7 - Enter a UFN.");
@@ -304,7 +305,7 @@ class CrimeValidationServiceTest {
 
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
-    assertThatThrownBy(() -> crimeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+    assertThatThrownBy(() -> crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CRIME_REP_ORDER_DATE_MISSING)
         .hasMessage("ERRCRM8 - Enter a representation order date.");
@@ -334,7 +335,7 @@ class CrimeValidationServiceTest {
 
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
-    assertThatThrownBy(() -> crimeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+    assertThatThrownBy(() -> crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CRIME_REP_ORDER_DATE)
         .hasMessage("ERRCRM12 - Fee Code is not valid for the Representation Order Date provided.");
@@ -363,7 +364,7 @@ class CrimeValidationServiceTest {
 
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
-    assertThatThrownBy(() -> crimeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+    assertThatThrownBy(() -> crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CRIME_UFN_MISSING)
         .hasMessage("ERRCRM7 - Enter a UFN.");
@@ -401,7 +402,7 @@ class CrimeValidationServiceTest {
 
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
-    assertThatThrownBy(() -> crimeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+    assertThatThrownBy(() -> crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CRIME_UFN_MISSING)
         .hasMessage("ERRCRM7 - Enter a UFN.");
@@ -432,7 +433,7 @@ class CrimeValidationServiceTest {
 
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
-    FeeEntity feeEntityResponse = crimeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest);
+    FeeEntity feeEntityResponse = crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest);
     assertThat(feeEntityResponse).isNotNull();
     assertThat(feeEntityResponse.getFeeCode()).isEqualTo("PROH");
     assertThat(feeEntityResponse.getFixedFee()).isEqualTo("200");
@@ -454,7 +455,7 @@ class CrimeValidationServiceTest {
   void testValidFeeCodes(String feeCode, String repDate) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode).representationOrderDate(LocalDate.parse(repDate)).build();
-    assertTrue(crimeValidationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
+    assertTrue(crimeFeeValidationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
   }
 
   // Test invalid fee codes
@@ -468,7 +469,7 @@ class CrimeValidationServiceTest {
   void testInvalidFeeCodes(String feeCode, String repDate) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode).representationOrderDate(LocalDate.parse(repDate)).build();
-    assertFalse(crimeValidationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
+    assertFalse(crimeFeeValidationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
   }
 
   // Test null repDate returns true
@@ -477,7 +478,7 @@ class CrimeValidationServiceTest {
   void testNullRepDate(String feeCode) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode).representationOrderDate(null).build();
-    assertTrue(crimeValidationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
+    assertTrue(crimeFeeValidationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
   }
 
   @ParameterizedTest
@@ -490,7 +491,7 @@ class CrimeValidationServiceTest {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode).caseConcludedDate(LocalDate.parse(caseConcludedDate)).build();
 
-    boolean result = crimeValidationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest);
+    boolean result = crimeFeeValidationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest);
     assertThat(result).isTrue();
   }
 }

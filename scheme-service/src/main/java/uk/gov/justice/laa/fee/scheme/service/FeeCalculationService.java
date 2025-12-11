@@ -12,6 +12,8 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculatorFactory;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.service.validation.CivilFeeValidationService;
+import uk.gov.justice.laa.fee.scheme.service.validation.CrimeFeeValidationService;
 
 /**
  * Calculate fee for a given fee calculation request.
@@ -27,8 +29,8 @@ public class FeeCalculationService {
 
   private final FeeDetailsService feeDetailsService;
 
-  private final CivilValidationService civilValidationService;
-  private final CrimeValidationService crimeValidationService;
+  private final CivilFeeValidationService civilFeeValidationService;
+  private final CrimeFeeValidationService crimeFeeValidationService;
 
   /**
    * Calculate Fees.
@@ -45,9 +47,9 @@ public class FeeCalculationService {
 
     FeeEntity feeEntity;
     if (caseType == CIVIL) {
-      feeEntity = civilValidationService.getValidFeeEntity(feeEntityList, request);
+      feeEntity = civilFeeValidationService.getValidFeeEntity(feeEntityList, request);
     } else {
-      feeEntity = crimeValidationService.getValidFeeEntity(feeEntityList, request);
+      feeEntity = crimeFeeValidationService.getValidFeeEntity(feeEntityList, request);
     }
 
     // Calculate fee

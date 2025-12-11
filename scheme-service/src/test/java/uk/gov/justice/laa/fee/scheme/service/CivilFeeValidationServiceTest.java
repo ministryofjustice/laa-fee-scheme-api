@@ -24,12 +24,13 @@ import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.Region;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
+import uk.gov.justice.laa.fee.scheme.service.validation.CivilFeeValidationService;
 
 @ExtendWith(MockitoExtension.class)
-class CivilValidationServiceTest {
+class CivilFeeValidationServiceTest {
 
   @InjectMocks
-  private CivilValidationService civilValidationService;
+  private CivilFeeValidationService civilFeeValidationService;
 
   private FeeEntity fixedFeeEntity(String feeCode, CategoryType categoryType, FeeSchemesEntity feeSchemesEntity) {
     return FeeEntity.builder()
@@ -70,7 +71,7 @@ class CivilValidationServiceTest {
 
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
-    assertThatThrownBy(() -> civilValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+    assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE)
         .hasMessage("ERRCIV1 - Fee Code is not valid for the Case Start Date.");
@@ -93,7 +94,7 @@ class CivilValidationServiceTest {
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
 
-    assertThatThrownBy(() -> civilValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+    assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE_TOO_OLD)
         .hasMessage("ERRCIV2 - Case Start Date is too far in the past.");
@@ -129,7 +130,7 @@ class CivilValidationServiceTest {
 
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
-    assertThatThrownBy(() -> civilValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+    assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", expectedError)
         .hasMessageContaining(expectedError.getMessage());
@@ -162,7 +163,7 @@ class CivilValidationServiceTest {
 
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
-    assertThatThrownBy(() -> civilValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+    assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", expectedError)
         .hasMessageContaining(expectedError.getMessage());
@@ -198,7 +199,7 @@ class CivilValidationServiceTest {
         .londonRate(isLondonRate)
         .build();
 
-    FeeEntity result = civilValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest);
+    FeeEntity result = civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest);
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("FPB010");
@@ -229,7 +230,7 @@ class CivilValidationServiceTest {
         .disbursementVatAmount(20.15)
         .build();
 
-    assertThatThrownBy(() -> civilValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+    assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_FAMILY_LONDON_RATE)
         .hasMessage("ERRFAM1 - London/non-London rate must be entered for the Fee Code used.");
