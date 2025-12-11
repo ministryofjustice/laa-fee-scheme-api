@@ -6,7 +6,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.CASE_START_
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.REP_ORDER_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.UFN;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
-import static uk.gov.justice.laa.fee.scheme.service.ValidationService.FEE_CODE_PROH_TYPE;
+import static uk.gov.justice.laa.fee.scheme.service.CrimeValidationService.FEE_CODE_PROH_TYPE;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

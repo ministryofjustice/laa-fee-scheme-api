@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
+import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CIVIL;
+
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +27,8 @@ public class FeeCalculationService {
 
   private final FeeDetailsService feeDetailsService;
 
-  private final ValidationService validationService;
+  private final CivilValidationService civilValidationService;
+  private final CrimeValidationService crimeValidationService;
 
   /**
    * Calculate Fees.
@@ -40,7 +43,12 @@ public class FeeCalculationService {
 
     List<FeeEntity> feeEntityList = feeDataService.getFeeEntities(request.getFeeCode());
 
-    FeeEntity feeEntity = validationService.getValidFeeEntity(feeEntityList, request, caseType);
+    FeeEntity feeEntity;
+    if (caseType == CIVIL) {
+      feeEntity = civilValidationService.getValidFeeEntity(feeEntityList, request);
+    } else {
+      feeEntity = crimeValidationService.getValidFeeEntity(feeEntityList, request);
+    }
 
     // Calculate fee
     FeeCalculator calculator = calculatorFactory.getCalculator(feeEntity.getCategoryType());
