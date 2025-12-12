@@ -5,10 +5,12 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_REP_ORDER_
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_REP_ORDER_DATE_MISSING;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_MISSING;
+import static uk.gov.justice.laa.fee.scheme.service.FeeCodeConstants.FEE_CODE_PROD;
+import static uk.gov.justice.laa.fee.scheme.service.FeeCodeConstants.FEE_CODE_PROH_TYPE;
+import static uk.gov.justice.laa.fee.scheme.service.FeeCodeConstants.REP_ORDER_DATE_PATTERN;
 
 import io.micrometer.common.util.StringUtils;
 import java.util.List;
-import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,11 +30,6 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 @RequiredArgsConstructor
 @Service
 public class CrimeFeeValidationService extends AbstractFeeValidationService {
-
-  private static final String FEE_CODE_PROD = "PROD";
-  public static final List<String> FEE_CODE_PROH_TYPE = List.of("PROH", "PROH1", "PROH2");
-  private static final Pattern REP_ORDER_DATE_PATTERN = Pattern.compile(
-      "^(PRO[EFKLV][1-4]|PROJ[1-8]|YOU[EFXKLY][1-4]|APP[AB]|PROW)$");
 
   /**
    * Validates the fee code and claim start date and returns the valid Fee entity.
