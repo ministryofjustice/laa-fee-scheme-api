@@ -7,7 +7,6 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_MISSING;
 
 import io.micrometer.common.util.StringUtils;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -51,8 +50,7 @@ public class CrimeFeeValidationService extends AbstractFeeValidationService {
     CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
     validateCrimeFee(feeCalculationRequest, categoryType);
 
-    LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeCalculationRequest);
-    return getFeeEntityForStartDate(feeEntityList, feeCalculationRequest, claimStartDate);
+    return getFeeEntityForStartDate(feeEntityList, feeCalculationRequest);
   }
 
   private void validateCrimeFee(FeeCalculationRequest feeCalculationRequest, CategoryType categoryType) {
@@ -81,12 +79,6 @@ public class CrimeFeeValidationService extends AbstractFeeValidationService {
     }
   }
 
-  @Override
-  protected ErrorType getErrorType(FeeCalculationRequest feeCalculationRequest, CategoryType categoryType) {
-    ClaimStartDateType claimStartDateType = FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeCalculationRequest);
-    return  claimStartDateType == REP_ORDER_DATE ? ERR_CRIME_REP_ORDER_DATE : ERR_CRIME_UFN_DATE;
-  }
-
   /**
    * Validate Fee Code against a set of Magistrates, Youth & Advocacy Fee codes.
    *
@@ -98,5 +90,11 @@ public class CrimeFeeValidationService extends AbstractFeeValidationService {
       return REP_ORDER_DATE_PATTERN.matcher(feeCalculationRequest.getFeeCode()).matches();
     }
     return true;
+  }
+
+  @Override
+  protected ErrorType getErrorType(FeeCalculationRequest feeCalculationRequest, CategoryType categoryType) {
+    ClaimStartDateType claimStartDateType = FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeCalculationRequest);
+    return  claimStartDateType == REP_ORDER_DATE ? ERR_CRIME_REP_ORDER_DATE : ERR_CRIME_UFN_DATE;
   }
 }

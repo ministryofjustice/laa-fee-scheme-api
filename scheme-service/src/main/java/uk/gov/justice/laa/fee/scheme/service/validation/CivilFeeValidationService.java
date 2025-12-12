@@ -49,8 +49,7 @@ public class CivilFeeValidationService extends AbstractFeeValidationService {
       validateLondonRate(feeCalculationRequest);
     }
 
-    LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeCalculationRequest);
-    return getFeeEntityForStartDate(feeEntityList, feeCalculationRequest, claimStartDate);
+    return getFeeEntityForStartDate(feeEntityList, feeCalculationRequest);
   }
 
   /**

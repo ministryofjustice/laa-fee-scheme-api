@@ -14,6 +14,7 @@ import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
 import uk.gov.justice.laa.fee.scheme.enums.Region;
 import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 
 /**
@@ -57,15 +58,13 @@ public abstract class AbstractFeeValidationService {
    *
    * @param feeEntityList         the list of fee entities to search
    * @param feeCalculationRequest the request context containing claim details
-   * @param claimStartDate        the start date of the claim
    * @return the valid FeeEntity
    * @throws ValidationException if no valid fee is found
    */
   protected FeeEntity getFeeEntityForStartDate(List<FeeEntity> feeEntityList,
-                                               FeeCalculationRequest feeCalculationRequest,
-                                               LocalDate claimStartDate) {
-
+                                               FeeCalculationRequest feeCalculationRequest) {
     CategoryType categoryType = feeEntityList.getFirst().getCategoryType();
+    LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeCalculationRequest);
 
     return feeEntityList.stream()
         .filter(fee -> isValidFee(fee, claimStartDate))
@@ -97,7 +96,5 @@ public abstract class AbstractFeeValidationService {
    * @param categoryType the category type of the fees being processed
    * @return the ErrorType to throw if validation fails
    */
-  protected ErrorType getErrorType(FeeCalculationRequest request, CategoryType categoryType) {
-    return null;
-  }
+  abstract ErrorType getErrorType(FeeCalculationRequest request, CategoryType categoryType);
 }
