@@ -478,7 +478,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "FPB010",
           "claimId": "claim_123",
-          "schemeId": "FAM_NON_LON_FS2011",
+          "schemeId": "FAM_NON_LON_FS2013",
           "validationMessages": [
             {
               "type": "WARNING",

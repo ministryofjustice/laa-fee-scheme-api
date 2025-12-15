@@ -151,7 +151,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         {
           "feeCode": "FPB010",
           "claimId": "claim_123",
-          "schemeId": "FAM_LON_FS2011",
+          "schemeId": "FAM_LON_FS2013",
           "escapeCaseFlag": false,
           "feeCalculation": {
             "totalAmount": 306.45,
