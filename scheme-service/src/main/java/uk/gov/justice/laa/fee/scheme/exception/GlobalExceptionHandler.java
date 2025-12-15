@@ -84,8 +84,8 @@ public class GlobalExceptionHandler {
     ErrorType error = ex.getError();
     FeeContext context = ex.getContext();
 
-    log.error("Validation error with message: {} :: {feeCode={}, startDate={}}",
-        ex.getMessage(), context.feeCode(), context.startDate(), ex);
+    log.error("Validation error with message: {}}",
+        ex.getMessage(), ex);
 
     ValidationMessagesInner validationMessages = ValidationMessagesInner.builder()
         .type(ERROR)

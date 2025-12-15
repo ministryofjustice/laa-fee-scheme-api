@@ -1,6 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -11,18 +14,22 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -135,6 +142,44 @@ class FeeCalculationControllerTest {
     List<ILoggingEvent> logsList = listAppender.list;
     assertThat(logsList.stream().anyMatch(event -> event.getLevel() == Level.INFO
         && event.getFormattedMessage().contains("\"feeCode\":\"FEE123\""))).isTrue();
+
+    listAppender.stop();
+    feeLogger.detachAppender(listAppender);
+  }
+
+  @Test
+  void logFeeRequest_shouldLogWarning_whenSerializationFails() throws Exception {
+    FeeCalculationController controller = new FeeCalculationController(feeCalculationService) {
+      @Override
+      public ResponseEntity<FeeCalculationResponse> getFeeCalculation(FeeCalculationRequest feeCalculationRequest) {
+        return super.getFeeCalculation(feeCalculationRequest);
+      }
+    };
+
+    ObjectMapper failingMapper = mock(ObjectMapper.class);
+    when(failingMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("Serialization failed") {});
+
+    Field objectMapperField = FeeCalculationController.class.getDeclaredField("objectMapper");
+    objectMapperField.setAccessible(true);
+    objectMapperField.set(controller, failingMapper);
+
+    Logger feeLogger = (Logger) LoggerFactory.getLogger(FeeCalculationController.class);
+    ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+    listAppender.start();
+    feeLogger.addAppender(listAppender);
+
+    FeeCalculationResponse responseDto = FeeCalculationResponse.builder()
+        .feeCode("FEE123")
+        .feeCalculation(FeeCalculation.builder().totalAmount(1500.12).build())
+        .build();
+
+    when(feeCalculationService.calculateFee(feeCalculationRequest)).thenReturn(responseDto);
+
+    controller.getFeeCalculation(feeCalculationRequest);
+
+    List<ILoggingEvent> logsList = listAppender.list;
+    assertThat(logsList.stream().anyMatch(event -> event.getLevel() == Level.WARN
+        && event.getFormattedMessage().contains("could not serialize object"))).isTrue();
 
     listAppender.stop();
     feeLogger.detachAppender(listAppender);
