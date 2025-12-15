@@ -31,12 +31,13 @@ public class FeeCalculationController implements FeeCalculationApi {
   public ResponseEntity<FeeCalculationResponse> getFeeCalculation(FeeCalculationRequest feeCalculationRequest) {
     MdcLoggingInterceptor.populateMdc(feeCalculationRequest);
     logFeeRequest(feeCalculationRequest);
+
     log.info("Getting fee calculation");
     FeeCalculationResponse feeCalculationResponse = feeCalculationService.calculateFee(feeCalculationRequest);
     log.info("Successfully retrieved fee calculation");
+
     return ResponseEntity.ok(feeCalculationResponse);
   }
-
 
   private void logFeeRequest(FeeCalculationRequest request) {
     try {
