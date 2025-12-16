@@ -19,6 +19,7 @@ public class MdcLoggingInterceptor implements HandlerInterceptor {
 
   private static final String FEE_CODE = "feeCode";
   private static final String CORRELATION_ID = "correlationId";
+  public static final String HEADER_CORRELATION_ID = "X-Correlation-Id";
 
   /**
    * Populates MDC with fee code and correlation id.
@@ -28,7 +29,10 @@ public class MdcLoggingInterceptor implements HandlerInterceptor {
     Optional.ofNullable(request.getParameter(FEE_CODE))
         .ifPresent(feeCode -> MDC.put(FEE_CODE, feeCode));
 
-    MDC.put(CORRELATION_ID, UUID.randomUUID().toString());
+    String correlationId = Optional.ofNullable(request.getHeader(HEADER_CORRELATION_ID))
+        .orElse(UUID.randomUUID().toString());
+    MDC.put(CORRELATION_ID, correlationId);
+    response.setHeader(HEADER_CORRELATION_ID, correlationId);
 
     return true;
   }

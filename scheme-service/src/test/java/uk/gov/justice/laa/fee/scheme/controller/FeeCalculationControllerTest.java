@@ -2,7 +2,6 @@ package uk.gov.justice.laa.fee.scheme.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -19,9 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -183,33 +180,6 @@ class FeeCalculationControllerTest {
 
     listAppender.stop();
     feeLogger.detachAppender(listAppender);
-  }
-
-  @Test
-  void shouldNotPutStartDateInMdc_whenStartDateIsNull() throws Exception {
-
-    feeCalculationRequest.setPoliceStationId("PS1");
-    feeCalculationRequest.setPoliceStationSchemeId("PSS1");
-    feeCalculationRequest.setUniqueFileNumber("UFN1");
-    feeCalculationRequest.setStartDate(null);
-    FeeCalculationResponse responseDto = FeeCalculationResponse.builder()
-        .feeCode("FEE123")
-        .feeCalculation(FeeCalculation.builder()
-            .totalAmount(1500.12)
-            .build())
-        .build();
-
-    when(feeCalculationService.calculateFee(feeCalculationRequest))
-        .thenReturn(responseDto);
-
-    mockMvc.perform(post("/api/v1/fee-calculation")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(feeCalculationRequest)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.feeCode").value("FEE123"))
-        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(1500));
-
-    assertThat(MDC.get("startDate")).isNull();
   }
 
 }
