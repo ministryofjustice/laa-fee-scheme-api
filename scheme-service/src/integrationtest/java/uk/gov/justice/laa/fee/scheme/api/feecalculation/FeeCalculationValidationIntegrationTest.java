@@ -452,7 +452,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "ERROR",
               "code": "ERRMED1",
-              "message": "Number of Mediation Sessions must be entered for this fee code."
+              "message": "Number of Mediation Sessions must be entered for the Fee Code used."
             }
           ]
         }
