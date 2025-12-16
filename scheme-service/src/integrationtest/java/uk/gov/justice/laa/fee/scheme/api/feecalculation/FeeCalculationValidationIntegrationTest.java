@@ -5,6 +5,7 @@ import static org.springframework.test.json.JsonCompareMode.LENIENT;
 import static org.springframework.test.json.JsonCompareMode.STRICT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @AutoConfigureMockMvc
 @Testcontainers
 class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrationTest {
+
+  private static final String HEADER_CORRELATION_ID = "X-Correlation-Id";
+
   @Test
   void shouldGetBadResponse_whenDuplicateField() throws Exception {
 
@@ -48,6 +52,28 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               "message": "JSON parse error: Duplicate field 'feeCode'"
             }
             """, LENIENT));
+  }
+
+  @Test
+  void shouldGetBadResponse_whenMissingField_correlationIdProvided() throws Exception {
+    String correlationId = "a51433f8-a78c-47ef-bd31-837b95467220";
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .header(HEADER_CORRELATION_ID, correlationId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "claimId": "claim_123",
+                  "startDate": "2019-09-30",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true,
+                  "numberOfMediationSessions": 1
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(header().string(HEADER_CORRELATION_ID, correlationId));
   }
 
   @Test
