@@ -19,7 +19,7 @@ public class MdcLoggingInterceptor implements HandlerInterceptor {
 
   private static final String FEE_CODE = "feeCode";
   private static final String CORRELATION_ID = "correlationId";
-  public static final String HEADER_CORRELATION_ID = "X-Correlation-Id";
+  private static final String HEADER_CORRELATION_ID = "X-Correlation-Id";
 
   /**
    * Populates MDC with fee code and correlation id.

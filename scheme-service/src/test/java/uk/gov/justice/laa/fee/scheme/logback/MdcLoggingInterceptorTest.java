@@ -19,7 +19,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 class MdcLoggingInterceptorTest {
 
   private static final String FEE_CODE = "feeCode";
-  public static final String HEADER_CORRELATION_ID = "X-Correlation-Id";
+  private static final String HEADER_CORRELATION_ID = "X-Correlation-Id";
 
   @AfterEach
   void clearMdc() {
