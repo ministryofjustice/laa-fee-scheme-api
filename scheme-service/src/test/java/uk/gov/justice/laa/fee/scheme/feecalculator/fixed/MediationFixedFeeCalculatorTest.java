@@ -146,7 +146,7 @@ class MediationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThatThrownBy(() -> mediationFeeCalculator.calculate(feeCalculationRequest, feeEntity))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_MEDIATION_SESSIONS)
-        .hasMessage("ERRMED1 - Number of Mediation Sessions must be entered for this fee code.");
+        .hasMessage("ERRMED1 - Number of Mediation Sessions must be entered for the Fee Code used.");
   }
 
   @Test
