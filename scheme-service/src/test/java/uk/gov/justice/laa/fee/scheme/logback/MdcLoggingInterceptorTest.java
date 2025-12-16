@@ -9,11 +9,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
+import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 
 class MdcLoggingInterceptorTest {
@@ -31,7 +34,10 @@ class MdcLoggingInterceptorTest {
     HttpServletRequest request = mock(HttpServletRequest.class);
     HttpServletResponse response = mock(HttpServletResponse.class);
 
-    when(request.getParameter(FEE_CODE)).thenReturn("ABC123");
+    Map<String, String> pathVariables = new HashMap<>();
+    pathVariables.put("feeCode", "ABC123");
+    when(request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE))
+        .thenReturn(pathVariables);
 
     MdcLoggingInterceptor interceptor = new MdcLoggingInterceptor();
     interceptor.preHandle(request, response, null);
@@ -45,7 +51,11 @@ class MdcLoggingInterceptorTest {
     HttpServletRequest request = mock(HttpServletRequest.class);
     HttpServletResponse response = mock(HttpServletResponse.class);
 
-    when(request.getParameter(FEE_CODE)).thenReturn("ABC123");
+    Map<String, String> pathVariables = new HashMap<>();
+    pathVariables.put("feeCode", "ABC123");
+    when(request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE))
+        .thenReturn(pathVariables);
+
     String correlationId = "a51433f8-a78c-47ef-bd31-837b95467220";
     when(request.getHeader(HEADER_CORRELATION_ID)).thenReturn(correlationId);
 
@@ -57,6 +67,17 @@ class MdcLoggingInterceptorTest {
   }
 
   @Test
+  void shouldNotSetFeeCodeMdc_whenFeeCodeIsNotProvided() {
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    HttpServletResponse response = mock(HttpServletResponse.class);
+
+    MdcLoggingInterceptor interceptor = new MdcLoggingInterceptor();
+    interceptor.preHandle(request, response, null);
+
+    assertThat(MDC.get("feeCode")).isNull();
+  }
+
+  @Test
   void shouldPopulateMdcWithFeeCalculationRequestDetails() {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("FEE123")
@@ -64,6 +85,8 @@ class MdcLoggingInterceptorTest {
         .policeStationId("PS1")
         .policeStationSchemeId("PSS1")
         .uniqueFileNumber("UFN")
+        .caseConcludedDate(LocalDate.now())
+        .representationOrderDate(LocalDate.now())
         .build();
 
     MdcLoggingInterceptor.populateMdc(feeCalculationRequest);
@@ -73,16 +96,20 @@ class MdcLoggingInterceptorTest {
     assertEquals("PS1", MDC.get("policeStationId"));
     assertEquals("PSS1", MDC.get("policeStationSchemeId"));
     assertEquals("UFN", MDC.get("uniqueFileNumber"));
+    assertEquals(feeCalculationRequest.getCaseConcludedDate().toString(), MDC.get("caseConcludedDate"));
+    assertEquals(feeCalculationRequest.getRepresentationOrderDate().toString(), MDC.get("representationOrderDate"));
   }
 
   @Test
-  void shouldNotPutStartDateInMdc_whenStartDateIsNull() {
+  void shouldNotPutDatesInMdc_whenDatesAreNull() {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("FEE123")
         .startDate(null)
         .policeStationId("PS1")
         .policeStationSchemeId("PSS1")
         .uniqueFileNumber("UFN")
+        .caseConcludedDate(null)
+        .representationOrderDate(null)
         .build();
 
     MdcLoggingInterceptor.populateMdc(feeCalculationRequest);
@@ -92,6 +119,8 @@ class MdcLoggingInterceptorTest {
     assertEquals("PS1", MDC.get("policeStationId"));
     assertEquals("PSS1", MDC.get("policeStationSchemeId"));
     assertEquals("UFN", MDC.get("uniqueFileNumber"));
+    assertThat(MDC.get("caseConcludedDate")).isNull();
+    assertThat(MDC.get("representationOrderDate")).isNull();
   }
 
   @Test
