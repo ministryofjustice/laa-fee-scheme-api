@@ -693,13 +693,13 @@
                         "uid": "prometheus"
                     },
                     "editorMode": "code",
-                    "expr": "jvm_memory_max_bytes{namespace='{{ .Release.Namespace }}',container='$container',area='heap',id='Eden Space'}/1000000",
+                    "expr": "jvm_memory_commited_bytes{namespace='{{ .Release.Namespace }}',container='$container',area='heap',id='G1 Eden Space'}/1000000",
                     "legendFormat": "{{`{{instance}}`}}",
                     "range": true,
                     "refId": "A"
                 }
             ],
-            "title": "Max Eden (MB)",
+            "title": "Committed Eden (MB)",
             "description": "Part of Garbage Collection. Eden space is a memory pool where new objects are created.",
             "type": "gauge"
         },
@@ -757,13 +757,13 @@
                         "uid": "prometheus"
                     },
                     "editorMode": "code",
-                    "expr": "jvm_memory_max_bytes{namespace='{{ .Release.Namespace }}',container='$container', area='heap', id='Survivor Space', namespace='{{ .Release.Namespace }}'} / 1000000",
+                    "expr": "jvm_memory_committed_bytes{namespace='{{ .Release.Namespace }}',container='$container', area='heap', id='G1 Survivor Space', namespace='{{ .Release.Namespace }}'} / 1000000",
                     "legendFormat": "{{`{{instance}}`}}",
                     "range": true,
                     "refId": "A"
                 }
             ],
-            "title": "Max Survivor (MB)",
+            "title": "Committed Survivor (MB)",
             "description": "Part of garbage collection. Survivor space is the memory pool in which when eden space is full, objects are moved to if they are still in use.",
             "type": "gauge"
         },
@@ -820,7 +820,7 @@
                         "uid": "prometheus"
                     },
                     "editorMode": "code",
-                    "expr": "jvm_memory_max_bytes{namespace='{{ .Release.Namespace }}',container='$container',area='heap',id='Tenured Gen',} /1000000",
+                    "expr": "jvm_memory_max_bytes{namespace='{{ .Release.Namespace }}',container='$container',area='heap',id='G1 Old Gen',} /1000000",
                     "legendFormat": "{{`{{instance}}`}}",
                     "range": true,
                     "refId": "A"
@@ -1003,7 +1003,7 @@
                         "uid": "prometheus"
                     },
                     "editorMode": "code",
-                    "expr": "jvm_memory_used_bytes{namespace='{{ .Release.Namespace }}',container='$container',area='heap',id='Survivor Space'}/1000000",
+                    "expr": "jvm_memory_used_bytes{namespace='{{ .Release.Namespace }}',container='$container',area='heap',id='G1 Survivor Space'}/1000000",
                     "legendFormat": "{{`{{instance}}`}}",
                     "range": true,
                     "refId": "A"
@@ -1094,7 +1094,7 @@
                         "uid": "prometheus"
                     },
                     "editorMode": "code",
-                    "expr": "jvm_memory_used_bytes{namespace='{{ .Release.Namespace }}',container='$container',area='heap',id='Tenured Gen',} /1000000",
+                    "expr": "jvm_memory_used_bytes{namespace='{{ .Release.Namespace }}',container='$container',area='heap',id='G1 Old Gen',} /1000000",
                     "legendFormat": "{{`{{instance}}`}}",
                     "range": true,
                     "refId": "A"
