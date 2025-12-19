@@ -12,7 +12,7 @@ VALUES ('CAPA', 239.00, 717.00, 'CAPA_FS2013'),
        ('MISCGEN', 79.00, 237.00, 'MISC_FS2013'),
        ('MISCPI', 203.00, 609.00, 'MISC_FS2013'),
        ('PUB', 259.00, 777.00, 'PUB_FS2013'),
-       ('WFB1', 208.00, NULL, 'WB_FS2023'),
+       ('WFB1', 208.00, NULL, 'WB_FS2014'),
        ('WFB1', 208.00, 624.00, 'WB_FS2025')
     ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
