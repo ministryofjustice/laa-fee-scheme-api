@@ -5,7 +5,7 @@ plugins {
 }
 
 def versions = [
-        sentry 						: '8.27.0'
+        sentry 						: '8.29.0'
 ]
 
 test {
@@ -92,9 +92,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0'
 
-    implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.14'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.15'
 
     implementation 'org.apache.commons:commons-lang3:3.20.0'
 
@@ -103,15 +103,15 @@ dependencies {
     implementation 'org.postgresql:postgresql:42.7.8'
 
 // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
-    implementation 'org.flywaydb:flyway-core:11.17.1'
-    implementation 'org.flywaydb:flyway-database-postgresql:11.17.1'
+    implementation 'org.flywaydb:flyway-core:11.19.1'
+    implementation 'org.flywaydb:flyway-database-postgresql:11.19.1'
 
-    implementation 'io.micrometer:micrometer-registry-prometheus:1.16.0'
+    implementation 'io.micrometer:micrometer-registry-prometheus:1.16.1'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    testImplementation 'org.testcontainers:junit-jupiter:1.21.3'
-    testImplementation 'org.testcontainers:postgresql:1.21.3'
+    testImplementation 'org.testcontainers:junit-jupiter:1.21.4'
+    testImplementation 'org.testcontainers:postgresql:1.21.4'
     // CVE-2024-25710
     testImplementation 'org.apache.commons:commons-compress:1.28.0'
 
