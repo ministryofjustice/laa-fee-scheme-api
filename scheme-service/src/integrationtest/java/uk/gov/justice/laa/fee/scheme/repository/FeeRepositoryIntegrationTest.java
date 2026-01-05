@@ -6,14 +6,14 @@ import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTestBase;
 
-@DataJpaTest
+@SpringBootTest
 class FeeRepositoryIntegrationTest extends PostgresContainerTestBase {
 
   @Autowired
