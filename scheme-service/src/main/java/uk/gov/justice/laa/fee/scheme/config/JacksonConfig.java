@@ -1,10 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.config;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonParser;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import tools.jackson.core.StreamReadFeature;
 
 /**
  * Jackson config.
@@ -17,9 +16,8 @@ public class JacksonConfig {
    * Duplicate fields not permitted in request.
    */
   @Bean
-  public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
-    return builder -> builder
-        .serializationInclusion(JsonInclude.Include.NON_EMPTY)
-        .featuresToEnable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION);
+  public JsonMapperBuilderCustomizer jsonCustomizer() {
+    return builder ->
+        builder.configure(StreamReadFeature.STRICT_DUPLICATE_DETECTION, true);
   }
 }
