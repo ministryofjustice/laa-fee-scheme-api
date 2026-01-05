@@ -17,7 +17,7 @@ spec:
         runbook_url: https://dsdmoj.atlassian.net/wiki/spaces/LFSP/pages/5844631676/Runbook+-+Fee+Scheme+Platform+API
         dashboard_url: {{ .Values.prometheus.dashboardUrl }}
       expr: kube_deployment_status_replicas_available{job="kube-state-metrics", namespace="{{ .Release.Namespace }}"} == 0
-      for: 1m
+      for: {{ if eq .Release.Namespace "laa-fee-scheme-api-dev" }}15m{{ else }}1m{{ end }}
       labels:
         severity: {{ .Values.prometheus.severity }}
     - alert: KubeQuota-Exceeded
