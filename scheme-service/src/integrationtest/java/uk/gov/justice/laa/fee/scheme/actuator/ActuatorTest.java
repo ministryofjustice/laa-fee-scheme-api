@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import uk.gov.justice.laa.fee.scheme.config.FeeSchemeTestConfig;
 import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTestBase;
 
 @SpringBootTest(
@@ -19,6 +21,7 @@ import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTest
         "management.endpoints.web.exposure.include=health,metrics,prometheus"
     }
 )
+@Import(FeeSchemeTestConfig.class)
 class ActuatorTest extends PostgresContainerTestBase {
 
   @LocalServerPort
