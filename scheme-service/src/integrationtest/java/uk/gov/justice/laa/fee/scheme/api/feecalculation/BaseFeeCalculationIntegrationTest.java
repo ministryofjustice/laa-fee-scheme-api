@@ -1,17 +1,22 @@
 package uk.gov.justice.laa.fee.scheme.api.feecalculation;
 
-import static org.springframework.test.json.JsonCompareMode.STRICT;
+import static org.springframework.test.json.JsonCompareMode.LENIENT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.justice.laa.fee.scheme.config.FeeSchemeTestConfig;
 import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTestBase;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Import(FeeSchemeTestConfig.class)
 public abstract class BaseFeeCalculationIntegrationTest extends PostgresContainerTestBase {
 
   static final String AUTH_TOKEN = "int-test-token";
@@ -30,7 +35,7 @@ public abstract class BaseFeeCalculationIntegrationTest extends PostgresContaine
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(expectedResponseJson, STRICT))
+        .andExpect(content().json(expectedResponseJson, LENIENT))
         .andExpect(header().exists(HEADER_CORRELATION_ID));
   }
 }

@@ -1,13 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.api.feecalculation;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import uk.gov.justice.laa.fee.scheme.config.FeeSchemeTestConfig;
 
-@SpringBootTest
-@Import(FeeSchemeTestConfig.class)
+
 @Testcontainers
 class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIntegrationTest {
 

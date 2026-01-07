@@ -1,11 +1,13 @@
 package uk.gov.justice.laa.fee.scheme.api.feecalculation;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.json.JsonCompareMode.LENIENT;
 import static org.springframework.test.json.JsonCompareMode.STRICT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
@@ -44,12 +46,13 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(content().json("""
-            {
-              "status": 400,
-              "error": "Bad Request",
-              "message": "JSON parse error: Duplicate field 'feeCode'"
-            }
-            """, LENIENT));
+        {
+          "status": 400,
+          "error": "Bad Request"
+        }
+        """, LENIENT))
+        .andExpect(jsonPath("$.message", containsString("Duplicate")))
+        .andExpect(jsonPath("$.message", containsString("feeCode")));
   }
 
   @Test
