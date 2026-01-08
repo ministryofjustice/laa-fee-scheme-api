@@ -141,7 +141,7 @@ class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .feeCode("CAPA")
         .feeScheme(FeeSchemesEntity.builder().schemeCode("CAPA_FS2013").build())
         .fixedFee(new BigDecimal("250.00"))
-        .categoryType(CategoryType.CLAIMS_PUBLIC_AUTHORITIES)
+        .categoryType(CLAIMS_PUBLIC_AUTHORITIES)
         .escapeThresholdLimit(new BigDecimal("500.00"))
         .build();
   }

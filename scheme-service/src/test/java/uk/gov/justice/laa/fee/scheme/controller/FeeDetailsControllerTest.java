@@ -31,7 +31,7 @@ class FeeDetailsControllerTest {
   @Test
   void getFeeDetailsFeeByCode() throws Exception {
 
-    when(feeDetailsService.getFeeDetails(any())).thenReturn(FeeDetailsResponse.builder()
+    when(feeDetailsService.getFeeDetails("FEE123")).thenReturn(FeeDetailsResponse.builder()
         .categoryOfLawCode("ASY")
         .feeCodeDescription("fee_code_description")
         .feeType("FIXED")
@@ -47,12 +47,14 @@ class FeeDetailsControllerTest {
 
   @Test
   void throwExceptionWhenCategoryOfLawNotFound() throws Exception {
-    when(feeDetailsService.getFeeDetails(anyString())).thenThrow(new CategoryCodeNotFoundException("FEE123"));
+    when(feeDetailsService.getFeeDetails("FEE123")).thenThrow(new CategoryCodeNotFoundException("FEE123"));
 
     mockMvc.perform(get("/api/v1/fee-details/FEE123")
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.timestamp").exists())
         .andExpect(jsonPath("$.status").value(404))
+        .andExpect(jsonPath("$.error").value("Not Found"))
         .andExpect(jsonPath("$.message").value("Category of law code not found for feeCode: FEE123"));
   }
 }

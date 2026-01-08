@@ -2,7 +2,6 @@ package uk.gov.justice.laa.fee.scheme.service;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -11,24 +10,28 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculatorFactory;
 
+@ExtendWith(MockitoExtension.class)
 class FeeCalculatorFactoryTest {
 
-  private FeeCalculator immigrationCalculator;
-  private FeeCalculator standardCalculator;
+  @Mock
+  FeeCalculator immigrationCalculator;
+  @Mock
+  FeeCalculator standardCalculator;
+
   private FeeCalculatorFactory factory;
 
   @BeforeEach
   void setUp() {
     // Mock calculators
-    immigrationCalculator = mock(FeeCalculator.class);
     when(immigrationCalculator.getSupportedCategories())
         .thenReturn(Set.of(CategoryType.IMMIGRATION_ASYLUM));
-
-    standardCalculator = mock(FeeCalculator.class);
     when(standardCalculator.getSupportedCategories())
         .thenReturn(Set.of(CategoryType.COMMUNITY_CARE, CategoryType.HOUSING, CategoryType.EDUCATION));
 
