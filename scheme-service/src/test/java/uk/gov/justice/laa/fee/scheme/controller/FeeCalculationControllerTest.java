@@ -150,13 +150,8 @@ class FeeCalculationControllerTest {
 
   @Test
   void logFeeRequest_shouldLogWarning_whenSerializationFails() throws Exception {
-    FeeCalculationController controller = new FeeCalculationController(feeCalculationService) {
-      @Override
-      public ResponseEntity<FeeCalculationResponse> getFeeCalculation(FeeCalculationRequest feeCalculationRequest) {
-        return super.getFeeCalculation(feeCalculationRequest);
-      }
-    };
 
+    FeeCalculationController controller = new FeeCalculationController(feeCalculationService);
     ObjectMapper failingMapper = mock(ObjectMapper.class);
     when(failingMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("Serialization failed") {});
 

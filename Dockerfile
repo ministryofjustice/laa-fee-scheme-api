@@ -19,7 +19,7 @@ USER 1001
 
 # Set environment variables
 ENV TZ=Europe/London
-ENV JAVA_TOOL_OPTIONS="-XX:InitialRAMPercentage=50.0 -XX:MaxRAMPercentage=80.0"
+ENV JAVA_TOOL_OPTIONS="-XX:+UseG1GC -XX:InitialRAMPercentage=50.0 -XX:MaxRAMPercentage=70.0"
 
 # Expose the port that the application will run on and actuator port
 EXPOSE 8085 8185

@@ -24,6 +24,8 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 @RequiredArgsConstructor
 public abstract class AbstractFeeValidationService {
 
+  public abstract FeeEntity getValidFeeEntity(List<FeeEntity> feeEntityList, FeeCalculationRequest feeCalculationRequest);
+
   /**
    * Validates that the provided list of FeeEntity objects is not empty.
    *

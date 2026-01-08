@@ -13,7 +13,7 @@ resources:
     memory: 2Gi
   requests:
     cpu: 500m
-    memory: 1Gi
+    memory: 1.5Gi
 
 autoscaling:
   enabled: true
@@ -42,3 +42,4 @@ application:
 prometheus:
   dashboardUrl: https://grafana.live.cloud-platform.service.justice.gov.uk/d/laa-fee-scheme-api-prod-dashboard
   severity: laa-fee-scheme-api-prod
+  zeroPodsInterval: 1m

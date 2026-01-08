@@ -367,7 +367,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
       "HOUS, HOUS_FS2013, 336.45, 31.4, 157.0",
       "MISCCON, MISC_FS2013, 338.85, 31.8, 159.0",
       "PUB, PUB_FS2013, 458.85, 51.8, 259.0",
-      "WFB1, WB_FS2023, 397.65, 41.6, 208.0"
+      "WFB1, WB_FS2014, 397.65, 41.6, 208.0"
   })
   void shouldGetFeeCalculation_otherCivilFixedFee(String feeCode,
                                                   String schemeId,
