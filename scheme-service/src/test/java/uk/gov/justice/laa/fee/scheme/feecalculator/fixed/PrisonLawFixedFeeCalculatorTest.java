@@ -42,7 +42,7 @@ class PrisonLawFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   void testGetSupportedCategories() {
     Set<CategoryType> result = prisonLawFeeCalculator.getSupportedCategories();
 
-    assertThat(result).containsExactly(CategoryType.PRISON_LAW);
+    assertThat(result).containsExactly(PRISON_LAW);
   }
 
   private FeeEntity buildFeeEntity(String feeCode, double fixedFeeAmount, Double escapeThreshold, Double feeLimit) {
