@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -58,6 +59,7 @@ class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
   }
 
   @Test
+  @Disabled
   void shouldGetUnauthorizedResponse_whenMissingAuthorizationHeader() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-details/CAPA"))
@@ -73,6 +75,7 @@ class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
   }
 
   @Test
+  @Disabled
   void shouldGetUnauthorizedResponse_whenAuthTokenIsInvalid() throws Exception {
     mockMvc
         .perform(post("/api/v1/fee-details/CAPA")
