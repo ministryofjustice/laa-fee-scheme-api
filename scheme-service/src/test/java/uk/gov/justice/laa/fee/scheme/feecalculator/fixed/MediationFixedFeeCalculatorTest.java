@@ -31,7 +31,7 @@ class MediationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   @InjectMocks
   MediationFixedFeeCalculator mediationFeeCalculator;
 
-  public static Stream<Arguments> testData() {
+  private static Stream<Arguments> testData() {
     return Stream.of(
         arguments("1 mediation session, VAT applied", "MDAS2B", true, 1, 130.65, null,
             50.5, 20.15, 50, 10),

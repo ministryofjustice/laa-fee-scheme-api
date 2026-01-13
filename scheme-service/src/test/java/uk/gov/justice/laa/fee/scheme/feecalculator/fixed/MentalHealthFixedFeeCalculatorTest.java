@@ -98,7 +98,7 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   @Nested
   class MentalHealthFeeCalculationTest {
 
-    public static Stream<Arguments> testData() {
+    private static Stream<Arguments> testData() {
       return Stream.of(
           arguments("MHL01, with Vat, no bolt ons", "MHL01", 253.0, true, 50.6, null,
               0.0, null, 374.25),
@@ -157,7 +157,7 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   @Nested
   class MentalHealthEscapeCaseTest {
 
-    public static Stream<Arguments> testDataEscapeCase() {
+    private static Stream<Arguments> testDataEscapeCase() {
       return Stream.of(
           argumentsEscapeCase("MHL01, with Vat, no bolt ons, escaped", "MHL01", 263.0,
               1000.0, true, 52.6, null,

@@ -4,25 +4,34 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 
+@ExtendWith(MockitoExtension.class)
 class MdcLoggingInterceptorTest {
 
   private static final String FEE_CODE = "feeCode";
   private static final String HEADER_CORRELATION_ID = "X-Correlation-Id";
+
+  @Mock
+  HttpServletRequest request;
+
+  @Mock
+  HttpServletResponse response;
 
   @AfterEach
   void clearMdc() {
@@ -31,9 +40,6 @@ class MdcLoggingInterceptorTest {
 
   @Test
   void shouldSetFeeCodeAndCorrelationIdInMdc_whenCorrelationIdIsNotProvided() {
-    HttpServletRequest request = mock(HttpServletRequest.class);
-    HttpServletResponse response = mock(HttpServletResponse.class);
-
     Map<String, String> pathVariables = new HashMap<>();
     pathVariables.put("feeCode", "ABC123");
     when(request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE))
@@ -48,9 +54,6 @@ class MdcLoggingInterceptorTest {
 
   @Test
   void shouldSetFeeCodeAndCorrelationIdInMdc_whenCorrelationIdIsProvided() {
-    HttpServletRequest request = mock(HttpServletRequest.class);
-    HttpServletResponse response = mock(HttpServletResponse.class);
-
     Map<String, String> pathVariables = new HashMap<>();
     pathVariables.put("feeCode", "ABC123");
     when(request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE))
@@ -68,9 +71,6 @@ class MdcLoggingInterceptorTest {
 
   @Test
   void shouldNotSetFeeCodeMdc_whenFeeCodeIsNotProvided() {
-    HttpServletRequest request = mock(HttpServletRequest.class);
-    HttpServletResponse response = mock(HttpServletResponse.class);
-
     MdcLoggingInterceptor interceptor = new MdcLoggingInterceptor();
     interceptor.preHandle(request, response, null);
 
@@ -125,9 +125,6 @@ class MdcLoggingInterceptorTest {
 
   @Test
   void shouldClearMdcAfterCompletion() {
-    HttpServletRequest request = mock(HttpServletRequest.class);
-    HttpServletResponse response = mock(HttpServletResponse.class);
-
     MDC.put("test123", "testValue");
 
     MdcLoggingInterceptor interceptor = new MdcLoggingInterceptor();
