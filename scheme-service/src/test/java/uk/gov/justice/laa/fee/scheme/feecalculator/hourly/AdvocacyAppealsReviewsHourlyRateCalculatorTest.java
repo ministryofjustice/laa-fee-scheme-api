@@ -30,7 +30,7 @@ class AdvocacyAppealsReviewsHourlyRateCalculatorTest extends BaseFeeCalculatorTe
   @InjectMocks
   AdvocacyAppealsReviewsHourlyRateCalculator calculator;
 
-  private static Stream<Arguments> testData() {
+  public static Stream<Arguments> testData() {
     return Stream.of(
         arguments("PROH, with VAT, no warning", "PROH", true, 100, 20, 500,
             50, 50, 1574.06, 120.0, 600, 840, false),

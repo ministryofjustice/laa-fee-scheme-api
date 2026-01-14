@@ -163,7 +163,7 @@ class PrisonLawFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   @Nested
   class PrisonLawEscapeCaseTest {
 
-    private static Stream<Arguments> testDataForPrisonLawEscapeLogic() {
+    public static Stream<Arguments> testDataForPrisonLawEscapeLogic() {
       return Stream.of(
           argumentsEscape("PRIC2,escape using escape case threshold, above limit", "PRIC2",
               "121221/799", true, 200.75, 100.00, 20.00,

@@ -15,7 +15,7 @@ import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTest
 class VatRatesRepositoryIntegrationTest extends PostgresContainerTestBase {
 
   @Autowired
-  VatRatesRepository repository;
+  private VatRatesRepository repository;
 
   @ParameterizedTest
   @CsvSource({
