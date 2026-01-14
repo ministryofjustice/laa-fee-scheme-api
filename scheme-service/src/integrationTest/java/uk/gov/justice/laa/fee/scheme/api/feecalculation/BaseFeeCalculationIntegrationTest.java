@@ -16,7 +16,7 @@ public abstract class BaseFeeCalculationIntegrationTest extends PostgresContaine
 
   static final String AUTH_TOKEN = "int-test-token";
   static final String URI = "/api/v1/fee-calculation";
-  private static final String HEADER_CORRELATION_ID = "X-Correlation-Id";
+  static final String HEADER_CORRELATION_ID = "X-Correlation-Id";
 
   @Autowired
   MockMvc mockMvc;

@@ -46,32 +46,16 @@ jacocoTestCoverageVerification {
     }
 }
 
-sourceSets {
-    integrationTest {
-        java.srcDir file('src/integrationtest/java')
-        resources.srcDir file('src/integrationtest/resources')
-        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
-        runtimeClasspath += output + compileClasspath
+['checkstyleTest', 'checkstyleIntegrationTest'].each {
+    tasks.named(it) {
+        configProperties = [
+                'checkstyle.suppressions.file': rootProject.file('config/checkstyle/suppressions-test.xml')
+        ]
     }
 }
 
-tasks.named('processIntegrationTestResources', Copy) {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
-
-configurations {
-    integrationTestImplementation.extendsFrom testImplementation
-    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
-}
-
-tasks.named('integrationTest', Test) {
-    description = 'Runs integration tests.'
-    group = 'verification'
-    testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath = sourceSets.integrationTest.runtimeClasspath
-    shouldRunAfter test
-}
-
+check.dependsOn checkstyleTest
+check.dependsOn checkstyleIntegrationTest
 check.dependsOn integrationTest
 check.dependsOn jacocoTestCoverageVerification
 
