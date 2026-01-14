@@ -81,7 +81,7 @@ class PrisonLawFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   @Nested
   class PrisonLawFeeCalculationTest {
 
-    private static Stream<Arguments> testDataForPrisonLawClaims() {
+    public static Stream<Arguments> testDataForPrisonLawClaims() {
       return Stream.of(
           arguments("PRIA Prison Law Fee Code, VAT applied", "PRIA",
               "121221/799", true, 200.75, 100.00,

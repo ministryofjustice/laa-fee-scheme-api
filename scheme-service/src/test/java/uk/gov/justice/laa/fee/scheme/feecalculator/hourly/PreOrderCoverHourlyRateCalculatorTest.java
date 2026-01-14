@@ -30,7 +30,7 @@ class PreOrderCoverHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
   PreOrderCoverHourlyRateCalculator preOrderCoverHourlyRateCalculator;
 
 
-  private static Stream<Arguments> testData() {
+  public static Stream<Arguments> testData() {
     return Stream.of(
         arguments("PROP1, no error", "PROP1", true, 10.0, 2.0, 10,
             10, 10, 55.14, 6.0, 30.0, 48.0, false),

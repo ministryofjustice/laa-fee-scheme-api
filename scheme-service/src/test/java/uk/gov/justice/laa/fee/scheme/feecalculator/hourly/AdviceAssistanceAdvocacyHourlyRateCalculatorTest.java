@@ -26,7 +26,7 @@ class AdviceAssistanceAdvocacyHourlyRateCalculatorTest extends BaseFeeCalculator
   @InjectMocks
   AdviceAssistanceAdvocacyHourlyRateCalculator adviceAssistanceAdvocacyHourlyRateCalculator;
 
-  private static Stream<Arguments> testData() {
+  public static Stream<Arguments> testData() {
     return Stream.of(
         arguments("PROD, with VAT", "PROD", true, 100.0, 20.0, 290,
             180, 120, 118.0, 590.0, 828.0),

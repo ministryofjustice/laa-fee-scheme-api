@@ -466,7 +466,7 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThat(result).isEmpty();
   }
 
-  private static Stream<Arguments> testPoliceStationAttendanceClaims() {
+  public static Stream<Arguments> testPoliceStationAttendanceClaims() {
     return Stream.of(
         arguments("INVC Police Fee Code, VAT applied", "INVC", "NE001",
             "1001", "121221/7899", true, 87.93,
@@ -478,7 +478,7 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     );
   }
 
-  private static Stream<Arguments> testPoliceStationTelephonicAdviceClaims() {
+  public static Stream<Arguments> testPoliceStationTelephonicAdviceClaims() {
     return Stream.of(
         arguments("INVB1 Police Fee Code, VAT applied", "INVB1", "NE001",
             "1001", "121221/7899", true, 17.28,

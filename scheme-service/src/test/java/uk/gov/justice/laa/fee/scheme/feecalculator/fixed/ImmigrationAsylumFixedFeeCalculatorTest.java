@@ -82,7 +82,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           .build();
     }
 
-    private static Stream<Arguments> testDataWithDisbursementWithinLimit() {
+    public static Stream<Arguments> testDataWithDisbursementWithinLimit() {
       return Stream.of(
           arguments("IACA, Has Vat, eligible for disbursement, below limit",
               "IACA", true, null, 399, 50, BigDecimal.valueOf(600),

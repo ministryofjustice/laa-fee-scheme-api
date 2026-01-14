@@ -98,7 +98,7 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   @Nested
   class MentalHealthFeeCalculationTest {
 
-    private static Stream<Arguments> testData() {
+    public static Stream<Arguments> testData() {
       return Stream.of(
           arguments("MHL01, with Vat, no bolt ons", "MHL01", 253.0, true, 50.6, null,
               0.0, null, 374.25),

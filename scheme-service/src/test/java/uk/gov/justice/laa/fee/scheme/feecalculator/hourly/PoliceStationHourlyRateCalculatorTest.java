@@ -37,7 +37,7 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
   PoliceStationHourlyRateCalculator policeStationHourlyRateCalculator;
 
 
-  private static Stream<Arguments> testPoliceOtherData() {
+  public static Stream<Arguments> testPoliceOtherData() {
 
     LocalDate start2016 = LocalDate.of(2016, 4, 15);
     LocalDate start2021 = LocalDate.of(2021, 7, 10);

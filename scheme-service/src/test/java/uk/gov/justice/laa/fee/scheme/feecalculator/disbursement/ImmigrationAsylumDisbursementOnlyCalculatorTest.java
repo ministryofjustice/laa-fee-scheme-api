@@ -30,7 +30,7 @@ class ImmigrationAsylumDisbursementOnlyCalculatorTest {
   @InjectMocks
   ImmigrationAsylumDisbursementOnlyCalculator immigrationAsylumDisbursementOnlyCalculator;
 
-  private static Stream<Arguments> testData() {
+  public static Stream<Arguments> testData() {
     return Stream.of(
         arguments("ICASD, below disbursement limit",
             "ICASD", null, 1000.0, 200.0,
