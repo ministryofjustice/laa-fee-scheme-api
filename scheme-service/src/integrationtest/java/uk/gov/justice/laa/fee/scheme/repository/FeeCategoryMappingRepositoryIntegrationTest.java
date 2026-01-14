@@ -16,7 +16,7 @@ import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTest
 class FeeCategoryMappingRepositoryIntegrationTest extends PostgresContainerTestBase {
 
   @Autowired
-  private FeeCategoryMappingRepository repository;
+  FeeCategoryMappingRepository repository;
 
   @Test
   void should_Return_FeeCategoryMappingEntity_whenFeeCodeIsPresent() {

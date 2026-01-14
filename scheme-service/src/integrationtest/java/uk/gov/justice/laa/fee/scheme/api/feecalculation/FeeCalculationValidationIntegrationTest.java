@@ -23,7 +23,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrationTest {
 
-  private static final String HEADER_CORRELATION_ID = "X-Correlation-Id";
+  static final String HEADER_CORRELATION_ID = "X-Correlation-Id";
 
   @Test
   void shouldGetBadResponse_whenDuplicateField() throws Exception {
@@ -531,11 +531,11 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   @ParameterizedTest
   @CsvSource({
       "IMCF, WARIA1, Costs have been capped at £600 without an Immigration Priority Authority Number. "
-        + "Disbursement costs exceed the Disbursement Limit., false, 2173.72, 250.6, 650.0, 600.0, 1092.0, 0",
+      + "Disbursement costs exceed the Disbursement Limit., false, 2173.72, 250.6, 650.0, 600.0, 1092.0, 0",
       "IALB, WARIA2, Costs have been capped at £400 without an Immigration Priority Authority Number. "
-        + "Disbursement costs exceed the Disbursement Limit., false, 1158.92, 114.8, 450.0, 400.0, 413.0, 0",
+      + "Disbursement costs exceed the Disbursement Limit., false, 1158.92, 114.8, 450.0, 400.0, 413.0, 0",
       "IACE, WARIA3, The claim exceeds the Escape Case Threshold. "
-        + "An Escape Case Claim must be submitted for further costs to be paid., true, 1116.12, 166.0, 50.0, 50.0, 669.0, 1500"
+      + "An Escape Case Claim must be submitted for further costs to be paid., true, 1116.12, 166.0, 50.0, 50.0, 669.0, 1500"
   })
   void shouldReturnValidationWarning_immigrationAndAsylumFixedFee(
       String feeCode,
@@ -1013,9 +1013,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   @ParameterizedTest
   @CsvSource({
       "PRIA, WARCRM6, The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid., "
-        + "true, 360.9, 40.15, 200.75",
+      + "true, 360.9, 40.15, 200.75",
       "PRIB1, WARCRM5, Costs are included. Profit and Waiting Costs exceed the Lower Standard Fee Limit. An escape fee may be payable., "
-        + "false, 364.72, 40.79, 203.93",
+      + "false, 364.72, 40.79, 203.93",
   })
   void shouldReturnValidationWarning_prisonLaw(
       String feeCode,

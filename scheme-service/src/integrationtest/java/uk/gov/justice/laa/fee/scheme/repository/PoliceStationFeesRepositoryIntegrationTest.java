@@ -14,7 +14,7 @@ import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTest
 class PoliceStationFeesRepositoryIntegrationTest extends PostgresContainerTestBase {
 
   @Autowired
-  private PoliceStationFeesRepository repository;
+  PoliceStationFeesRepository repository;
 
   @Test
   void testFindById() {
