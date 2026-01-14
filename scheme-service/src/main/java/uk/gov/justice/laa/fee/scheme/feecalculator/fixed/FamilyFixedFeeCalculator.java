@@ -2,109 +2,57 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.FAMILY;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_FAMILY_ESCAPE_THRESHOLD;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isEscapedCase;
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
-import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
-import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
-import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 /**
  * Calculate the fixed fee for a given fee entity and fee calculation request.
  */
-@Slf4j
 @Component
-@RequiredArgsConstructor
-public class FamilyFixedFeeCalculator implements FeeCalculator {
+public class FamilyFixedFeeCalculator extends BaseFixedFeeCalculator {
 
-  private final VatRatesService vatRatesService;
+  public FamilyFixedFeeCalculator(VatRatesService vatRatesService) {
+    super(vatRatesService);
+  }
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of(FAMILY);
   }
 
-  /**
-   * Calculated fee based on the provided fee entity and fee calculation request.
-   *
-   * @param feeCalculationRequest the request containing fee calculation data
-   * @param feeEntity             the fee entity containing fee details
-   * @return FeeCalculationResponse with calculated fee
-   */
   @Override
-  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+  protected boolean canEscape() {
+    return true;
+  }
 
-    log.info("Calculate Family fixed fee");
+  @Override
+  protected boolean handleEscapeCase(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
+                                     List<ValidationMessagesInner> validationMessages, BigDecimal totalAmount) {
 
-    // Get fixed fee amount
-    BigDecimal fixedFeeAmount = defaultToZeroIfNull(feeEntity.getFixedFee());
-
-    // Calculate VAT if applicable
-    LocalDate claimStartDate = getFeeClaimStartDate(feeEntity.getCategoryType(), feeCalculationRequest);
-    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatIndicator);
-    BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAmount, vatRate);
-
-    // Get disbursements
-    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
-
-    BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount,
-        netDisbursementAmount, disbursementVatAmount);
-
-    boolean isClaimEscaped = false;
-
-    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-
-    // For five Fee Codes FVP012, FVP010, FVP190, FVP200 & FVP210, Escape threshold limit will be empty.
-    // Hence, No escape threshold check for these fee codes.
-
+    boolean escaped = false;
     BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
 
     if (escapeThresholdLimit != null) {
-
       BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
+      escaped = isEscapedCase(totalAmount.add(netProfitCosts), feeEntity);
 
-      isClaimEscaped = isEscapedCase(totalAmount.add(netProfitCosts), feeEntity);
-
-      if (isClaimEscaped) {
+      if (escaped) {
         validationMessages.add(buildValidationWarning(WARN_FAMILY_ESCAPE_THRESHOLD,
             "Fee total exceeds escape threshold limit"));
       }
     }
 
-    FeeCalculation feeCalculation = FeeCalculation.builder()
-        .totalAmount(toDouble(totalAmount))
-        .vatIndicator(vatIndicator)
-        .vatRateApplied(toDoubleOrNull(vatRate))
-        .calculatedVatAmount(toDouble(calculatedVatAmount))
-        .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
-        .fixedFeeAmount(toDouble(fixedFeeAmount))
-        .build();
-
-    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, validationMessages, isClaimEscaped);
+    return escaped;
   }
 }

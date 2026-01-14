@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
@@ -16,7 +15,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -60,19 +58,15 @@ public abstract class BaseFixedFeeCalculator implements FeeCalculator {
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount, netDisbursementAmount,
         disbursementVatAmount);
 
-    //Step 7: check if escaped
+    //Step 7: check if escaped, if eligible
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     boolean canEscape = canEscape();
     boolean isEscaped = false;
     if (canEscape) {
-      isEscaped = determineEscapeCase(feeCalculationRequest, feeEntity);
-      if (isEscaped) {
-        //Step 8: build Validation Messages
-        validationMessages.add(buildValidationWarning(getEscapeWarningCode(feeEntity), getEscapeWarningMessage()));
-      }
+      isEscaped = handleEscapeCase(feeCalculationRequest, feeEntity, validationMessages, totalAmount);
     }
 
-    //Step 9: build FeeCalculation
+    //Step 8: build FeeCalculation
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
         .vatIndicator(vatIndicator)
@@ -84,7 +78,7 @@ public abstract class BaseFixedFeeCalculator implements FeeCalculator {
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .build();
 
-    //step 10: build response
+    //step 9: build response
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
@@ -96,20 +90,13 @@ public abstract class BaseFixedFeeCalculator implements FeeCalculator {
         .build();
   }
 
+  protected boolean handleEscapeCase(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
+                                     List<ValidationMessagesInner> messages, BigDecimal totalAmount) {
+    return false;
+  }
+
   protected boolean canEscape() {
     return false;
-  }
-
-  protected boolean determineEscapeCase(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
-    return false;
-  }
-
-  protected WarningType getEscapeWarningCode(FeeEntity feeEntity) {
-    return null;
-  }
-
-  protected String getEscapeWarningMessage() {
-    return null;
   }
 
 }

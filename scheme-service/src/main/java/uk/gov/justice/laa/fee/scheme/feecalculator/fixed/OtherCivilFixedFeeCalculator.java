@@ -9,24 +9,24 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.HOUSING_HLPAS;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MISCELLANEOUS;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PUBLIC_LAW;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.WELFARE_BENEFITS;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 /**
  * Calculate the Other Civil fee for a given fee entity and fee data.
  */
-@Slf4j
 @Component
 public class OtherCivilFixedFeeCalculator extends BaseFixedFeeCalculator {
 
@@ -46,23 +46,20 @@ public class OtherCivilFixedFeeCalculator extends BaseFixedFeeCalculator {
   }
 
   @Override
-  protected boolean determineEscapeCase(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+  protected boolean handleEscapeCase(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
+                                     List<ValidationMessagesInner> messages, BigDecimal totalAmount) {
+
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
-    return isEscapedCase(netProfitCosts, feeEntity);
-  }
+    boolean escaped = isEscapedCase(netProfitCosts, feeEntity);
 
-  @Override
-  protected WarningType getEscapeWarningCode(FeeEntity feeEntity) {
-    List<WarningType> warningTypes = WarningType.getByCategory(feeEntity.getCategoryType());
-    if (warningTypes.isEmpty()) {
-      throw new IllegalStateException("No warning codes found for category: " + feeEntity.getCategoryType());
+    if (escaped) {
+      List<WarningType> warningTypes = WarningType.getByCategory(feeEntity.getCategoryType());
+      if (warningTypes.isEmpty()) {
+        throw new IllegalStateException("No warning codes found for category: " + feeEntity.getCategoryType());
+      }
+      messages.add(buildValidationWarning(warningTypes.getFirst(), "Fee total exceeds escape threshold limit"));
     }
-    return  warningTypes.getFirst();
-  }
-
-  @Override
-  protected String getEscapeWarningMessage() {
-    return "Fee total exceeds escape threshold limit";
+    return escaped;
   }
 
 }
