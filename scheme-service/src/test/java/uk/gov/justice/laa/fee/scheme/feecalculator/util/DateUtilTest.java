@@ -36,4 +36,16 @@ class DateUtilTest {
       DateUtil.toLocalDate("1203"); // less than 6 chars
     });
   }
+
+  @Test
+  void testDateHavingGreaterThan50() {
+    LocalDate result = DateUtil.toLocalDate("120351/8789");
+    assertEquals(LocalDate.of(1951, 3, 12), result);
+  }
+
+  @Test
+  void testDateHavingLessThan50() {
+    LocalDate result = DateUtil.toLocalDate("120349/8789");
+    assertEquals(LocalDate.of(2049, 3, 12), result);
+  }
 }
