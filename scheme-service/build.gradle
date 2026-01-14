@@ -1,7 +1,7 @@
 plugins {
     id 'io.freefair.lombok' version '9.1.0'
     id 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
-    id 'io.sentry.jvm.gradle' version '5.12.2'
+    id "io.sentry.jvm.gradle" version "5.12.2"
 }
 
 def versions = [
@@ -130,7 +130,7 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // Sentry
-    implementation platform('io.sentry:sentry-bom:$versions.sentry')
-    implementation 'io.sentry:sentry-logback:$versions.sentry'
-    implementation 'io.sentry:sentry-spring-boot-starter-jakarta:$versions.sentry'
+    implementation platform("io.sentry:sentry-bom:$versions.sentry")
+    implementation "io.sentry:sentry-logback:$versions.sentry"
+    implementation "io.sentry:sentry-spring-boot-starter-jakarta:$versions.sentry"
 }
