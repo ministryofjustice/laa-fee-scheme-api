@@ -38,6 +38,12 @@ class DateUtilTest {
   }
 
   @Test
+  void testDateHaving50() {
+    LocalDate result = DateUtil.toLocalDate("120350/8789");
+    assertEquals(LocalDate.of(1950, 3, 12), result);
+  }
+
+  @Test
   void testDateHavingGreaterThan50() {
     LocalDate result = DateUtil.toLocalDate("120351/8789");
     assertEquals(LocalDate.of(1951, 3, 12), result);
