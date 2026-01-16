@@ -49,18 +49,15 @@ public class PrisonLawFixedFeeCalculator extends BaseFixedFeeCalculator {
     BigDecimal profitCosts = toBigDecimal(request.getNetProfitCosts());
     BigDecimal waitingCosts = toBigDecimal(request.getNetWaitingCosts());
     BigDecimal total = profitCosts.add(waitingCosts);
-
     String feeCode = request.getFeeCode();
 
     if (FEE_CODES_ESCAPE_USING_ESCAPE_THRESHOLD.contains(feeCode)) {
       return escapeCaseValidation(feeEntity, messages, total);
     }
-
     if (FEE_CODES_ESCAPE_USING_FEE_LIMIT.contains(feeCode)) {
       feeLimitValidation(feeEntity, messages, total);
       return false;
     }
-
     return false;
   }
 

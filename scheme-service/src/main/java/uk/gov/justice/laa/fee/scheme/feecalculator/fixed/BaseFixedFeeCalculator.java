@@ -23,7 +23,8 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 /**
- * Base.
+ * Base Fixed Fee Calculator.
+ * Fixed Fee plus Disbursements.
  */
 @Slf4j
 @RequiredArgsConstructor
