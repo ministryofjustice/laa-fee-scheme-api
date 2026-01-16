@@ -14,7 +14,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrationTest {
 
   @Test
-  void shouldGetFeeCalculation_adviceAssistanceAdvocacyHourlyRate() throws Exception {
+  void shouldGetAdviceAssistanceAdvocacyHourlyRateFeeCalculation() throws Exception {
     String request = """ 
         {
           "feeCode": "PROD",
@@ -62,7 +62,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
       "APPA, 221225/456, AAR_FS2025, 261.6, 28.6, 143.0, 43.0, 43.0",
       "APPB, 221225/456, AAR_FS2025, 354.0, 44.0, 220.0, 120.0, 120.0"
   })
-  void shouldGetFeeCalculation_advocacyAppealsReviewHourlyRate(String feeCode,
+  void shouldGetAdvocacyAppealsReviewHourlyRateFeeCalculation(String feeCode,
                                                      String uniqueFileNumber,
                                                      String schemeId,
                                                      String expectedTotal,
@@ -113,7 +113,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
       "PROH1, 2025-12-22, 111111/456, AAR_FS2025, 810.0, 120.0, 600.0, 500.0, 500.0",
       "PROH2, 2025-12-22, 111111/456, AAR_FS2025, 810.0, 120.0, 600.0, 500.0, 500.0"
   })
-  void shouldGetFeeCalculation_advocacyAppealsReviewHourlyRate_PROH_repOrderDate(String feeCode,
+  void shouldGetAdvocacyAppealsReviewHourlyRateFeeCalculationWithRepOrderDate(String feeCode,
                                                                String repOrderDate,
                                                                String uniqueFileNumber,
                                                                String schemeId,
@@ -163,7 +163,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldGetFeeCalculation_discriminationHourlyRate() throws Exception {
+  void shouldGetDiscriminationHourlyRateFeeCalculation() throws Exception {
     String request = """ 
         {
           "feeCode": "DISC",
@@ -206,7 +206,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
       "IMXC, IMM_ASYLM_FS2025",
       "IRAR, IMM_ASYLM_FS2023"
   })
-  void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate_clr(String feeCode, String feeScheme) throws Exception {
+  void shouldGetImmigrationAndAsylumHourlyRateClrFeeCalculation(String feeCode, String feeScheme) throws Exception {
     String request = """ 
         {
           "feeCode": "%s",
@@ -248,7 +248,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
       "IACD, 1781.39, 271.76, 1484.49, 885.0, 302.0",
       "IMCD, 1703.39, 258.76, 1419.49, 820.0, 237.0",
   })
-  void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate_clrInterim(String feeCode, double total, double vat,
+  void shouldGetImmigrationAndAsylumHourlyRateClrInterimFeeCalculation(String feeCode, double total, double vat,
                                                                          double hourlyTotal, double boltOnTotal,
                                                                          double boltOnSubHearing) throws Exception {
     String request = """ 
@@ -310,7 +310,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
       "IMXL, 116.89, 260.27, 23.38, 216.89",
       "IA100, 45, 174.0, 9.0, 145.0",
   })
-  void shouldGetFeeCalculation_immigrationAndAsylumHourlyRate_legalHelp(String feeCode, double netProfitCosts, double total,
+  void shouldGetImmigrationAndAsylumHourlyRateLegalHelpFeeCalculation(String feeCode, double netProfitCosts, double total,
                                                                         double vat, double hourlyTotal) throws Exception {
     String request = """ 
         {
@@ -346,7 +346,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldGetFeeCalculation_policeStationHourlyRate() throws Exception {
+  void shouldGetPoliceStationHourlyRateFeeCalculation() throws Exception {
     String request = """ 
         {
           "feeCode": "INVH",
@@ -393,7 +393,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
       "PROP2, 211225/123, POC_FS2022",
       "PROP2, 221225/123, POC_FS2025",
   })
-  void shouldGetFeeCalculation_preOrderCoverHourlyRate(String feeCode, String ufn, String feeScheme) throws Exception {
+  void shouldGetPreOrderCoverHourlyRateFeeCalculation(String feeCode, String ufn, String feeScheme) throws Exception {
     String request = """ 
         {
           "feeCode": "%s",
