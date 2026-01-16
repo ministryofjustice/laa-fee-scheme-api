@@ -38,12 +38,11 @@ class FeeDetailsServiceTest {
     String feeCode = "FEE123";
 
     CategoryOfLawTypeEntity categoryOfLawType = CategoryOfLawTypeEntity.builder().code("AAP").build();
-    FeeType feeType = FeeType.FIXED;
 
     // Mock FeeInformationEntity
     FeeInformationEntity feeInformation = mock(FeeInformationEntity.class);
     when(feeInformation.getFeeDescription()).thenReturn("Claims Against Public Authorities Legal Help Fixed Fee");
-    when(feeInformation.getFeeType()).thenReturn(feeType);
+    when(feeInformation.getFeeType()).thenReturn(FeeType.FIXED);
 
     FeeCategoryMappingEntity feeCategoryMappingEntity = mock(FeeCategoryMappingEntity.class);
     when(feeCategoryMappingEntity.getCategoryOfLawType()).thenReturn(categoryOfLawType);
@@ -93,7 +92,7 @@ class FeeDetailsServiceTest {
   @Test
   void getCaseType_shouldThrowExceptionCategoryOfLawNotFound() {
     String feeCode = "FEE123";
-    when(feeCategoryMappingRepository.findByFeeCodeFeeCode(any())).thenReturn(Optional.empty());
+    when(feeCategoryMappingRepository.findByFeeCodeFeeCode(feeCode)).thenReturn(Optional.empty());
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder().feeCode(feeCode).build();
 
     assertThatThrownBy(() -> feeDetailsService.getCaseType(feeCalculationRequest))

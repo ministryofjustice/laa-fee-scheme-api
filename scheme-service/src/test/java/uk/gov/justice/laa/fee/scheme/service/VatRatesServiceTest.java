@@ -7,6 +7,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -32,32 +35,18 @@ class VatRatesServiceTest {
         .build();
     when(vatRatesRepository.findTopByStartDateLessThanEqualOrderByStartDateDesc(date)).thenReturn(vatRatesEntity);
 
-
     BigDecimal result = vatRatesService.getVatRateForDate(date, true);
-
-    assertThat(result).isNotNull();
 
     assertThat(result).isEqualTo(new BigDecimal("20.00"));
   }
 
-  @Test
-  void calculateVat_whenVatIndicatorIsNull_shouldReturnZeroVatResult() {
+  @NullSource
+  @ValueSource(booleans = {false})
+  @ParameterizedTest
+  void calculateVat_whenVatIndicatorIsNullOrFalse_shouldReturnZeroVatResult(Boolean vatIndicator) {
     LocalDate date = LocalDate.of(2025, 1, 1);
 
-    BigDecimal result = vatRatesService.getVatRateForDate(date, null);
-
-    assertThat(result).isNotNull();
-
-    assertThat(result).isEqualTo(BigDecimal.ZERO);
-  }
-
-  @Test
-  void calculateVat_whenVatIndicatorIsFalse_shouldReturnZeroVatResult() {
-    LocalDate date = LocalDate.of(2025, 1, 1);
-
-    BigDecimal result = vatRatesService.getVatRateForDate(date, false);
-
-    assertThat(result).isNotNull();
+    BigDecimal result = vatRatesService.getVatRateForDate(date, vatIndicator);
 
     assertThat(result).isEqualTo(BigDecimal.ZERO);
   }

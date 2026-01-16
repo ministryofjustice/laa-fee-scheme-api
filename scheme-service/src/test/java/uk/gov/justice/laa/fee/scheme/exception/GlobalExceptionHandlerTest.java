@@ -5,7 +5,6 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.ERROR;
 
 import java.time.LocalDate;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,12 +24,7 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @ExtendWith(MockitoExtension.class)
 class GlobalExceptionHandlerTest {
 
-  private GlobalExceptionHandler globalExceptionHandler;
-
-  @BeforeEach
-  void setup() {
-    globalExceptionHandler = new GlobalExceptionHandler();
-  }
+  private final GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
 
   @Test
   void handleHttpMessageNotReadable() {
@@ -38,10 +32,7 @@ class GlobalExceptionHandlerTest {
 
     ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadable(exception);
 
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().getStatus()).isEqualTo(400);
-    assertThat(response.getBody().getMessage()).contains("Duplicate field 'feeCode'");
+    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Duplicate field 'feeCode'");
   }
 
   @Test
@@ -59,6 +50,8 @@ class GlobalExceptionHandlerTest {
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().getTimestamp()).isNotNull();
+    assertThat(response.getBody().getError()).isEqualTo("Bad Request");
     assertThat(response.getBody().getStatus()).isEqualTo(400);
     assertThat(response.getBody().getMessage()).contains("Fee code must not be blank");
   }
@@ -69,10 +62,7 @@ class GlobalExceptionHandlerTest {
 
     ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleCategoryOfLawNotFound(exception);
 
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-    assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().getStatus()).isEqualTo(404);
-    assertThat(response.getBody().getMessage()).isEqualTo("Category of law code not found for feeCode: FEE123");
+    assertErrorResponse(response, HttpStatus.NOT_FOUND, "Category of law code not found for feeCode: FEE123");
   }
 
   @Test
@@ -105,10 +95,7 @@ class GlobalExceptionHandlerTest {
 
     ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpRequestMethodNotSupported(exception);
 
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED);
-    assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().getStatus()).isEqualTo(405);
-    assertThat(response.getBody().getMessage()).isEqualTo("Request method 'GET' is not supported");
+    assertErrorResponse(response, HttpStatus.METHOD_NOT_ALLOWED, "Request method 'GET' is not supported");
   }
 
   @Test
@@ -117,10 +104,7 @@ class GlobalExceptionHandlerTest {
 
     ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleGenericException(exception);
 
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-    assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().getStatus()).isEqualTo(500);
-    assertThat(response.getBody().getMessage()).isEqualTo("some error");
+    assertErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, "some error");
   }
 
   @Test
@@ -129,10 +113,7 @@ class GlobalExceptionHandlerTest {
 
     ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleStartDateNotProvided(exception);
 
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-    assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().getStatus()).isEqualTo(404);
-    assertThat(response.getBody().getMessage()).isEqualTo("Start Date is required for feeCode: FEE123");
+    assertErrorResponse(response, HttpStatus.NOT_FOUND, "Start Date is required for feeCode: FEE123");
   }
 
   @Test
@@ -141,9 +122,16 @@ class GlobalExceptionHandlerTest {
 
     ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleCaseConcludedDateNotProvided(exception);
 
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    assertErrorResponse(response, HttpStatus.NOT_FOUND, "Case Concluded Date is required for feeCode: FEE123");
+  }
+
+  private void assertErrorResponse(ResponseEntity<ErrorResponse> response, HttpStatus expectedStatus,
+                                   String expectedMessage) {
+    assertThat(response.getStatusCode()).isEqualTo(expectedStatus);
     assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().getStatus()).isEqualTo(404);
-    assertThat(response.getBody().getMessage()).isEqualTo("Case Concluded Date is required for feeCode: FEE123");
+    assertThat(response.getBody().getTimestamp()).isNotNull();
+    assertThat(response.getBody().getError()).isEqualTo(expectedStatus.getReasonPhrase());
+    assertThat(response.getBody().getStatus()).isEqualTo(expectedStatus.value());
+    assertThat(response.getBody().getMessage()).isEqualTo(expectedMessage);
   }
 }

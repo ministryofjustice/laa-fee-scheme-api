@@ -12,6 +12,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -23,10 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -146,13 +145,8 @@ class FeeCalculationControllerTest {
 
   @Test
   void logFeeRequest_shouldLogWarning_whenSerializationFails() throws Exception {
-    FeeCalculationController controller = new FeeCalculationController(feeCalculationService) {
-      @Override
-      public ResponseEntity<FeeCalculationResponse> getFeeCalculation(FeeCalculationRequest feeCalculationRequest) {
-        return super.getFeeCalculation(feeCalculationRequest);
-      }
-    };
 
+    FeeCalculationController controller = new FeeCalculationController(feeCalculationService);
     ObjectMapper failingMapper = mock(ObjectMapper.class);
     when(failingMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("Serialization failed") {});
 

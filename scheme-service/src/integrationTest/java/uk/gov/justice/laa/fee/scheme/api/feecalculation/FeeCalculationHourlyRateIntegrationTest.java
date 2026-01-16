@@ -103,7 +103,8 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
             "netWaitingCostsAmount": 50
           }
         }
-        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, expectedHourlyTotalAmount, netProfitCostsAmount, requestedNetProfitCostsAmount));
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, expectedHourlyTotalAmount,
+        netProfitCostsAmount, requestedNetProfitCostsAmount));
   }
 
   @ParameterizedTest
@@ -157,7 +158,8 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
             "netWaitingCostsAmount": 50
           }
         }
-        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, expectedHourlyTotalAmount, netProfitCostsAmount, requestedNetProfitCostsAmount));
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, expectedHourlyTotalAmount,
+        netProfitCostsAmount, requestedNetProfitCostsAmount));
   }
 
   @Test

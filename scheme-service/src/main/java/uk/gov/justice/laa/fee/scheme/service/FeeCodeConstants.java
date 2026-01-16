@@ -6,9 +6,9 @@ import java.util.regex.Pattern;
 /**
  * Constants for Fee codes.
  */
-public class FeeCodeConstants {
+public final class FeeCodeConstants {
 
-  private  FeeCodeConstants() {}
+  private FeeCodeConstants() {}
 
   public static final List<String> FEE_CODE_PROH_TYPE =
       List.of("PROH", "PROH1", "PROH2");

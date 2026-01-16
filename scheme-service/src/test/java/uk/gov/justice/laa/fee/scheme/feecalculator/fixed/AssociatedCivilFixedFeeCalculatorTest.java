@@ -147,6 +147,6 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     Set<CategoryType> result = associatedCivilFixedFeeCalculator.getSupportedCategories();
 
-    assertThat(result).containsExactly(CategoryType.ASSOCIATED_CIVIL);
+    assertThat(result).containsExactly(ASSOCIATED_CIVIL);
   }
 }
