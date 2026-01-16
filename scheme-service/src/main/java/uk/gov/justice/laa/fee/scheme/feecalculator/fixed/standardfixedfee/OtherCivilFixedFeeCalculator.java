@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
+package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standardfixedfee;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLAIMS_PUBLIC_AUTHORITIES;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLINICAL_NEGLIGENCE;
@@ -28,21 +28,16 @@ import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
  * Calculate the Other Civil fee for a given fee entity and fee data.
  */
 @Component
-public class OtherCivilFixedFeeCalculator extends BaseFixedFeeCalculator {
+public class OtherCivilFixedFeeCalculator extends StandardFixedFeeCalculator {
 
   public OtherCivilFixedFeeCalculator(VatRatesService vatRatesService) {
-    super(vatRatesService);
+    super(vatRatesService, true);
   }
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of(CLAIMS_PUBLIC_AUTHORITIES, CLINICAL_NEGLIGENCE, COMMUNITY_CARE, DEBT,
         HOUSING, HOUSING_HLPAS, MISCELLANEOUS, PUBLIC_LAW, WELFARE_BENEFITS);
-  }
-
-  @Override
-  protected boolean canEscape() {
-    return true;
   }
 
   @Override

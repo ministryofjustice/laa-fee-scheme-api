@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
+package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standardfixedfee;
 
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
@@ -23,14 +23,15 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 /**
- * Base Fixed Fee Calculator.
+ * Standard Fixed Fee Calculator.
  * Fixed Fee plus Disbursements.
  */
 @Slf4j
 @RequiredArgsConstructor
-public abstract class BaseFixedFeeCalculator implements FeeCalculator {
+public abstract class StandardFixedFeeCalculator implements FeeCalculator {
 
-  protected final VatRatesService vatRatesService;
+  private final VatRatesService vatRatesService;
+  private final boolean canEscape;
 
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest,
@@ -61,7 +62,6 @@ public abstract class BaseFixedFeeCalculator implements FeeCalculator {
 
     //Step 7: check if escaped, if eligible
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    boolean canEscape = canEscape();
     boolean isEscaped = false;
     if (canEscape) {
       isEscaped = handleEscapeCase(feeCalculationRequest, feeEntity, validationMessages, totalAmount);
@@ -95,9 +95,4 @@ public abstract class BaseFixedFeeCalculator implements FeeCalculator {
                                      List<ValidationMessagesInner> messages, BigDecimal totalAmount) {
     return false;
   }
-
-  protected boolean canEscape() {
-    return false;
-  }
-
 }

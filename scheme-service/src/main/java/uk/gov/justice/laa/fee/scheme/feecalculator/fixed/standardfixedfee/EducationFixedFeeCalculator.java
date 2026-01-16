@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
+package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standardfixedfee;
 
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_EDUCATION_ESCAPE_THRESHOLD;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
@@ -21,20 +21,15 @@ import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
  */
 @Slf4j
 @Component
-public class EducationFixedFeeCalculator extends BaseFixedFeeCalculator {
+public class EducationFixedFeeCalculator extends StandardFixedFeeCalculator {
 
   public EducationFixedFeeCalculator(VatRatesService vatRatesService) {
-    super(vatRatesService);
+    super(vatRatesService, true);
   }
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of();
-  }
-
-  @Override
-  protected boolean canEscape() {
-    return true;
   }
 
   @Override

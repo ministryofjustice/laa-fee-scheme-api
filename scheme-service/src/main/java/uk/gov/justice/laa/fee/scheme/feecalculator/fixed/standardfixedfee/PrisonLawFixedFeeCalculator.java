@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
+package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standardfixedfee;
 
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_PRISON_HAS_ESCAPED;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_PRISON_MAY_HAVE_ESCAPED;
@@ -22,23 +22,18 @@ import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
  */
 @Slf4j
 @Component
-public class PrisonLawFixedFeeCalculator extends BaseFixedFeeCalculator {
+public class PrisonLawFixedFeeCalculator extends StandardFixedFeeCalculator {
 
   private static final Set<String> FEE_CODES_ESCAPE_USING_ESCAPE_THRESHOLD = Set.of("PRIA", "PRIB2", "PRIC2", "PRID2", "PRIE2");
   private static final Set<String> FEE_CODES_ESCAPE_USING_FEE_LIMIT = Set.of("PRIB1", "PRIC1", "PRID1", "PRIE1");
 
   public PrisonLawFixedFeeCalculator(VatRatesService vatRatesService) {
-    super(vatRatesService);
+    super(vatRatesService, true);
   }
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of(CategoryType.PRISON_LAW);
-  }
-
-  @Override
-  protected boolean canEscape() {
-    return true;
   }
 
   @Override

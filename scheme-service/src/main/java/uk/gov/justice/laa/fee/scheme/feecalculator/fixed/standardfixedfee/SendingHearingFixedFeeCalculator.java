@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
+package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standardfixedfee;
 
 
 import java.util.Set;
@@ -12,10 +12,10 @@ import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
  */
 @Slf4j
 @Component
-public class SendingHearingFixedFeeCalculator extends BaseFixedFeeCalculator {
+public class SendingHearingFixedFeeCalculator extends StandardFixedFeeCalculator {
 
   public SendingHearingFixedFeeCalculator(VatRatesService vatRatesService) {
-    super(vatRatesService);
+    super(vatRatesService, false);
   }
 
   @Override

@@ -7,7 +7,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.disbursement.EducationDisbursementOnlyCalculator;
-import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.EducationFixedFeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standardfixedfee.EducationFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 

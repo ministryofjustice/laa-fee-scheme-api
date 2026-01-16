@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
+package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standardfixedfee;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.FAMILY;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_FAMILY_ESCAPE_THRESHOLD;
@@ -20,20 +20,15 @@ import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
  * Calculate the fixed fee for a given fee entity and fee calculation request.
  */
 @Component
-public class FamilyFixedFeeCalculator extends BaseFixedFeeCalculator {
+public class FamilyFixedFeeCalculator extends StandardFixedFeeCalculator {
 
   public FamilyFixedFeeCalculator(VatRatesService vatRatesService) {
-    super(vatRatesService);
+    super(vatRatesService, true);
   }
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of(FAMILY);
-  }
-
-  @Override
-  protected boolean canEscape() {
-    return true;
   }
 
   @Override
