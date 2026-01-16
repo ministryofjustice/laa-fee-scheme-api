@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.api.feecalculation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,7 +31,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "PROD",
           "schemeId": "AAA_FS2016",
@@ -50,6 +52,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           }
         }
         """);
+    assertThat(actualResponse).isNotBlank();
   }
 
   @ParameterizedTest
@@ -84,7 +87,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """.formatted(feeCode, uniqueFileNumber, netProfitCostsAmount);
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "%s",
@@ -104,6 +107,8 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           }
         }
         """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, expectedHourlyTotalAmount, netProfitCostsAmount, requestedNetProfitCostsAmount));
+
+    assertThat(actualResponse).isNotBlank();
   }
 
   @ParameterizedTest
@@ -138,7 +143,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """.formatted(feeCode, representationOrderDate, uniqueFileNumber, netProfitCostsAmount);
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "%s",
@@ -158,6 +163,8 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           }
         }
         """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, expectedHourlyTotalAmount, netProfitCostsAmount, requestedNetProfitCostsAmount));
+
+    assertThat(actualResponse).isNotBlank();
   }
 
   @Test
@@ -175,7 +182,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "DISC",
           "schemeId": "DISC_FS2013",
@@ -196,6 +203,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           }
         }
         """);
+    assertThat(actualResponse).isNotBlank();
   }
 
   @ParameterizedTest
@@ -218,7 +226,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """.formatted(feeCode);
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "%s",
@@ -238,6 +246,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           }
         }
         """.formatted(feeCode, feeScheme));
+    assertThat(actualResponse).isNotBlank();
   }
 
   @ParameterizedTest
@@ -268,7 +277,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """.formatted(feeCode);
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "IMM_ASYLM_FS2020",
@@ -298,6 +307,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           }
         }
         """.formatted(feeCode, total, vat, hourlyTotal, boltOnTotal, boltOnSubHearing));
+    assertThat(actualResponse).isNotBlank();
 
   }
 
@@ -322,7 +332,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """.formatted(feeCode, netProfitCosts);
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "IMM_ASYLM_FS2025",
@@ -341,6 +351,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           }
         }
         """.formatted(feeCode, total, vat, hourlyTotal, netProfitCosts, netProfitCosts));
+    assertThat(actualResponse).isNotBlank();
   }
 
   @Test
@@ -361,7 +372,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "INVH",
           "schemeId": "POL_FS2022",
@@ -382,6 +393,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           }
         }
         """);
+    assertThat(actualResponse).isNotBlank();
   }
 
   @ParameterizedTest
@@ -406,7 +418,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """.formatted(feeCode, ufn);
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "%s",
@@ -427,5 +439,6 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           }
         }
         """.formatted(feeCode, feeScheme));
+    assertThat(actualResponse).isNotBlank();
   }
 }

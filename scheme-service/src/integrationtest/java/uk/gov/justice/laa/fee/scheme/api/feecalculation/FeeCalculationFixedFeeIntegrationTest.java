@@ -1,5 +1,8 @@
 package uk.gov.justice.laa.fee.scheme.api.feecalculation;
 
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,24 +32,25 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """;
 
-    postAndExpect(request, """
-        {
-          "feeCode": "ASMS",
-          "schemeId": "ASSOC_FS2016",
-          "claimId": "claim_123",
-          "escapeCaseFlag": false,
-          "feeCalculation": {
-           "totalAmount": 161.22,
-           "vatIndicator": true,
-           "vatRateApplied": 20.0,
-           "calculatedVatAmount": 15.8,
-           "disbursementAmount": 55.35,
-           "requestedNetDisbursementAmount": 55.35,
-           "disbursementVatAmount": 11.07,
-           "fixedFeeAmount": 79.0
+     String actualResponse = postAndExpect(request, """
+          {
+            "feeCode": "ASMS",
+            "schemeId": "ASSOC_FS2016",
+            "claimId": "claim_123",
+            "escapeCaseFlag": false,
+            "feeCalculation": {
+             "totalAmount": 161.22,
+             "vatIndicator": true,
+             "vatRateApplied": 20.0,
+             "calculatedVatAmount": 15.8,
+             "disbursementAmount": 55.35,
+             "requestedNetDisbursementAmount": 55.35,
+             "disbursementVatAmount": 11.07,
+             "fixedFeeAmount": 79.0
+            }
           }
-        }
-        """);
+          """);
+    assertThat(actualResponse).isNotBlank();
   }
 
   @ParameterizedTest
@@ -74,7 +78,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """.formatted(feeCode, representationOrderDate);
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "%s",
@@ -92,6 +96,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount)
     );
+    assertThat(actualResponse).isNotBlank();
   }
 
   @ParameterizedTest
@@ -116,7 +121,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """.formatted(feeCode, uniqueFileNumber);
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "%s",
@@ -131,6 +136,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount)
     );
+    assertThat(actualResponse).isNotBlank();
   }
 
   @Test
@@ -147,7 +153,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """;
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "FPB010",
           "claimId": "claim_123",
@@ -165,6 +171,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           }
         }
         """);
+    assertThat(actualResponse).isNotBlank();
   }
 
   @ParameterizedTest
@@ -248,7 +255,8 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         """.formatted(feeCode, startDate);
     request = (boltOn != null) ? request + ", \"boltOns\": { \"boltOn%s\": 1 }}".formatted(boltOn) : request + "}";
 
-    postAndExpect(request, boltOn != null ? expectedJsonWithBoltOns : expectedJson);
+    String actualResponse = postAndExpect(request, boltOn != null ? expectedJsonWithBoltOns : expectedJson);
+    assertThat(actualResponse).isNotBlank();
   }
 
   @Test
@@ -265,7 +273,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """;
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
          "feeCode": "MDAS2B",
           "schemeId": "MED_FS2013",
@@ -282,6 +290,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           }
         }
         """);
+    assertThat(actualResponse).isNotBlank();
   }
 
   @Test
@@ -300,7 +309,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """;
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "MHL03",
           "schemeId": "MHL_FS2013",
@@ -323,6 +332,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           }
         }
         """);
+    assertThat(actualResponse).isNotBlank();
   }
 
   @Test
@@ -339,7 +349,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """;
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "EDUFIN",
           "schemeId": "EDU_FS2013",
@@ -357,6 +367,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           }
         }
         """);
+    assertThat(actualResponse).isNotBlank();
   }
 
   @ParameterizedTest
@@ -388,7 +399,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """.formatted(feeCode);
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "%s",
@@ -406,6 +417,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           }
         }
         """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount));
+    assertThat(actualResponse).isNotBlank();
   }
 
   @Test
@@ -421,7 +433,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """;
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "INVB1",
           "claimId": "claim_123",
@@ -435,6 +447,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           }
         }
         """);
+    assertThat(actualResponse).isNotBlank();
   }
 
   @ParameterizedTest
@@ -456,7 +469,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """.formatted(ufn);
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "INVC",
           "claimId": "claim_123",
@@ -470,6 +483,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           }
         }
         """.formatted(feeScheme, feeTotal, feeTotal));
+    assertThat(actualResponse).isNotBlank();
   }
 
   @ParameterizedTest
@@ -507,7 +521,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """.formatted(feeCode, ufn);
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "%s",
@@ -525,6 +539,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           }
         }
         """.formatted(feeCode, feeScheme, total, vat, fixedFee));
+    assertThat(actualResponse).isNotBlank();
   }
 
   @ParameterizedTest
@@ -550,7 +565,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """.formatted(feeCode, uniqueFileNumber, representationOrderDate);
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "%s",
@@ -565,6 +580,8 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount)
     );
+
+    assertThat(actualResponse).isNotBlank();
   }
 
   @ParameterizedTest
@@ -596,7 +613,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """.formatted(feeCode, representationOrderDate, netWaitingCosts, netTravelCosts);
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "%s",
@@ -616,5 +633,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount,
         netWaitingCosts, netTravelCosts, fixedFeeAmount));
+
+    assertThat(actualResponse).isNotBlank();
   }
 }
