@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standardfixedfee;
+package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard;
 
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_EDUCATION_ESCAPE_THRESHOLD;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;

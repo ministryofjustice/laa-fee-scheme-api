@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standardfixedfee;
+package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLAIMS_PUBLIC_AUTHORITIES;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.CLINICAL_NEGLIGENCE;

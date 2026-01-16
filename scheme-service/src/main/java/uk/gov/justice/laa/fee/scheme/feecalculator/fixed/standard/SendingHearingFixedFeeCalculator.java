@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standardfixedfee;
+package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard;
 
 
 import java.util.Set;

@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standardfixedfee;
+package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard;
 
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;

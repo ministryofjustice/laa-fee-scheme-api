@@ -19,7 +19,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculatorFactory;
 import uk.gov.justice.laa.fee.scheme.feecalculator.ImmigrationAsylumFeeCalculator;
-import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standardfixedfee.PrisonLawFixedFeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard.PrisonLawFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.service.validation.CivilFeeValidationService;
 import uk.gov.justice.laa.fee.scheme.service.validation.CrimeFeeValidationService;

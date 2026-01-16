@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standardfixedfee;
+package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard;
 
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_PRISON_HAS_ESCAPED;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_PRISON_MAY_HAVE_ESCAPED;
