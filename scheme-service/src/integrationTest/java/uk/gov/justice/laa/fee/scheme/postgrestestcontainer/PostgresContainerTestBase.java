@@ -11,6 +11,9 @@ public abstract class PostgresContainerTestBase {
 
   private static final PostgresSingletonContainer POSTGRES = PostgresSingletonContainer.getInstance();
 
+  protected PostgresContainerTestBase() {
+  }
+
   @DynamicPropertySource
   static void configureProperties(DynamicPropertyRegistry registry) {
     registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);

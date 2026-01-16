@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTestBase;
 
 public abstract class BaseFeeCalculationIntegrationTest extends PostgresContainerTestBase {
@@ -21,8 +22,8 @@ public abstract class BaseFeeCalculationIntegrationTest extends PostgresContaine
   @Autowired
   MockMvc mockMvc;
 
-  void postAndExpect(String requestJson, String expectedResponseJson) throws Exception {
-    mockMvc
+  String postAndExpect(String requestJson, String expectedResponseJson) throws Exception {
+    MvcResult result = mockMvc
         .perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
@@ -31,6 +32,9 @@ public abstract class BaseFeeCalculationIntegrationTest extends PostgresContaine
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json(expectedResponseJson, STRICT))
-        .andExpect(header().exists(HEADER_CORRELATION_ID));
+        .andExpect(header().exists(HEADER_CORRELATION_ID))
+        .andReturn();
+
+    return result.getResponse().getContentAsString();
   }
 }
