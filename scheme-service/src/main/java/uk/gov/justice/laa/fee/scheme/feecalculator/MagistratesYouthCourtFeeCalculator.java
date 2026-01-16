@@ -8,8 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.DesignatedCourtFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.UndesignatedCourtFixedFeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard.DesignatedCourtFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
