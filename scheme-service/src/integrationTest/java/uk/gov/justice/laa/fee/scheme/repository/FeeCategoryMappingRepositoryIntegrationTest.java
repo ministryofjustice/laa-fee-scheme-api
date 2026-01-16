@@ -2,6 +2,7 @@ package uk.gov.justice.laa.fee.scheme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +16,22 @@ import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTest
 @Testcontainers
 class FeeCategoryMappingRepositoryIntegrationTest extends PostgresContainerTestBase {
 
+  private final FeeCategoryMappingRepository repository;
+
   @Autowired
-  private FeeCategoryMappingRepository repository;
+  public FeeCategoryMappingRepositoryIntegrationTest(FeeCategoryMappingRepository repository) {
+    this.repository = repository;
+  }
 
   @Test
-  void should_Return_FeeCategoryMappingEntity_whenFeeCodeIsPresent() {
+  void shouldReturnFeeCategoryMappingEntityWhenFeeCodeIsPresent() {
     String feeCode = "IACA";
     Optional<FeeCategoryMappingEntity> result = repository.findByFeeCodeFeeCode(feeCode);
 
     assertThat(result).isPresent();
+    if (result.isEmpty()) {
+      throw new EntityNotFoundException();
+    }
 
     FeeCategoryMappingEntity feeCategoryMappingEntity = result.get();
     assertThat(feeCategoryMappingEntity.getCategoryOfLawType().getCode()).isEqualTo("IMMAS");
@@ -32,7 +40,7 @@ class FeeCategoryMappingRepositoryIntegrationTest extends PostgresContainerTestB
   }
 
   @Test
-  void should_Return_Empty_whenFeeCodeIsNotPresent() {
+  void shouldReturnEmptyWhenFeeCodeIsNotPresent() {
     String feeCode = "XYZ";
     Optional<FeeCategoryMappingEntity> result = repository.findByFeeCodeFeeCode(feeCode);
     assertThat(result).isEmpty();

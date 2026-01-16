@@ -35,26 +35,6 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
       "false, 80.00, 20.00, 170.33, 0", // Equal to escape threshold limit (No VAT)
       "true, 80.00, 20.00, 180.33, 10.00" // Equal to escape threshold limit (VAT applied)
   })
-  void calculate_whenVatIndicatorIsFalseShouldReturnFeeCalculationResponse(boolean vatIndicator, double netTravelCosts,
-                                                                           double netWaitingCosts, double expectedTotal,
-                                                                           double expectedVat) {
-    mockVatRatesService(vatIndicator);
-
-    FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netTravelCosts, netWaitingCosts);
-    FeeEntity feeEntity = buildFeeEntity();
-
-    FeeCalculationResponse result = associatedCivilFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
-
-    assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, false);
-  }
-
-  @ParameterizedTest
-  @CsvSource({
-      "false, 10.00, 20.00, 170.33, 0",  // Under escape threshold (No VAT)
-      "true, 10.00, 20.00, 180.33, 10.00",  // Under escape threshold limit (VAT applied)
-      "false, 80.00, 20.00, 170.33, 0", // Equal to escape threshold limit (No VAT)
-      "true, 80.00, 20.00, 180.33, 10.00" // Equal to escape threshold limit (VAT applied)
-  })
   void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double netTravelCosts,
                                                     double netWaitingCosts, double expectedTotal,
                                                     double expectedVat) {
