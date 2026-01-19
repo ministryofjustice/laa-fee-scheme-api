@@ -1,12 +1,8 @@
-package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
+package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard;
 
-import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_EDUCATION_ESCAPE_THRESHOLD;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -16,12 +12,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
-import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -30,70 +23,76 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 /**
- * Calculate Education fee for a given fee entity and fee data.
+ * Standard Fixed Fee Calculator.
+ * Fixed Fee plus Disbursements.
  */
 @Slf4j
-@Component
 @RequiredArgsConstructor
-public class EducationFixedFeeCalculator implements FeeCalculator {
+public abstract class StandardFixedFeeCalculator implements FeeCalculator {
 
   private final VatRatesService vatRatesService;
+  private final boolean canEscape;
 
   @Override
-  public Set<CategoryType> getSupportedCategories() {
-    return Set.of();
-  }
+  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest,
+                                          FeeEntity feeEntity) {
 
-  /**
-   * Calculated fee based on the provided fee entity and fee calculation request.
-   *
-   * @param feeCalculationRequest the request containing fee calculation data
-   * @return FeeCalculationResponse with calculated fee
-   */
-  @Override
-  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+    log.info("Starting fee calculation for {}", feeEntity.getCategoryType());
 
-    log.info("Calculate Education fixed fee");
-
-    // Get fixed fee amount
+    //Step 1: get Fixed Fee Amount
     BigDecimal fixedFeeAmount = defaultToZeroIfNull(feeEntity.getFixedFee());
 
-    // Calculate VAT if applicable
+    //Step 2: get Start Date
     LocalDate claimStartDate = getFeeClaimStartDate(feeEntity.getCategoryType(), feeCalculationRequest);
+
+    //Step 3: get VAT Rate
     Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
     BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatIndicator);
+
+    //Step 4: Calculate VAT Amount
     BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAmount, vatRate);
 
-    // Get disbursements
+    //Step 5: get Disbursements
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    // Calculate total amount
-    BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount,
-        calculatedVatAmount, netDisbursementAmount, disbursementVatAmount);
+    //Step 6: calculate Total Amount
+    BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount, netDisbursementAmount,
+        disbursementVatAmount);
 
-    // Escape case logic
-    BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
-
+    //Step 7: check if escaped, if eligible
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    boolean isEscaped = isEscapedCase(netProfitCosts, feeEntity);
-
-    if (isEscaped) {
-      validationMessages.add(buildValidationWarning(WARN_EDUCATION_ESCAPE_THRESHOLD,
-          "Fee total exceeds escape threshold limit"));
+    boolean isEscaped = false;
+    if (canEscape) {
+      isEscaped = handleEscapeCase(feeCalculationRequest, feeEntity, validationMessages, totalAmount);
     }
 
+    //Step 8: build FeeCalculation
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
         .vatIndicator(vatIndicator)
         .vatRateApplied(toDoubleOrNull(vatRate))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
-        .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .disbursementAmount(toDoubleOrNull(netDisbursementAmount))
+        .requestedNetDisbursementAmount(toDoubleOrNull(netDisbursementAmount))
+        .disbursementVatAmount(toDoubleOrNull(disbursementVatAmount))
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .build();
 
-    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, validationMessages, isEscaped);
+    //step 9: build response
+    log.info("Build fee calculation response");
+    return FeeCalculationResponse.builder()
+        .feeCode(feeCalculationRequest.getFeeCode())
+        .schemeId(feeEntity.getFeeScheme().getSchemeCode())
+        .claimId(feeCalculationRequest.getClaimId())
+        .escapeCaseFlag(canEscape ? isEscaped : null)
+        .validationMessages(validationMessages)
+        .feeCalculation(feeCalculation)
+        .build();
+  }
+
+  protected boolean handleEscapeCase(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
+                                     List<ValidationMessagesInner> messages, BigDecimal totalAmount) {
+    return false;
   }
 }
