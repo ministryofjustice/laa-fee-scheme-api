@@ -69,7 +69,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .immigrationPriorAuthorityNumber(priorAuthority)
         .build();
 
-    FeeEntity feeEntity = buildFeeEntity();
+    FeeEntity feeEntity = buildFeeEntity(feeCode);
 
     FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
 
@@ -229,7 +229,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .vatIndicator(false)
         .build();
 
-    FeeEntity feeEntity = buildFeeEntity();
+    FeeEntity feeEntity = buildFeeEntity("IAXL");
 
     FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
 
@@ -335,7 +335,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .vatIndicator(false)
         .build();
 
-    FeeEntity feeEntity = buildFeeEntity();
+    FeeEntity feeEntity = buildFeeEntity(feeCode);
 
     FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
 
@@ -460,9 +460,9 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .isInstanceOf(IllegalArgumentException.class).hasMessage("Fee code not supported: AAAA");
   }
 
-  private FeeEntity buildFeeEntity() {
+  private FeeEntity buildFeeEntity(String feeCode) {
     return FeeEntity.builder()
-        .feeCode("IAXL")
+        .feeCode(feeCode)
         .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
         .categoryType(IMMIGRATION_ASYLUM)
         .feeType(HOURLY)

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.entity.VatRatesEntity;
 import uk.gov.justice.laa.fee.scheme.repository.VatRatesRepository;
@@ -27,7 +28,7 @@ public class VatRatesService {
    */
   public BigDecimal getVatRateForDate(LocalDate date, Boolean vatIndicator) {
 
-    if (!Boolean.TRUE.equals(vatIndicator)) {
+    if (BooleanUtils.isNotTrue(vatIndicator)) {
       log.info("VAT is not applicable for fee calculation");
       return BigDecimal.ZERO;
     }

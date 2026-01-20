@@ -2,7 +2,6 @@ package uk.gov.justice.laa.fee.scheme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +28,6 @@ class FeeCategoryMappingRepositoryIntegrationTest extends PostgresContainerTestB
     Optional<FeeCategoryMappingEntity> result = repository.findByFeeCodeFeeCode(feeCode);
 
     assertThat(result).isPresent();
-    if (result.isEmpty()) {
-      throw new EntityNotFoundException();
-    }
 
     FeeCategoryMappingEntity feeCategoryMappingEntity = result.get();
     assertThat(feeCategoryMappingEntity.getCategoryOfLawType().getCode()).isEqualTo("IMMAS");

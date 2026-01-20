@@ -62,6 +62,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
   /**
    * Calculated fee for Immigration and asylum fee based on the provided fee entity and fee calculation request.
    */
+  @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
     log.info("Calculate Immigration and Asylum fixed fee");
