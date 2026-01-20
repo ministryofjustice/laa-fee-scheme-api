@@ -23,8 +23,9 @@ import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTest
 @Testcontainers
 class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
 
-  public static final String INT_TEST_TOKEN = "int-test-token";
-  public static final String API_V_1_FEE_DETAILS_CAPA = "/api/v1/fee-details/CAPA";
+  static final String INT_TEST_TOKEN = "int-test-token";
+  static final String API_V_1_FEE_DETAILS_CAPA = "/api/v1/fee-details/CAPA";
+
   private final MockMvc mockMvc;
 
   @Autowired

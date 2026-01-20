@@ -2,7 +2,6 @@ package uk.gov.justice.laa.fee.scheme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -28,9 +27,7 @@ class PoliceStationFeesRepositoryIntegrationTest extends PostgresContainerTestBa
     Optional<PoliceStationFeesEntity> result = repository.findById(1L);
 
     assertThat(result).isPresent();
-    if (result.isEmpty()) {
-      throw new EntityNotFoundException();
-    }
+
     PoliceStationFeesEntity entity = result.get();
     assertThat(entity.getPsSchemeName()).isEqualTo("Hartlepool");
     assertThat(entity.getPsSchemeId()).isEqualTo("1001");
