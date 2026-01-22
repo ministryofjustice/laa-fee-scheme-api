@@ -15,6 +15,13 @@ resources:
     cpu: 500m
     memory: 1.5Gi
 
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
 sentry:
   enabled: true
   environment: staging
