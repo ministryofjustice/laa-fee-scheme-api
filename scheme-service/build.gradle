@@ -107,4 +107,6 @@ dependencies {
     implementation platform("io.sentry:sentry-bom:$versions.sentry")
     implementation "io.sentry:sentry-logback:$versions.sentry"
     implementation "io.sentry:sentry-spring-boot-starter-jakarta:$versions.sentry"
+
+    implementation "io.micrometer:micrometer-registry-prometheus:1.15.8"
 }
