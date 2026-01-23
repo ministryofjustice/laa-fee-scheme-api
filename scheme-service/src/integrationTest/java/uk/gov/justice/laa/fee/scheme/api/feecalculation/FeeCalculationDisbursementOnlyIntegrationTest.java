@@ -14,6 +14,7 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
 
   @Test
   void shouldReturnFeeCalculationForEducationDisbursementOnly() throws Exception {
+//test
     String request = """ 
         {
           "feeCode": "EDUDIS",

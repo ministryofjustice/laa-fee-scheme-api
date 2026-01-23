@@ -17,7 +17,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 @ExtendWith(MockitoExtension.class)
 class EducationDisbursementOnlyCalculatorTest {
-
+//test
   @InjectMocks
   EducationDisbursementOnlyCalculator educationDisbursementOnlyCalculator;
 
