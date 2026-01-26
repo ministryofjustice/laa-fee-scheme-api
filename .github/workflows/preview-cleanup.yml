@@ -1,0 +1,14 @@
+name: Destroy preview
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  destroy:
+    uses: ./.github/workflows/_deploy-to-env.yml
+    with:
+      environment: preview
+      preview_id: pr-${{ github.event.pull_request.number }}
+      destroy: true
+    secrets: inherit

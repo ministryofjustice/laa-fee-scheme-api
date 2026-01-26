@@ -7,6 +7,18 @@ on:
         description: "Target environment to deploy"
         required: true
         type: string
+
+      preview_id:
+        description: "Preview identifier"
+        required: false
+        type: string
+
+      destroy:
+        description: "Destroy preview environment"
+        required: false
+        type: boolean
+        default: false
+
     secrets:
       ECR_ROLE_TO_ASSUME:
         required: true
@@ -46,13 +58,49 @@ jobs:
           kube-cluster: ${{ secrets.KUBE_CLUSTER }}
           kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
 
+      # Decide namespace
+      - name: Compute deploy target
+        id: target
+        run: |
+          if [[ "${{ inputs.environment }}" == "preview" ]]; then
+            NAMESPACE="preview-${{ inputs.preview_id }}"
+            RELEASE="laa-fee-scheme-api-${{ inputs.preview_id }}"
+            IMAGE_TAG="${{ inputs.preview_id }}"
+            VALUES="helm_deploy/laa-fee-scheme-api/values-dev.yaml"
+          else
+            NAMESPACE="${{ secrets.KUBE_NAMESPACE }}"
+            RELEASE="laa-fee-scheme-api-${{ inputs.environment }}"
+            IMAGE_TAG="${{ github.sha }}"
+            VALUES="helm_deploy/laa-fee-scheme-api/values-${{ inputs.environment }}.yaml"
+          fi
+
+          echo "namespace=$NAMESPACE" >> $GITHUB_OUTPUT
+          echo "release=$RELEASE" >> $GITHUB_OUTPUT
+          echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "values=$VALUES" >> $GITHUB_OUTPUT
+
+      # Create namespace for preview
+      - name: Create preview namespace
+        if: inputs.environment == 'preview'
+        run: |
+          kubectl create namespace ${{ steps.target.outputs.namespace }} || true
+
+      # Destroy preview on PR closed
+      - name: Destroy preview
+        if: inputs.destroy == true
+        run: |
+          helm uninstall ${{ steps.target.outputs.release }} \
+            -n ${{ steps.target.outputs.namespace }} || true
+          kubectl delete namespace ${{ steps.target.outputs.namespace }} || true
+
       - name: Helm Deploy
+        if: inputs.destroy == false
         uses: ministryofjustice/laa-reusable-github-actions/.github/actions/helm-deploy@main
         with:
-          k8s_namespace: ${{ secrets.KUBE_NAMESPACE }}
-          helm_release_name: laa-fee-scheme-api-${{ inputs.environment }}
+          k8s_namespace: ${{ steps.target.outputs.namespace }}
+          helm_release_name: ${{ steps.target.outputs.release }}
           helm_chart: helm_deploy/laa-fee-scheme-api
-          helm_values_path: helm_deploy/laa-fee-scheme-api/values-${{ inputs.environment }}.yaml
+          helm_values_path: ${{ steps.target.outputs.values }}
           image_registry: ${{ steps.login-ecr.outputs.image_registry }}
           image_repo: ${{ vars.ECR_REPOSITORY }}
-          image_tag: ${{ github.sha }}
+          image_tag: ${{ steps.target.outputs.image_tag }}
