@@ -5,7 +5,7 @@ plugins {
 }
 
 def versions = [
-        sentry 						: '8.30.0'
+        sentry 						: '8.31.0'
 ]
 
 test {
