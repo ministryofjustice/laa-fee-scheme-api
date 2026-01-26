@@ -58,4 +58,9 @@ jobs:
     with:
       environment: preview
       preview_id: pr-${{ github.event.pull_request.number }}
-    secrets: inherit
+    secrets:
+      ECR_ROLE_TO_ASSUME: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+      KUBE_CERT: ${{ secrets.KUBE_CERT }}
+      KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
+      KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
+      KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
