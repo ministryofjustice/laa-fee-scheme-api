@@ -3,7 +3,6 @@ name: Preview deploy
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-  workflow_dispatch:
 
 concurrency:
   group: preview-${{ github.event.pull_request.number }}
@@ -28,6 +27,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+
       - uses: actions/setup-java@v5
         with:
           java-version: '25'
@@ -56,11 +56,6 @@ jobs:
     needs: ecr
     uses: ./.github/workflows/_deploy-to-env.yml
     with:
-      environment: preview
+      environment: dev
       preview_id: pr-${{ github.event.pull_request.number }}
-    secrets:
-      ECR_ROLE_TO_ASSUME: ${{ secrets.ECR_ROLE_TO_ASSUME }}
-      KUBE_CERT: ${{ secrets.KUBE_CERT }}
-      KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
-      KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
-      KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+    secrets: inherit
