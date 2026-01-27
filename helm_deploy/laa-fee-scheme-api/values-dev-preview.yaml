@@ -18,9 +18,6 @@ resources:
 sentry:
   enabled: false
 
-prometheus:
-  enabled: false
-
 root:
   logging:
     level: INFO
@@ -31,4 +28,7 @@ spring:
 
 application:
   logging:
-    level: DEBUG
+    level: INFO
+
+prometheus:
+  enabled: false
