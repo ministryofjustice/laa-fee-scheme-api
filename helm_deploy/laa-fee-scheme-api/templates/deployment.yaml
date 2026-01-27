@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "{{ .Release.Name }}-deployment"
+  name: "{{ .Chart.Name }}-deployment"
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "laa-fee-scheme-api.labels" . | nindent 4 }}
@@ -14,7 +14,7 @@ spec:
       {{- include "laa-fee-scheme-api.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      name: {{ .Release.Name }}
+      name: {{ .Chart.Name }}
       namespace: {{ .Release.Namespace }}
       labels:
         {{- include "laa-fee-scheme-api.labels" . | nindent 8 }}
@@ -23,7 +23,7 @@ spec:
         {{- end }}
     spec:
       containers:
-        - name: {{ .Release.Name }}
+        - name: {{ .Chart.Name }}
           image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
@@ -53,5 +53,5 @@ spec:
             periodSeconds: {{ .Values.actuator.readiness.periodSeconds }}
             timeoutSeconds: {{ .Values.actuator.readiness.timeoutSeconds }}
             failureThreshold: {{ .Values.actuator.readiness.failureThreshold }}
-          env:
-            {{- include "laa-fee-scheme-api.env-vars" . | nindent 12 }}
+
+          {{ include "laa-fee-scheme-api.env-vars" . | nindent 10 }}
