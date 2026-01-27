@@ -13,16 +13,10 @@ on:
         type: string
 
       destroy:
-        description: "Destroy the PR environment"
+        description: "destroy the PR environment"
         required: false
         type: boolean
         default: false
-
-      extra_set_values:
-        description: "Additional Helm values to set"
-        required: false
-        type: string
-        default: ""
 
     secrets:
       ECR_ROLE_TO_ASSUME:
@@ -69,20 +63,13 @@ jobs:
           if [[ -n "${{ inputs.preview_id }}" ]]; then
             RELEASE="laa-fee-scheme-api-${{ inputs.preview_id }}"
             IMAGE_TAG="${{ inputs.preview_id }}"
-            VALUES="helm_deploy/laa-fee-scheme-api/values-dev.yaml"
-            SHARED_RESOURCES="false"
           else
-            # Regular environment deployment (dev/uat/prod)
             RELEASE="laa-fee-scheme-api-${{ inputs.environment }}"
             IMAGE_TAG="${{ github.sha }}"
-            VALUES="helm_deploy/laa-fee-scheme-api/values-${{ inputs.environment }}.yaml"
-            SHARED_RESOURCES="true"
           fi
 
           echo "release=$RELEASE" >> $GITHUB_OUTPUT
-          echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
-          echo "values=$VALUES" >> $GITHUB_OUTPUT
-          echo "shared_resources=$SHARED_RESOURCES" >> $GITHUB_OUTPUT
+          echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT    
 
       - name: Helm Deploy
         uses: ministryofjustice/laa-reusable-github-actions/.github/actions/helm-deploy@main
@@ -94,4 +81,3 @@ jobs:
           image_registry: ${{ steps.login-ecr.outputs.image_registry }}
           image_repo: ${{ vars.ECR_REPOSITORY }}
           image_tag: ${{ steps.target.outputs.image_tag }}
-          extra_set_values: ${{ inputs.extra_set_values }}
