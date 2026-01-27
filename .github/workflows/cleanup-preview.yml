@@ -1,0 +1,36 @@
+name: Destroy preview
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  destroy-preview:
+    uses: ./.github/workflows/_deploy-to-env.yml
+    with:
+      environment: dev
+      preview_id: pr-${{ github.event.pull_request.number }}
+      destroy: true
+    secrets: inherit
+
+  delete-ecr-image:
+    needs: destroy-preview
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Login to ECR
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/ecr-auth@main
+        id: auth
+        with:
+          ecr_region: ${{ vars.ECR_REGION }}
+          ecr_role: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          role-session-name: cleanup
+
+      - name: Delete preview image
+        run: |
+          aws ecr batch-delete-image \
+            --repository-name ${{ vars.ECR_REPOSITORY }} \
+            --image-ids imageTag=pr-${{ github.event.pull_request.number }} || true
