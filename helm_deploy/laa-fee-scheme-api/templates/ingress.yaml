@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-ingress
+  name: {{ .Chart.Name }}-ingress
   namespace: {{ .Release.Namespace }}
   labels:
     {{ include "laa-fee-scheme-api.labels" . | nindent 4 }}
@@ -26,7 +26,7 @@ spec:
             pathType: "ImplementationSpecific"
             backend:
               service:
-                name: {{ $.Release.Name }}-service
+                name: {{ $.Chart.Name }}-service
                 port:
                   number: {{ $.Values.service.port }}
   {{- end }}

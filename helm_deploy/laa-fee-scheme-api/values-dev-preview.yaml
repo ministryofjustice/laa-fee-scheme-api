@@ -5,10 +5,7 @@
 replicaCount: 1
 
 ingress:
-  enabled: true
-  domain: apps.live.cloud-platform.service.justice.gov.uk
-  annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: "{{ .Release.Name }}-green"
+  enabled: false
 
 resources:
   limits:
@@ -19,6 +16,9 @@ resources:
     memory: 1Gi
 
 sentry:
+  enabled: false
+
+prometheus:
   enabled: false
 
 root:
