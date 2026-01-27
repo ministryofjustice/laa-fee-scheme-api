@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Chart.Name }}-ingress
+  name: {{ .Release.Name }}-ingress
   namespace: {{ .Release.Namespace }}
   labels:
     {{ include "laa-fee-scheme-api.labels" . | nindent 4 }}
