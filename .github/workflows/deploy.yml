@@ -58,13 +58,13 @@ jobs:
           image_repo: ${{ vars.ECR_REPOSITORY }}
           image_tag: ${{ github.sha }}
 
-#  deploy-dev:
-#    needs: ecr
-#    uses: ./.github/workflows/_deploy-to-env.yml
-#    with:
-#      environment: dev
-#    secrets: inherit
-#
+  deploy-dev:
+    needs: ecr
+    uses: ./.github/workflows/_deploy-to-env.yml
+    with:
+      environment: dev
+    secrets: inherit
+
 #  deploy-uat:
 #    needs: deploy-dev
 #    uses: ./.github/workflows/_deploy-to-env.yml
