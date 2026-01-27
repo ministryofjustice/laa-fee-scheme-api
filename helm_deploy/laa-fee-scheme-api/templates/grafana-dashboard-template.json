@@ -685,7 +685,7 @@
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum by(status) (increase(http_server_requests_seconds_count{namespace='{{ .Release.Namespace }}', container='$container'}[1m]))",
+              "expr": "sum by(status) (increase(http_server_requests_seconds_count{namespace='{{ .Release.Namespace }}', container='$container'}[$__rate_interval]]))",
               "format": "time_series",
               "interval": "",
               "intervalFactor": 2,
@@ -784,7 +784,7 @@
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum by(status) (increase(http_server_requests_seconds_count{namespace='{{ .Release.Namespace }}', container='$container', status=~'4..|5..'}[1m]))",
+              "expr": "sum by(instance) (increase(http_server_requests_seconds_count{namespace='{{ .Release.Namespace }}', container='$container', status=~\"4..|5..\"}[$__rate_interval]))",
               "format": "time_series",
               "interval": "",
               "intervalFactor": 2,
