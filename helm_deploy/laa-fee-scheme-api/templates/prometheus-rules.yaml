@@ -1,3 +1,4 @@
+{{- if .Values.prometheus.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
@@ -70,3 +71,4 @@ spec:
       for: 15m
       labels:
         severity: {{ .Values.prometheus.severity }}
+{{- end }}

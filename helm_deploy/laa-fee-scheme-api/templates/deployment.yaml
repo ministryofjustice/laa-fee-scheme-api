@@ -18,9 +18,9 @@ spec:
       namespace: {{ .Release.Namespace }}
       labels:
         {{- include "laa-fee-scheme-api.labels" . | nindent 8 }}
-          {{- with .Values.podLabels }}
-          {{- toYaml . | nindent 8 }}
-          {{- end }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       containers:
         - name: {{ .Release.Name }}
