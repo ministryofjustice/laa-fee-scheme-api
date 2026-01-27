@@ -6,7 +6,7 @@ metadata:
     prometheus: prometheus-operator
     role: alert-rules
     release: prometheus-operator
-  name: prometheus-custom-rules-{{ .Chart.Name }}
+  name: prometheus-custom-rules-{{ .Release.Name }}
 spec:
   groups:
   - name: application-rules
