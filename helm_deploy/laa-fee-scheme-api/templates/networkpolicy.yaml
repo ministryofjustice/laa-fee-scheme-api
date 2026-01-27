@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ include "laa-fee-scheme-api.fullname" . }}-monitoring
+  name: {{ .Release.Name }}-monitoring
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "laa-fee-scheme-api.labels" . | nindent 4 }}
