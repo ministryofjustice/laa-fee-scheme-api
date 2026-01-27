@@ -18,9 +18,9 @@ spec:
       namespace: {{ .Release.Namespace }}
       labels:
         {{- include "laa-fee-scheme-api.labels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
+          {{- with .Values.podLabels }}
+          {{- toYaml . | nindent 8 }}
+          {{- end }}
     spec:
       containers:
         - name: {{ .Release.Name }}
@@ -53,5 +53,5 @@ spec:
             periodSeconds: {{ .Values.actuator.readiness.periodSeconds }}
             timeoutSeconds: {{ .Values.actuator.readiness.timeoutSeconds }}
             failureThreshold: {{ .Values.actuator.readiness.failureThreshold }}
-
-          {{ include "laa-fee-scheme-api.env-vars" . | nindent 10 }}
+          env:
+            {{- include "laa-fee-scheme-api.env-vars" . | nindent 12 }}
