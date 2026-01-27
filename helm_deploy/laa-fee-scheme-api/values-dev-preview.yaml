@@ -16,9 +16,9 @@ resources:
     memory: 1Gi
 
 sentry:
-  enabled: false
-  dsn: ""
-  environment: ""
+  enabled: true
+  environment: development
+  dsn: https://3dba04b677b4b24e1cd3380e474f7b26@o345774.ingest.us.sentry.io/4509803102666752
 
 root:
   logging:
