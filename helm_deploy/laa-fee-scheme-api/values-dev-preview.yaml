@@ -17,6 +17,8 @@ resources:
 
 sentry:
   enabled: false
+  dsn: ""
+  environment: ""
 
 root:
   logging:
