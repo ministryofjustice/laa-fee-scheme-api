@@ -1,3 +1,4 @@
+{{- if .Values.prometheus.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
@@ -6,7 +7,7 @@ metadata:
     prometheus: prometheus-operator
     role: alert-rules
     release: prometheus-operator
-  name: prometheus-custom-rules-{{ .Chart.Name }}
+  name: prometheus-custom-rules-{{ .Release.Name }}
 spec:
   groups:
   - name: application-rules
@@ -70,3 +71,4 @@ spec:
       for: 15m
       labels:
         severity: {{ .Values.prometheus.severity }}
+{{- end }}

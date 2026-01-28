@@ -1,0 +1,63 @@
+name: Preview deploy
+
+on:
+  pull_request:
+    types: [labeled]
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    if: github.event.label.name == 'preview-deploy'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: './.github/actions/build-and-test'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  ecr:
+    needs: build-test
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: corretto
+
+      - uses: gradle/actions/setup-gradle@v5
+      - run: ./gradlew clean build
+
+      - name: Login to ECR
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/ecr-auth@main
+        id: auth
+        with:
+          ecr_region: ${{ vars.ECR_REGION }}
+          ecr_role: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          role-session-name: preview
+
+      - name: Build and push preview image
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/build-and-push@main
+        with:
+          dockerfile_path: ./Dockerfile
+          image_registry: ${{ steps.auth.outputs.image_registry }}
+          image_repo: ${{ vars.ECR_REPOSITORY }}
+          image_tag: pr-${{ github.event.pull_request.number }}
+
+  deploy-preview:
+    needs: ecr
+    uses: ./.github/workflows/_deploy-to-env.yml
+    with:
+      environment: dev
+      preview_id: pr-${{ github.event.pull_request.number }}
+      preview_schema_id: pr_${{ github.event.pull_request.number }}
+    secrets: inherit
