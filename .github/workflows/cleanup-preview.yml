@@ -34,7 +34,7 @@ jobs:
 
       - name: Drop preview schema
         run: |
-          cat <<EOF | kubectl apply -f -
+          cat <<'EOF' | kubectl apply -f -
           apiVersion: batch/v1
           kind: Job
           metadata:
@@ -44,40 +44,51 @@ jobs:
             template:
               spec:
                 restartPolicy: Never
+                securityContext:
+                  runAsNonRoot: true
+                  runAsUser: 1000
+                  allowPrivilegeEscalation: false
+                  seccompProfile:
+                    type: RuntimeDefault
                 containers:
-                - name: cleanup
-                  image: postgres:15
-                  env:
-                    - name: PGHOST
-                      valueFrom:
-                        secretKeyRef:
-                          name: rds-postgresql-instance-output
-                          key: rds_instance_address
-                    - name: PGDATABASE
-                      valueFrom:
-                        secretKeyRef:
-                          name: rds-postgresql-instance-output
-                          key: database_name
-                    - name: PGUSER
-                      valueFrom:
-                        secretKeyRef:
-                          name: rds-postgresql-instance-output
-                          key: database_username
-                    - name: PGPASSWORD
-                      valueFrom:
-                        secretKeyRef:
-                          name: rds-postgresql-instance-output
-                          key: database_password
-                  command: ["psql"]
-                  args:
-                    - "-h"
-                    - "$(PGHOST)"
-                    - "-U"
-                    - "$(PGUSER)"
-                    - "-d"
-                    - "$(PGDATABASE)"
-                    - "-c"
-                    - "DROP SCHEMA IF EXISTS pr_${{ github.event.pull_request.number }} CASCADE;"
+                  - name: cleanup
+                    image: postgres:15
+                    securityContext:
+                      runAsNonRoot: true
+                      allowPrivilegeEscalation: false
+                      capabilities:
+                        drop: ["ALL"]
+                    env:
+                      - name: PGHOST
+                        valueFrom:
+                          secretKeyRef:
+                            name: rds-postgresql-instance-output
+                            key: rds_instance_address
+                      - name: PGDATABASE
+                        valueFrom:
+                          secretKeyRef:
+                            name: rds-postgresql-instance-output
+                            key: database_name
+                      - name: PGUSER
+                        valueFrom:
+                          secretKeyRef:
+                            name: rds-postgresql-instance-output
+                            key: database_username
+                      - name: PGPASSWORD
+                        valueFrom:
+                          secretKeyRef:
+                            name: rds-postgresql-instance-output
+                            key: database_password
+                    command: ["psql"]
+                    args:
+                      - "-h"
+                      - "$(PGHOST)"
+                      - "-U"
+                      - "$(PGUSER)"
+                      - "-d"
+                      - "$(PGDATABASE)"
+                      - "-c"
+                      - "DROP SCHEMA IF EXISTS pr_${{ github.event.pull_request.number }} CASCADE;"
           EOF
 
       - name: Wait for cleanup to finish
