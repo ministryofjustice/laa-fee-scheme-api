@@ -95,3 +95,5 @@ jobs:
           image_registry: ${{ steps.login-ecr.outputs.image_registry }}
           image_repo: ${{ vars.ECR_REPOSITORY }}
           image_tag: ${{ steps.target.outputs.image_tag }}
+          helm_additional_args: >
+            --set preview_schema_id=${{ inputs.preview_schema_id }}
