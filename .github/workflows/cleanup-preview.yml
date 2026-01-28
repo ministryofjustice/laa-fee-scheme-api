@@ -36,7 +36,7 @@ jobs:
           kubectl -n ${{ secrets.KUBE_NAMESPACE }} run drop-schema-${{ github.event.pull_request.number }} \
             --rm -i --restart=Never \
             --image=postgres:17 \
-            --env="PGHOST=$(kubectl get secret rds-postgresql-instance-output -o jsonpath='{.data.rds_instance_endpoint}' | base64 -d)" \
+            --env="PGHOST=$(kubectl get secret rds-postgresql-instance-output -o jsonpath='{.data.rds_instance_endpoint}' | base64 -d | cut -d: -f1)" \
             --env="PGPORT=5432" \
             --env="PGDATABASE=$(kubectl get secret rds-postgresql-instance-output -o jsonpath='{.data.database_name}' | base64 -d)" \
             --env="PGUSER=$(kubectl get secret rds-postgresql-instance-output -o jsonpath='{.data.database_username}' | base64 -d)" \
