@@ -59,4 +59,5 @@ jobs:
     with:
       environment: dev
       preview_id: pr_${{ github.event.pull_request.number }}
+      preview_schema_id: pr_${{ github.event.pull_request.number }}
     secrets: inherit

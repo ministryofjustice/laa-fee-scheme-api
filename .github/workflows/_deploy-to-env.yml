@@ -12,6 +12,10 @@ on:
         required: false
         type: string
 
+      preview_schema_id:
+        required: false
+        type: string
+
       destroy:
         description: "destroy the PR environment"
         required: false
