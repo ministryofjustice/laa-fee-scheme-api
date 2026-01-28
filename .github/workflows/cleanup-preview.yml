@@ -33,13 +33,16 @@ jobs:
 
       - name: Drop preview schema
         run: |
-          export PGHOST=$(kubectl get secret rds-postgresql-instance-output -o jsonpath='{.data.rds_instance_endpoint}' | base64 -d)
-          export PGDATABASE=$(kubectl get secret rds-postgresql-instance-output -o jsonpath='{.data.database_name}' | base64 -d)
-          export PGUSER=$(kubectl get secret rds-postgresql-instance-output -o jsonpath='{.data.database_username}' | base64 -d)
-          export PGPASSWORD=$(kubectl get secret rds-postgresql-instance-output -o jsonpath='{.data.database_password}' | base64 -d)
-
-          docker run --rm -e PGHOST -e PGDATABASE -e PGUSER -e PGPASSWORD postgres:17 \
-            psql -c "DROP SCHEMA IF EXISTS pr_${{ github.event.pull_request.number }} CASCADE;" 
+          kubectl -n ${{ secrets.KUBE_NAMESPACE }} run drop-schema-${{ github.event.pull_request.number }} \
+            --rm -i --restart=Never \
+            --image=postgres:17 \
+            --env="PGHOST=$(kubectl get secret rds-postgresql-instance-output -o jsonpath='{.data.rds_instance_endpoint}' | base64 -d)" \
+            --env="PGPORT=5432" \
+            --env="PGDATABASE=$(kubectl get secret rds-postgresql-instance-output -o jsonpath='{.data.database_name}' | base64 -d)" \
+            --env="PGUSER=$(kubectl get secret rds-postgresql-instance-output -o jsonpath='{.data.database_username}' | base64 -d)" \
+            --env="PGPASSWORD=$(kubectl get secret rds-postgresql-instance-output -o jsonpath='{.data.database_password}' | base64 -d)" \
+            -- \
+            psql -c "DROP SCHEMA IF EXISTS pr_${{ github.event.pull_request.number }} CASCADE;"
 
   delete-ecr-image:
     needs: delete-preview-schema
