@@ -31,19 +31,35 @@ jobs:
           kube-cluster: ${{ secrets.KUBE_CLUSTER }}
           kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
 
-      - name: Drop preview schema
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'corretto'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Drop PR schema
+        continue-on-error: true
         run: |
-          kubectl run pr-schema-cleanup-${{ github.event.pull_request.number }} \
+          DB_SERVER=$(kubectl get secret rds-postgresql-instance-output \
             -n ${{ secrets.KUBE_NAMESPACE }} \
-            --image=postgres:15 \
-            --rm --restart=Never \
-            --env="PGHOST=$(kubectl get secret rds-postgresql-instance-output -n ${{ secrets.KUBE_NAMESPACE }} -o jsonpath='{.data.rds_instance_address}' | base64 -d)" \
-            --env="PGDATABASE=$(kubectl get secret rds-postgresql-instance-output -n ${{ secrets.KUBE_NAMESPACE }} -o jsonpath='{.data.database_name}' | base64 -d)" \
-            --env="PGUSER=$(kubectl get secret rds-postgresql-instance-output -n ${{ secrets.KUBE_NAMESPACE }} -o jsonpath='{.data.database_username}' | base64 -d)" \
-            --env="PGPASSWORD=$(kubectl get secret rds-postgresql-instance-output -n ${{ secrets.KUBE_NAMESPACE }} -o jsonpath='{.data.database_password}' | base64 -d)" \
-            --command -- \
-            psql -h "$PGHOST" -U "$PGUSER" -d "$PGDATABASE" \
-            -c "DROP SCHEMA IF EXISTS pr_${{ github.event.pull_request.number }} CASCADE;" || true
+            -o jsonpath='{.data.rds_instance_address}' | base64 -d)
+          DB_NAME=$(kubectl get secret rds-postgresql-instance-output \
+            -n ${{ secrets.KUBE_NAMESPACE }} \
+            -o jsonpath='{.data.database_name}' | base64 -d)
+          DB_USER=$(kubectl get secret rds-postgresql-instance-output \
+            -n ${{ secrets.KUBE_NAMESPACE }} \
+            -o jsonpath='{.data.database_username}' | base64 -d)
+          DB_PASSWORD=$(kubectl get secret rds-postgresql-instance-output \
+            -n ${{ secrets.KUBE_NAMESPACE }} \
+            -o jsonpath='{.data.database_password}' | base64 -d)
+
+          ./gradlew flywayClean -Pflyway.schemas=pr_${{ github.event.pull_request.number }} \
+            -Pflyway.url=jdbc:postgresql://$DB_SERVER:5432/$DB_NAME \
+            -Pflyway.user=$DB_USER \
+            -Pflyway.password=$DB_PASSWORD
 
   delete-ecr-image:
     needs: destroy-preview
