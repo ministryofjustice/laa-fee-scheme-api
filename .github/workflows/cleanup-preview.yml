@@ -13,11 +13,80 @@ jobs:
       destroy: true
     secrets: inherit
 
-  # to do
-  # delete-preview-schema:
+  delete-preview-schema:
+    needs: destroy-preview
+    runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Authenticate with Kubernetes cluster
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@main
+        with:
+          kube-cert: ${{ secrets.KUBE_CERT }}
+          kube-token: ${{ secrets.KUBE_TOKEN }}
+          kube-cluster: ${{ secrets.KUBE_CLUSTER }}
+          kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
+
+      - name: Drop preview schema
+        run: |
+          cat <<EOF | kubectl apply -f -
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: pr-schema-cleanup-${{ github.event.pull_request.number }}
+            namespace: ${{ secrets.KUBE_NAMESPACE }}
+          spec:
+            template:
+              spec:
+                restartPolicy: Never
+                containers:
+                - name: cleanup
+                  image: postgres:15
+                  env:
+                    - name: PGHOST
+                      valueFrom:
+                        secretKeyRef:
+                          name: rds-postgresql-instance-output
+                          key: rds_instance_address
+                    - name: PGDATABASE
+                      valueFrom:
+                        secretKeyRef:
+                          name: rds-postgresql-instance-output
+                          key: database_name
+                    - name: PGUSER
+                      valueFrom:
+                        secretKeyRef:
+                          name: rds-postgresql-instance-output
+                          key: database_username
+                    - name: PGPASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                          name: rds-postgresql-instance-output
+                          key: database_password
+                  command: ["psql"]
+                  args:
+                    - "-h"
+                    - "$(PGHOST)"
+                    - "-U"
+                    - "$(PGUSER)"
+                    - "-d"
+                    - "$(PGDATABASE)"
+                    - "-c"
+                    - "DROP SCHEMA IF EXISTS pr_${{ github.event.pull_request.number }} CASCADE;"
+          EOF
+
+      - name: Wait for cleanup to finish
+        run: |
+          kubectl wait --for=condition=complete job/pr-schema-cleanup-${{ github.event.pull_request.number }} -n ${{ secrets.KUBE_NAMESPACE }} --timeout=120s
+          kubectl delete job pr-schema-cleanup-${{ github.event.pull_request.number }} -n ${{ secrets.KUBE_NAMESPACE }}
 
   delete-ecr-image:
-    needs: destroy-preview
+    needs: delete-preview-schema
     runs-on: ubuntu-latest
     permissions:
       id-token: write
