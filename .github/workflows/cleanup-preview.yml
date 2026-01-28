@@ -34,66 +34,21 @@ jobs:
 
       - name: Drop preview schema
         run: |
-          cat <<'EOF' | kubectl apply -f -
-          apiVersion: batch/v1
-          kind: Job
-          metadata:
-            name: pr-schema-cleanup-${{ github.event.pull_request.number }}
-            namespace: ${{ secrets.KUBE_NAMESPACE }}
-          spec:
-            template:
-              spec:
-                restartPolicy: Never
-                securityContext:
-                  runAsNonRoot: true
-                  runAsUser: 1000
-                  seccompProfile:
-                    type: RuntimeDefault
-                containers:
-                  - name: cleanup
-                    image: postgres:15
-                    securityContext:
-                      runAsNonRoot: true
-                      allowPrivilegeEscalation: false
-                      capabilities:
-                        drop: ["ALL"]
-                    env:
-                      - name: PGHOST
-                        valueFrom:
-                          secretKeyRef:
-                            name: rds-postgresql-instance-output
-                            key: rds_instance_address
-                      - name: PGDATABASE
-                        valueFrom:
-                          secretKeyRef:
-                            name: rds-postgresql-instance-output
-                            key: database_name
-                      - name: PGUSER
-                        valueFrom:
-                          secretKeyRef:
-                            name: rds-postgresql-instance-output
-                            key: database_username
-                      - name: PGPASSWORD
-                        valueFrom:
-                          secretKeyRef:
-                            name: rds-postgresql-instance-output
-                            key: database_password
-                    command: ["psql"]
-                    args:
-                      - "-h"
-                      - "$(PGHOST)"
-                      - "-U"
-                      - "$(PGUSER)"
-                      - "-d"
-                      - "$(PGDATABASE)"
-                      - "-c"
-                      - "DROP SCHEMA IF EXISTS pr_${{ github.event.pull_request.number }} CASCADE;"
-          EOF
+          POD_NAME=pr-schema-cleanup-${{ github.event.pull_request.number }}
+          
+          kubectl run "$POD_NAME" \
+            -n ${{ secrets.KUBE_NAMESPACE }} \
+            --image=zricethezav/postgres-client:alpine \
+            --restart=Never \
+            --env="PGHOST=$(kubectl get secret rds-postgresql-instance-output -n ${{ secrets.KUBE_NAMESPACE }} -o jsonpath='{.data.rds_instance_address}' | base64 -d)" \
+            --env="PGDATABASE=$(kubectl get secret rds-postgresql-instance-output -n ${{ secrets.KUBE_NAMESPACE }} -o jsonpath='{.data.database_name}' | base64 -d)" \
+            --env="PGUSER=$(kubectl get secret rds-postgresql-instance-output -n ${{ secrets.KUBE_NAMESPACE }} -o jsonpath='{.data.database_username}' | base64 -d)" \
+            --env="PGPASSWORD=$(kubectl get secret rds-postgresql-instance-output -n ${{ secrets.KUBE_NAMESPACE }} -o jsonpath='{.data.database_password}' | base64 -d)" \
+            --command -- \
+            sh -c "psql -h \"\$PGHOST\" -U \"\$PGUSER\" -d \"\$PGDATABASE\" -c 'DROP SCHEMA IF EXISTS pr_${{ github.event.pull_request.number }} CASCADE;'"
 
-      - name: Wait for cleanup to finish
-        run: |
-          kubectl wait --for=condition=complete job/pr-schema-cleanup-${{ github.event.pull_request.number }} -n ${{ secrets.KUBE_NAMESPACE }} --timeout=120s
-          kubectl delete job pr-schema-cleanup-${{ github.event.pull_request.number }} -n ${{ secrets.KUBE_NAMESPACE }}
+          kubectl wait --for=condition=Succeeded pod/"$POD_NAME" -n ${{ secrets.KUBE_NAMESPACE }} --timeout=120s || true
+          kubectl delete pod "$POD_NAME" -n ${{ secrets.KUBE_NAMESPACE }} || true
 
   delete-ecr-image:
     needs: delete-preview-schema
