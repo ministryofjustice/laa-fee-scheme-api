@@ -9,7 +9,7 @@ jobs:
     uses: ./.github/workflows/_deploy-to-env.yml
     with:
       environment: dev
-      preview_id: pr-${{ github.event.pull_request.number }}
+      preview_id: pr_${{ github.event.pull_request.number }}
       destroy: true
     secrets: inherit
 

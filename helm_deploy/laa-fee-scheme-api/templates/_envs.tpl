@@ -3,6 +3,8 @@ Environment variables for service containers
 */}}
 {{- define "laa-fee-scheme-api.env-vars" }}
 env:
+  - name: DB_SCHEMA
+    value: {{ .Values.preview_id | default "fee_scheme" | quote }}
   - name: DB_SERVER
     valueFrom:
       secretKeyRef:
