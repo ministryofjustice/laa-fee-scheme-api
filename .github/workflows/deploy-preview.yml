@@ -7,7 +7,7 @@ on:
       - completed
 
 concurrency:
-  group: pr-${{ github.event.pull_request.number }}
+  group: pr-${{ github.event.workflow_run.pull_requests[0].number }}
   cancel-in-progress: false
 
 jobs:
@@ -36,13 +36,13 @@ jobs:
           dockerfile_path: ./Dockerfile
           image_registry: ${{ steps.auth.outputs.image_registry }}
           image_repo: ${{ vars.ECR_REPOSITORY }}
-          image_tag: pr-${{ github.event.pull_request.number }}
+          image_tag: pr-${{ github.event.workflow_run.pull_requests[0].number }}
 
   deploy-preview:
     needs: ecr
     uses: ./.github/workflows/_deploy-to-env.yml
     with:
       environment: dev
-      preview_id: pr-${{ github.event.pull_request.number }}
-      preview_schema_id: pr_${{ github.event.pull_request.number }}
+      preview_id: pr-${{ github.event.workflow_run.pull_requests[0].number }}
+      preview_schema_id: pr_${{ github.event.workflow_run.pull_requests[0].number }}
     secrets: inherit
