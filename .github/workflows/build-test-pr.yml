@@ -23,3 +23,11 @@ jobs:
 
   zap-pr-scan:
     uses: ./.github/workflows/zap-security-scan.yml
+
+  check-for-preview-deploy:
+    if: contains(github.event.pull_request.labels.*.name, 'preview-deploy')
+    needs: [build-test, snyk-vulnerability-scan, zap-pr-scan]
+    uses: ./.github/workflows/deploy-preview.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+    secrets: inherit

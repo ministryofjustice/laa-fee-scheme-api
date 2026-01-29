@@ -1,20 +1,18 @@
 name: Preview deploy
 
 on:
-  workflow_run:
-    workflows: ["PR build and test"]
-    types:
-      - completed
+  workflow_call:
+    inputs:
+      pr_number:
+        required: true
+        type: number
 
 concurrency:
-  group: pr-${{ github.event.workflow_run.pull_requests[0].number }}
-  cancel-in-progress: false
+  group: preview-deploy-pr-${{ inputs.pr_number }}
+  cancel-in-progress: true
 
 jobs:
   ecr:
-    if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      contains(github.event.workflow_run.pull_requests[0].labels.*.name, 'preview-deploy')
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -36,13 +34,13 @@ jobs:
           dockerfile_path: ./Dockerfile
           image_registry: ${{ steps.auth.outputs.image_registry }}
           image_repo: ${{ vars.ECR_REPOSITORY }}
-          image_tag: pr-${{ github.event.workflow_run.pull_requests[0].number }}
+          image_tag: pr-${{ inputs.pr_number }}
 
   deploy-preview:
     needs: ecr
     uses: ./.github/workflows/_deploy-to-env.yml
     with:
       environment: dev
-      preview_id: pr-${{ github.event.workflow_run.pull_requests[0].number }}
-      preview_schema_id: pr_${{ github.event.workflow_run.pull_requests[0].number }}
+      preview_id: pr-${{ inputs.pr_number }}
+      preview_schema_id: pr_${{ inputs.pr_number }}
     secrets: inherit
