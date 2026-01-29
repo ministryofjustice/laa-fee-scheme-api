@@ -40,6 +40,7 @@ application:
     level: WARN
 
 prometheus:
+  enabled: true
   dashboardUrl: https://grafana.live.cloud-platform.service.justice.gov.uk/d/laa-fee-scheme-api-prod-dashboard
   severity: laa-fee-scheme-api-prod
   zeroPodsInterval: 1m
