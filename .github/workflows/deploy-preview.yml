@@ -1,30 +1,20 @@
 name: Preview deploy
 
 on:
-  pull_request:
+  workflow_run:
+    workflows: ["PR build and test"]
     types:
-      - opened
-      - synchronize
-      - reopened
-      - labeled
+      - completed
 
 concurrency:
   group: pr-${{ github.event.pull_request.number }}
   cancel-in-progress: false
 
 jobs:
-  build-test:
-    if: contains(github.event.pull_request.labels.*.name, 'preview-deploy')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: './.github/actions/build-and-test'
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
   ecr:
-    needs: build-test
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      contains(github.event.workflow_run.pull_requests[0].labels.*.name, 'preview-deploy')
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -32,15 +22,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-
-      - uses: actions/setup-java@v5
-        with:
-          java-version: '25'
-          distribution: corretto
-
-      - uses: gradle/actions/setup-gradle@v5
-      - run: ./gradlew clean build
-
       - name: Login to ECR
         uses: ministryofjustice/laa-reusable-github-actions/.github/actions/ecr-auth@main
         id: auth
