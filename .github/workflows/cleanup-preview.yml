@@ -2,19 +2,22 @@ name: Destroy preview
 
 on:
   pull_request:
-    types: [closed]
+    types:
+      - closed
+      - unlabeled
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
 
 jobs:
-  destroy-preview:
-    uses: ./.github/workflows/_deploy-to-env.yml
-    with:
-      environment: dev
-      preview_id: pr-${{ github.event.pull_request.number }}
-      destroy: true
-    secrets: inherit
-
-  delete-preview-schema:
-    needs: destroy-preview
+  cleanup:
+    if: |
+      github.event.action == 'closed' ||
+      (
+        github.event.action == 'unlabeled' &&
+        github.event.label.name == 'preview-deploy'
+      )
     runs-on: ubuntu-latest
     environment: dev
     permissions:
@@ -24,6 +27,14 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      # Safety check
+      - name: Safety check namespace
+        run: |
+          if [ "${{ secrets.KUBE_NAMESPACE }}" != "laa-fee-scheme-api-dev" ]; then
+            echo "Refusing to cleanup outside dev namespace: ${{ secrets.KUBE_NAMESPACE }}"
+            exit 0
+          fi
+
       - name: Authenticate with Kubernetes cluster
         uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@main
         with:
@@ -32,10 +43,16 @@ jobs:
           kube-cluster: ${{ secrets.KUBE_CLUSTER }}
           kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
 
+      # Helm destroy
+      - name: Destroy preview release
+        run: |
+          helm uninstall laa-fee-scheme-api-pr-${{ github.event.pull_request.number }} \
+            -n ${{ secrets.KUBE_NAMESPACE }} || true
+
+      # Drop Postgres preview schema
       - name: Drop preview schema
         run: |
           POD_NAME=pr-schema-cleanup-${{ github.event.pull_request.number }}
-          # Run ephemeral, non-root container to drop PR schema
           kubectl run "$POD_NAME" \
             -n ${{ secrets.KUBE_NAMESPACE }} \
             --image=postgres:15-alpine \
@@ -56,21 +73,13 @@ jobs:
             --env="PGPASSWORD=$(kubectl get secret rds-postgresql-instance-output -n ${{ secrets.KUBE_NAMESPACE }} -o jsonpath='{.data.database_password}' | base64 -d)" \
             --command -- \
             sh -c "psql -h \"\$PGHOST\" -U \"\$PGUSER\" -d \"\$PGDATABASE\" -c 'DROP SCHEMA IF EXISTS pr_${{ github.event.pull_request.number }} CASCADE;'"
-  
-            kubectl wait --for=condition=Succeeded pod/"$POD_NAME" -n ${{ secrets.KUBE_NAMESPACE }} --timeout=120s || true
-            kubectl delete pod "$POD_NAME" -n ${{ secrets.KUBE_NAMESPACE }} || true
 
-  delete-ecr-image:
-    needs: delete-preview-schema
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
+          kubectl wait --for=condition=Succeeded pod/"$POD_NAME" -n ${{ secrets.KUBE_NAMESPACE }} --timeout=120s || true
+          kubectl delete pod "$POD_NAME" -n ${{ secrets.KUBE_NAMESPACE }} || true
 
-    steps:
+      # ECR cleanup
       - name: Login to ECR
         uses: ministryofjustice/laa-reusable-github-actions/.github/actions/ecr-auth@main
-        id: auth
         with:
           ecr_region: ${{ vars.ECR_REGION }}
           ecr_role: ${{ secrets.ECR_ROLE_TO_ASSUME }}
