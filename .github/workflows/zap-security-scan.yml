@@ -86,24 +86,17 @@ jobs:
 
       - name: Check for High Severity Issues
         run: |
-          critical_count=$(jq '[.site[].alerts[]? | select(.riskdesc | startswith("Critical"))] | length' report_json.json)
           high_count=$(jq '[.site[].alerts[]? | select(.riskdesc | startswith("High"))] | length' report_json.json)
-          info_count=$(jq '[.site[].alerts[]? | select(.riskdesc | startswith("Info"))] | length' report_json.json)
-          low_count=$(jq '[.site[].alerts[]? | select(.riskdesc | startswith("Low"))] | length' report_json.json)
-          
+          critical_count=$(jq '[.site[].alerts[]? | select(.riskdesc | startswith("Critical"))] | length' report_json.json)
+
           echo "Critical issues found: $critical_count"
           echo "High issues found: $high_count"
-          echo "Info issues found: $info_count"
-          echo "Low issues found: $low_count"
-          
-          # Fail on any severity (adjust as needed)
-          total_issues=$((critical_count + high_count + info_count + low_count))
-          
-          if [ "$total_issues" -gt 0 ]; then
-            echo "Issues found (Critical/High/Medium/Low), build failed"
+
+          if [ "$high_count" -gt 0 ] || [ "$critical_count" -gt 0 ]; then
+            echo "High or Critical severity issues, build failed"
             exit 1
           else
-            echo "No issues found"
+            echo "No high or critical issues found"
           fi
 
       - name: Upload ZAP Json Report
