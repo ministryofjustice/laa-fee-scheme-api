@@ -66,6 +66,7 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
 
     log.info("Calculate hourly rate and costs");
     BigDecimal feeTotal = netProfitCosts.add(netDisbursementAmount).add(travelCosts).add(waitingCosts);
+    BigDecimal vatEligibleFeeTotal = netProfitCosts.add(travelCosts).add(waitingCosts);
 
     if (isOverUpperCostLimit(feeTotal, feeEntity)) {
       validationMessages.add(buildValidationWarning(WARN_POLICE_OTHER_UPPER_LIMIT,
@@ -76,7 +77,8 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
     LocalDate claimStartDate = getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
     Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
     BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatIndicator);
-    BigDecimal calculatedVatAmount = calculateVatAmount(feeTotal, vatRate);
+    // subtract netDisbursementAmount to prevent VAT calculation with the netDisbursementAmount value
+    BigDecimal calculatedVatAmount = calculateVatAmount(vatEligibleFeeTotal, vatRate);
 
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
