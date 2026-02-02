@@ -65,8 +65,8 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
     BigDecimal waitingCosts = toBigDecimal(feeCalculationRequest.getNetWaitingCosts());
 
     log.info("Calculate hourly rate and costs");
-    BigDecimal feeTotal = netProfitCosts.add(netDisbursementAmount).add(travelCosts).add(waitingCosts);
     BigDecimal vatEligibleFeeTotal = netProfitCosts.add(travelCosts).add(waitingCosts);
+    BigDecimal feeTotal = vatEligibleFeeTotal.add(netDisbursementAmount);
 
     if (isOverUpperCostLimit(feeTotal, feeEntity)) {
       validationMessages.add(buildValidationWarning(WARN_POLICE_OTHER_UPPER_LIMIT,
