@@ -77,7 +77,6 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
     LocalDate claimStartDate = getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
     Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
     BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatIndicator);
-    // subtract netDisbursementAmount to prevent VAT calculation with the netDisbursementAmount value
     BigDecimal calculatedVatAmount = calculateVatAmount(vatEligibleFeeTotal, vatRate);
 
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
