@@ -904,10 +904,10 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               }
           ],
           "feeCalculation": {
-              "totalAmount": 936.0,
+              "totalAmount": 816.0,
               "vatIndicator": true,
               "vatRateApplied": 20.0,
-              "calculatedVatAmount": 136.0,
+              "calculatedVatAmount": 16.0,
               "disbursementAmount": 600.0,
               "requestedNetDisbursementAmount": 600.0,
               "disbursementVatAmount": 120.0,

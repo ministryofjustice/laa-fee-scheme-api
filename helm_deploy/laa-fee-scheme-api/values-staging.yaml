@@ -37,7 +37,7 @@ spring:
 
 application:
   logging:
-    level: WARN
+    level: INFO
 
 prometheus:
   enabled: true
