@@ -25,3 +25,6 @@ jobs:
 
   zap-pr-scan:
     uses: ./.github/workflows/zap-security-scan.yml
+    secrets:
+      SLACK_NON_PROD_WEBHOOK_URL: ${{ secrets.SLACK_NON_PROD_WEBHOOK_URL }}
+      SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_PROD_WEBHOOK_URL }}

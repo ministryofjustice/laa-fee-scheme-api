@@ -108,6 +108,4 @@ dependencies {
     implementation "io.sentry:sentry-logback:$versions.sentry"
     implementation "io.sentry:sentry-spring-boot-starter-jakarta:$versions.sentry"
 
-    implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
-
 }
