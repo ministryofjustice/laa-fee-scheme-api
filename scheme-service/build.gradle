@@ -25,7 +25,7 @@ jacocoTestCoverageVerification {
     dependsOn jacocoTestReport
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/FeeSchemeApplication.class', '**/config/**', '**/enums/**', '**/entity/**'])
+            fileTree(dir: it, exclude: ['**/FeeSchemeApplication.class', '**/config/**', '**/enums/**', '**/entity/**', '**/controller/TestZap.class'])
         }))
     }
 
@@ -107,5 +107,4 @@ dependencies {
     implementation platform("io.sentry:sentry-bom:$versions.sentry")
     implementation "io.sentry:sentry-logback:$versions.sentry"
     implementation "io.sentry:sentry-spring-boot-starter-jakarta:$versions.sentry"
-
 }

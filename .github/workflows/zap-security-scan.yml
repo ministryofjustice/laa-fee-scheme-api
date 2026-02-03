@@ -139,7 +139,6 @@ jobs:
           fi
 
           message=":red_circle: ZAP scan failed $MESSAGE\n\
-          ZAP scan: ${{ needs.zap_scan.result }}\n\
           Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
           curl -X POST -H 'Content-type: application/json' \
