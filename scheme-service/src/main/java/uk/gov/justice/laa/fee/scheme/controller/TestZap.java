@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Controller.
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class TestZap {
 
   @GetMapping("/zap-test")
-  public String zapTest(@RequestParam String input) {
-    return "<html><body>" + input + "</body></html>";
+  public ResponseEntity<String> zapTest() {
+    return ResponseEntity.ok("password=12345");
   }
 }
