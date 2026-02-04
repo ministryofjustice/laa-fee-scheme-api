@@ -18,7 +18,6 @@ on:
 jobs:
   notify:
     runs-on: ubuntu-latest
-
     steps:
       - name: Send Slack notification on failure
         run: |
