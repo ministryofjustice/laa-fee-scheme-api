@@ -1,0 +1,42 @@
+name: notify slack
+
+on:
+  workflow_call:
+    inputs:
+      scan_name:
+        required: true
+        type: string
+      message_details:
+        required: false
+        type: string
+    secrets:
+      SLACK_NON_PROD_WEBHOOK_URL:
+        required: true
+      SLACK_PROD_WEBHOOK_URL:
+        required: true
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Slack notification on failure
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            WEBHOOK="${{ secrets.SLACK_NON_PROD_WEBHOOK_URL }}"
+            PR_LINK="<https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}|PR-${{ github.event.pull_request.number }}>"
+            MESSAGE="on $PR_LINK"
+          else
+            WEBHOOK="${{ secrets.SLACK_PROD_WEBHOOK_URL }}"
+            MESSAGE="on main (scheduled scan)"
+          fi
+
+          DETAILS="${{ inputs.message_details }}"
+
+          message=":red_circle: ${{ inputs.scan_name }} failed $MESSAGE\n\
+          ${DETAILS}\
+          Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"$message\"}" \
+            $WEBHOOK
