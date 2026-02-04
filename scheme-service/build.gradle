@@ -65,19 +65,11 @@ dependencyManagement {
             entry 'sentry-spring-boot-starter'
             entry 'sentry-logback'
         }
-        dependencySet(group: 'ch.qos.logback', version: '1.5.25') {
-            entry 'logback-classic'
-            entry 'logback-core'
-        }
     }
 }
 
 dependencies {
     implementation project(':scheme-api')
-
-    configurations.all {
-        resolutionStrategy.force("org.apache.commons:commons-lang3:3.18.0")
-    }
 
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -87,8 +79,6 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.15'
 
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.15'
-
-    implementation 'org.apache.commons:commons-lang3:3.18.0'
 
     implementation 'uk.gov.laa.springboot:laa-spring-boot-starter-auth'
 
@@ -115,4 +105,12 @@ dependencies {
     implementation platform("io.sentry:sentry-bom:$versions.sentry")
     implementation "io.sentry:sentry-logback:$versions.sentry"
     implementation "io.sentry:sentry-spring-boot-starter-jakarta:$versions.sentry"
+}
+
+configurations.all {
+    resolutionStrategy {
+        force "org.apache.commons:commons-lang3:3.18.0"
+        force 'ch.qos.logback:logback-core:1.5.25'
+        force 'ch.qos.logback:logback-classic:1.5.25'
+    }
 }
