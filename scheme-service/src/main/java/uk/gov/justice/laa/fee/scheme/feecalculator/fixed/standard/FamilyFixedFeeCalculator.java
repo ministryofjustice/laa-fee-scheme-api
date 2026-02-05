@@ -40,7 +40,7 @@ public class FamilyFixedFeeCalculator extends StandardFixedFeeCalculator {
 
     if (escapeThresholdLimit != null) {
       BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
-      escaped = isEscapedCase(totalAmount.add(netProfitCosts), feeEntity);
+      escaped = isEscapedCase(netProfitCosts, feeEntity);
 
       if (escaped) {
         validationMessages.add(buildValidationWarning(WARN_FAMILY_ESCAPE_THRESHOLD,
