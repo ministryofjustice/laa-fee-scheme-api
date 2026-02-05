@@ -493,7 +493,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "FPB010",
           "claimId": "claim_123",
           "startDate": "2023-04-01",
-          "netProfitCosts": 200.20,
+          "netProfitCosts": 400.20,
           "netDisbursementAmount": 55.35,
           "disbursementVatAmount": 11.07,
           "londonRate": false,
