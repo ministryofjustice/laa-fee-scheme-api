@@ -10,8 +10,6 @@ on:
         required: false
         type: string
     secrets:
-      SLACK_NON_PROD_WEBHOOK_URL:
-        required: true
       SLACK_PROD_WEBHOOK_URL:
         required: true
 
@@ -21,15 +19,8 @@ jobs:
     steps:
       - name: Send Slack notification on failure
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            WEBHOOK="${{ secrets.SLACK_NON_PROD_WEBHOOK_URL }}"
-            PR_LINK="<https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}|PR-${{ github.event.pull_request.number }}>"
-            MESSAGE="on $PR_LINK"
-          else
-            WEBHOOK="${{ secrets.SLACK_PROD_WEBHOOK_URL }}"
-            MESSAGE="on main (scheduled scan)"
-          fi
-
+          WEBHOOK="${{ secrets.SLACK_PROD_WEBHOOK_URL }}"
+          MESSAGE="on main (scheduled scan)"
           DETAILS="${{ inputs.message_details }}"
 
           message=":red_circle: ${{ inputs.scan_name }} failed $MESSAGE\n\
