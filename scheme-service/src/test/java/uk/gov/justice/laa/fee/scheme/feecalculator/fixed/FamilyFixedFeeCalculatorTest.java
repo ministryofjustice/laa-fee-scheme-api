@@ -74,20 +74,20 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   }
 
   @Test
-  void should_returnValidationWarningMessageInResponse_when_total_fee_exceeds_escape_threshold_limit_for_family() {
+  void should_returnValidationWarningMessageInResponse_whenNetProfitCostsExceedEscapeThreshold() {
     mockVatRatesService(true);
 
     BigDecimal fixedFee = new BigDecimal("263.00");
-    BigDecimal escapeThresoldLimit = new BigDecimal("550.00");
+    BigDecimal escapeThresoldLimit = new BigDecimal("396.00");
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("FPB010")
         .claimId("claim_124")
         .startDate(LocalDate.of(2025, 1, 1))
         .vatIndicator(true)
-        .netDisbursementAmount(29.45)
-        .disbursementVatAmount(1005.89)
-        .netProfitCosts(30.00)
+        .netDisbursementAmount(129.45)
+        .disbursementVatAmount(25.89)
+        .netProfitCosts(400.00)
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
@@ -101,12 +101,12 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     FeeCalculationResponse response = familyFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
-        .totalAmount(1350.94)
+        .totalAmount(470.94)
         .vatIndicator(true)
         .vatRateApplied(20.0)
-        .disbursementAmount(29.45)
-        .requestedNetDisbursementAmount(29.45)
-        .disbursementVatAmount(1005.89)
+        .disbursementAmount(129.45)
+        .requestedNetDisbursementAmount(129.45)
+        .disbursementVatAmount(25.89)
         .fixedFeeAmount(263.00)
         .calculatedVatAmount(52.60)
         .build();
