@@ -3,6 +3,8 @@ Environment variables for service containers
 */}}
 {{- define "laa-fee-scheme-api.env-vars" }}
 env:
+  - name: DB_SCHEMA
+    value: {{ .Values.preview_schema_id | default "fee_scheme" | quote }}
   - name: DB_SERVER
     valueFrom:
       secretKeyRef:
@@ -33,7 +35,7 @@ env:
     value: {{ .Values.sentry.dsn }}
   - name: SENTRY_ENVIRONMENT
     value: {{ .Values.sentry.environment }}
-  {{ end -}}
+  {{- end }}
   - name: ROOT_LOGGING_LEVEL
     value: {{.Values.root.logging.level}}
   - name: SPRING_LOGGING_LEVEL
