@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.ERROR;
 
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -73,6 +74,14 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler({CaseConcludedDateRequiredException.class})
   public ResponseEntity<ErrorResponse> handleCaseConcludedDateNotProvided(CaseConcludedDateRequiredException ex) {
+    return handleException(ex, HttpStatus.NOT_FOUND);
+  }
+
+  /**
+   * Global exception handler for DateTimeParseException parsing exception.
+   */
+  @ExceptionHandler({DateTimeParseException.class})
+  public ResponseEntity<ErrorResponse> handleDateTimeParsingIssue(DateTimeParseException ex) {
     return handleException(ex, HttpStatus.NOT_FOUND);
   }
 
