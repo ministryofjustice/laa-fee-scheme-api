@@ -20,9 +20,12 @@ jobs:
     uses: ./.github/workflows/snyk-vulnerability-scans.yml
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_PROD_WEBHOOK_URL }}
 
   zap-pr-scan:
     uses: ./.github/workflows/zap-security-scan.yml
+    secrets:
+      SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_PROD_WEBHOOK_URL }}
 
   check-for-preview-deploy:
     if: contains(github.event.pull_request.labels.*.name, 'preview-deploy')

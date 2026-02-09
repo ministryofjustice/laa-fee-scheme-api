@@ -3,6 +3,9 @@ on:
   schedule:
     - cron: '0 8 * * MON'
   workflow_call:
+    secrets:
+      SLACK_PROD_WEBHOOK_URL:
+        required: true
   workflow_dispatch:
 
 jobs:
@@ -114,3 +117,16 @@ jobs:
           name: ${{ github.event_name == 'pull_request' && format('zap-pr-{0}-report', github.event.pull_request.number) || format('zap-{0}-report', github.event_name) }}
           path: report_html.html
           if-no-files-found: warn
+
+  notify-slack:
+    needs:
+      - zap_scan
+    if: always() &&
+      github.event_name == 'schedule' &&
+      github.ref == 'refs/heads/main' &&
+      contains(join(needs.*.result, ' '), 'failure')
+    uses: ./.github/workflows/notify-slack.yml
+    with:
+      scan_name: "ZAP security scan"
+    secrets:
+      SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_PROD_WEBHOOK_URL }}

@@ -1,0 +1,32 @@
+name: notify slack
+
+on:
+  workflow_call:
+    inputs:
+      scan_name:
+        required: true
+        type: string
+      message_details:
+        required: false
+        type: string
+    secrets:
+      SLACK_PROD_WEBHOOK_URL:
+        required: true
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification on failure
+        run: |
+          WEBHOOK="${{ secrets.SLACK_PROD_WEBHOOK_URL }}"
+          MESSAGE="on main (scheduled scan)"
+          DETAILS="${{ inputs.message_details }}"
+  
+          message=":red_circle: ${{ inputs.scan_name }} failed $MESSAGE\n\
+          ${DETAILS}\
+          Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+  
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"$message\"}" \
+            $WEBHOOK
