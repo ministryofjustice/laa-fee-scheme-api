@@ -55,7 +55,7 @@ jobs:
           POD_NAME=pr-schema-cleanup-${{ github.event.pull_request.number }}
           kubectl run "$POD_NAME" \
             -n ${{ secrets.KUBE_NAMESPACE }} \
-            --image=postgres:15-alpine \
+            --image=postgres:17-alpine \
             --restart=Never \
             --overrides='
             {
