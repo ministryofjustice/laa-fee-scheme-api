@@ -8,13 +8,27 @@ services:
     environment:
         - DB_SERVER=postgres
         - DB_NAME=fee_scheme_test_db
-        - DB_USER= # enter chosen DB user here
-        - DB_PASSWORD= # enter chosen DB user here
-        - DATA_CLAIMS_EVENT_SERVICE_TOKEN= # enter chosen API token here
+        - DB_USER=dev
+        - DB_PASSWORD=dev
+        - DATA_CLAIMS_EVENT_SERVICE_TOKEN=1234
         - SENTRY_DSN=
     depends_on:
       postgres:
         condition: service_started
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
 
   # Local Postgres database service
   postgres:
@@ -24,8 +38,8 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: # enter chosen DB user here
-      POSTGRES_PASSWORD: # enter chosen DB password here
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
       POSTGRES_DB: fee_scheme_test_db
     volumes:
       - postgres-data:/var/lib/postgresql/data

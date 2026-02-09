@@ -5,8 +5,11 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.ERROR;
 
 import java.time.LocalDate;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
@@ -20,11 +23,16 @@ import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
+import uk.gov.justice.laa.fee.scheme.service.FeeCalculationMetricsService;
 
 @ExtendWith(MockitoExtension.class)
 class GlobalExceptionHandlerTest {
 
-  private final GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
+  @Mock
+  private FeeCalculationMetricsService metricsService;
+
+  @InjectMocks
+  private GlobalExceptionHandler globalExceptionHandler;
 
   @Test
   void handleHttpMessageNotReadable() {
