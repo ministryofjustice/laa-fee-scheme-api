@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * Constants for Fee codes.
