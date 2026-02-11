@@ -114,7 +114,7 @@ class GlobalExceptionHandlerTest {
 
     ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleStartDateNotProvided(exception);
 
-    assertErrorResponse(response, HttpStatus.NOT_FOUND, "Start Date is required for feeCode: FEE123");
+    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Start Date is required for feeCode: FEE123");
   }
 
   @Test
@@ -123,7 +123,7 @@ class GlobalExceptionHandlerTest {
 
     ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleCaseConcludedDateNotProvided(exception);
 
-    assertErrorResponse(response, HttpStatus.NOT_FOUND, "Case Concluded Date is required for feeCode: FEE123");
+    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Case Concluded Date is required for feeCode: FEE123");
   }
 
   @Test
@@ -134,7 +134,7 @@ class GlobalExceptionHandlerTest {
     ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleDateTimeParsingIssue(exception);
 
     assertErrorResponse(response,
-        HttpStatus.NOT_FOUND, "ext '541116' could not be parsed: Invalid value for DayOfMonth "
+        HttpStatus.BAD_REQUEST, "ext '541116' could not be parsed: Invalid value for DayOfMonth "
             + "(valid values 1 - 28/31): 54");
   }
 

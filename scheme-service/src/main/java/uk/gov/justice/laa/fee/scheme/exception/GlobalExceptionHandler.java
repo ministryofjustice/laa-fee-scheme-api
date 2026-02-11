@@ -66,7 +66,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler({StartDateRequiredException.class})
   public ResponseEntity<ErrorResponse> handleStartDateNotProvided(StartDateRequiredException ex) {
-    return handleException(ex, HttpStatus.NOT_FOUND);
+    return handleException(ex, HttpStatus.BAD_REQUEST);
   }
 
   /**
@@ -74,7 +74,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler({CaseConcludedDateRequiredException.class})
   public ResponseEntity<ErrorResponse> handleCaseConcludedDateNotProvided(CaseConcludedDateRequiredException ex) {
-    return handleException(ex, HttpStatus.NOT_FOUND);
+    return handleException(ex, HttpStatus.BAD_REQUEST);
   }
 
   /**
@@ -82,7 +82,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler({DateTimeParseException.class})
   public ResponseEntity<ErrorResponse> handleDateTimeParsingIssue(DateTimeParseException ex) {
-    return handleException(ex, HttpStatus.NOT_FOUND);
+    return handleException(ex, HttpStatus.BAD_REQUEST);
   }
 
   /**
