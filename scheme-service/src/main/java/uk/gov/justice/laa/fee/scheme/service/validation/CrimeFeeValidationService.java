@@ -7,7 +7,6 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_MISSING;
 import static uk.gov.justice.laa.fee.scheme.service.FeeCodeConstants.FEE_CODE_PROD;
 import static uk.gov.justice.laa.fee.scheme.service.FeeCodeConstants.FEE_CODE_PROH_TYPE;
-import static uk.gov.justice.laa.fee.scheme.service.FeeCodeConstants.REP_ORDER_DATE_PATTERN;
 
 import io.micrometer.common.util.StringUtils;
 import java.util.List;
@@ -53,41 +52,39 @@ public class CrimeFeeValidationService extends AbstractFeeValidationService {
 
   private void validateCrimeFee(FeeCalculationRequest feeCalculationRequest, CategoryType categoryType) {
     ClaimStartDateType claimStartDateType = FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeCalculationRequest);
+    String feeCode = feeCalculationRequest.getFeeCode();
 
-    if (FEE_CODE_PROH_TYPE.contains(feeCalculationRequest.getFeeCode())) {
-      if (feeCalculationRequest.getRepresentationOrderDate() == null
-          && StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber())) {
-        throw new ValidationException(ERR_CRIME_UFN_MISSING, new FeeContext(feeCalculationRequest));
-      }
-    } else {
-      if (!FEE_CODE_PROD.equals(feeCalculationRequest.getFeeCode())
-          && !isFeeCodeValidForRepOrderDate(feeCalculationRequest)) {
-        throw new ValidationException(ERR_CRIME_REP_ORDER_DATE, new FeeContext(feeCalculationRequest));
-      }
-    }
+    // Validate PROH fee codes
+    validateProhTypeFeeCodes(feeCalculationRequest, feeCode);
 
+    // Validate based on claim start date type
     if (claimStartDateType == REP_ORDER_DATE) {
-      if (feeCalculationRequest.getRepresentationOrderDate() == null) {
-        throw new ValidationException(ERR_CRIME_REP_ORDER_DATE_MISSING, new FeeContext(feeCalculationRequest));
-      }
-    } else if (StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber())
-               && !(FEE_CODE_PROD.equals(feeCalculationRequest.getFeeCode())
-                    || FEE_CODE_PROH_TYPE.contains(feeCalculationRequest.getFeeCode()))) {
+      validateRepresentationOrderDate(feeCalculationRequest);
+    } else {
+      validateUniqueFileNumber(feeCalculationRequest, feeCode);
+    }
+  }
+
+  private void validateProhTypeFeeCodes(FeeCalculationRequest feeCalculationRequest, String feeCode) {
+    if (FEE_CODE_PROH_TYPE.contains(feeCode)
+        && feeCalculationRequest.getRepresentationOrderDate() == null
+        && StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber())) {
       throw new ValidationException(ERR_CRIME_UFN_MISSING, new FeeContext(feeCalculationRequest));
     }
   }
 
-  /**
-   * Validate Fee Code against a set of Magistrates, Youth & Advocacy Fee codes.
-   *
-   * @param feeCalculationRequest FeeCalculationRequest
-   * @return boolean
-   */
-  public boolean isFeeCodeValidForRepOrderDate(FeeCalculationRequest feeCalculationRequest) {
-    if (feeCalculationRequest.getRepresentationOrderDate() != null) {
-      return REP_ORDER_DATE_PATTERN.matcher(feeCalculationRequest.getFeeCode()).matches();
+  private void validateRepresentationOrderDate(FeeCalculationRequest feeCalculationRequest) {
+    if (feeCalculationRequest.getRepresentationOrderDate() == null) {
+      throw new ValidationException(ERR_CRIME_REP_ORDER_DATE_MISSING, new FeeContext(feeCalculationRequest));
     }
-    return true;
+  }
+
+  private void validateUniqueFileNumber(FeeCalculationRequest feeCalculationRequest, String feeCode) {
+    boolean isProhOrProd = FEE_CODE_PROD.equals(feeCode) || FEE_CODE_PROH_TYPE.contains(feeCode);
+    
+    if (StringUtils.isBlank(feeCalculationRequest.getUniqueFileNumber()) && !isProhOrProd) {
+      throw new ValidationException(ERR_CRIME_UFN_MISSING, new FeeContext(feeCalculationRequest));
+    }
   }
 
   @Override
