@@ -22,7 +22,7 @@ runs:
       uses: gradle/actions/setup-gradle@v5
 
     - name: Build and test
-      run: ./gradlew build
+      run: ./gradlew assemble
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
