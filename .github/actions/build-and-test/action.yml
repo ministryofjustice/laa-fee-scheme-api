@@ -16,13 +16,13 @@ runs:
       uses: actions/setup-java@v5
       with:
         distribution: 'corretto'
-        java-version: '21'
+        java-version: '25'
 
     - name: Set up Gradle
       uses: gradle/actions/setup-gradle@v5
 
     - name: Build and test
-      run: ./gradlew assemble
+      run: ./gradlew build
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
