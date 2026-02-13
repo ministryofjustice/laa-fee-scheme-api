@@ -6,10 +6,7 @@ on:
 
 jobs:
   build-test:
-    runs-on: ubuntu-latest
-    env:
-      DOCKER_HOST: unix:///var/run/docker.sock
-      TESTCONTAINERS_HOST_OVERRIDE: localhost
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout GitHub repository
         uses: actions/checkout@v6
