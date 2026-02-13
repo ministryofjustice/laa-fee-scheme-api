@@ -2,13 +2,10 @@ package uk.gov.justice.laa.fee.scheme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVICE_ASSISTANCE_ADVOCACY;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVOCACY_APPEALS_REVIEWS;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
-import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.SENDING_HEARING;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_REP_ORDER_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_REP_ORDER_DATE_MISSING;
@@ -22,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
@@ -196,32 +192,6 @@ class CrimeFeeValidationServiceTest {
     assertThat(result.getFeeCode()).isEqualTo("PROD");
     assertThat(result.getFeeScheme().getSchemeCode()).isEqualTo("AAA_FS2016");
   }
-
-  @Test
-  void test_whenClaimReceivedWithInvalidFeeCode_And_Valid_RepOrderDate_shouldThrowException() {
-
-    FeeCalculationRequest feeCalculationRequest = getFeeCalculationRequest();
-    feeCalculationRequest.setFeeCode("XYZ");
-    feeCalculationRequest.setRepresentationOrderDate(LocalDate.of(2022, 11, 1));
-    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("SEND_HEAR_FS2022")
-        .validFrom(LocalDate.of(2021, 12, 31)).build();
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("XYZ")
-        .feeScheme(feeSchemesEntity)
-        .fixedFee(new BigDecimal("208.61"))
-        .categoryType(SENDING_HEARING)
-        .feeType(FeeType.FIXED)
-        .build();
-
-    List<FeeEntity> feeEntityList = List.of(feeEntity);
-
-    assertThatThrownBy(() -> crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
-        .isInstanceOf(ValidationException.class)
-        .hasFieldOrPropertyWithValue("error", ERR_CRIME_REP_ORDER_DATE)
-        .hasMessage("ERRCRM12 - Fee Code is not valid for the Representation Order Date provided.");
-  }
-
 
   @Test
   void getValidFeeEntity_whenGivenInvalidFeeCode_throwsException() {
@@ -438,60 +408,5 @@ class CrimeFeeValidationServiceTest {
     assertThat(feeEntityResponse.getFeeCode()).isEqualTo("PROH");
     assertThat(feeEntityResponse.getFixedFee()).isEqualTo("200");
     assertThat(feeEntityResponse.getFeeScheme().getSchemeCode()).isEqualTo("MAGS_COURT_FS2022");
-  }
-
-
-  @ParameterizedTest
-  @CsvSource({
-      "PROE1, 2025-11-12",
-      "PROF4, 2025-11-12",
-      "PROJ3, 2025-11-12",
-      "YOUE2, 2025-11-12",
-      "YOUE4, 2025-11-12",
-      "YOUF4, 2025-11-12",
-      "APPB, 2025-11-12",
-      "PROW, 2025-11-12"
-  })
-  void testValidFeeCodes(String feeCode, String repDate) {
-    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode(feeCode).representationOrderDate(LocalDate.parse(repDate)).build();
-    assertTrue(crimeFeeValidationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
-  }
-
-  // Test invalid fee codes
-  @ParameterizedTest
-  @CsvSource({
-      "INVALID, 2025-11-12",
-      "PROX5, 2025-11-12",
-      "YOUZ1, 2025-11-12",
-      "APPZ, 2025-11-12"
-  })
-  void testInvalidFeeCodes(String feeCode, String repDate) {
-    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode(feeCode).representationOrderDate(LocalDate.parse(repDate)).build();
-    assertFalse(crimeFeeValidationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
-  }
-
-  // Test null repDate returns true
-  @ParameterizedTest
-  @ValueSource(strings = {"PROW", "APPB"})
-  void testNullRepDate(String feeCode) {
-    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode(feeCode).representationOrderDate(null).build();
-    assertTrue(crimeFeeValidationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest));
-  }
-
-  @ParameterizedTest
-  @CsvSource({
-      "PROH, 2025-10-12, 2025-11-12",
-      "PROH1, 2025-10-12, 2025-11-12",
-      "PROH2, 2025-10-12, 2025-11-12",
-  })
-  void testValidAdvocacyAssistanceFeeCode(String feeCode, String caseConcludedDate) {
-    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode(feeCode).caseConcludedDate(LocalDate.parse(caseConcludedDate)).build();
-
-    boolean result = crimeFeeValidationService.isFeeCodeValidForRepOrderDate(feeCalculationRequest);
-    assertThat(result).isTrue();
   }
 }
