@@ -25,7 +25,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Build API JAR
-        run: ./gradlew clean build
+        run: ./gradlew clean assemble
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
