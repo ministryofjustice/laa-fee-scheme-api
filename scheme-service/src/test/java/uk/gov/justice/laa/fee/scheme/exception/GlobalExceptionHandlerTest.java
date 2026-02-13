@@ -5,6 +5,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.ERROR;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -113,7 +114,7 @@ class GlobalExceptionHandlerTest {
 
     ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleStartDateNotProvided(exception);
 
-    assertErrorResponse(response, HttpStatus.NOT_FOUND, "Start Date is required for feeCode: FEE123");
+    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Start Date is required for feeCode: FEE123");
   }
 
   @Test
@@ -122,7 +123,28 @@ class GlobalExceptionHandlerTest {
 
     ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleCaseConcludedDateNotProvided(exception);
 
-    assertErrorResponse(response, HttpStatus.NOT_FOUND, "Case Concluded Date is required for feeCode: FEE123");
+    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Case Concluded Date is required for feeCode: FEE123");
+  }
+
+  @Test
+  void handleDateTimeParsingIssue() {
+    DateTimeParseException exception = new DateTimeParseException("ext '541116' could not be parsed: "
+        + "Invalid value for DayOfMonth (valid values 1 - 28/31): 54", "541116", 1);
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleDateTimeParsingIssue(exception);
+
+    assertErrorResponse(response,
+        HttpStatus.BAD_REQUEST, "ext '541116' could not be parsed: Invalid value for DayOfMonth "
+            + "(valid values 1 - 28/31): 54");
+  }
+
+  @Test
+  void handleNumberFormatException() {
+    NumberFormatException exception = new NumberFormatException("For input string: \"6/\"");
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleNumberException(exception);
+
+    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "For input string: \"6/\"");
   }
 
   private void assertErrorResponse(ResponseEntity<ErrorResponse> response, HttpStatus expectedStatus,
