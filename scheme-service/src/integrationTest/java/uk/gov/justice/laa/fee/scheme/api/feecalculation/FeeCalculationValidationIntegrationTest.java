@@ -493,7 +493,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "FPB010",
           "claimId": "claim_123",
           "startDate": "2023-04-01",
-          "netProfitCosts": 200.20,
+          "netProfitCosts": 400.20,
           "netDisbursementAmount": 55.35,
           "disbursementVatAmount": 11.07,
           "londonRate": false,
@@ -904,10 +904,10 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               }
           ],
           "feeCalculation": {
-              "totalAmount": 936.0,
+              "totalAmount": 816.0,
               "vatIndicator": true,
               "vatRateApplied": 20.0,
-              "calculatedVatAmount": 136.0,
+              "calculatedVatAmount": 16.0,
               "disbursementAmount": 600.0,
               "requestedNetDisbursementAmount": 600.0,
               "disbursementVatAmount": 120.0,

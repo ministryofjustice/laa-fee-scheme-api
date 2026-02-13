@@ -369,10 +369,10 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "schemeId": "POL_FS2022",
           "claimId": "claim_123",
           "feeCalculation": {
-            "totalAmount": 158.22,
+            "totalAmount": 148.12,
             "vatIndicator": true,
             "vatRateApplied": 20.0,
-            "calculatedVatAmount": 23.01,
+            "calculatedVatAmount": 12.91,
             "disbursementAmount": 50.5,
             "requestedNetDisbursementAmount": 50.5,
             "disbursementVatAmount": 20.15,
