@@ -2,7 +2,7 @@ name: PR build and test
 on:
   workflow_dispatch:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened, reopened, synchronize, labeled]
 
 jobs:
   build-test:
@@ -26,3 +26,11 @@ jobs:
     uses: ./.github/workflows/zap-security-scan.yml
     secrets:
       SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_PROD_WEBHOOK_URL }}
+
+  check-for-preview-deploy:
+    if: contains(github.event.pull_request.labels.*.name, 'preview-deploy')
+    needs: [ build-test, snyk-vulnerability-scan, zap-pr-scan ]
+    uses: ./.github/workflows/deploy-preview.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+    secrets: inherit
