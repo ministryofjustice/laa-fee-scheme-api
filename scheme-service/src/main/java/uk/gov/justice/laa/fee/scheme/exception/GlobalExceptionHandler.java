@@ -86,6 +86,14 @@ public class GlobalExceptionHandler {
   }
 
   /**
+   * Global exception handler for NumberFormatException parsing exception.
+   */
+  @ExceptionHandler(NumberFormatException.class)
+  public ResponseEntity<ErrorResponse> handleNumberException(NumberFormatException ex) {
+    return handleException(ex, HttpStatus.BAD_REQUEST);
+  }
+
+  /**
    * Global exception handler for ValidationException exception.
    */
   @ExceptionHandler(ValidationException.class)

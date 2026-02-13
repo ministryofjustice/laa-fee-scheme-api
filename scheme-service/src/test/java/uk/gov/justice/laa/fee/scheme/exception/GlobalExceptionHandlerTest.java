@@ -138,6 +138,15 @@ class GlobalExceptionHandlerTest {
             + "(valid values 1 - 28/31): 54");
   }
 
+  @Test
+  void handleNumberFormatException() {
+    NumberFormatException exception = new NumberFormatException("For input string: \"6/\"");
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleNumberException(exception);
+
+    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "For input string: \"6/\"");
+  }
+
   private void assertErrorResponse(ResponseEntity<ErrorResponse> response, HttpStatus expectedStatus,
                                    String expectedMessage) {
     assertThat(response.getStatusCode()).isEqualTo(expectedStatus);
