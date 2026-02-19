@@ -33,4 +33,7 @@ application:
     level: INFO
 
 prometheus:
-  enabled: false
+  enabled: true
+  dashboardUrl: https://grafana.live.cloud-platform.service.justice.gov.uk/d/laa-fee-scheme-api-dev-dashboard
+  severity: laa-fee-scheme-api-dev
+  zeroPodsInterval: 15m
