@@ -1869,7 +1869,7 @@
     },
     "timezone": "browser",
     "title": "LAA Fee Scheme API - {{ .Release.Namespace | replace "laa-fee-scheme-api-" "" }} / {{ .Release.Namespace }}",
-    "uid": "{{ .Release.Namespace }}-dashboard",
+    "uid": "{{ .Release.Namespace }}-dashboard-291",
     "version": 1,
     "weekStart": ""
 }
