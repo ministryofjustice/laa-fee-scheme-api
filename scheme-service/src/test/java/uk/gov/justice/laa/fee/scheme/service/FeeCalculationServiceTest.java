@@ -48,6 +48,9 @@ class FeeCalculationServiceTest {
   @Mock
   PrisonLawFixedFeeCalculator prisonLawFixedFeeCalculator;
 
+  @Mock
+  FeeCalculationMetricsService feeCalculationMetricsService;
+
   @InjectMocks
   private FeeCalculationService feeCalculationService;
 

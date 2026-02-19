@@ -14,6 +14,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.justice.laa.fee.scheme.exception.CategoryCodeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponse;
+import uk.gov.justice.laa.fee.scheme.service.FeeCalculationMetricsService;
 import uk.gov.justice.laa.fee.scheme.service.FeeDetailsService;
 
 @WebMvcTest(FeeDetailsController.class)
@@ -25,6 +26,9 @@ class FeeDetailsControllerTest {
 
   @MockitoBean
   private FeeDetailsService feeDetailsService;
+
+  @MockitoBean
+  FeeCalculationMetricsService feeCalculationMetricsService;
 
   @Test
   void getFeeDetailsFeeByCode() throws Exception {
