@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.fee.scheme.api.feecalculation;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.json.JsonCompareMode.LENIENT;
 import static org.springframework.test.json.JsonCompareMode.STRICT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -96,13 +95,10 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         .andExpect(content().json("""
             {
               "status": 400,
-              "error": "Bad Request"
+              "error": "Bad Request",
+              "message": "feeCode: must not be null"
             }
-            """, LENIENT))
-        .andExpect(result ->
-            assertThat(result.getResponse().getContentAsString())
-                .contains("default message [feeCode]]; default message [must not be null]]")
-        );
+            """, LENIENT));
   }
 
   @Test

@@ -5,6 +5,7 @@ import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEn
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,63 +30,99 @@ public class GlobalExceptionHandler {
   /**
    * Global exception handler for HttpMessageNotReadableException exception.
    * Duplicate fields, malformed request, type mismatch.
+   *
+   * @param ex the exception thrown when the request body is not readable or cannot be parsed.
+   * @return the error response and a 400 Bad Request status code.
    */
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
-    return handleException(ex, HttpStatus.BAD_REQUEST);
+    return handleException("Unreadable request error", ex, HttpStatus.BAD_REQUEST);
   }
 
   /**
-   * Global exception handler for HttpMessageNotReadableException exception.
-   * Duplicate fields, malformed request, type mismatch.
-   */
-  @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-  public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
-    return handleException(ex, HttpStatus.METHOD_NOT_ALLOWED);
-  }
-
-  /**
-   * Handle missing request fields.
+   * Global exception handler for MethodArgumentNotValidException exception.
+   * Validation errors for @Valid annotated request bodies.
+   *
+   * @param ex the exception thrown when validation on an argument annotated with @Valid fails.
+   * @return the error response and a 400 Bad Request status code.
    */
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorResponse> handleMethodArgumentException(MethodArgumentNotValidException ex) {
-    return handleException(ex, HttpStatus.BAD_REQUEST);
+
+    // extract field errors
+    String errorMessage = ex.getBindingResult()
+        .getFieldErrors()
+        .stream()
+        .map(error -> error.getField() + ": " + error.getDefaultMessage())
+        .collect(Collectors.joining("; "));
+
+    HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+    log.error("Invalid request error [status={}, error={}, message={}]", httpStatus.value(),
+        httpStatus.getReasonPhrase(), errorMessage, ex);
+
+    return getErrorResponse(httpStatus, errorMessage);
+  }
+
+  /**
+   * Global exception handler for HttpRequestMethodNotSupportedException exception.
+   * Unsupported HTTP method used in the request.
+   *
+   * @param ex the exception thrown when an HTTP request method is not supported by the endpoint.
+   * @return the error response and a 405 Method Not Allowed status code.
+   */
+  @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+  public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
+    return handleException("Unsupported HTTP method error", ex, HttpStatus.METHOD_NOT_ALLOWED);
   }
 
   /**
    * Global exception handler for CategoryCodeNotFoundException exception.
+   * Category code provided in the request does not exist.
+   *
+   * @param ex the exception thrown when a category code is not found.
+   * @return the error response and a 404 Not Found status code.
    */
-  @ExceptionHandler({CategoryCodeNotFoundException.class})
+  @ExceptionHandler(CategoryCodeNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleCategoryOfLawNotFound(CategoryCodeNotFoundException ex) {
-    return handleException(ex, HttpStatus.NOT_FOUND);
+    return handleException("Category code not found error", ex, HttpStatus.NOT_FOUND);
   }
 
   /**
    * Global exception handler for startDate not provided exception.
+   * Start date is required for fee calculation but was not provided in the request.
+   *
+   * @param ex the exception thrown when start date is required but not provided.
+   * @return the error response and a 404 Not Found status code.
    */
-  @ExceptionHandler({StartDateRequiredException.class})
+  @ExceptionHandler(StartDateRequiredException.class)
   public ResponseEntity<ErrorResponse> handleStartDateNotProvided(StartDateRequiredException ex) {
-    return handleException(ex, HttpStatus.NOT_FOUND);
+    return handleException("Start date required error", ex, HttpStatus.NOT_FOUND);
   }
 
   /**
    * Global exception handler for caseConcludedDate not provided exception.
+   * Case concluded date is required for fee calculation but was not provided in the request.
+   *
+   * @param ex the exception thrown when case concluded date is required but not provided.
+   * @return the error response and a 404 Not Found status code.
    */
-  @ExceptionHandler({CaseConcludedDateRequiredException.class})
+  @ExceptionHandler(CaseConcludedDateRequiredException.class)
   public ResponseEntity<ErrorResponse> handleCaseConcludedDateNotProvided(CaseConcludedDateRequiredException ex) {
-    return handleException(ex, HttpStatus.NOT_FOUND);
+    return handleException("Case concluded date required error", ex, HttpStatus.NOT_FOUND);
   }
 
   /**
    * Global exception handler for ValidationException exception.
+   *
+   * @param ex the exception thrown when validation errors occur during fee calculation.
+   * @return the success response with validation messages and a 200 OK status code.
    */
   @ExceptionHandler(ValidationException.class)
   public ResponseEntity<FeeCalculationResponse> handleValidationException(ValidationException ex) {
     ErrorType error = ex.getError();
     FeeContext context = ex.getContext();
 
-    log.error("Validation error with message: {}}",
-        ex.getMessage(), ex);
+    log.error("Validation error [{}]}", ex.getMessage(), ex);
 
     ValidationMessagesInner validationMessages = ValidationMessagesInner.builder()
         .type(ERROR)
@@ -102,23 +139,30 @@ public class GlobalExceptionHandler {
 
   /**
    * Global exception handler for all other exceptions.
+   *
+   * @param ex the exception thrown when an unexpected error occurs.
+   * @return the error response and a 500 Internal Server Error status code.
    */
   @ExceptionHandler(Exception.class)
   @ResponseStatus(INTERNAL_SERVER_ERROR)
   public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
-    return handleException(ex, INTERNAL_SERVER_ERROR);
+    return handleException("Unexpected error", ex, INTERNAL_SERVER_ERROR);
   }
 
+  private ResponseEntity<ErrorResponse> handleException(String errorMessagePrefix, Throwable ex, HttpStatus httpStatus) {
+    log.error("{} [status={}, error={}, message={}]", errorMessagePrefix, httpStatus.value(),
+        httpStatus.getReasonPhrase(), ex.getMessage(), ex);
 
-  private ResponseEntity<ErrorResponse> handleException(Throwable ex, HttpStatus status) {
-    log.error("Error occurred :: {error={}, status={}, message={}}", status.getReasonPhrase(), status.value(), ex.getMessage(), ex);
+    return getErrorResponse(httpStatus, ex.getMessage());
+  }
 
+  private ResponseEntity<ErrorResponse> getErrorResponse(HttpStatus httpStatus, String message) {
     ErrorResponse errorResponse = new ErrorResponse()
         .timestamp(OffsetDateTime.now())
-        .status(status.value())
-        .error(status.getReasonPhrase())
-        .message(ex.getMessage());
+        .status(httpStatus.value())
+        .error(httpStatus.getReasonPhrase())
+        .message(message);
 
-    return new ResponseEntity<>(errorResponse, status);
+    return new ResponseEntity<>(errorResponse, httpStatus);
   }
 }
