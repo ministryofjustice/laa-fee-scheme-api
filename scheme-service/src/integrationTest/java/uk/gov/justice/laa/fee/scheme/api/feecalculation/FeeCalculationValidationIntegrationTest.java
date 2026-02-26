@@ -1,8 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.api.feecalculation;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.json.JsonCompareMode.LENIENT;
+import static org.springframework.test.json.JsonCompareMode.STRICT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -23,10 +24,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrationTest {
 
-  private static final String HEADER_CORRELATION_ID = "X-Correlation-Id";
+  static final String HEADER_CORRELATION_ID = "X-Correlation-Id";
 
   @Test
-  void shouldGetBadResponse_whenDuplicateField() throws Exception {
+  void shouldReturnBadRequestWhenDuplicateFieldPresent() throws Exception {
 
     mockMvc.perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
@@ -56,7 +57,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldGetBadResponse_whenMissingField_correlationIdProvided() throws Exception {
+  void shouldReturnBadRequestWhenMissingFieldAndCorrelationIdProvided() throws Exception {
     String correlationId = "a51433f8-a78c-47ef-bd31-837b95467220";
     mockMvc.perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
@@ -78,7 +79,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldGetBadResponse_whenMissingField() throws Exception {
+  void shouldReturnBadRequestWhenMissingField() throws Exception {
     mockMvc.perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
@@ -101,13 +102,14 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             }
             """, LENIENT))
         .andExpect(result ->
-            assertTrue(result.getResponse().getContentAsString().contains("default message [feeCode]]; default message [must not be null]]"))
+            assertThat(result.getResponse().getContentAsString())
+                .contains("default message [feeCode]]; default message [must not be null]]")
         );
   }
 
   @Test
   @Disabled
-  void shouldGetUnauthorizedResponse_whenMissingAuthorizationHeader() throws Exception {
+  void shouldReturnUnauthorizedResponseWhenAuthorizationHeaderIsMissing() throws Exception {
     mockMvc
         .perform(post(URI)
             .contentType(MediaType.APPLICATION_JSON)
@@ -128,19 +130,17 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         .andExpect(status().isUnauthorized())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(content().json("""
-          {
-            "code": 401,
-            "status": "UNAUTHORIZED"
-          }
-          """, LENIENT))
-              .andExpect(jsonPath("$.message")
-                  .value(containsString("No API access token")));
+            {
+              "code": 401,
+              "status": "UNAUTHORIZED",
+              "message": "No API access token provided."
+            }
+            """, STRICT));
 
   }
 
   @Test
-  @Disabled
-  void shouldGetUnauthorizedResponse_whenAuthTokenIsInvalid() throws Exception {
+  void shouldReturnUnauthorizedResponseWhenAuthTokenIsInvalid() throws Exception {
     mockMvc
         .perform(post(URI)
             .header(HttpHeaders.AUTHORIZATION, "BLAH")
@@ -167,11 +167,11 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               "status": "UNAUTHORIZED",
               "message": "Invalid API access token provided."
             }
-            """, LENIENT));
+            """, STRICT));
   }
 
   @Test
-  void shouldReturnValidationError_whenFeeCodeIsInvalid() throws Exception {
+  void shouldReturnValidationErrorWhenFeeCodeIsInvalid() throws Exception {
     String request = """ 
         {
           "feeCode": "BLAH",
@@ -201,7 +201,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationError_whenCivilFeeCodeAndStartDateIsTooFarInThePast() throws Exception {
+  void shouldReturnValidationErrorWhenCivilFeeCodeAndStartDateIsTooFarInThePast() throws Exception {
     String request = """ 
         {
           "feeCode": "DISC",
@@ -231,7 +231,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationError_whenCrimeFeeCodeAndStartDateIsInvalid() throws Exception {
+  void shouldReturnValidationErrorWhenCrimeFeeCodeAndStartDateIsInvalid() throws Exception {
     String request = """ 
         {
           "feeCode": "INVC",
@@ -259,7 +259,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationError_whenCrimeFeeCodeAndPoliceStationIdIsInvalid() throws Exception {
+  void shouldReturnValidationErrorWhenCrimeFeeCodeAndPoliceStationIdIsInvalid() throws Exception {
     String request = """ 
         {
           "feeCode": "INVC",
@@ -287,7 +287,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationError_whenCrimeFeeCodeAndPoliceSchemeIdIsInvalid() throws Exception {
+  void shouldReturnValidationErrorWhenCrimeFeeCodeAndPoliceSchemeIdIsInvalid() throws Exception {
     String request = """ 
         {
           "feeCode": "INVC",
@@ -314,7 +314,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationError_whenCrimeFeeCodeAndUfnIsMissing() throws Exception {
+  void shouldReturnValidationErrorWhenCrimeFeeCodeAndUfnIsMissing() throws Exception {
     String request = """ 
         {
           "feeCode": "INVK",
@@ -346,7 +346,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
       "YOUK2, YOUTH_COURT_FS2024",
       "PROW, SEND_HEAR_FS2022",
   })
-  void shouldReturnValidationError_criminalProceedings_missingRepOrderDate(String feeCode) throws Exception {
+  void shouldReturnValidationErrorWhenCriminalProceedingsMissingRepOrderDate(String feeCode) throws Exception {
     String request = """ 
         {
           "feeCode": "%s",
@@ -375,7 +375,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @ParameterizedTest
   @ValueSource(strings = {"PROP1", "PROP2"})
-  void shouldReturnValidationWarning_preOrderCover_netCostOverUpperCostLimit(String feeCode) throws Exception {
+  void shouldReturnValidationWarningWhenPreOrderCoverNetCostOverUpperCostLimit(String feeCode) throws Exception {
     String request = """ 
         {
           "feeCode": "%s",
@@ -406,7 +406,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationError_whenCrimeFeeCodeAndRepOrderDateIsInvalid() throws Exception {
+  void shouldReturnValidationErrorWhenCrimeFeeCodeAndRepOrderDateIsInvalid() throws Exception {
     String request = """ 
         {
           "feeCode": "PROJ5",
@@ -435,7 +435,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationError_WhenFamilyFeeCodeAndLondonRateIsMissing() throws Exception {
+  void shouldReturnValidationErrorWhenFamilyFeeCodeAndLondonRateIsMissing() throws Exception {
     String request = """ 
         {
           "feeCode": "FPB010",
@@ -463,7 +463,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationError_WhenMediationFeeCodeAndNoOfMediationSessionsIsMissing() throws Exception {
+  void shouldReturnValidationErrorWhenMediationFeeCodeAndNoOfMediationSessionsIsMissing() throws Exception {
     String request = """ 
         {
           "feeCode": "MDAS2B",
@@ -491,13 +491,13 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationWarning_family() throws Exception {
+  void shouldReturnValidationWarningForFamilyFee() throws Exception {
     String request = """ 
         {
           "feeCode": "FPB010",
           "claimId": "claim_123",
           "startDate": "2023-04-01",
-          "netProfitCosts": 200.20,
+          "netProfitCosts": 400.20,
           "netDisbursementAmount": 55.35,
           "disbursementVatAmount": 11.07,
           "londonRate": false,
@@ -534,14 +534,14 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @ParameterizedTest
   @CsvSource({
-      "IMCF, WARIA1, Costs have been capped at £600 without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit., "
-      + "false, 2173.72, 250.6, 650.0, 600.0, 1092.0, 0",
-      "IALB, WARIA2, Costs have been capped at £400 without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit., "
-      + "false, 1158.92, 114.8, 450.0, 400.0, 413.0, 0",
-      "IACE, WARIA3, The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid., "
-      + "true, 1116.12, 166.0, 50.0, 50.0, 669.0, 1500"
+      "IMCF, WARIA1, Costs have been capped at £600 without an Immigration Priority Authority Number. "
+        + "Disbursement costs exceed the Disbursement Limit., false, 2173.72, 250.6, 650.0, 600.0, 1092.0, 0",
+      "IALB, WARIA2, Costs have been capped at £400 without an Immigration Priority Authority Number. "
+        + "Disbursement costs exceed the Disbursement Limit., false, 1158.92, 114.8, 450.0, 400.0, 413.0, 0",
+      "IACE, WARIA3, The claim exceeds the Escape Case Threshold. "
+        + "An Escape Case Claim must be submitted for further costs to be paid., true, 1116.12, 166.0, 50.0, 50.0, 669.0, 1500"
   })
-  void shouldReturnValidationWarning_immigrationAndAsylumFixedFee(
+  void shouldReturnValidationWarningForImmigrationAndAsylumFixedFee(
       String feeCode,
       String warningType,
       String warningMessage,
@@ -598,7 +598,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationWarning_immigrationAndAsylumHourlyRate_legalHelpIA100() throws Exception {
+  void shouldReturnValidationWarningForImmigrationAndAsylumHourlyRateLegalHelpIA100() throws Exception {
     String request = """ 
         {
           "feeCode": "IA100",
@@ -640,7 +640,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationWarning_immigrationAndAsylumHourlyRate_legalHelp() throws Exception {
+  void shouldReturnValidationWarningForImmigrationAndAsylumHourlyRateLegalHelp() throws Exception {
     String request = """ 
         {
           "feeCode": "IMXL",
@@ -687,7 +687,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationWarning_immigrationAndAsylumHourlyRate_clr() throws Exception {
+  void shouldReturnValidationWarningForImmigrationAndAsylumHourlyRateClr() throws Exception {
     String request = """ 
         {
           "feeCode": "IAXC",
@@ -729,7 +729,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationWarning_immigrationAndAsylumHourlyRate_clrInterim() throws Exception {
+  void shouldReturnValidationWarningForImmigrationAndAsylumHourlyRateClrInterim() throws Exception {
     String request = """ 
         {
           "feeCode": "IACD",
@@ -801,7 +801,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationWarning_immigrationAndAsylumDisbursementOnly() throws Exception {
+  void shouldReturnValidationWarningForImmigrationAndAsylumDisbursementOnly() throws Exception {
     String request = """ 
         {
           "feeCode": "ICASD",
@@ -835,7 +835,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationWarningForEscapeCase_policeStations() throws Exception {
+  void shouldReturnValidationWarningForPoliceStationEscapeCase() throws Exception {
     String request = """ 
         {
           "feeCode": "INVC",
@@ -880,7 +880,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationWarning_policeOther() throws Exception {
+  void shouldReturnValidationWarningForPoliceOther() throws Exception {
     String request = """ 
         {
           "feeCode": "INVA",
@@ -908,10 +908,10 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               }
           ],
           "feeCalculation": {
-              "totalAmount": 936.0,
+              "totalAmount": 816.0,
               "vatIndicator": true,
               "vatRateApplied": 20.0,
-              "calculatedVatAmount": 136.0,
+              "calculatedVatAmount": 16.0,
               "disbursementAmount": 600.0,
               "requestedNetDisbursementAmount": 600.0,
               "disbursementVatAmount": 120.0,
@@ -926,7 +926,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationWarning_associatedCivil() throws Exception {
+  void shouldReturnValidationWarningForAssociatedCivil() throws Exception {
     String request = """ 
         {
           "feeCode": "ASMS",
@@ -969,7 +969,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationWarning_advocacyAppealsReviews() throws Exception {
+  void shouldReturnValidationWarningForAdvocacyAppealsReviews() throws Exception {
     String request = """ 
         {
           "feeCode": "PROH",
@@ -1017,11 +1017,11 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   @ParameterizedTest
   @CsvSource({
       "PRIA, WARCRM6, The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid., "
-      + "true, 360.9, 40.15, 200.75",
+        + "true, 360.9, 40.15, 200.75",
       "PRIB1, WARCRM5, Costs are included. Profit and Waiting Costs exceed the Lower Standard Fee Limit. An escape fee may be payable., "
-      + "false, 364.72, 40.79, 203.93",
+        + "false, 364.72, 40.79, 203.93",
   })
-  void shouldReturnValidationWarning_prisonLaw(
+  void shouldReturnValidationWarningForPrisonLaw(
       String feeCode,
       String warningType,
       String warningMessage,
@@ -1071,7 +1071,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationWarning_mentalHealth() throws Exception {
+  void shouldReturnValidationWarningForMentalHealth() throws Exception {
     String request = """ 
         {
           "feeCode": "MHL03",
@@ -1133,7 +1133,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
       "PUB, PUB_FS2013, WAROTH10, 458.85, 51.8, 259.0",
       "WFB1, WB_FS2025, WAROTH11, 397.65, 41.6, 208.0"
   })
-  void shouldReturnValidationWarning_otherCivilCategories(String feeCode, String schemeId, String warningCode,
+  void shouldReturnValidationWarningForOtherCivilCategories(String feeCode, String schemeId, String warningCode,
                                                           String expectedTotal, String expectedVatAmount,
                                                           String expectedFixedFeeAmount) throws Exception {
     String request = """ 
@@ -1176,7 +1176,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationWarning_discrimination() throws Exception {
+  void shouldReturnValidationWarningForDiscrimination() throws Exception {
     String request = """ 
         {
           "feeCode": "DISC",

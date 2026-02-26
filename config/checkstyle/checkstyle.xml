@@ -31,8 +31,7 @@
     </module>
     <!-- https://checkstyle.org/filters/suppressionfilter.html -->
     <module name="SuppressionFilter">
-        <property name="file" value="${org.checkstyle.google.suppressionfilter.config}"
-                  default="checkstyle-suppressions.xml" />
+        <property name="file" value="${checkstyle.suppressions.file}" default="suppressions-test.xml" />
         <property name="optional" value="true"/>
     </module>
 
@@ -47,9 +46,19 @@
         <property name="max" value="140"/>
         <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
     </module>
-
     <module name="TreeWalker">
         <module name="UnusedImports"/>
+        <module name="HideUtilityClassConstructor"/>
+        <module name="FinalClass"/>
+        <module name="EqualsAvoidNull"/>
+        <module name="IllegalCatch"/>
+        <module name="IllegalThrows"/>
+        <module name="MethodLength">
+            <property name="max" value="80"/>
+        </module>
+        <module name="ReturnCount">
+            <property name="max" value="3"/>
+        </module>
         <module name="OuterTypeFilename"/>
         <module name="IllegalTokenText">
             <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL"/>
@@ -73,6 +82,7 @@
             <property name="tokens"
                       value="LITERAL_TRY, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH"/>
         </module>
+        <module name="EmptyCatchBlock"/>
         <module name="NeedBraces">
             <property name="tokens"
                       value="LITERAL_DO, LITERAL_ELSE, LITERAL_FOR, LITERAL_IF, LITERAL_WHILE"/>

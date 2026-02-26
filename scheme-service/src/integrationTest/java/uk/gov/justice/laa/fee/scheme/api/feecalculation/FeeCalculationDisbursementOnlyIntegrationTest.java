@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.api.feecalculation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -8,7 +10,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIntegrationTest {
 
   @Test
-  void shouldGetFeeCalculation_educationDisbursementOnly() throws Exception {
+  void shouldReturnFeeCalculationForEducationDisbursementOnly() throws Exception {
     String request = """ 
         {
           "feeCode": "EDUDIS",
@@ -19,7 +21,7 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
         }
         """;
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "EDUDIS",
           "schemeId": "EDU_DISB_FS2013",
@@ -32,10 +34,11 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
            }
         }
         """);
+    assertThat(actualResponse).isNotBlank();
   }
 
   @Test
-  void shouldGetFeeCalculation_immigrationDisbursementOnly() throws Exception {
+  void shouldReturnFeeCalculationForImmigrationDisbursementOnly() throws Exception {
     String request = """ 
         {
           "feeCode": "ICASD",
@@ -46,7 +49,7 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
         }
         """;
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "ICASD",
           "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2013",
@@ -60,10 +63,11 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
           }
         }
         """);
+    assertThat(actualResponse).isNotBlank();
   }
 
   @Test
-  void shouldGetFeeCalculation_mentalHealthDisbursementOnly() throws Exception {
+  void shouldReturnFeeCalculationForMentalHealthDisbursementOnly() throws Exception {
     String request = """ 
         {
           "feeCode": "MHLDIS",
@@ -74,7 +78,7 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
         }
         """;
 
-    postAndExpect(request, """
+    String actualResponse = postAndExpect(request, """
         {
           "feeCode": "MHLDIS",
           "schemeId": "MHL_DISB_FS2013",
@@ -88,5 +92,6 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
           }
         }
         """);
+    assertThat(actualResponse).isNotBlank();
   }
 }

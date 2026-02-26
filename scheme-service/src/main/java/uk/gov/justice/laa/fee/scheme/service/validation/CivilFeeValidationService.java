@@ -37,6 +37,7 @@ public class CivilFeeValidationService extends AbstractFeeValidationService {
    * @param feeCalculationRequest the fee calculation request
    * @return the valid Fee entity
    */
+  @Override
   public FeeEntity getValidFeeEntity(List<FeeEntity> feeEntityList, FeeCalculationRequest feeCalculationRequest) {
 
     log.info("Getting valid fee entity");

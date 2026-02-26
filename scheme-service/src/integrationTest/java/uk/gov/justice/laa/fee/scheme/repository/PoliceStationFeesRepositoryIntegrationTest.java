@@ -13,8 +13,13 @@ import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTest
 @SpringBootTest
 class PoliceStationFeesRepositoryIntegrationTest extends PostgresContainerTestBase {
 
+  private final PoliceStationFeesRepository repository;
+
   @Autowired
-  private PoliceStationFeesRepository repository;
+  public PoliceStationFeesRepositoryIntegrationTest(PoliceStationFeesRepository repository) {
+    super();
+    this.repository = repository;
+  }
 
   @Test
   void testFindById() {
@@ -22,6 +27,7 @@ class PoliceStationFeesRepositoryIntegrationTest extends PostgresContainerTestBa
     Optional<PoliceStationFeesEntity> result = repository.findById(1L);
 
     assertThat(result).isPresent();
+
     PoliceStationFeesEntity entity = result.get();
     assertThat(entity.getPsSchemeName()).isEqualTo("Hartlepool");
     assertThat(entity.getPsSchemeId()).isEqualTo("1001");

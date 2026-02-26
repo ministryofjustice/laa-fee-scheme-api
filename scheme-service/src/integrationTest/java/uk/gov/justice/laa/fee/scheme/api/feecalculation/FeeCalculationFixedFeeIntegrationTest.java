@@ -12,7 +12,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegrationTest {
 
   @Test
-  void shouldGetFeeCalculation_associatedCivilFixedFee() throws Exception {
+  void shouldGetAssociatedCivilFixedFeeCalculation() throws Exception {
     String request = """ 
         {
           "feeCode": "ASMS",
@@ -54,7 +54,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
       "PROJ5, 2025-12-22, MAGS_COURT_FS2025, 525.59, 62.92, 314.62",
       "YOUK2, 2025-12-22, YOUTH_COURT_FS2025, 454.99, 51.16, 255.78"
   })
-  void shouldGetFeeCalculation_designatedMagsOrYouthCourtFixedFee(String feeCode,
+  void shouldGetDesignatedMagsOrYouthCourtFixedFeeCalculation(String feeCode,
                                                                   String repOrderDate,
                                                                   String schemeId,
                                                                   String expectedTotal,
@@ -97,7 +97,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
       "PROU, 211225/456, EC_RMT_FS2022, 31.48, 5.25, 26.23",
       "PROU, 221225/456, EC_RMT_FS2025, 34.62, 5.77, 28.85"
   })
-  void shouldGetFeeCalculation_earlyCoverOrRefusedMeansFixedFee(String feeCode,
+  void shouldGetEarlyCoverOrRefusedMeansFixedFeeCalculation(String feeCode,
                                                                 String uniqueFileNumber,
                                                                 String schemeId,
                                                                 String expectedTotal,
@@ -132,7 +132,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
   }
 
   @Test
-  void shouldGetFeeCalculation_familyFixedFee() throws Exception {
+  void shouldGetFamilyFixedFeeCalculation() throws Exception {
     String request = """ 
         {
           "feeCode": "FPB010",
@@ -183,7 +183,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
       "IDAS1, 2025-12-22, IMM_ASYLM_FS2025, 612.33, 82.0, 249.0, null, 0", // uplift 2025
       "IDAS2, 2025-12-22, IMM_ASYLM_FS2025, 909.93, 131.6, 497.0, null, 0" // uplift 2025
   }, nullValues = {"null"})
-  void shouldGetFeeCalculation_immigrationAndAsylumFixedFee(String feeCode, LocalDate startDate, String feeScheme,
+  void shouldGetImmigrationAndAsylumFixedFeeCalculation(String feeCode, LocalDate startDate, String feeScheme,
                                                             double total, double vat, double fixedFee,
                                                             String boltOn, double boltOnFee) throws Exception {
     String expectedJson = """
@@ -250,7 +250,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
   }
 
   @Test
-  void shouldGetFeeCalculation_mediationFixedFee() throws Exception {
+  void shouldGetMediationFixedFeeCalculation() throws Exception {
     String request = """ 
         {
           "feeCode": "MDAS2B",
@@ -283,7 +283,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
   }
 
   @Test
-  void shouldGetFeeCalculation_mentalHealthFixedFee() throws Exception {
+  void shouldGetMentalHealthFixedFeeCalculation() throws Exception {
     String request = """ 
         {
           "feeCode": "MHL03",
@@ -324,7 +324,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
   }
 
   @Test
-  void shouldGetFeeCalculation_educationFixedFee() throws Exception {
+  void shouldGetEducationFixedFeeCalculation() throws Exception {
     String request = """ 
         {
           "feeCode": "EDUFIN",
@@ -369,7 +369,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
       "PUB, PUB_FS2013, 458.85, 51.8, 259.0",
       "WFB1, WB_FS2014, 397.65, 41.6, 208.0"
   })
-  void shouldGetFeeCalculation_otherCivilFixedFee(String feeCode,
+  void shouldGetOtherCivilFixedFeeCalculation(String feeCode,
                                                   String schemeId,
                                                   String expectedTotal,
                                                   String expectedVatAmount,
@@ -407,7 +407,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
   }
 
   @Test
-  void shouldGetFeeCalculation_policeOtherFixedFee() throws Exception {
+  void shouldGetPoliceOtherFixedFeeCalculation() throws Exception {
     String request = """ 
         {
           "feeCode": "INVB1",
@@ -440,7 +440,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
       "211225/242, POL_FS2024, 223.52",
       "221225/242, POL_FS2025, 320.0"
   })
-  void shouldGetFeeCalculation_policeStationFixedFee(String ufn,
+  void shouldGetPoliceStationFixedFeeCalculation(String ufn,
                                                      String feeScheme,
                                                      double feeTotal) throws Exception {
     String request = """ 
@@ -489,7 +489,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
       "PRIE1, 211225/123, PRISON_FS2016, 644.65, 87.44, 437.21",
       "PRIE2, 221225/123, PRISON_FS2025, 2284.21, 360.7, 1803.51",
   })
-  void shouldGetFeeCalculation_prisonLawFixedFee(String feeCode, String ufn, String feeScheme,
+  void shouldGetPrisonLawFixedFeeCalculation(String feeCode, String ufn, String feeScheme,
                                                  double total, double vat, double fixedFee) throws Exception {
     String request = """ 
         {
@@ -531,7 +531,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
       "PROW, 051222/678, SEND_HEAR_FS2022, 2022-12-21, 250.33, 41.72, 208.61",
       "PROW, 261225/934, SEND_HEAR_FS2025, 2025-12-26, 275.36, 45.89, 229.47"
   })
-  void shouldGetFeeCalculation_sendingHearing(String feeCode,
+  void shouldGetSendingHearingFeeCalculation(String feeCode,
                                               String uniqueFileNumber,
                                               String schemeId,
                                               String representationOrderDate,
@@ -572,7 +572,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
       "PROE1, 2025-12-22, MAGS_COURT_FS2025, 696.77, 91.45, 100, 111, 246.27",
       "YOUE1, 2025-12-22, YOUTH_COURT_FS2025, 1486.91, 223.14, 100, 111, 904.72",
   })
-  void shouldGetFeeCalculation_undesignatedMagsOrYouthCourt(String feeCode,
+  void shouldGetUndesignatedMagsOrYouthCourtFeeCalculation(String feeCode,
                                                             String repOrderDate,
                                                             String schemeId,
                                                             String expectedTotal,

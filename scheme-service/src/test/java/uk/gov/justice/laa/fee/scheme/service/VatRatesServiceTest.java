@@ -35,10 +35,7 @@ class VatRatesServiceTest {
         .build();
     when(vatRatesRepository.findTopByStartDateLessThanEqualOrderByStartDateDesc(date)).thenReturn(vatRatesEntity);
 
-
     BigDecimal result = vatRatesService.getVatRateForDate(date, true);
-
-    assertThat(result).isNotNull();
 
     assertThat(result).isEqualTo(new BigDecimal("20.00"));
   }
@@ -50,8 +47,6 @@ class VatRatesServiceTest {
     LocalDate date = LocalDate.of(2025, 1, 1);
 
     BigDecimal result = vatRatesService.getVatRateForDate(date, vatIndicator);
-
-    assertThat(result).isNotNull();
 
     assertThat(result).isEqualTo(BigDecimal.ZERO);
   }

@@ -56,7 +56,7 @@ public class MdcLoggingInterceptor implements HandlerInterceptor {
     }
 
     Map<String, Object> mdcFields = new HashMap<>();
-    mdcFields.put("feeCode", feeCalculationRequest.getFeeCode());
+    mdcFields.put(FEE_CODE, feeCalculationRequest.getFeeCode());
     mdcFields.put("startDate", feeCalculationRequest.getStartDate());
     mdcFields.put("policeStationId", feeCalculationRequest.getPoliceStationId());
     mdcFields.put("policeStationSchemeId", feeCalculationRequest.getPoliceStationSchemeId());

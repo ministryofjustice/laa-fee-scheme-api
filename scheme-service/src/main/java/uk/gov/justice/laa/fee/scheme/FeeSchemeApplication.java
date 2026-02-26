@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * Entry point for Fee-Scheme application.
  */
+@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
 @SpringBootApplication
 public class FeeSchemeApplication {
 

@@ -49,7 +49,7 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         arguments("INVA, VAT applied", "INVA", true,
             start2016, "POL_FS2016",
             100.0, 60.0, 12.0, 20.0, 10.0,
-            240.0, 38.0, 190.0),
+            228.0, 26.0, 190.0),
 
         arguments("INVA, VAT NOT applied", "INVA", false,
             start2022, "POL_FS2022",
@@ -60,7 +60,7 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         arguments("INVE, VAT applied", "INVE", true,
             start2016, "POL_FS2016",
             140.0, 70.0, 14.0, 15.0, 8.0,
-            293.6, 46.6, 233.0),
+            279.6, 32.6, 233.0),
 
         arguments("INVE, VAT NOT applied", "INVE", false,
             start2022, "POL_FS2022",
@@ -71,7 +71,7 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         arguments("INVH, VAT applied", "INVH", true,
             start2016, "POL_FS2016",
             160.0, 85.0, 17.0, 22.0, 6.0,
-            344.6, 54.6, 273.0),
+            327.6, 37.6, 273.0),
 
         arguments("INVH, VAT NOT applied", "INVH", false,
             start2022, "POL_FS2022",
@@ -82,7 +82,7 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         arguments("INVK, VAT applied", "INVK", true,
             start2016, "POL_FS2016",
             130.0, 75.0, 15.0, 18.0, 7.0,
-            291.0, 46.0, 230.0),
+            276.0, 31.0, 230.0),
 
         arguments("INVK, VAT NOT applied", "INVK", false,
             start2022, "POL_FS2022",
@@ -93,7 +93,7 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         arguments("INVL, VAT applied", "INVL", true,
             start2016, "POL_FS2016",
             180.0, 95.0, 19.0, 20.0, 11.0,
-            386.2, 61.2, 306.0),
+            367.2, 42.2, 306.0),
 
         arguments("INVL, VAT NOT applied", "INVL", false,
             start2022, "POL_FS2022",
@@ -104,7 +104,7 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         arguments("INVM, VAT applied (FS2021)", "INVM", true,
             start2021, "POL_FS2021",
             150.0, 110.0, 22.0, 19.0, 9.0,
-            367.6, 57.6, 288.0),
+            345.6, 35.6, 288.0),
 
         arguments("INVM, VAT NOT applied (FS2022)", "INVM", false,
             start2022, "POL_FS2022",

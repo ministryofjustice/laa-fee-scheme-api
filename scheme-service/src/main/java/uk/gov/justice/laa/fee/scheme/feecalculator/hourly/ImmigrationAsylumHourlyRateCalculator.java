@@ -82,15 +82,12 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     String feeCode = feeEntity.getFeeCode();
 
-    if (isLegalHelp(feeCode)) {
-      return calculateFeeLegalHelp(feeCalculationRequest, feeEntity);
-    } else if (isClr(feeCode)) {
-      return calculateFeeClr(feeCalculationRequest, feeEntity);
-    } else if (isClrInterim(feeCode)) {
-      return calculateFeeClrInterim(feeCalculationRequest, feeEntity);
-    } else {
-      throw new IllegalArgumentException("Fee code not supported: " + feeCode);
-    }
+    return switch (feeCode) {
+      case FEE_CODE_IAXL, FEE_CODE_IMXL, FEE_CODE_IA100 -> calculateFeeLegalHelp(feeCalculationRequest, feeEntity);
+      case FEE_CODE_IAXC, FEE_CODE_IMXC, FEE_CODE_IRAR -> calculateFeeClr(feeCalculationRequest, feeEntity);
+      case FEE_CODE_IACD, FEE_CODE_IMCD -> calculateFeeClrInterim(feeCalculationRequest, feeEntity);
+      default -> throw new IllegalArgumentException("Fee code not supported: " + feeCode);
+    };
   }
 
   /**
@@ -191,7 +188,7 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
     FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, vatRate,
         calculatedVatAmount, netDisbursementAmount, feeTotal, netProfitCosts, true, null);
 
-    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity,  feeCalculation, validationMessages);
+    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, validationMessages);
   }
 
   /**
@@ -249,23 +246,11 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
     FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, vatRate,
         calculatedVatAmount, netDisbursementAmount, feeTotalWithBoltsOn, netProfitCosts, true, boltOnFeeDetails);
 
-    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity,  feeCalculation, validationMessages);
-  }
-
-  private boolean isLegalHelp(String feeCode) {
-    return FEE_CODE_IAXL.equals(feeCode) || FEE_CODE_IMXL.equals(feeCode) || FEE_CODE_IA100.equals(feeCode);
-  }
-
-  private boolean isClr(String feeCode) {
-    return FEE_CODE_IAXC.equals(feeCode) || FEE_CODE_IMXC.equals(feeCode) || FEE_CODE_IRAR.equals(feeCode);
-  }
-
-  private boolean isClrInterim(String feeCode) {
-    return FEE_CODE_IACD.equals(feeCode) || FEE_CODE_IMCD.equals(feeCode);
+    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, validationMessages);
   }
 
   private void checkFieldsAreEmpty(FeeCalculationRequest feeCalculationRequest,
-                                          List<ValidationMessagesInner> validationMessages) {
+                                   List<ValidationMessagesInner> validationMessages) {
     log.info("Check detention travel waiting and costs field is empty for fee calculation");
     checkFieldIsEmpty(feeCalculationRequest.getDetentionTravelAndWaitingCosts(), validationMessages,
         WARN_IMM_ASYLM_DETENTION_TRAVEL, "Detention travel and waiting costs not applicable for legal help");
@@ -276,21 +261,21 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
   }
 
   private void checkFieldIsEmpty(Double value, List<ValidationMessagesInner> validationMessages,
-                                        WarningType warning, String logMessage) {
+                                 WarningType warning, String logMessage) {
     if (value != null) {
       validationMessages.add(buildValidationWarning(warning, logMessage));
     }
   }
 
   private FeeCalculation buildFeeCalculation(FeeCalculationRequest feeCalculationRequest,
-                                                    BigDecimal totalAmount,
-                                                    BigDecimal vatRate,
-                                                    BigDecimal calculatedVatAmount,
-                                                    BigDecimal disbursementAmount,
-                                                    BigDecimal hourlyTotalAmount,
-                                                    BigDecimal netProfitCostsAmount,
-                                                    boolean includeCostOfCounsel,
-                                                    BoltOnFeeDetails boltOnFeeDetails) {
+                                             BigDecimal totalAmount,
+                                             BigDecimal vatRate,
+                                             BigDecimal calculatedVatAmount,
+                                             BigDecimal disbursementAmount,
+                                             BigDecimal hourlyTotalAmount,
+                                             BigDecimal netProfitCostsAmount,
+                                             boolean includeCostOfCounsel,
+                                             BoltOnFeeDetails boltOnFeeDetails) {
     return FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
         .vatIndicator(feeCalculationRequest.getVatIndicator())
