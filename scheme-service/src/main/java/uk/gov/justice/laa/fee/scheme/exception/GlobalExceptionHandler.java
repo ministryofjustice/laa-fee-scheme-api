@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
-    return handleException("Unreadable request error", ex, HttpStatus.BAD_REQUEST);
+    return handleException("Request not readable error", ex, HttpStatus.BAD_REQUEST);
   }
 
   /**
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
         .collect(Collectors.joining("; "));
 
     HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-    log.error("Invalid request error [status={}, error={}, message={}]", httpStatus.value(),
+    log.error("Request not valid error [status={}, error={}, message={}]", httpStatus.value(),
         httpStatus.getReasonPhrase(), errorMessage, ex);
 
     return getErrorResponse(httpStatus, errorMessage);
@@ -72,7 +72,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
   public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
-    return handleException("Unsupported HTTP method error", ex, HttpStatus.METHOD_NOT_ALLOWED);
+    return handleException("HTTP request method not supported error", ex, HttpStatus.METHOD_NOT_ALLOWED);
   }
 
   /**
@@ -88,7 +88,7 @@ public class GlobalExceptionHandler {
   }
 
   /**
-   * Global exception handler for startDate not provided exception.
+   * Global exception handler for StartDateRequiredException exception.
    * Start date is required for fee calculation but was not provided in the request.
    *
    * @param ex the exception thrown when start date is required but not provided.
@@ -100,7 +100,7 @@ public class GlobalExceptionHandler {
   }
 
   /**
-   * Global exception handler for caseConcludedDate not provided exception.
+   * Global exception handler for CaseConcludedDateRequiredException exception.
    * Case concluded date is required for fee calculation but was not provided in the request.
    *
    * @param ex the exception thrown when case concluded date is required but not provided.
@@ -122,7 +122,7 @@ public class GlobalExceptionHandler {
     ErrorType error = ex.getError();
     FeeContext context = ex.getContext();
 
-    log.error("Validation error [{}]}", ex.getMessage(), ex);
+    log.error("Validation error [message={}]", ex.getMessage(), ex);
 
     ValidationMessagesInner validationMessages = ValidationMessagesInner.builder()
         .type(ERROR)

@@ -36,7 +36,7 @@ class GlobalExceptionHandlerTest {
 
     assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Duplicate field 'feeCode'");
     assertThat(capturedOutput.getOut())
-        .contains("Unreadable request error [status=400, error=Bad Request, message=Duplicate field 'feeCode']");
+        .contains("Request not readable error [status=400, error=Bad Request, message=Duplicate field 'feeCode']");
   }
 
   @Test
@@ -58,7 +58,7 @@ class GlobalExceptionHandlerTest {
     assertThat(response.getBody().getStatus()).isEqualTo(400);
     assertThat(response.getBody().getMessage()).isEqualTo("feeCode: must not be blank");
     assertThat(capturedOutput.getOut())
-        .contains("Invalid request error [status=400, error=Bad Request, message=feeCode: must not be blank]");
+        .contains("Request not valid error [status=400, error=Bad Request, message=feeCode: must not be blank]");
   }
 
   @Test
@@ -95,7 +95,7 @@ class GlobalExceptionHandlerTest {
 
     assertThat(feeCalculationResponse.getFeeCalculation()).isNull();
 
-    assertThat(capturedOutput.getOut()).contains("Validation error [ERRALL1 - Enter a valid Fee Code.]");
+    assertThat(capturedOutput.getOut()).contains("Validation error [message=ERRALL1 - Enter a valid Fee Code.]");
   }
 
   @Test
@@ -106,7 +106,7 @@ class GlobalExceptionHandlerTest {
 
     assertErrorResponse(response, HttpStatus.METHOD_NOT_ALLOWED, "Request method 'GET' is not supported");
     assertThat(capturedOutput.getOut())
-        .contains("Unsupported HTTP method error [status=405, error=Method Not Allowed, message=Request method 'GET' is not supported]");
+        .contains("HTTP request method not supported error [status=405, error=Method Not Allowed, message=Request method 'GET' is not supported]");
   }
 
   @Test
