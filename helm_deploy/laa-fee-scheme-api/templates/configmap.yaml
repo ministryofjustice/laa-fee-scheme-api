@@ -1,3 +1,4 @@
+{{- if .Values.prometheus.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -12,3 +13,4 @@ metadata:
 data:
   {{ .Release.Name }}-dashboard.json:
   {{ include "laa-fee-scheme-api-grafana-dashboard-template" . | quote | indent 4 }}
+{{- end }}

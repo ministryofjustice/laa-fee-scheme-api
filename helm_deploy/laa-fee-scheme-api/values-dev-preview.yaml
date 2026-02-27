@@ -2,14 +2,10 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 2
+replicaCount: 1
 
 ingress:
-  enabled: true
-  hosts:
-    - laa-fee-scheme-api-uat.apps.live.cloud-platform.service.justice.gov.uk
-  annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: "laa-fee-scheme-api-ingress-laa-fee-scheme-api-uat-green"
+  enabled: false
 
 resources:
   limits:
@@ -21,7 +17,7 @@ resources:
 
 sentry:
   enabled: true
-  environment: uat
+  environment: development
   dsn: https://3dba04b677b4b24e1cd3380e474f7b26@o345774.ingest.us.sentry.io/4509803102666752
 
 root:
@@ -34,10 +30,10 @@ spring:
 
 application:
   logging:
-    level: DEBUG
+    level: INFO
 
 prometheus:
   enabled: true
-  dashboardUrl: https://grafana.live.cloud-platform.service.justice.gov.uk/d/laa-fee-scheme-api-uat-dashboard
-  severity: laa-fee-scheme-api-uat
-  zeroPodsInterval: 1m
+  dashboardUrl: https://grafana.live.cloud-platform.service.justice.gov.uk/d/laa-fee-scheme-api-dev-dashboard
+  severity: laa-fee-scheme-api-dev
+  zeroPodsInterval: 15m

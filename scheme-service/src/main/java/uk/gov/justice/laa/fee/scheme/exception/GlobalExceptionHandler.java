@@ -18,6 +18,7 @@ import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
+import uk.gov.justice.laa.fee.scheme.service.FeeCalculationMetricsService;
 
 /**
  * Global exception handler for our controllers.
@@ -26,12 +27,19 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @Slf4j
 public class GlobalExceptionHandler {
 
+  private final FeeCalculationMetricsService metricsService;
+
+  public GlobalExceptionHandler(FeeCalculationMetricsService metricsService) {
+    this.metricsService = metricsService;
+  }
+
   /**
    * Global exception handler for HttpMessageNotReadableException exception.
    * Duplicate fields, malformed request, type mismatch.
    */
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+    metricsService.recordValidationError("HttpMessageNotReadableException");
     return handleException(ex, HttpStatus.BAD_REQUEST);
   }
 
@@ -41,6 +49,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
   public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
+    metricsService.recordValidationError("HttpRequestMethodNotSupportedException");
     return handleException(ex, HttpStatus.METHOD_NOT_ALLOWED);
   }
 
@@ -49,6 +58,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorResponse> handleMethodArgumentException(MethodArgumentNotValidException ex) {
+    metricsService.recordValidationError("MethodArgumentNotValidException");
     return handleException(ex, HttpStatus.BAD_REQUEST);
   }
 
@@ -57,6 +67,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler({CategoryCodeNotFoundException.class})
   public ResponseEntity<ErrorResponse> handleCategoryOfLawNotFound(CategoryCodeNotFoundException ex) {
+    metricsService.recordValidationError("CategoryCodeNotFoundException");
     return handleException(ex, HttpStatus.NOT_FOUND);
   }
 
@@ -65,6 +76,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler({StartDateRequiredException.class})
   public ResponseEntity<ErrorResponse> handleStartDateNotProvided(StartDateRequiredException ex) {
+    metricsService.recordValidationError("StartDateRequiredException");
     return handleException(ex, HttpStatus.NOT_FOUND);
   }
 
@@ -73,6 +85,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler({CaseConcludedDateRequiredException.class})
   public ResponseEntity<ErrorResponse> handleCaseConcludedDateNotProvided(CaseConcludedDateRequiredException ex) {
+    metricsService.recordValidationError("CaseConcludedDateRequiredException");
     return handleException(ex, HttpStatus.NOT_FOUND);
   }
 
@@ -92,6 +105,8 @@ public class GlobalExceptionHandler {
         .code(error.getCode())
         .message(error.getMessage()).build();
 
+    metricsService.recordValidationError(error);
+
     FeeCalculationResponse feeCalculationResponse = FeeCalculationResponse.builder()
         .feeCode(context.feeCode())
         .claimId(context.claimId())
@@ -106,6 +121,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(Exception.class)
   @ResponseStatus(INTERNAL_SERVER_ERROR)
   public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+    metricsService.recordValidationError("handleGenericException");
     return handleException(ex, INTERNAL_SERVER_ERROR);
   }
 
