@@ -7,6 +7,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -16,7 +17,8 @@ class SortedMdcConverterTest {
   @Mock
   ILoggingEvent event;
 
-  SortedMdcConverter converter = new SortedMdcConverter();
+  @InjectMocks
+  SortedMdcConverter converter;
 
   @Test
   void convert_givenNonEmptyMdc_shouldReturnFormattedMdcString() {

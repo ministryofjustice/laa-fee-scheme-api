@@ -42,9 +42,8 @@ class FeeCalculationControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
-
   private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule())
-      .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).setSerializationInclusion(JsonInclude.Include.ALWAYS);
+      .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).setDefaultPropertyInclusion(JsonInclude.Include.ALWAYS);
 
   @MockitoBean
   private FeeCalculationService feeCalculationService;

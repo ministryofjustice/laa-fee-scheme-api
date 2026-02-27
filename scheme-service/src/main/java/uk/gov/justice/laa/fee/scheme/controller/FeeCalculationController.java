@@ -25,7 +25,7 @@ public class FeeCalculationController implements FeeCalculationApi {
 
   private final FeeCalculationService feeCalculationService;
   private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule())
-      .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).setSerializationInclusion(JsonInclude.Include.ALWAYS);
+      .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).setDefaultPropertyInclusion(JsonInclude.Include.ALWAYS);
 
   @Override
   public ResponseEntity<FeeCalculationResponse> getFeeCalculation(FeeCalculationRequest feeCalculationRequest) {

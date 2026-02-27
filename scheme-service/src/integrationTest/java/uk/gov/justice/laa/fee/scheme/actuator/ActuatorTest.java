@@ -21,7 +21,6 @@ import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTest
 @TestPropertySource(properties = {
     "management.endpoints.web.exposure.include=health,metrics,prometheus",
     "management.prometheus.metrics.export.enabled=true",
-    "spring.flyway.enabled=false" // flyway not required for test
 })
 class ActuatorTest extends PostgresContainerTestBase {
 

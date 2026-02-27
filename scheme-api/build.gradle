@@ -26,7 +26,7 @@ openApiGenerate {
     modelPackage = "uk.gov.justice.laa.fee.scheme.model"
     configOptions = [
             generateBuilders    : "true",
-            interfaceOnly       : "true", // This will only generate interfaces, not implementations
+            interfaceOnly       : "true",
             serializableModel   : "true",
             skipDefaultInterface: "true",
             useJakartaEe        : "true",
