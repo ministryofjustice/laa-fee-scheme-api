@@ -1,0 +1,55 @@
+name: Preview deploy
+
+on:
+  workflow_call:
+    inputs:
+      pr_number:
+        required: true
+        type: number
+
+concurrency:
+  group: preview-deploy-pr-${{ inputs.pr_number }}
+  cancel-in-progress: true
+
+jobs:
+  ecr:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: corretto
+
+      - uses: gradle/actions/setup-gradle@v5
+      - run: ./gradlew clean build
+
+      - name: Login to ECR
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/ecr-auth@main
+        id: auth
+        with:
+          ecr_region: ${{ vars.ECR_REGION }}
+          ecr_role: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          role-session-name: preview
+
+      - name: Build and push preview image
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/build-and-push@main
+        with:
+          dockerfile_path: ./Dockerfile
+          image_registry: ${{ steps.auth.outputs.image_registry }}
+          image_repo: ${{ vars.ECR_REPOSITORY }}
+          image_tag: pr-${{ inputs.pr_number }}
+
+  deploy-preview:
+    needs: ecr
+    uses: ./.github/workflows/_deploy-to-env.yml
+    with:
+      environment: dev
+      preview_id: pr-${{ inputs.pr_number }}
+      preview_schema_id: pr_${{ inputs.pr_number }}
+    secrets: inherit
