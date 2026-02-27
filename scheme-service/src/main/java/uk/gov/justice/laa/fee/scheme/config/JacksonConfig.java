@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.config;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,8 @@ public class JacksonConfig {
   @Bean
   public JsonMapperBuilderCustomizer jsonCustomizer() {
     return builder ->
-        builder.configure(StreamReadFeature.STRICT_DUPLICATE_DETECTION, true);
+        builder
+            .changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(JsonInclude.Include.NON_EMPTY))
+            .configure(StreamReadFeature.STRICT_DUPLICATE_DETECTION, true);
   }
 }

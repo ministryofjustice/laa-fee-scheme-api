@@ -2,19 +2,15 @@ package uk.gov.justice.laa.fee.scheme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import jakarta.transaction.Transactional;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import uk.gov.justice.laa.fee.scheme.entity.FeeCategoryMappingEntity;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTestBase;
 
-@SpringBootTest
-@Transactional
-@Testcontainers
+@DataJpaTest
 class FeeCategoryMappingRepositoryIntegrationTest extends PostgresContainerTestBase {
 
   private final FeeCategoryMappingRepository repository;

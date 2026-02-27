@@ -8,34 +8,27 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import uk.gov.justice.laa.fee.scheme.config.FeeSchemeTestConfig;
+import org.springframework.test.context.TestPropertySource;
 import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTestBase;
 
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = {
-        "management.endpoints.web.exposure.include=health,metrics,prometheus"
-    }
-)
-@Import(FeeSchemeTestConfig.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestRestTemplate
+@TestPropertySource(properties = {
+    "management.endpoints.web.exposure.include=health,metrics,prometheus",
+    "management.prometheus.metrics.export.enabled=true",
+    "spring.flyway.enabled=false" // flyway not required for test
+})
 class ActuatorTest extends PostgresContainerTestBase {
 
   @LocalServerPort
   private int port;
 
   private final TestRestTemplate restTemplate;
-
-  @DynamicPropertySource
-  static void configure(DynamicPropertyRegistry registry) {
-    registry.add("management.observability.enabled", () -> "false");
-  }
 
   @Autowired
   public ActuatorTest(TestRestTemplate restTemplate) {

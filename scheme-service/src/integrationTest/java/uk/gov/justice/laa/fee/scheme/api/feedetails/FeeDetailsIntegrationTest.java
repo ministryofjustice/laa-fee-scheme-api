@@ -8,20 +8,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import uk.gov.justice.laa.fee.scheme.config.FeeSchemeTestConfig;
 import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTestBase;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Import(FeeSchemeTestConfig.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 @Testcontainers
 class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
 
@@ -66,7 +64,6 @@ class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
   }
 
   @Test
-  @Disabled
   void shouldReturnUnauthorizedResponseWhenAuthorizationHeaderIsMissing() throws Exception {
     mockMvc
         .perform(post(API_V_1_FEE_DETAILS_CAPA))
@@ -82,7 +79,6 @@ class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
   }
 
   @Test
-  @Disabled
   void shouldReturnUnauthorizedResponseWhenAuthTokenIsInvalid() throws Exception {
     mockMvc
         .perform(post(API_V_1_FEE_DETAILS_CAPA)

@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-
 @Testcontainers
 class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIntegrationTest {
 

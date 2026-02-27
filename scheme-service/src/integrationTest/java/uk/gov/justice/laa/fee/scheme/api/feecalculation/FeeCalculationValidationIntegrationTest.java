@@ -10,17 +10,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-@SpringBootTest
 @Testcontainers
 class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrationTest {
 
@@ -47,11 +44,11 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(content().json("""
-        {
-          "status": 400,
-          "error": "Bad Request"
-        }
-        """, LENIENT))
+            {
+              "status": 400,
+              "error": "Bad Request"
+            }
+            """, LENIENT))
         .andExpect(jsonPath("$.message", containsString("Duplicate")))
         .andExpect(jsonPath("$.message", containsString("feeCode")));
   }
@@ -108,7 +105,6 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  @Disabled
   void shouldReturnUnauthorizedResponseWhenAuthorizationHeaderIsMissing() throws Exception {
     mockMvc
         .perform(post(URI)
@@ -1134,8 +1130,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
       "WFB1, WB_FS2025, WAROTH11, 397.65, 41.6, 208.0"
   })
   void shouldReturnValidationWarningForOtherCivilCategories(String feeCode, String schemeId, String warningCode,
-                                                          String expectedTotal, String expectedVatAmount,
-                                                          String expectedFixedFeeAmount) throws Exception {
+                                                            String expectedTotal, String expectedVatAmount,
+                                                            String expectedFixedFeeAmount) throws Exception {
     String request = """ 
         {
           "feeCode": "%s",
