@@ -23,12 +23,6 @@ spring:
     default-schema: fee_scheme
     enabled: true
     locations: classpath:db/migration,classpath:db/repeatable
-  jackson:
-    default-property-inclusion: non_empty
-    json:
-      read:
-        allow-backslash-escaping-any-character:
-
 
 management:
   server:

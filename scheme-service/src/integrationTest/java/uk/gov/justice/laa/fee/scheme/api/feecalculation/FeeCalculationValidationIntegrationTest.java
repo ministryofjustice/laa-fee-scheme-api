@@ -124,7 +124,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
                 """)
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized())
-        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json("""
             {
               "code": 401,
@@ -1130,8 +1130,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
       "WFB1, WB_FS2025, WAROTH11, 397.65, 41.6, 208.0"
   })
   void shouldReturnValidationWarningForOtherCivilCategories(String feeCode, String schemeId, String warningCode,
-                                                            String expectedTotal, String expectedVatAmount,
-                                                            String expectedFixedFeeAmount) throws Exception {
+                                                          String expectedTotal, String expectedVatAmount,
+                                                          String expectedFixedFeeAmount) throws Exception {
     String request = """ 
         {
           "feeCode": "%s",
