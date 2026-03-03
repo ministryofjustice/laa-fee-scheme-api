@@ -2,6 +2,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.util;
 
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVICE_ASSISTANCE_ADVOCACY;
@@ -20,6 +21,7 @@ import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
 import uk.gov.justice.laa.fee.scheme.exception.CaseConcludedDateRequiredException;
 import uk.gov.justice.laa.fee.scheme.exception.StartDateRequiredException;
+import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 
@@ -128,9 +130,9 @@ class FeeCalculationUtilTest {
     FeeCalculationRequest request = getFeeCalculationRequest();
     request.setUniqueFileNumber(null);
 
-    assertThrows(NullPointerException.class, () ->
-        FeeCalculationUtil.getFeeClaimStartDate(POLICE_STATION, request)
-    );
+    assertThatThrownBy(() -> FeeCalculationUtil.getFeeClaimStartDate(POLICE_STATION, request))
+        .isInstanceOf(ValidationException.class)
+        .hasMessageContaining("ERRCRM7 - Enter a UFN.");
   }
 
   @Test
