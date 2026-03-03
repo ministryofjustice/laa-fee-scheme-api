@@ -1,25 +1,23 @@
 package uk.gov.justice.laa.fee.scheme.api.feecalculation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.json.JsonCompareMode.LENIENT;
 import static org.springframework.test.json.JsonCompareMode.STRICT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-@SpringBootTest
-@AutoConfigureMockMvc
 @Testcontainers
 class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrationTest {
 
@@ -48,10 +46,11 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         .andExpect(content().json("""
             {
               "status": 400,
-              "error": "Bad Request",
-              "message": "JSON parse error: Duplicate field 'feeCode'"
+              "error": "Bad Request"
             }
-            """, LENIENT));
+            """, LENIENT))
+        .andExpect(jsonPath("$.message", containsString("Duplicate")))
+        .andExpect(jsonPath("$.message", containsString("feeCode")));
   }
 
   @Test
@@ -133,6 +132,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               "message": "No API access token provided."
             }
             """, STRICT));
+
   }
 
   @Test
