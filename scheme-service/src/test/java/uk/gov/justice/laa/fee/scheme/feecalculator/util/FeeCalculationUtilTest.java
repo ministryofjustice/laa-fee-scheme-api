@@ -88,7 +88,7 @@ class FeeCalculationUtilTest {
   @EnumSource(value = CategoryType.class, names = {
       "MAGISTRATES_COURT", "YOUTH_COURT"
   })
-  void calculate_ReturnRepresentationOrderDate_forMagistratesAndYouthCourts(CategoryType categoryType) {
+  void getFeeClaimStartDate_returnsRepresentationOrderDate_forMagistratesAndYouthCourts(CategoryType categoryType) {
     FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
     LocalDate repOrderDate = LocalDate.of(2023, 12, 12);
     feeDataRequest.setRepresentationOrderDate(repOrderDate);
@@ -106,7 +106,7 @@ class FeeCalculationUtilTest {
       "ADVOCACY_APPEALS_REVIEWS, APPA, , 090925/abc, 2025-09-09",
       "ADVOCACY_APPEALS_REVIEWS, APPB, , 090925/abc, 2025-09-09"
   })
-  void shouldReturnStartDate_forOtherCategories(String categoryType, String feeCode, String repOrderDate, String ufn,
+  void getFeeClaimStartDate_returnsStartDate_forOtherCategories(String categoryType, String feeCode, String repOrderDate, String ufn,
                                                 LocalDate expectedDate) {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -126,13 +126,23 @@ class FeeCalculationUtilTest {
   }
 
   @Test
-  void shouldThrowException_ifUniqueFileNumberIsNullForPoliceStation() {
+  void getFeeClaimStartDate_shouldThrowException_ifUniqueFileNumberIsNullForPoliceStation() {
     FeeCalculationRequest request = getFeeCalculationRequest();
     request.setUniqueFileNumber(null);
 
     assertThatThrownBy(() -> FeeCalculationUtil.getFeeClaimStartDate(POLICE_STATION, request))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining("ERRCRM7 - Enter a UFN.");
+  }
+
+  @Test
+  void getFeeClaimStartDate_shouldThrowException_ifUniqueFileNumberIsInvalidForPoliceStation() {
+    FeeCalculationRequest request = getFeeCalculationRequest();
+    request.setUniqueFileNumber("999999/123");
+
+    assertThatThrownBy(() -> FeeCalculationUtil.getFeeClaimStartDate(POLICE_STATION, request))
+        .isInstanceOf(ValidationException.class)
+        .hasMessageContaining("ERRCRM13 - UFN must be in the correct format.");
   }
 
   @Test

@@ -2,7 +2,6 @@ package uk.gov.justice.laa.fee.scheme.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
-import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_UFN_INVALID;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.ERROR;
 
 import java.time.LocalDate;
@@ -85,30 +84,6 @@ class GlobalExceptionHandlerTest {
         .code("ERRALL1")
         .type(ERROR)
         .message("Enter a valid Fee Code.")
-        .build();
-    assertThat(feeCalculationResponse.getValidationMessages()).containsExactly(validationMessage);
-
-    assertThat(feeCalculationResponse.getFeeCalculation()).isNull();
-  }
-
-  @Test
-  void handleValidationExceptionWithCause() {
-    FeeContext feeContext = new FeeContext("FEE123", LocalDate.of(2020, 3, 1), "claim_123");
-    ValidationException exception = new ValidationException(ERR_CRIME_UFN_INVALID, feeContext, new IllegalArgumentException("Invalid ufn"));
-
-    ResponseEntity<FeeCalculationResponse> response = globalExceptionHandler.handleValidationException(exception);
-
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody()).isNotNull();
-
-    FeeCalculationResponse feeCalculationResponse = response.getBody();
-    assertThat(feeCalculationResponse.getFeeCode()).isEqualTo("FEE123");
-    assertThat(feeCalculationResponse.getClaimId()).isEqualTo("claim_123");
-
-    ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
-        .code("ERRCRM13")
-        .type(ERROR)
-        .message("UFN must be in the correct format.")
         .build();
     assertThat(feeCalculationResponse.getValidationMessages()).containsExactly(validationMessage);
 
