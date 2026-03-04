@@ -431,6 +431,36 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
+  void shouldReturnValidationErrorWhenCrimeFeeCodeAndUfnIsInvalid() throws Exception {
+    String request = """ 
+        {
+          "feeCode": "INVB1",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "999999/242",
+          "representationOrderDate": "2015-02-01",
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "INVB1",
+          "claimId": "claim_123",
+          "validationMessages": [
+            {
+              "type":"ERROR",
+              "code":"ERRCRM13",
+              "message":"UFN must be in the correct format."
+            }
+          ]
+        }
+        """);
+  }
+
+
+  @Test
   void shouldReturnValidationErrorWhenFamilyFeeCodeAndLondonRateIsMissing() throws Exception {
     String request = """ 
         {
