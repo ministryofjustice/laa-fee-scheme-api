@@ -1,8 +1,8 @@
 package uk.gov.justice.laa.fee.scheme.api.feecalculation;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.json.JsonCompareMode.LENIENT;
 import static org.springframework.test.json.JsonCompareMode.STRICT;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -96,13 +96,10 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         .andExpect(content().json("""
             {
               "status": 400,
-              "error": "Bad Request"
+              "error": "Bad Request",
+              "message": "feeCode: must not be null"
             }
-            """, LENIENT))
-        .andExpect(result ->
-            assertThat(result.getResponse().getContentAsString())
-                .contains("default message [feeCode]]; default message [must not be null]]")
-        );
+            """, LENIENT));
   }
 
   @Test
@@ -164,6 +161,37 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               "message": "Invalid API access token provided."
             }
             """, STRICT));
+  }
+
+  @Test
+  void shouldReturnMethodNotAllowedErrorWhenNotHttpPostRequestMethod() throws Exception {
+    mockMvc
+        .perform(get(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "ASMS",
+                  "claimId": "claim_123",
+                  "uniqueFileNumber": "020416/001",
+                  "netProfitCosts": 27.8,
+                  "netTravelCosts": 10.0,
+                  "netWaitingCosts": 11.5,
+                  "netDisbursementAmount": 55.35,
+                  "disbursementVatAmount": 11.07,
+                  "vatIndicator": true
+                   }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isMethodNotAllowed())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "status": 405,
+              "error": "Method Not Allowed",
+              "message": "Request method 'GET' is not supported"
+            }
+            """, LENIENT));
   }
 
   @Test
@@ -371,7 +399,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @ParameterizedTest
   @ValueSource(strings = {"PROP1", "PROP2"})
-  void shouldReturnValidationWarningWhenPreOrderCoverNetCostOverUpperCostLimit(String feeCode) throws Exception {
+  void shouldReturnValidationErrorWhenPreOrderCoverNetCostOverUpperCostLimit(String feeCode) throws Exception {
     String request = """ 
         {
           "feeCode": "%s",
