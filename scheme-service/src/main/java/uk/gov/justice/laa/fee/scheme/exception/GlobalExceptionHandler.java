@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.ERROR;
 
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -96,7 +97,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(StartDateRequiredException.class)
   public ResponseEntity<ErrorResponse> handleStartDateNotProvided(StartDateRequiredException ex) {
-    return handleException("Start date required error", ex, HttpStatus.NOT_FOUND);
+    return handleException("Start date required error", ex, HttpStatus.BAD_REQUEST);
   }
 
   /**
@@ -108,7 +109,31 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(CaseConcludedDateRequiredException.class)
   public ResponseEntity<ErrorResponse> handleCaseConcludedDateNotProvided(CaseConcludedDateRequiredException ex) {
-    return handleException("Case concluded date required error", ex, HttpStatus.NOT_FOUND);
+    return handleException("Case concluded date required error", ex, HttpStatus.BAD_REQUEST);
+  }
+
+  /**
+   * Global exception handler for DateTimeParseException exception.
+   * Date string provided in the request cannot be parsed.
+   *
+   * @param ex the exception thrown when a date string cannot be parsed.
+   * @return the error response and a 400 Bad Request status code.
+   */
+  @ExceptionHandler({DateTimeParseException.class})
+  public ResponseEntity<ErrorResponse> handleDateTimeParsingIssue(DateTimeParseException ex) {
+    return handleException("Date time parse error", ex, HttpStatus.BAD_REQUEST);
+  }
+
+  /**
+   * Global exception handler for NumberFormatException exception.
+   * Number string provided in the request cannot be parsed.
+   *
+   * @param ex the exception thrown when a number string cannot be parsed.
+   * @return the error response and a 400 Bad Request status code.
+   */
+  @ExceptionHandler(NumberFormatException.class)
+  public ResponseEntity<ErrorResponse> handleNumberException(NumberFormatException ex) {
+    return handleException("Number format error", ex, HttpStatus.BAD_REQUEST);
   }
 
   /**
