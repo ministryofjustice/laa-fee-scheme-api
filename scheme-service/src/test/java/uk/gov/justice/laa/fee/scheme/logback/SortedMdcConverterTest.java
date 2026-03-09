@@ -24,7 +24,7 @@ class SortedMdcConverterTest {
 
     String result = converter.convert(event);
 
-    assertThat(result).isEqualTo(":: {feeCode=FEE123, startDate=15-02-11}");
+    assertThat(result).isEqualTo(":: (feeCode=FEE123, startDate=15-02-11)");
   }
 
   @Test
