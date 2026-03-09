@@ -49,7 +49,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "status": 400,
               "error": "Bad Request",
-              "message": "JSON parse error: Duplicate field 'feeCode'"
+              "message": "Request body is invalid JSON"
             }
             """, LENIENT));
   }
@@ -98,6 +98,80 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               "status": 400,
               "error": "Bad Request",
               "message": "feeCode: must not be null"
+            }
+            """, LENIENT));
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenRequestHasInvalidFieldValueFormat() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "claimId": "claim_123",
+                  "startDate": "2022-99-99",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true,
+                  "numberOfMediationSessions": 1
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().json("""
+            {
+              "status": 400,
+              "error": "Bad Request",
+              "message": "Invalid value: 2022-99-99 for field: startDate expects a LocalDate"
+            }
+            """, LENIENT));
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenRequestHasInvalidFieldValueType() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "MHL03",
+                  "claimId": "claim_123",
+                  "startDate": "2025-02-01",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "netProfitCosts": 1000,
+                  "netCostOfCounsel": 500,
+                  "vatIndicator": true,
+                  "boltOns": 1
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().json("""
+            {
+              "status": 400,
+              "error": "Bad Request",
+              "message": "Invalid value for field: boltOns expects a BoltOnType"
+            }
+            """, LENIENT));
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenRequestIsMalformedJson() throws Exception {
+    String malformedJson = "{\"feeCode\":\"ASMS\",}";
+
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(malformedJson)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().json("""
+            {
+              "status": 400,
+              "error": "Bad Request",
+              "message": "Request body is invalid JSON"
             }
             """, LENIENT));
   }

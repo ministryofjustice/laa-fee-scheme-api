@@ -3,6 +3,9 @@ package uk.gov.justice.laa.fee.scheme.exception;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.ERROR;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -37,7 +40,21 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
-    return handleException("Request not readable error", ex, HttpStatus.BAD_REQUEST);
+    HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+    String errorMessage = switch (ex.getCause()) {
+      case InvalidFormatException ife -> String.format("Invalid value: %s for field: %s expects a %s",
+          ife.getValue(), ife.getPath().isEmpty() ? "unknown" : ife.getPath().getFirst().getFieldName(),
+          ife.getTargetType().getSimpleName());
+      case MismatchedInputException mie -> String.format("Invalid value for field: %s expects a %s",
+          mie.getPath().isEmpty() ? "unknown" : mie.getPath().getFirst().getFieldName(), mie.getTargetType().getSimpleName());
+      case JsonParseException ignored -> "Request body is invalid JSON";
+      case null, default -> "Request body is not readable";
+    };
+
+    log.error("Request not readable error [status={}, error={}, message={}]", httpStatus.value(),
+        httpStatus.getReasonPhrase(), errorMessage, ex);
+
+    return getErrorResponse(httpStatus, errorMessage);
   }
 
   /**
