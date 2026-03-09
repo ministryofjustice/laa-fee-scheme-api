@@ -1,24 +1,35 @@
 package uk.gov.justice.laa.fee.scheme.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.ERROR;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.LinkedList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import uk.gov.justice.laa.fee.scheme.controller.FeeCalculationController;
+import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -30,15 +41,102 @@ class GlobalExceptionHandlerTest {
   private final GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
 
   @Test
-  void handleHttpMessageNotReadable(CapturedOutput capturedOutput) {
-    HttpMessageNotReadableException exception = new HttpMessageNotReadableException("Duplicate field 'feeCode'", null, null);
+  void handleHttpMessageNotReadableWhenCauseIsMismatchedInputException(CapturedOutput capturedOutput) {
+    MismatchedInputException cause = MismatchedInputException.from(null, Double.class, "error");
+    JsonMappingException.Reference mockReference = mock(JsonMappingException.Reference.class);
+    when(mockReference.getFieldName()).thenReturn("field1");
+    ReflectionTestUtils.setField(cause, "_path", new LinkedList<>(List.of(mockReference)));
+    ReflectionTestUtils.setField(cause, "_targetType", BoltOnType.class);
+
+    HttpMessageNotReadableException exception
+        = new HttpMessageNotReadableException("Some error", cause, mock(HttpInputMessage.class));
 
     ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadable(exception);
 
-    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Duplicate field 'feeCode'");
+    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Invalid value for field: field1 expects a BoltOnType");
     assertThat(capturedOutput.getOut())
-        .contains("Request not readable error [status=400, error=Bad Request, message=Duplicate field 'feeCode']");
+        .contains("Request not readable error "
+                  + "[status=400, error=Bad Request, message=Invalid value for field: field1 expects a BoltOnType]");
   }
+
+  @Test
+  void handleHttpMessageNotReadableWhenCauseIsMismatchedInputExceptionUnknownField(CapturedOutput capturedOutput) {
+    MismatchedInputException cause = MismatchedInputException.from(null, Double.class, "error");
+    JsonMappingException.Reference mockReference = mock(JsonMappingException.Reference.class);
+    ReflectionTestUtils.setField(cause, "_targetType", BoltOnType.class);
+
+    HttpMessageNotReadableException exception
+        = new HttpMessageNotReadableException("Some error", cause, mock(HttpInputMessage.class));
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadable(exception);
+
+    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Invalid value for field: unknown expects a BoltOnType");
+    assertThat(capturedOutput.getOut())
+        .contains("Request not readable error "
+                  + "[status=400, error=Bad Request, message=Invalid value for field: unknown expects a BoltOnType]");
+  }
+
+  @Test
+  void handleHttpMessageNotReadableWhenCauseIsInvalidFormatException(CapturedOutput capturedOutput) {
+    InvalidFormatException cause = new InvalidFormatException(null, "error", "test", Double.class);
+    JsonMappingException.Reference mockReference = mock(JsonMappingException.Reference.class);
+    when(mockReference.getFieldName()).thenReturn("field1");
+    ReflectionTestUtils.setField(cause, "_path", new LinkedList<>(List.of(mockReference)));
+    ReflectionTestUtils.setField(cause, "_targetType", Double.class);
+    ReflectionTestUtils.setField(cause, "_value", "blah");
+
+    HttpMessageNotReadableException exception
+        = new HttpMessageNotReadableException("Some error", cause, mock(HttpInputMessage.class));
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadable(exception);
+
+    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Invalid value: blah for field: field1 expects a Double");
+    assertThat(capturedOutput.getOut())
+        .contains("Request not readable error "
+                  + "[status=400, error=Bad Request, message=Invalid value: blah for field: field1 expects a Double]");
+  }
+
+  @Test
+  void handleHttpMessageNotReadableWhenCauseIsInvalidFormatExceptionUnknownField(CapturedOutput capturedOutput) {
+    InvalidFormatException cause = new InvalidFormatException(null, "error", "test", Double.class);
+    JsonMappingException.Reference mockReference = mock(JsonMappingException.Reference.class);
+    ReflectionTestUtils.setField(cause, "_targetType", Double.class);
+    ReflectionTestUtils.setField(cause, "_value", "blah");
+
+    HttpMessageNotReadableException exception
+        = new HttpMessageNotReadableException("Some error", cause, mock(HttpInputMessage.class));
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadable(exception);
+
+    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Invalid value: blah for field: unknown expects a Double");
+    assertThat(capturedOutput.getOut())
+        .contains("Request not readable error "
+                  + "[status=400, error=Bad Request, message=Invalid value: blah for field: unknown expects a Double]");
+  }
+
+  @Test
+  void handleHttpMessageNotReadableWhenCauseIsJsonParseException(CapturedOutput capturedOutput) {
+    HttpMessageNotReadableException exception
+        = new HttpMessageNotReadableException("Some error", new JsonParseException(null, "error"), mock(HttpInputMessage.class));
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadable(exception);
+
+    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Request body is invalid JSON");
+    assertThat(capturedOutput.getOut())
+        .contains("Request not readable error [status=400, error=Bad Request, message=Request body is invalid JSON]");
+  }
+
+  @Test
+  void handleHttpMessageNotReadableWhenCauseIsNull(CapturedOutput capturedOutput) {
+    HttpMessageNotReadableException exception = new HttpMessageNotReadableException("Some error", mock(HttpInputMessage.class));
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadable(exception);
+
+    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Request body is not readable");
+    assertThat(capturedOutput.getOut())
+        .contains("Request not readable error [status=400, error=Bad Request, message=Request body is not readable]");
+  }
+
 
   @Test
   void handleMethodArgumentException(CapturedOutput capturedOutput) throws NoSuchMethodException {
@@ -70,7 +168,8 @@ class GlobalExceptionHandlerTest {
 
     assertErrorResponse(response, HttpStatus.NOT_FOUND, "Category of law code not found for feeCode: FEE123");
     assertThat(capturedOutput.getOut())
-        .contains("Category code not found error [status=404, error=Not Found, message=Category of law code not found for feeCode: FEE123]");
+        .contains("Category code not found error "
+                  + "[status=404, error=Not Found, message=Category of law code not found for feeCode: FEE123]");
   }
 
   @Test
@@ -107,7 +206,8 @@ class GlobalExceptionHandlerTest {
 
     assertErrorResponse(response, HttpStatus.METHOD_NOT_ALLOWED, "Request method 'GET' is not supported");
     assertThat(capturedOutput.getOut())
-        .contains("HTTP request method not supported error [status=405, error=Method Not Allowed, message=Request method 'GET' is not supported]");
+        .contains("HTTP request method not supported error "
+                  + "[status=405, error=Method Not Allowed, message=Request method 'GET' is not supported]");
   }
 
   @Test
@@ -129,7 +229,8 @@ class GlobalExceptionHandlerTest {
 
     assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Start Date is required for feeCode: FEE123");
     assertThat(capturedOutput.getOut())
-        .contains("Start date required error [status=400, error=Bad Request, message=Start Date is required for feeCode: FEE123]");
+        .contains("Start date required error "
+                  + "[status=400, error=Bad Request, message=Start Date is required for feeCode: FEE123]");
   }
 
   @Test
@@ -140,7 +241,8 @@ class GlobalExceptionHandlerTest {
 
     assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Case Concluded Date is required for feeCode: FEE123");
     assertThat(capturedOutput.getOut())
-        .contains("Case concluded date required error [status=400, error=Bad Request, message=Case Concluded Date is required for feeCode: FEE123]");
+        .contains("Case concluded date required error "
+                  + "[status=400, error=Bad Request, message=Case Concluded Date is required for feeCode: FEE123]");
   }
 
   @Test
