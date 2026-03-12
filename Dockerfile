@@ -1,5 +1,5 @@
 # Specify java runtime base image
-FROM amazoncorretto:25-alpine
+FROM amazoncorretto:25.0.2-alpine3.22
 
 # Use a build argument for version
 ARG app_version=1.0.0
