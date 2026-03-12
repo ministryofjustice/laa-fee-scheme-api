@@ -3,7 +3,7 @@ name: SCA - Software Composition Analysis
 on:
   workflow_call:
     secrets:
-      SLACK_NON_PROD_WEBHOOK_URL:
+      SLACK_PROD_WEBHOOK_URL:
         required: true
   workflow_dispatch:
 
@@ -53,4 +53,4 @@ jobs:
       message_details: |
         SCA - Software Composition Analysis: ${{ needs.sca.result }}
     secrets:
-      SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_NON_PROD_WEBHOOK_URL }}
+      SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_PROD_WEBHOOK_URL }}

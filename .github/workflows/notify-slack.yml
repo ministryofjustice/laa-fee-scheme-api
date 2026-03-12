@@ -12,8 +12,6 @@ on:
     secrets:
       SLACK_PROD_WEBHOOK_URL:
         required: true
-      SLACK_NON_PROD_WEBHOOK_URL:
-        required: true
 
 jobs:
   notify:
@@ -21,7 +19,7 @@ jobs:
     steps:
       - name: Send Slack notification on failure
         run: |
-          WEBHOOK="${{ secrets.SLACK_NON_PROD_WEBHOOK_URL }}"
+          WEBHOOK="${{ secrets.SLACK_PROD_WEBHOOK_URL }}"
           MESSAGE="on main (scheduled scan)"
           DETAILS="${{ inputs.message_details }}"
   
