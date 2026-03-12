@@ -28,4 +28,9 @@ jobs:
       SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_PROD_WEBHOOK_URL }}
 
   sca-pr-scan:
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      security-events: read
     uses: ./.github/workflows/sca-analysis.yml
