@@ -2,6 +2,9 @@ name: SCA - Software Composition Analysis
 
 on:
   workflow_call:
+    secrets:
+      SLACK_NON_PROD_WEBHOOK_URL:
+        required: true
   workflow_dispatch:
 
 permissions: {}
