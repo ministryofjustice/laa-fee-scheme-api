@@ -34,7 +34,7 @@ public class EducationFixedFeeCalculator extends StandardFixedFeeCalculator {
 
   @Override
   protected boolean handleEscapeCase(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
-                                     List<ValidationMessagesInner> messages, BigDecimal totalAmount) {
+                                     List<ValidationMessagesInner> messages) {
 
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     boolean escaped = isEscapedCase(netProfitCosts, feeEntity);
