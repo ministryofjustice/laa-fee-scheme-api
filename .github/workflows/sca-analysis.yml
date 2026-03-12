@@ -38,3 +38,16 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           renovate: "false"
+
+  notify-slack:
+    needs:
+      - sca
+    if: always() &&
+      contains(join(needs.*.result, ' '), 'failure')
+    uses: ./.github/workflows/notify-slack.yml
+    with:
+      scan_name: "SCA - Software Composition Analysis"
+      message_details: |
+        SCA - Software Composition Analysis: ${{ needs.sca.result }}
+    secrets:
+      SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_NON_PROD_WEBHOOK_URL }}
