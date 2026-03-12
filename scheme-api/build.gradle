@@ -32,7 +32,7 @@ openApiGenerate {
             serializableModel   : "true",
             skipDefaultInterface: "true",
             useJakartaEe        : "true",
-            useSpringBoot3      : "true",
+            useSpringBoot4      : "true",
             useTags             : "true",
     ]
 }
