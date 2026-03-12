@@ -1,0 +1,25 @@
+name: SCA - Software Composition Analysis
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  sca:
+    name: Software Composition Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      security-events: read
+
+    steps:
+      - name: Run SCA
+        uses: ministryofjustice/devsecops-actions/sca@v1.4.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
