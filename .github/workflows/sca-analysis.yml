@@ -1,6 +1,8 @@
 name: SCA - Software Composition Analysis
 
 on:
+  schedule:
+    - cron: '0 8 * * MON'
   workflow_call:
     secrets:
       SLACK_PROD_WEBHOOK_URL:
@@ -46,6 +48,8 @@ jobs:
     needs:
       - sca
     if: always() &&
+      github.event_name == 'schedule' &&
+      github.ref == 'refs/heads/main' &&
       contains(join(needs.*.result, ' '), 'failure')
     uses: ./.github/workflows/notify-slack.yml
     with:
