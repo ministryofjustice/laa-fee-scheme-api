@@ -33,6 +33,7 @@ jobs:
       pull-requests: write
       issues: write
       security-events: read
+      actions: read
     uses: ./.github/workflows/sca-analysis.yml
     secrets:
       SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_PROD_WEBHOOK_URL }}
