@@ -34,6 +34,8 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
+        with:
+          dependency-graph: generate-and-submit
 
       - name: Build app jar with gradle
         run: ./gradlew assemble
