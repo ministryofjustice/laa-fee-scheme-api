@@ -32,7 +32,7 @@ jobs:
       contents: write
       pull-requests: write
       issues: write
-      security-events: read
+      security-events: write
       actions: read
     uses: ./.github/workflows/sca-analysis.yml
     secrets:
