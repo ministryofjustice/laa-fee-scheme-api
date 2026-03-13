@@ -110,4 +110,6 @@ dependencies {
     implementation platform("io.sentry:sentry-bom:$versions.sentry")
     implementation "io.sentry:sentry-logback:$versions.sentry"
     implementation "io.sentry:sentry-spring-boot-starter-jakarta:$versions.sentry"
+
+    implementation 'org.apache.commons:commons-text:1.9'
 }

@@ -27,6 +27,9 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
 
+    - name: Submit dependency graph
+      uses: gradle/actions/dependency-submission@v5
+
     - name: Publish package
       run: ./gradlew publish
       shell: bash
