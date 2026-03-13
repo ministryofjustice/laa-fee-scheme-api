@@ -39,7 +39,7 @@ jobs:
         run: ./gradlew assemble
 
       - name: Build Docker image
-        run: docker build -t laa-fee-scheme-api:latest-image .
+        run: docker build -t laa-fee-scheme-api:latest-image1 .
 
       - name: Run SCA
         uses: ministryofjustice/devsecops-actions/sca@f965eb1771ec66cfc41d7d57dc607fa6dfbc10ed
