@@ -36,3 +36,11 @@ jobs:
     uses: ./.github/workflows/sca-analysis.yml
     secrets:
       SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_PROD_WEBHOOK_URL }}
+
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v4
+      - name: 'Dependency Review'
+        uses: actions/dependency-review-action@v4
