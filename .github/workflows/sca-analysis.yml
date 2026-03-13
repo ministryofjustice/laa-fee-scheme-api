@@ -43,7 +43,7 @@ jobs:
 
       - name: Generate docker images file
         run: |
-          cat > docker-images.json <<EOF
+          cat > ${{ github.workspace }}/docker-images.json <<EOF
           {
             "images": [
               "laa-fee-scheme-api:latest-image"
