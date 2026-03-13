@@ -38,10 +38,10 @@ jobs:
           dependency-graph: generate-and-submit
 
       - name: Build app jar with gradle
-        run: ./gradlew assemble
+        run: ./gradlew build
 
       - name: Build Docker image
-        run: docker build -t laa-fee-scheme-api:latest-image1 .
+        run: docker build -t laa-fee-scheme-api:latest-image .
 
       - name: Run SCA
         uses: ministryofjustice/devsecops-actions/sca@f965eb1771ec66cfc41d7d57dc607fa6dfbc10ed
