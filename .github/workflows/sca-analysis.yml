@@ -48,6 +48,7 @@ jobs:
           docker-images-file: ${{ github.workspace }}/docker-images.json
           renovate: "false"
           codeql-upload-findings: "always"
+          dependency-review-config-file: "./.github/dependency-review-config.yml"
 
   notify-slack:
     needs:
