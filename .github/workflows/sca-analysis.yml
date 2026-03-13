@@ -42,7 +42,7 @@ jobs:
         run: docker build -t laa-fee-scheme-api:latest-image .
 
       - name: Run SCA
-        uses: ministryofjustice/devsecops-actions/sca@v1.4.0
+        uses: ministryofjustice/devsecops-actions/sca@f965eb1771ec66cfc41d7d57dc607fa6dfbc10ed
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker-images-file: ${{ github.workspace }}/docker-images.json
