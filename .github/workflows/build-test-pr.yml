@@ -4,9 +4,16 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Needed for dependency graph submission
+      pull-requests: write
     steps:
       - name: Checkout GitHub repository
         uses: actions/checkout@v6
@@ -16,8 +23,24 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+  dependency-review:
+    needs: build-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v6
+
+      - name: 'Dependency Review'
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: always
+
   snyk-vulnerability-scan:
-    uses: ./.github/workflows/snyk-vulnerability-scans.yml
+    uses: ./.github/workflows/snyk-vulnerability-scanas.yml
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_PROD_WEBHOOK_URL }}
@@ -36,28 +59,3 @@ jobs:
     uses: ./.github/workflows/sca-analysis.yml
     secrets:
       SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_PROD_WEBHOOK_URL }}
-
-  dependency-review:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-    steps:
-      - name: 'Checkout Repository'
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 25
-        uses: actions/setup-java@v5
-        with:
-          java-version: 25
-          distribution: 'corretto'
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
-        with:
-          dependency-graph: generate-and-submit  # Enable dependency graph
-
-      - name: 'Dependency Review'
-        uses: actions/dependency-review-action@v4
-        with:
-          fail-on-severity: high
