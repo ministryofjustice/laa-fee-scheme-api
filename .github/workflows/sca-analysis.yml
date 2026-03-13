@@ -47,6 +47,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker-images-file: ${{ github.workspace }}/docker-images.json
           renovate: "false"
+          codeql-upload-findings: "always"
 
   notify-slack:
     needs:
