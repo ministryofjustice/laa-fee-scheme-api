@@ -27,20 +27,26 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/setup-java@v5
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
         with:
-          java-version: '25'
+          java-version: 25
           distribution: 'corretto'
 
-      - uses: gradle/actions/setup-gradle@v5
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
 
-      - name: Build Java project
+      - name: Build app jar with gradle
         run: ./gradlew build
+
+      - name: Build Docker image
+        run: docker build -t laa-fee-scheme-api:latest-image .
 
       - name: Run SCA
         uses: ministryofjustice/devsecops-actions/sca@f965eb1771ec66cfc41d7d57dc607fa6dfbc10ed
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          docker-images-file: ${{ github.workspace }}/docker-images.json
           renovate: "false"
           dependency-review-config-file: "./.github/dependency-review-config.yml"
 
