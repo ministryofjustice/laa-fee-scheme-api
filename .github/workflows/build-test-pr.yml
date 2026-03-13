@@ -40,7 +40,7 @@ jobs:
           comment-summary-in-pr: always
 
   snyk-vulnerability-scan:
-    uses: ./.github/workflows/snyk-vulnerability-scanas.yml
+    uses: ./.github/workflows/snyk-vulnerability-scans.yml
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_PROD_WEBHOOK_URL }}
