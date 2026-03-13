@@ -38,10 +38,24 @@ jobs:
       - name: Build app jar with gradle
         run: ./gradlew assemble
 
+      - name: Build Docker image
+        run: docker build -t laa-fee-scheme-api:latest-image .
+
+      - name: Generate docker images file
+        run: |
+          cat > docker-images.json <<EOF
+          {
+            "images": [
+              "laa-fee-scheme-api:latest-image"
+            ]
+          }
+          EOF  
+
       - name: Run SCA
         uses: ministryofjustice/devsecops-actions/sca@v1.4.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          docker-images-file: "docker-images.json"
           renovate: "false"
 
   notify-slack:
