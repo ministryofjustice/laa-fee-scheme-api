@@ -24,6 +24,14 @@ jobs:
       security-events: read
 
     steps:
+      - uses: actions/checkout@v6
+
+      - name: Download built jar
+        uses: actions/download-artifact@v5
+        with:
+          name: scheme-service-jar
+          path: build/libs
+
       - name: Run SCA
         uses: ministryofjustice/devsecops-actions/sca@f965eb1771ec66cfc41d7d57dc607fa6dfbc10ed
         with:

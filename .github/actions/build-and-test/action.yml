@@ -21,6 +21,12 @@ runs:
     - name: Set up Gradle
       uses: gradle/actions/setup-gradle@v5
 
+    - name: Upload built jar
+      uses: actions/upload-artifact@v5
+      with:
+        name: scheme-service-jar
+        path: scheme-service/build/libs/*.jar
+
     - name: Build and test
       run: ./gradlew build
       shell: bash
