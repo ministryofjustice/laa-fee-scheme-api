@@ -41,21 +41,17 @@ jobs:
       - name: Build Docker image
         run: docker build -t laa-fee-scheme-api:latest-image .
 
-      - name: Generate docker images file
+      - name: Generate docker-images.json
         run: |
-          cat > ${{ github.workspace }}/docker-images.json <<EOF
-          {
-            "images": [
-              "laa-fee-scheme-api:latest-image"
-            ]
-          }
-          EOF  
+          docker images --format '{{.Repository}}:{{.Tag}}' \
+            | grep '^laa-fee-scheme-api:' \
+            | jq -R . | jq -s '{images: .}' > docker-images.json 
 
       - name: Run SCA
         uses: ministryofjustice/devsecops-actions/sca@v1.4.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          docker-images-file: ${{ github.workspace }}/docker-images.json
+          docker-images-file: docker-images.json
           renovate: "false"
 
   notify-slack:
