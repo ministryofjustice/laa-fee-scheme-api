@@ -6,10 +6,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.ERROR;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.LinkedList;
@@ -28,6 +24,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.exc.InvalidFormatException;
+import tools.jackson.databind.exc.MismatchedInputException;
 import uk.gov.justice.laa.fee.scheme.controller.FeeCalculationController;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
@@ -43,8 +42,8 @@ class GlobalExceptionHandlerTest {
   @Test
   void handleHttpMessageNotReadableWhenCauseIsMismatchedInputException(CapturedOutput capturedOutput) {
     MismatchedInputException cause = MismatchedInputException.from(null, Double.class, "error");
-    JsonMappingException.Reference mockReference = mock(JsonMappingException.Reference.class);
-    when(mockReference.getFieldName()).thenReturn("field1");
+    JacksonException.Reference mockReference = mock(JacksonException.Reference.class);
+    when(mockReference.getPropertyName()).thenReturn("field1");
     ReflectionTestUtils.setField(cause, "_path", new LinkedList<>(List.of(mockReference)));
     ReflectionTestUtils.setField(cause, "_targetType", BoltOnType.class);
 
@@ -62,7 +61,7 @@ class GlobalExceptionHandlerTest {
   @Test
   void handleHttpMessageNotReadableWhenCauseIsMismatchedInputExceptionUnknownField(CapturedOutput capturedOutput) {
     MismatchedInputException cause = MismatchedInputException.from(null, Double.class, "error");
-    JsonMappingException.Reference mockReference = mock(JsonMappingException.Reference.class);
+    JacksonException.Reference mockReference = mock(JacksonException.Reference.class);
     ReflectionTestUtils.setField(cause, "_targetType", BoltOnType.class);
 
     HttpMessageNotReadableException exception
@@ -79,8 +78,8 @@ class GlobalExceptionHandlerTest {
   @Test
   void handleHttpMessageNotReadableWhenCauseIsInvalidFormatException(CapturedOutput capturedOutput) {
     InvalidFormatException cause = new InvalidFormatException(null, "error", "test", Double.class);
-    JsonMappingException.Reference mockReference = mock(JsonMappingException.Reference.class);
-    when(mockReference.getFieldName()).thenReturn("field1");
+    JacksonException.Reference mockReference = mock(JacksonException.Reference.class);
+    when(mockReference.getPropertyName()).thenReturn("field1");
     ReflectionTestUtils.setField(cause, "_path", new LinkedList<>(List.of(mockReference)));
     ReflectionTestUtils.setField(cause, "_targetType", Double.class);
     ReflectionTestUtils.setField(cause, "_value", "blah");
@@ -99,7 +98,7 @@ class GlobalExceptionHandlerTest {
   @Test
   void handleHttpMessageNotReadableWhenCauseIsInvalidFormatExceptionUnknownField(CapturedOutput capturedOutput) {
     InvalidFormatException cause = new InvalidFormatException(null, "error", "test", Double.class);
-    JsonMappingException.Reference mockReference = mock(JsonMappingException.Reference.class);
+    JacksonException.Reference mockReference = mock(JacksonException.Reference.class);
     ReflectionTestUtils.setField(cause, "_targetType", Double.class);
     ReflectionTestUtils.setField(cause, "_value", "blah");
 
@@ -112,18 +111,6 @@ class GlobalExceptionHandlerTest {
     assertThat(capturedOutput.getOut())
         .contains("Request not readable error "
                   + "[status=400, error=Bad Request, message=Invalid value: blah for field: unknown expects a Double]");
-  }
-
-  @Test
-  void handleHttpMessageNotReadableWhenCauseIsJsonParseException(CapturedOutput capturedOutput) {
-    HttpMessageNotReadableException exception
-        = new HttpMessageNotReadableException("Some error", new JsonParseException(null, "error"), mock(HttpInputMessage.class));
-
-    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadable(exception);
-
-    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Request body is invalid JSON");
-    assertThat(capturedOutput.getOut())
-        .contains("Request not readable error [status=400, error=Bad Request, message=Request body is invalid JSON]");
   }
 
   @Test

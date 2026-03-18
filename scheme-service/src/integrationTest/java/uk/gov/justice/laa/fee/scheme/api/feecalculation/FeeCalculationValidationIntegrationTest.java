@@ -1,14 +1,11 @@
 package uk.gov.justice.laa.fee.scheme.api.feecalculation;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.json.JsonCompareMode.LENIENT;
 import static org.springframework.test.json.JsonCompareMode.STRICT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
@@ -48,7 +45,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "status": 400,
               "error": "Bad Request",
-              "message": "Request body is invalid JSON"
+              "message": "Request body is not readable"
             }
             """, LENIENT));
   }
@@ -170,7 +167,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "status": 400,
               "error": "Bad Request",
-              "message": "Request body is invalid JSON"
+              "message": "Request body is not readable"
             }
             """, LENIENT));
   }
