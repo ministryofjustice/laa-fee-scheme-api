@@ -101,7 +101,7 @@ public class GlobalExceptionHandler {
     ErrorType error = ex.getError();
     FeeContext context = ex.getContext();
 
-    log.error("Validation error with message: {}}",
+    log.error("Validation error with message: {}",
         ex.getMessage(), ex);
 
     ValidationMessagesInner validationMessages = ValidationMessagesInner.builder()
