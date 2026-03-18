@@ -23,6 +23,7 @@ public enum ErrorType {
   ERR_CRIME_REP_ORDER_DATE_MISSING("ERRCRM8", "Enter a representation order date."),
   ERR_CRIME_UFN_DATE("ERRCRM1", "Fee Code is not valid for the Case Start Date."),
   ERR_CRIME_UFN_MISSING("ERRCRM7", "Enter a UFN."),
+  ERR_CRIME_UFN_INVALID("ERRCRM13", "UFN must be in the correct format."),
   ERR_FAMILY_LONDON_RATE("ERRFAM1", "London/non-London rate must be entered for the Fee Code used."),
   ERR_IMM_ASYLUM_AFTER_DATE("ERRIA3", "For the Fee Code used, Case Start Date must be on or after "
                                       + "1st April 2023.", Set.of("IACE", "IACF", "IMCE", "IMCF")),

@@ -26,3 +26,14 @@ jobs:
     uses: ./.github/workflows/zap-security-scan.yml
     secrets:
       SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_PROD_WEBHOOK_URL }}
+
+  sca-pr-scan:
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      security-events: write
+      actions: read
+    uses: ./.github/workflows/sca-analysis.yml
+    secrets:
+      SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_PROD_WEBHOOK_URL }}

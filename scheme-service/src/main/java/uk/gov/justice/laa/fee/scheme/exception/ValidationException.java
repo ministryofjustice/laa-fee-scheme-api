@@ -22,4 +22,16 @@ public class ValidationException extends RuntimeException  {
     this.error = error;
     this.context = context;
   }
+
+  /**
+   * Constructor for ValidationException.
+   *
+   * @param error the validation error
+   * @param context the context
+   */
+  public ValidationException(ErrorType error, FeeContext context, Throwable cause) {
+    super(error.getCode() + " - " + error.getMessage(), cause);
+    this.error = error;
+    this.context = context;
+  }
 }
