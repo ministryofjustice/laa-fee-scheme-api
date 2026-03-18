@@ -45,7 +45,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "status": 400,
               "error": "Bad Request",
-              "message": "Request body is not readable"
+              "message": "Request body is invalid JSON"
             }
             """, LENIENT));
   }
@@ -167,7 +167,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "status": 400,
               "error": "Bad Request",
-              "message": "Request body is not readable"
+              "message": "Request body is invalid JSON"
             }
             """, LENIENT));
   }

@@ -25,6 +25,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import tools.jackson.core.JacksonException;
+import tools.jackson.core.exc.StreamReadException;
 import tools.jackson.databind.exc.InvalidFormatException;
 import tools.jackson.databind.exc.MismatchedInputException;
 import uk.gov.justice.laa.fee.scheme.controller.FeeCalculationController;
@@ -111,6 +112,18 @@ class GlobalExceptionHandlerTest {
     assertThat(capturedOutput.getOut())
         .contains("Request not readable error "
                   + "[status=400, error=Bad Request, message=Invalid value: blah for field: unknown expects a Double]");
+  }
+
+  @Test
+  void handleHttpMessageNotReadableWhenCauseIsStreamReadException(CapturedOutput capturedOutput) {
+    HttpMessageNotReadableException exception
+        = new HttpMessageNotReadableException("Some error", new StreamReadException(null, "error"), mock(HttpInputMessage.class));
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadable(exception);
+
+    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Request body is invalid JSON");
+    assertThat(capturedOutput.getOut())
+        .contains("Request not readable error [status=400, error=Bad Request, message=Request body is invalid JSON]");
   }
 
   @Test

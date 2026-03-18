@@ -16,6 +16,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import tools.jackson.core.exc.StreamReadException;
 import tools.jackson.databind.exc.InvalidFormatException;
 import tools.jackson.databind.exc.MismatchedInputException;
 import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
@@ -46,6 +47,7 @@ public class GlobalExceptionHandler {
           ife.getTargetType().getSimpleName());
       case MismatchedInputException mie -> String.format("Invalid value for field: %s expects a %s",
           mie.getPath().isEmpty() ? "unknown" : mie.getPath().getFirst().getPropertyName(), mie.getTargetType().getSimpleName());
+      case StreamReadException ignored -> "Request body is invalid JSON";
       case null, default -> "Request body is not readable";
     };
 
