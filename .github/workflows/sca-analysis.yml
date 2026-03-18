@@ -16,6 +16,8 @@ jobs:
     name: Software Composition Analysis
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
 
     permissions:
       contents: write
@@ -45,7 +47,7 @@ jobs:
       - name: Run SCA
         uses: ministryofjustice/devsecops-actions/sca@f965eb1771ec66cfc41d7d57dc607fa6dfbc10ed
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ github.token }}
           docker-images-file: ${{ github.workspace }}/docker-images.json
           renovate: "false"
           dependency-review-config-file: "./.github/dependency-review-config.yml"
