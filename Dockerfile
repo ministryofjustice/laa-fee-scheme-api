@@ -1,4 +1,6 @@
 # Specify java runtime base image
+# temp fix for Snyk issue - https://security.snyk.io/vuln/SNYK-ALPINE323-ZLIB-15435528
+# will revert back to latest once issue fix is available
 FROM amazoncorretto:25.0.2-alpine3.22
 
 # Use a build argument for version

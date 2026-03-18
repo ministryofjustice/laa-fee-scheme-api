@@ -25,9 +25,9 @@ public class SortedMdcConverter extends ClassicConverter {
     }
 
     Map<String, String> sorted = new TreeMap<>(mdcMap);
-    return ":: {" + sorted.entrySet()
+    return ":: (" + sorted.entrySet()
         .stream()
         .map(e -> e.getKey() + "=" + e.getValue())
-        .collect(Collectors.joining(", ")) + "}";
+        .collect(Collectors.joining(", ")) + ")";
   }
 }
