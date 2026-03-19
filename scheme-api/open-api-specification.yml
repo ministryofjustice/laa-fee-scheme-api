@@ -112,7 +112,7 @@ components:
           type: array
           items:
             type: string
-          description: "Category of law code(s) corresponding to fee code"
+          description: "Category of law codes corresponding to fee code"
         feeCodeDescription:
           type: string
           description: "Description of fee code"

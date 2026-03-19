@@ -32,8 +32,10 @@ import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTest
 class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
 
   static final String INT_TEST_TOKEN = "int-test-token";
-  static final String API_V_1_FEE_DETAILS_CAPA = "/api/v1/fee-details/CAPA";
-  static final String API_V_2_FEE_DETAILS_CAPA = "/api/v2/fee-details/CAPA";
+  static final String API_V_1_FEE_DETAILS = "/api/v1/fee-details/";
+  static final String API_V_2_FEE_DETAILS = "/api/v2/fee-details/";
+  static final String API_V_1_FEE_DETAILS_CAPA = API_V_1_FEE_DETAILS + "CAPA";
+  static final String API_V_2_FEE_DETAILS_CAPA = API_V_2_FEE_DETAILS + "CAPA";
 
   private final MockMvc mockMvc;
 
@@ -86,7 +88,7 @@ class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
   void shouldGetFeeDetailsV2WhenCorrelationIdProvided(String feeCode, String description, List<String> categoryOfLawCodes) throws Exception {
     String correlationId = "a51433f8-a78c-47ef-bd31-837b95467220";
     mockMvc
-        .perform(get("/api/v2/fee-details/" + feeCode)
+        .perform(get(API_V_2_FEE_DETAILS + feeCode)
             .header(HttpHeaders.AUTHORIZATION, INT_TEST_TOKEN)
             .header(HEADER_CORRELATION_ID, correlationId))
         .andExpect(status().isOk())
@@ -101,7 +103,7 @@ class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
   @ParameterizedTest
   void shouldGetFeeDetailsV2WhenCorrelationIdNotProvided(String feeCode, String description, List<String> categoryOfLawCodes) throws Exception {
     mockMvc
-        .perform(get("/api/v2/fee-details/" + feeCode)
+        .perform(get(API_V_2_FEE_DETAILS + feeCode)
             .header(HttpHeaders.AUTHORIZATION, INT_TEST_TOKEN))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -111,11 +113,11 @@ class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
         .andExpect(header().exists(HEADER_CORRELATION_ID));
   }
 
-  @ValueSource(strings = {"/api/v1/fee-details/BLAH", "/api/v2/fee-details/BLAH"})
+  @ValueSource(strings = {API_V_1_FEE_DETAILS, API_V_2_FEE_DETAILS})
   @ParameterizedTest
   void shouldReturnNotFoundResponseWhenFeeCodeIsInvalid(String endpoint) throws Exception {
     mockMvc
-        .perform(get(endpoint)
+        .perform(get(endpoint + "BLAH")
             .header(HttpHeaders.AUTHORIZATION, INT_TEST_TOKEN))
         .andExpect(status().isNotFound())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))

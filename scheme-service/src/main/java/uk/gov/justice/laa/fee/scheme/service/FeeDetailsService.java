@@ -52,7 +52,7 @@ public class FeeDetailsService {
   }
 
   /**
-   * Get category of law code, fee type, fee code description based on given fee code.
+   * Get category of law codes, fee type, fee code description based on given fee code.
    *
    * @param feeCode the fee code
    * @return the fee details response (v2)

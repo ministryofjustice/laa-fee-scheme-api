@@ -69,7 +69,7 @@ class FeeDetailsControllerTest {
     mockMvc.perform(get("/api/v2/fee-details/FEE123")
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.categoryOfLawCodes.*").value(Matchers.containsInAnyOrder("CAT1", "CAT2", "CAT3")))
+        .andExpect(jsonPath("$.categoryOfLawCodes.*").value(Matchers.is(List.of("CAT1", "CAT2", "CAT3"))))
         .andExpect(jsonPath("$.feeCodeDescription").value("fee_code_description"))
         .andExpect(jsonPath("$.feeType").value("FIXED"));
   }

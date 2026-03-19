@@ -23,18 +23,18 @@ public class FeeDetailsController implements FeeDetailsApi {
   public ResponseEntity<FeeDetailsResponseV1> getFeeDetailsV1(String feeCode) {
 
     log.info("Getting fee details (v1)");
-    FeeDetailsResponseV1 feeDetails = feeDetailsService.getFeeDetailsV1(feeCode);
+    FeeDetailsResponseV1 feeDetailsV1 = feeDetailsService.getFeeDetailsV1(feeCode);
     log.info("Successfully retrieved fee details (v1)");
 
-    return ResponseEntity.ok(feeDetails);
+    return ResponseEntity.ok(feeDetailsV1);
   }
 
   @Override
   public ResponseEntity<FeeDetailsResponseV2> getFeeDetailsV2(String feeCode) {
     log.info("Getting fee details (v2)");
-    FeeDetailsResponseV2 feeDetails = feeDetailsService.getFeeDetailsV2(feeCode);
+    FeeDetailsResponseV2 feeDetailsV2 = feeDetailsService.getFeeDetailsV2(feeCode);
     log.info("Successfully retrieved fee details (v2)");
 
-    return ResponseEntity.ok(feeDetails);
+    return ResponseEntity.ok(feeDetailsV2);
   }
 }

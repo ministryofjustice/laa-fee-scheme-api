@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -98,15 +98,19 @@ class FeeDetailsServiceTest {
     assertThat(response.getFeeType()).isEqualTo("FIXED");
   }
 
-  @ValueSource(strings = {"ASMS", "ASPL", "ASAS"})
+  @CsvSource({
+      "ASMS, Legal Help and Associated Civil Work – Miscellaneous",
+      "ASPL, Legal Help and Associated Civil Work – Public Law",
+      "ASAS, Part 1 injunction Anti-Social Behaviour Crime and Policing Act 2014"
+  })
   @ParameterizedTest
-  void getFeeDetailsV2_whenGivenAssociatedCivilFeeCode_shouldReturnExpectedFeeDetails(String feeCode) {
+  void getFeeDetailsV2_whenGivenAssociatedCivilFeeCode_shouldReturnExpectedFeeDetails(String feeCode, String description) {
 
     CategoryOfLawTypeEntity categoryOfLawType = CategoryOfLawTypeEntity.builder().code("ALL").build();
 
     // Mock FeeInformationEntity
     FeeInformationEntity feeInformation = mock(FeeInformationEntity.class);
-    when(feeInformation.getFeeDescription()).thenReturn("Legal Help and Associated Civil Work");
+    when(feeInformation.getFeeDescription()).thenReturn(description);
     when(feeInformation.getFeeType()).thenReturn(FeeType.FIXED);
 
     FeeCategoryMappingEntity feeCategoryMappingEntity = mock(FeeCategoryMappingEntity.class);
@@ -117,7 +121,7 @@ class FeeDetailsServiceTest {
     FeeDetailsResponseV2 response = feeDetailsService.getFeeDetailsV2(feeCode);
 
     assertThat(response.getCategoryOfLawCodes()).isEqualTo(List.of("APPEALS", "INVEST", "PRISON"));
-    assertThat(response.getFeeCodeDescription()).isEqualTo("Legal Help and Associated Civil Work");
+    assertThat(response.getFeeCodeDescription()).isEqualTo(description);
     assertThat(response.getFeeType()).isEqualTo("FIXED");
   }
 
