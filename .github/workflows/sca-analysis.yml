@@ -21,9 +21,7 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     permissions:
-      contents: write
-      pull-requests: write
-      issues: write
+      contents: read
       security-events: write
       actions: read
 
