@@ -4,6 +4,13 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  security-events: write
+  actions: read
+
 jobs:
   build-test:
     runs-on: ubuntu-latest
@@ -28,12 +35,6 @@ jobs:
       SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_PROD_WEBHOOK_URL }}
 
   sca-pr-scan:
-    permissions:
-      contents: write
-      pull-requests: write
-      issues: write
-      security-events: write
-      actions: read
     uses: ./.github/workflows/sca-analysis.yml
     secrets:
       SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_PROD_WEBHOOK_URL }}
