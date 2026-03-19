@@ -2,6 +2,9 @@ package uk.gov.justice.laa.fee.scheme.service;
 
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -11,7 +14,8 @@ import uk.gov.justice.laa.fee.scheme.exception.CategoryCodeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
-import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponse;
+import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponseV1;
+import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponseV2;
 import uk.gov.justice.laa.fee.scheme.repository.FeeCategoryMappingRepository;
 
 /**
@@ -24,22 +28,47 @@ public class FeeDetailsService {
 
   private final FeeCategoryMappingRepository feeCategoryMappingRepository;
 
+  private static final Set<String> ASSOC_CIVIL_FEE_CODES = Set.of("ASMS", "ASPL", "ASAS");
+  private static final List<String> ASSOC_CIVIL_CATEGORY_CODES = List.of("APPEALS", "INVEST", "PRISON");
+
   /**
-   * Get a category of law code based on given fee code.
-   * Get Fee code type and fee code description based on given fee code.
+   * Get category of law code, fee type, fee code description based on given fee code.
    *
    * @param feeCode the fee code
-   * @return category of law response
-   * @throws CategoryCodeNotFoundException category law not found
+   * @return the fee details response (v1)
+   * @throws CategoryCodeNotFoundException if the fee code is not found
    */
-  public FeeDetailsResponse getFeeDetails(String feeCode) {
+  public FeeDetailsResponseV1 getFeeDetailsV1(String feeCode) {
 
-    log.info("Get category of law and fee details");
+    log.info("Get category of law and fee details (v1)");
 
     FeeCategoryMappingEntity feeCategoryMapping = getFeeCategoryMapping(feeCode);
 
-    return FeeDetailsResponse.builder()
+    return FeeDetailsResponseV1.builder()
         .categoryOfLawCode(feeCategoryMapping.getCategoryOfLawType().getCode())
+        .feeCodeDescription(feeCategoryMapping.getFeeCode().getFeeDescription())
+        .feeType(feeCategoryMapping.getFeeCode().getFeeType().toString())
+        .build();
+  }
+
+  /**
+   * Get category of law code, fee type, fee code description based on given fee code.
+   *
+   * @param feeCode the fee code
+   * @return the fee details response (v2)
+   * @throws CategoryCodeNotFoundException if the fee code is not found
+   */
+  public FeeDetailsResponseV2 getFeeDetailsV2(String feeCode) {
+
+    log.info("Get category of law and fee details (v2)");
+
+    FeeCategoryMappingEntity feeCategoryMapping = getFeeCategoryMapping(feeCode);
+
+    List<String> categoryOfLawCodes = ASSOC_CIVIL_FEE_CODES.contains(feeCode) ? ASSOC_CIVIL_CATEGORY_CODES
+        : Collections.singletonList(feeCategoryMapping.getCategoryOfLawType().getCode());
+
+    return FeeDetailsResponseV2.builder()
+        .categoryOfLawCodes(categoryOfLawCodes)
         .feeCodeDescription(feeCategoryMapping.getFeeCode().getFeeDescription())
         .feeType(feeCategoryMapping.getFeeCode().getFeeType().toString())
         .build();
@@ -50,7 +79,7 @@ public class FeeDetailsService {
    *
    * @param feeCalculationRequest the feeCalculationRequest
    * @return the case type
-   * @throws CategoryCodeNotFoundException category law not found
+   * @throws ValidationException if the fee code is not found
    */
   public CaseType getCaseType(FeeCalculationRequest feeCalculationRequest) {
     FeeCategoryMappingEntity feeCategoryMapping = getFeeCategoryMapping(feeCalculationRequest);
