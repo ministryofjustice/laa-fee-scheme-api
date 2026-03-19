@@ -3,6 +3,9 @@ name: SCA - Software Composition Analysis
 on:
   schedule:
     - cron: '0 8 * * MON'
+  push:
+    branches:
+      - main
   workflow_call:
     secrets:
       SLACK_PROD_WEBHOOK_URL:
