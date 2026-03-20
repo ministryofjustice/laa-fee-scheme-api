@@ -39,7 +39,7 @@ public class PrisonLawFixedFeeCalculator extends StandardFixedFeeCalculator {
   @Override
   protected boolean handleEscapeCase(FeeCalculationRequest request,
                                      FeeEntity feeEntity,
-                                     List<ValidationMessagesInner> messages, BigDecimal totalAmount) {
+                                     List<ValidationMessagesInner> messages) {
 
     BigDecimal profitCosts = toBigDecimal(request.getNetProfitCosts());
     BigDecimal waitingCosts = toBigDecimal(request.getNetWaitingCosts());
