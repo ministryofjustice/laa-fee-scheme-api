@@ -62,7 +62,6 @@ class GlobalExceptionHandlerTest {
   @Test
   void handleHttpMessageNotReadableWhenCauseIsMismatchedInputExceptionUnknownField(CapturedOutput capturedOutput) {
     MismatchedInputException cause = MismatchedInputException.from(null, Double.class, "error");
-    JsonMappingException.Reference mockReference = mock(JsonMappingException.Reference.class);
     ReflectionTestUtils.setField(cause, "_targetType", BoltOnType.class);
 
     HttpMessageNotReadableException exception
@@ -99,7 +98,6 @@ class GlobalExceptionHandlerTest {
   @Test
   void handleHttpMessageNotReadableWhenCauseIsInvalidFormatExceptionUnknownField(CapturedOutput capturedOutput) {
     InvalidFormatException cause = new InvalidFormatException(null, "error", "test", Double.class);
-    JsonMappingException.Reference mockReference = mock(JsonMappingException.Reference.class);
     ReflectionTestUtils.setField(cause, "_targetType", Double.class);
     ReflectionTestUtils.setField(cause, "_value", "blah");
 
