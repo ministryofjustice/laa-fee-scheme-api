@@ -106,8 +106,6 @@ class FeeDetailsServiceTest {
   @ParameterizedTest
   void getFeeDetailsV2_whenGivenAssociatedCivilFeeCode_shouldReturnExpectedFeeDetails(String feeCode, String description) {
 
-    CategoryOfLawTypeEntity categoryOfLawType = CategoryOfLawTypeEntity.builder().code("ALL").build();
-
     // Mock FeeInformationEntity
     FeeInformationEntity feeInformation = mock(FeeInformationEntity.class);
     when(feeInformation.getFeeDescription()).thenReturn(description);
