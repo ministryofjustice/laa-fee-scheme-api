@@ -3,13 +3,14 @@ name: SCA - Software Composition Analysis
 on:
   schedule:
     - cron: '0 8 * * MON'
+  push:
+    branches:
+      - main
   workflow_call:
     secrets:
       SLACK_PROD_WEBHOOK_URL:
         required: true
   workflow_dispatch:
-
-permissions: {}
 
 jobs:
   sca:
@@ -20,9 +21,7 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     permissions:
-      contents: write
-      pull-requests: write
-      issues: write
+      contents: read
       security-events: write
       actions: read
 
