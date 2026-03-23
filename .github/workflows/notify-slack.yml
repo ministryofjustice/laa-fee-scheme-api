@@ -13,6 +13,9 @@ on:
       SLACK_PROD_WEBHOOK_URL:
         required: true
 
+permissions:
+  contents: read
+
 jobs:
   notify:
     runs-on: ubuntu-latest
