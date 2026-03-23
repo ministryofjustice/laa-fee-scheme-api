@@ -60,6 +60,13 @@ check.dependsOn integrationTest
 check.dependsOn jacocoTestCoverageVerification
 
 dependencyManagement {
+    imports {
+        // override LAA plugin's Spring Boot version
+        // CVE-2026-22733
+        // will be removed when we upgrade to latest springboot 4 version plugin
+        mavenBom 'org.springframework.boot:spring-boot-dependencies:3.5.12'
+    }
+
     dependencies {
         dependencySet(group: 'io.sentry', version: versions.sentry) {
             entry 'sentry-spring-boot-starter'
@@ -71,13 +78,7 @@ dependencyManagement {
 dependencies {
     implementation project(':scheme-api')
 
-    //CVE-2026-22733
-    implementation 'org.springframework.boot:spring-boot-actuator:3.5.12'
-    implementation 'org.springframework.security:spring-security-web:6.5.9'
-    implementation 'org.springframework:spring-webmvc:6.2.17'
-    implementation 'org.springframework.boot:spring-boot-actuator-autoconfigure:3.5.12'
-    //CVE-2026-22733
-
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
