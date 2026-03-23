@@ -64,13 +64,6 @@ tasks.named("integrationTest") {
 }
 
 dependencyManagement {
-    imports {
-        // override LAA plugin's Spring Boot version
-        // CVE-2026-22733
-        // will be removed when we upgrade to latest springboot 4 version plugin
-        mavenBom 'org.springframework.boot:spring-boot-dependencies:3.5.12'
-    }
-
     dependencies {
         dependencySet(group: 'io.sentry', version: versions.sentry) {
             entry 'sentry-spring-boot-starter'
