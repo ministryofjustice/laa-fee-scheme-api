@@ -1,8 +1,8 @@
 package uk.gov.justice.laa.fee.scheme.api.feecalculation;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.json.JsonCompareMode.LENIENT;
 import static org.springframework.test.json.JsonCompareMode.STRICT;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -12,14 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-@SpringBootTest
-@AutoConfigureMockMvc
 @Testcontainers
 class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrationTest {
 
@@ -49,7 +45,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "status": 400,
               "error": "Bad Request",
-              "message": "JSON parse error: Duplicate field 'feeCode'"
+              "message": "Request body is invalid JSON"
             }
             """, LENIENT));
   }
@@ -96,13 +92,84 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         .andExpect(content().json("""
             {
               "status": 400,
-              "error": "Bad Request"
+              "error": "Bad Request",
+              "message": "feeCode: must not be null"
             }
-            """, LENIENT))
-        .andExpect(result ->
-            assertThat(result.getResponse().getContentAsString())
-                .contains("default message [feeCode]]; default message [must not be null]]")
-        );
+            """, LENIENT));
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenRequestHasInvalidFieldValueFormat() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "claimId": "claim_123",
+                  "startDate": "2022-99-99",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "vatIndicator": true,
+                  "numberOfMediationSessions": 1
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().json("""
+            {
+              "status": 400,
+              "error": "Bad Request",
+              "message": "Invalid value: 2022-99-99 for field: startDate expects a LocalDate"
+            }
+            """, LENIENT));
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenRequestHasInvalidFieldValueType() throws Exception {
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "MHL03",
+                  "claimId": "claim_123",
+                  "startDate": "2025-02-01",
+                  "netDisbursementAmount": 100.21,
+                  "disbursementVatAmount": 20.12,
+                  "netProfitCosts": 1000,
+                  "netCostOfCounsel": 500,
+                  "vatIndicator": true,
+                  "boltOns": 1
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().json("""
+            {
+              "status": 400,
+              "error": "Bad Request",
+              "message": "Invalid value for field: boltOns expects a BoltOnType"
+            }
+            """, LENIENT));
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenRequestIsMalformedJson() throws Exception {
+    String malformedJson = "{\"feeCode\":\"ASMS\",}";
+
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(malformedJson)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().json("""
+            {
+              "status": 400,
+              "error": "Bad Request",
+              "message": "Request body is invalid JSON"
+            }
+            """, LENIENT));
   }
 
   @Test
@@ -164,6 +231,37 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               "message": "Invalid API access token provided."
             }
             """, STRICT));
+  }
+
+  @Test
+  void shouldReturnMethodNotAllowedErrorWhenNotHttpPostRequestMethod() throws Exception {
+    mockMvc
+        .perform(get(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "feeCode": "ASMS",
+                  "claimId": "claim_123",
+                  "uniqueFileNumber": "020416/001",
+                  "netProfitCosts": 27.8,
+                  "netTravelCosts": 10.0,
+                  "netWaitingCosts": 11.5,
+                  "netDisbursementAmount": 55.35,
+                  "disbursementVatAmount": 11.07,
+                  "vatIndicator": true
+                   }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isMethodNotAllowed())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "status": 405,
+              "error": "Method Not Allowed",
+              "message": "Request method 'GET' is not supported"
+            }
+            """, LENIENT));
   }
 
   @Test
@@ -371,7 +469,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @ParameterizedTest
   @ValueSource(strings = {"PROP1", "PROP2"})
-  void shouldReturnValidationWarningWhenPreOrderCoverNetCostOverUpperCostLimit(String feeCode) throws Exception {
+  void shouldReturnValidationErrorWhenPreOrderCoverNetCostOverUpperCostLimit(String feeCode) throws Exception {
     String request = """ 
         {
           "feeCode": "%s",
@@ -429,6 +527,36 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """);
   }
+
+  @Test
+  void shouldReturnValidationErrorWhenCrimeFeeCodeAndUfnIsInvalid() throws Exception {
+    String request = """ 
+        {
+          "feeCode": "INVB1",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "999999/242",
+          "representationOrderDate": "2015-02-01",
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "INVB1",
+          "claimId": "claim_123",
+          "validationMessages": [
+            {
+              "type":"ERROR",
+              "code":"ERRCRM13",
+              "message":"UFN must be in the correct format."
+            }
+          ]
+        }
+        """);
+  }
+
 
   @Test
   void shouldReturnValidationErrorWhenFamilyFeeCodeAndLondonRateIsMissing() throws Exception {

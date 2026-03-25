@@ -39,6 +39,10 @@ logging:
     org.springframework: ${SPRING_LOGGING_LEVEL:info}
     uk.gov.justice.laa.fee.scheme: ${APP_LOGGING_LEVEL:info}
 
+    # suppress ExceptionHandlerExceptionResolver warning messages
+    org.springframework.web.servlet.mvc.method.annotation: error
+
+
 laa.springboot.starter:
   auth:
     authentication-header: "Authorization"

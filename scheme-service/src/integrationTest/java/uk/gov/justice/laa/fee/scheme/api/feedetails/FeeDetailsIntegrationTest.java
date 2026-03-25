@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.api.feedetails;
 
+import static org.springframework.test.json.JsonCompareMode.LENIENT;
 import static org.springframework.test.json.JsonCompareMode.STRICT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -10,8 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -105,5 +106,21 @@ class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
         .andExpect(jsonPath("$.error").value("Not Found"))
         .andExpect(jsonPath("$.message").value("Category of law code not found for feeCode: BLAH"))
         .andExpect(jsonPath("$.timestamp").exists());
+  }
+
+  @Test
+  void shouldReturnMethodNotAllowedErrorWhenHttpNotGetRequestMethod() throws Exception {
+    mockMvc
+        .perform(post(API_V_1_FEE_DETAILS_CAPA)
+            .header(HttpHeaders.AUTHORIZATION, INT_TEST_TOKEN))
+        .andExpect(status().isMethodNotAllowed())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json("""
+            {
+              "status": 405,
+              "error": "Method Not Allowed",
+              "message": "Request method 'POST' is not supported"
+            }
+            """, LENIENT));
   }
 }
