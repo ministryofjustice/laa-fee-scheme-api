@@ -12,8 +12,11 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.List;
@@ -21,8 +24,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -39,8 +42,8 @@ class FeeCalculationControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
-  @Autowired
-  private ObjectMapper objectMapper;
+  private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule())
+      .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).setDefaultPropertyInclusion(JsonInclude.Include.ALWAYS);
 
   @MockitoBean
   private FeeCalculationService feeCalculationService;

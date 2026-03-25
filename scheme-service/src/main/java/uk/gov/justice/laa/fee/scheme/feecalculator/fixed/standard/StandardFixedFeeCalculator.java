@@ -64,7 +64,7 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     boolean isEscaped = false;
     if (canEscape) {
-      isEscaped = handleEscapeCase(feeCalculationRequest, feeEntity, validationMessages, totalAmount);
+      isEscaped = handleEscapeCase(feeCalculationRequest, feeEntity, validationMessages);
     }
 
     //Step 8: build FeeCalculation
@@ -92,7 +92,7 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
   }
 
   protected boolean handleEscapeCase(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
-                                     List<ValidationMessagesInner> messages, BigDecimal totalAmount) {
+                                     List<ValidationMessagesInner> messages) {
     return false;
   }
 }
