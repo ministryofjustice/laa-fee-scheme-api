@@ -33,7 +33,7 @@ public class FamilyFixedFeeCalculator extends StandardFixedFeeCalculator {
 
   @Override
   protected boolean handleEscapeCase(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
-                                     List<ValidationMessagesInner> validationMessages, BigDecimal totalAmount) {
+                                     List<ValidationMessagesInner> validationMessages) {
 
     boolean escaped = false;
     BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();

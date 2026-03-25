@@ -78,7 +78,7 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     mockVatRatesService(true);
 
     BigDecimal fixedFee = new BigDecimal("263.00");
-    BigDecimal escapeThresoldLimit = new BigDecimal("396.00");
+    BigDecimal escapeThresholdLimit = new BigDecimal("396.00");
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("FPB010")
@@ -94,7 +94,7 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .feeCode("FPB010")
         .feeScheme(FeeSchemesEntity.builder().schemeCode("FAM_NON_LON_FS2011").build())
         .fixedFee(fixedFee)
-        .escapeThresholdLimit(escapeThresoldLimit)
+        .escapeThresholdLimit(escapeThresholdLimit)
         .categoryType(FAMILY)
         .build();
 

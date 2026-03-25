@@ -3,9 +3,6 @@ package uk.gov.justice.laa.fee.scheme.exception;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.ERROR;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -19,6 +16,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import tools.jackson.core.exc.StreamReadException;
+import tools.jackson.databind.exc.InvalidFormatException;
+import tools.jackson.databind.exc.MismatchedInputException;
 import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -43,11 +43,11 @@ public class GlobalExceptionHandler {
     HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
     String errorMessage = switch (ex.getCause()) {
       case InvalidFormatException ife -> String.format("Invalid value: %s for field: %s expects a %s",
-          ife.getValue(), ife.getPath().isEmpty() ? "unknown" : ife.getPath().getFirst().getFieldName(),
+          ife.getValue(), ife.getPath().isEmpty() ? "unknown" : ife.getPath().getFirst().getPropertyName(),
           ife.getTargetType().getSimpleName());
       case MismatchedInputException mie -> String.format("Invalid value for field: %s expects a %s",
-          mie.getPath().isEmpty() ? "unknown" : mie.getPath().getFirst().getFieldName(), mie.getTargetType().getSimpleName());
-      case JsonParseException ignored -> "Request body is invalid JSON";
+          mie.getPath().isEmpty() ? "unknown" : mie.getPath().getFirst().getPropertyName(), mie.getTargetType().getSimpleName());
+      case StreamReadException ignored -> "Request body is invalid JSON";
       case null, default -> "Request body is not readable";
     };
 
