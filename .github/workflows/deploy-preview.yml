@@ -11,12 +11,13 @@ concurrency:
   group: preview-deploy-pr-${{ inputs.pr_number }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   ecr:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
 
     steps:
       - uses: actions/checkout@v6
