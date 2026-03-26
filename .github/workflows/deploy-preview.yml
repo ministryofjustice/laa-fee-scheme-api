@@ -7,6 +7,10 @@ on:
         required: true
         type: number
 
+    secrets:
+      ECR_ROLE_TO_ASSUME:
+        required: true
+
 concurrency:
   group: preview-deploy-pr-${{ inputs.pr_number }}
   cancel-in-progress: true
