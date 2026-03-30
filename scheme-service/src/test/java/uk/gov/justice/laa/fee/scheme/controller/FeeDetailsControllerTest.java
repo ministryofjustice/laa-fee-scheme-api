@@ -5,6 +5,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -13,7 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.justice.laa.fee.scheme.exception.CategoryCodeNotFoundException;
-import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponse;
+import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponseV1;
+import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponseV2;
 import uk.gov.justice.laa.fee.scheme.service.FeeDetailsService;
 
 @WebMvcTest(FeeDetailsController.class)
@@ -27,9 +30,8 @@ class FeeDetailsControllerTest {
   private FeeDetailsService feeDetailsService;
 
   @Test
-  void getFeeDetailsFeeByCode() throws Exception {
-
-    when(feeDetailsService.getFeeDetails("FEE123")).thenReturn(FeeDetailsResponse.builder()
+  void getFeeDetailsV1FeeByCode() throws Exception {
+    when(feeDetailsService.getFeeDetailsV1("FEE123")).thenReturn(FeeDetailsResponseV1.builder()
         .categoryOfLawCode("ASY")
         .feeCodeDescription("fee_code_description")
         .feeType("FIXED")
@@ -44,8 +46,8 @@ class FeeDetailsControllerTest {
   }
 
   @Test
-  void throwExceptionWhenCategoryOfLawNotFound() throws Exception {
-    when(feeDetailsService.getFeeDetails("FEE123")).thenThrow(new CategoryCodeNotFoundException("FEE123"));
+  void getFeeDetailsV1FeeByCodeThrowsExceptionWhenCategoryOfLawNotFound() throws Exception {
+    when(feeDetailsService.getFeeDetailsV1("FEE123")).thenThrow(new CategoryCodeNotFoundException("FEE123"));
 
     mockMvc.perform(get("/api/v1/fee-details/FEE123")
             .contentType(MediaType.APPLICATION_JSON))
@@ -55,4 +57,34 @@ class FeeDetailsControllerTest {
         .andExpect(jsonPath("$.error").value("Not Found"))
         .andExpect(jsonPath("$.message").value("Category of law code not found for feeCode: FEE123"));
   }
+
+  @Test
+  void getFeeDetailsV2FeeByCode() throws Exception {
+    when(feeDetailsService.getFeeDetailsV2("FEE123")).thenReturn(FeeDetailsResponseV2.builder()
+        .categoryOfLawCodes(List.of("CAT1", "CAT2", "CAT3"))
+        .feeCodeDescription("fee_code_description")
+        .feeType("FIXED")
+        .build());
+
+    mockMvc.perform(get("/api/v2/fee-details/FEE123")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.categoryOfLawCodes.*").value(Matchers.is(List.of("CAT1", "CAT2", "CAT3"))))
+        .andExpect(jsonPath("$.feeCodeDescription").value("fee_code_description"))
+        .andExpect(jsonPath("$.feeType").value("FIXED"));
+  }
+
+  @Test
+  void getFeeDetailsV2FeeByCodeThrowsExceptionWhenCategoryOfLawNotFound() throws Exception {
+    when(feeDetailsService.getFeeDetailsV2("FEE123")).thenThrow(new CategoryCodeNotFoundException("FEE123"));
+
+    mockMvc.perform(get("/api/v2/fee-details/FEE123")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.timestamp").exists())
+        .andExpect(jsonPath("$.status").value(404))
+        .andExpect(jsonPath("$.error").value("Not Found"))
+        .andExpect(jsonPath("$.message").value("Category of law code not found for feeCode: FEE123"));
+  }
+
 }
