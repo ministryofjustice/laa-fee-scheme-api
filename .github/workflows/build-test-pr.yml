@@ -2,7 +2,7 @@ name: PR build and test
 on:
   workflow_dispatch:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened, reopened, synchronize, labeled]
 
 permissions:
   contents: read
@@ -36,3 +36,14 @@ jobs:
     uses: ./.github/workflows/sca-analysis.yml
     secrets:
       SLACK_PROD_WEBHOOK_URL: ${{ secrets.SLACK_PROD_WEBHOOK_URL }}
+
+  check-for-preview-deploy:
+    permissions:
+      id-token: write
+      contents: read
+    if: contains(github.event.pull_request.labels.*.name, 'preview-deploy')
+    needs: [ build-test, snyk-vulnerability-scan, zap-pr-scan, sca-pr-scan ]
+    uses: ./.github/workflows/deploy-preview.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+    secrets: inherit
