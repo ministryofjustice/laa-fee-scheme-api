@@ -31,6 +31,8 @@ Includes the following subprojects:
 
 ### Run application via intellij
 
+Update placeholders in docker-compose.yml
+
 - Create 'postgres' container for database, do not create 'app' container
 
 `docker compose up postgres -d`
@@ -78,6 +80,9 @@ sentry:
 ```
 
 ### Run application via Docker
+
+Update placeholders in docker-compose.yml
+
 `docker compose up`
 
 ## Application Endpoints
