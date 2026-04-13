@@ -29,10 +29,60 @@ Includes the following subprojects:
 ### Build application
 `./gradlew clean build`
 
-### Run application
-`./gradlew bootRun`
+### Run application via intellij
+
+Update placeholders in docker-compose.yml
+
+- Create 'postgres' container for database, do not create 'app' container
+
+`docker compose up postgres -d`
+
+- Edit SpringBoot Run configuration
+- Active profile: local
+- Environment variables: - DATA_CLAIMS_EVENT_SERVICE_TOKEN={someToken}
+
+Create application-local.yml
+
+```yaml
+spring:
+  application:
+    name: LAA Fee Scheme
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fee_scheme_test_db
+    username: dev
+    password: dev
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    url: jdbc:postgresql://localhost:5432/fee_scheme_test_db
+    user: dev
+    password: dev
+    locations: classpath:db/migration,classpath:db/repeatable
+    baseline-on-migrate: true
+    schemas: fee_scheme
+    default-schema: fee_scheme
+    enabled: true
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: fee_scheme
+
+logging:
+  level:
+    root: ERROR
+
+sentry:
+  dsn: ""
+  environment: ""
+```
 
 ### Run application via Docker
+
+Update placeholders in docker-compose.yml
+
 `docker compose up`
 
 ## Application Endpoints
