@@ -41,14 +41,14 @@ jobs:
 
       - name: Login to AWS ECR container repo
         id: login-ecr
-        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/ecr-auth@main
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/ecr-auth@7c81d37978aef9418f7185d9ecf70e3cd1c63c02 # main
         with:
           ecr_region: ${{ vars.ECR_REGION }}
           ecr_role: ${{ secrets.ECR_ROLE_TO_ASSUME }}
           role-session-name: deployment
 
       - name: Authenticate with Kubernetes cluster in Cloud Platform
-        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@main
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@7c81d37978aef9418f7185d9ecf70e3cd1c63c02 # main
         with:
           kube-cert: ${{ secrets.KUBE_CERT }}
           kube-token: ${{ secrets.KUBE_TOKEN }}
@@ -73,7 +73,7 @@ jobs:
           echo "values_file=$VALUES_FILE" >> $GITHUB_OUTPUT
 
       - name: Helm Deploy
-        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/helm-deploy@main
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/helm-deploy@7c81d37978aef9418f7185d9ecf70e3cd1c63c02 # main
         with:
           k8s_namespace: ${{ secrets.KUBE_NAMESPACE }}
           helm_release_name: ${{ steps.target.outputs.release }}

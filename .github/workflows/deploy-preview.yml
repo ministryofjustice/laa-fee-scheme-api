@@ -35,7 +35,7 @@ jobs:
       - run: ./gradlew clean build
 
       - name: Login to ECR
-        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/ecr-auth@main
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/ecr-auth@7c81d37978aef9418f7185d9ecf70e3cd1c63c02 # main
         id: auth
         with:
           ecr_region: ${{ vars.ECR_REGION }}
@@ -43,7 +43,7 @@ jobs:
           role-session-name: preview
 
       - name: Build and push preview image
-        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/build-and-push@main
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/build-and-push@7c81d37978aef9418f7185d9ecf70e3cd1c63c02 # main
         with:
           dockerfile_path: ./Dockerfile
           image_registry: ${{ steps.auth.outputs.image_registry }}
