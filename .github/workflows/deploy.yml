@@ -45,7 +45,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to AWS ECR container repo
-        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/ecr-auth@main
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/ecr-auth@7c81d37978aef9418f7185d9ecf70e3cd1c63c02 # main
         id: auth
         with:
           ecr_region: ${{ vars.ECR_REGION }}
@@ -53,7 +53,7 @@ jobs:
           role-session-name: deployment
 
       - name: Build and Push
-        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/build-and-push@main
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/build-and-push@7c81d37978aef9418f7185d9ecf70e3cd1c63c02 # main
         with:
           dockerfile_path: ./Dockerfile
           image_registry: ${{ steps.auth.outputs.image_registry }}
@@ -106,7 +106,7 @@ jobs:
           distribution: 'corretto'
 
       - name: Setup Snyk
-        uses: snyk/actions/setup@master
+        uses: snyk/actions/setup@9adf32b1121593767fc3c057af55b55db032dc04 # master
 
       - name: Run Snyk to check app for vulnerabilities
         run: snyk monitor --severity-threshold=high
@@ -123,6 +123,6 @@ jobs:
           sed -i 's/"security-severity": "undefined"/"security-severity": "0"/g' snyk-app.sarif
 
       - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@b25d0ebf40e5b63ee81e1bd6e5d2a12b7c2aeb61 # v4
         with:
           sarif_file: snyk-app.sarif
