@@ -73,17 +73,9 @@ dependencyManagement {
 }
 
 dependencies {
-    constraints {
-        implementation("tools.jackson.core:jackson-core:3.1.1") {
-            because "Fix Snyk vulnerability"
-        }
-        implementation("org.apache.tomcat.embed:tomcat-embed-core:11.0.21") {
-            because "Fix Snyk vulnerability"
-        }
-    }
-
     implementation project(':scheme-api')
 
+    // To be removed as apart of LSFP-403
     implementation("tools.jackson.core:jackson-core:3.1.1")
     implementation("org.apache.tomcat.embed:tomcat-embed-core:11.0.21")
 
