@@ -74,13 +74,12 @@ jobs:
       environment: uat
     secrets: inherit
 
-  deploy-staging:
-    needs: deploy-uat
-    uses: ./.github/workflows/_deploy-to-env.yml
-    with:
-      environment: staging
-    secrets: inherit
-
+#  deploy-staging:
+#    needs: deploy-uat
+#    uses: ./.github/workflows/_deploy-to-env.yml
+#    with:
+#      environment: staging
+#    secrets: inherit
 #
 #  deploy-prod:
 #    needs: deploy-staging
