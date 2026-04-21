@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.entity.FeeCategoryMappingEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CaseType;
@@ -38,6 +39,7 @@ public class FeeDetailsService {
    * @return the fee details response (v1)
    * @throws CategoryCodeNotFoundException if the fee code is not found
    */
+  @Cacheable(value = "feeDetailsV1", key = "#feeCode")
   public FeeDetailsResponseV1 getFeeDetailsV1(String feeCode) {
 
     log.info("Get category of law and fee details (v1)");
@@ -58,6 +60,7 @@ public class FeeDetailsService {
    * @return the fee details response (v2)
    * @throws CategoryCodeNotFoundException if the fee code is not found
    */
+  @Cacheable(value = "feeDetailsV2", key = "#feeCode")
   public FeeDetailsResponseV2 getFeeDetailsV2(String feeCode) {
 
     log.info("Get category of law and fee details (v2)");
@@ -81,6 +84,7 @@ public class FeeDetailsService {
    * @return the case type
    * @throws ValidationException if the fee code is not found
    */
+  @Cacheable("caseType")
   public CaseType getCaseType(FeeCalculationRequest feeCalculationRequest) {
     FeeCategoryMappingEntity feeCategoryMapping = getFeeCategoryMapping(feeCalculationRequest);
 

@@ -2,11 +2,13 @@ package uk.gov.justice.laa.fee.scheme;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
 /**
  * Entry point for Fee-Scheme application.
  */
 @SuppressWarnings("checkstyle:HideUtilityClassConstructor")
+@EnableCaching
 @SpringBootApplication
 public class FeeSchemeApplication {
 
