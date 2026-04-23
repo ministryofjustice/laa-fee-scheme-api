@@ -1,10 +1,15 @@
+{{- if not (hasPrefix "laa-fee-scheme-api-pr" .Release.Name) }}
+{{- if ne .Release.Name .Chart.Name }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "laa-fee-scheme-api.serviceName" . }}
+  name: "{{ .Release.Name }}-service"
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "laa-fee-scheme-api.labels" . | nindent 4 }}
+    legacy: "true"
+  annotations:
+    description: "release.name service name for backward compatibility, will be removed after migration"
 spec:
   ports:
     - name: http
@@ -17,3 +22,5 @@ spec:
       protocol: TCP
   selector:
     {{- include "laa-fee-scheme-api.selectorLabels" . | nindent 4 }}
+{{- end }}
+{{- end }}
