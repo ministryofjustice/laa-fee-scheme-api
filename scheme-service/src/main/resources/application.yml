@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: LAA Fee Scheme API
+    name: laa-fee-scheme-api
 
   datasource:
     url: 'jdbc:postgresql://${DB_SERVER}/${DB_NAME}'
@@ -34,6 +34,15 @@ management:
         include: health,metrics,prometheus
 
 logging:
+  structured:
+    format:
+      console: ecs
+    ecs:
+      service:
+        name: laa-fee-scheme-api
+        version: ${spring.application.version:default}
+        environment: ${spring.profiles.active:default}
+        node_name: ${HOSTNAME:unknown}
   level:
     root: ${ROOT_LOGGING_LEVEL:info}
     org.springframework: ${SPRING_LOGGING_LEVEL:info}
