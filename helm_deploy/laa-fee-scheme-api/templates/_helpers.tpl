@@ -39,7 +39,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Use release name if release name starts with "laa-fee-scheme-api-pr" else use chart name
 */}}
 {{- define "laa-fee-scheme-api.serviceName" -}}
-{{- if hasPrefix "laa-fee-scheme-api-pr" .Release.Name }}
+{{- if hasPrefix "laa-fee-scheme-api-pr-" .Release.Name }}
 {{- printf "%s-service" .Release.Name }}
 {{- else }}
 {{- printf "%s-service" .Chart.Name }}
