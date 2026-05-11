@@ -34,3 +34,6 @@ application:
 
 prometheus:
   enabled: false
+
+legacyService:
+  enabled: true

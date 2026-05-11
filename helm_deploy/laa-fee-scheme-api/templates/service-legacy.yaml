@@ -1,5 +1,4 @@
-{{- if not (hasPrefix "laa-fee-scheme-api-pr" .Release.Name) }}
-{{- if ne .Release.Name .Chart.Name }}
+{{- if .Values.legacyService.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -22,5 +21,4 @@ spec:
       protocol: TCP
   selector:
     {{- include "laa-fee-scheme-api.selectorLabels" . | nindent 4 }}
-{{- end }}
 {{- end }}
