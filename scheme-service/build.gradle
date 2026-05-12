@@ -52,8 +52,14 @@ pitest {
     pitestVersion = '1.23.1'
     junit5PluginVersion = '1.2.3'
 
-    targetClasses = ['uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard.*']
-    targetTests = ['uk.gov.justice.laa.fee.scheme.feecalculator.fixed.*Test']
+    targetClasses = ['uk.gov.justice.laa.fee.scheme.*']
+    targetTests = ['uk.gov.justice.laa.fee.scheme.*Test']
+    excludedClasses = [
+        'uk.gov.justice.laa.fee.scheme.FeeSchemeApplication',
+        'uk.gov.justice.laa.fee.scheme.config.*',
+        'uk.gov.justice.laa.fee.scheme.enums.*',
+        'uk.gov.justice.laa.fee.scheme.entity.*'
+    ]
 
     outputFormats = ['HTML', 'XML']
     timestampedReports = false
