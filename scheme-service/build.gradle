@@ -2,6 +2,7 @@ plugins {
     id 'io.freefair.lombok' version '9.2.0'
     id 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
     id "io.sentry.jvm.gradle" version "6.2.0"
+    id 'info.solidsoft.pitest' version '1.19.0'
 }
 
 def versions = [
@@ -44,6 +45,20 @@ jacocoTestCoverageVerification {
             }
         }
     }
+}
+
+// LFSP-422 spike — run: ./gradlew :scheme-service:pitest
+pitest {
+    pitestVersion = '1.19.1'
+    junit5PluginVersion = '1.2.1'
+
+    targetClasses = ['uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard.*']
+    targetTests = ['uk.gov.justice.laa.fee.scheme.feecalculator.fixed.*Test']
+
+    outputFormats = ['HTML', 'XML']
+    timestampedReports = false
+    threads = 4
+    failWhenNoMutations = false
 }
 
 ['checkstyleTest', 'checkstyleIntegrationTest'].each {
