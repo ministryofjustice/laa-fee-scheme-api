@@ -49,8 +49,8 @@ jacocoTestCoverageVerification {
 
 // LFSP-422 spike — run: ./gradlew :scheme-service:pitest
 pitest {
-    pitestVersion = '1.19.1'
-    junit5PluginVersion = '1.2.1'
+    pitestVersion = '1.23.1'
+    junit5PluginVersion = '1.2.3'
 
     targetClasses = ['uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard.*']
     targetTests = ['uk.gov.justice.laa.fee.scheme.feecalculator.fixed.*Test']
