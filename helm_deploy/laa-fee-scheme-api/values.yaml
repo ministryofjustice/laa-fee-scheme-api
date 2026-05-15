@@ -85,6 +85,3 @@ spring:
 application:
   logging:
     level: INFO
-
-legacyService:
-  enabled: true

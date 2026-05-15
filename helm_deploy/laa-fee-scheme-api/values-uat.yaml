@@ -41,6 +41,3 @@ prometheus:
   dashboardUrl: https://grafana.live.cloud-platform.service.justice.gov.uk/d/laa-fee-scheme-api-uat-dashboard
   severity: laa-fee-scheme-api-uat
   zeroPodsInterval: 1m
-
-legacyService:
-  enabled: true
