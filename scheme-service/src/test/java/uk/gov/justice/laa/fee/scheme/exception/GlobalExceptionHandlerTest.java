@@ -171,6 +171,18 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
+  void handleAreaOfLawNotFound(CapturedOutput capturedOutput) {
+    AreaOfLawNotFoundException exception = new AreaOfLawNotFoundException("FEE123");
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleAreaOfLawNotFound(exception);
+
+    assertErrorResponse(response, HttpStatus.NOT_FOUND, "Area of law not found for: FEE123");
+    assertThat(capturedOutput.getOut())
+            .contains("Area of law not found error "
+                    + "[status=404, error=Not Found, message=Area of law not found for: FEE123]");
+  }
+
+  @Test
   void handleValidationException(CapturedOutput capturedOutput) {
     FeeContext feeContext = new FeeContext("FEE123", LocalDate.of(2020, 3, 1), "claim_123");
     ValidationException exception = new ValidationException(ERR_ALL_FEE_CODE, feeContext);

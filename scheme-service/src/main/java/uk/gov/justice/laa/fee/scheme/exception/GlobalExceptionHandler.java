@@ -106,6 +106,18 @@ public class GlobalExceptionHandler {
   }
 
   /**
+   * Global exception handler for AreaOfLawCodeNotFoundException exception.
+   * Area of law provided in the request does not exist.
+   *
+   * @param ex the exception thrown when a category code is not found.
+   * @return the error response and a 404 Not Found status code.
+   */
+  @ExceptionHandler(AreaOfLawNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleAreaOfLawNotFound(AreaOfLawNotFoundException ex) {
+    return handleException("Area of law not found error", ex, HttpStatus.NOT_FOUND);
+  }
+
+  /**
    * Global exception handler for StartDateRequiredException exception.
    * Start date is required for fee calculation but was not provided in the request.
    *
