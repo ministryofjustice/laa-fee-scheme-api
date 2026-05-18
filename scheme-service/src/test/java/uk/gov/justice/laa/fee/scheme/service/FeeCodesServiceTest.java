@@ -84,6 +84,12 @@ class FeeCodesServiceTest {
   }
 
   @Test
+  void getFeeCodesV1_shouldThrowExceptionForNullAreaOfLaw() {
+    assertThatThrownBy(() -> feeCodesService.getFeeCodesV1(null))
+            .isInstanceOf(AreaOfLawNotFoundException.class);
+  }
+
+  @Test
   void getFeeCodesV1_shouldThrowExceptionForInvalidAreaOfLaw() {
     assertThatThrownBy(() -> feeCodesService.getFeeCodesV1("INVALID"))
         .isInstanceOf(AreaOfLawNotFoundException.class);
