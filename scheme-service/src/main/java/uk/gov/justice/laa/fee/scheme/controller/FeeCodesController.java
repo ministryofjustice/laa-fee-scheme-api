@@ -8,23 +8,20 @@ import uk.gov.justice.laa.fee.scheme.api.FeeCodesApi;
 import uk.gov.justice.laa.fee.scheme.model.FeeCodesResponseV1;
 import uk.gov.justice.laa.fee.scheme.service.FeeCodesService;
 
-/**
- * Controller for getting fee codes and their details corresponding to area of law.
- */
+/** Controller for getting fee codes and their details corresponding to area of law. */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class FeeCodesController implements FeeCodesApi {
 
-    private final FeeCodesService feeCodesService;
+  private final FeeCodesService feeCodesService;
 
-    @Override
-    public ResponseEntity<FeeCodesResponseV1> getFeeCodesV1(String areaOfLaw) {
-        log.info("Getting fee codes (v1)");
-        FeeCodesResponseV1 feeCodesResponseV1 = feeCodesService.getFeeCodesV1(areaOfLaw);
-        log.info("Successfully retrieved fee codes (v1)");
+  @Override
+  public ResponseEntity<FeeCodesResponseV1> getFeeCodesV1(String areaOfLaw) {
+    log.info("Getting fee codes (v1)");
+    FeeCodesResponseV1 feeCodesResponseV1 = feeCodesService.getFeeCodesV1(areaOfLaw);
+    log.info("Successfully retrieved fee codes (v1)");
 
-        return ResponseEntity.ok(feeCodesResponseV1);
-    }
-
+    return ResponseEntity.ok(feeCodesResponseV1);
+  }
 }

@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import uk.gov.justice.laa.fee.scheme.entity.AreaOfLawTypeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeCategoryMappingEntity;
 import uk.gov.justice.laa.fee.scheme.enums.AreaOfLawType;
 
@@ -23,10 +22,10 @@ public interface FeeCategoryMappingRepository extends JpaRepository<FeeCategoryM
   Optional<FeeCategoryMappingEntity> findByFeeCodeFeeCode(String feeCode);
 
   @EntityGraph(attributePaths = {
-          "feeCode",
-          "categoryOfLawType",
-          "categoryOfLawType.areaOfLawType",
-          "categoryOfLawType.areaOfLawType.caseType"
+      "feeCode",
+      "categoryOfLawType",
+      "categoryOfLawType.areaOfLawType",
+      "categoryOfLawType.areaOfLawType.caseType"
   })
   List<FeeCategoryMappingEntity> findByCategoryOfLawTypeAreaOfLawTypeCode(AreaOfLawType areaOfLawType);
 
