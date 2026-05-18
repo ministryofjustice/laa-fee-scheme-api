@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.laa.fee.scheme.api.FeeCodesApi;
 import uk.gov.justice.laa.fee.scheme.model.FeeCodesResponseV1;
-import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponseV1;
+import uk.gov.justice.laa.fee.scheme.service.FeeCodesService;
 
 /**
  * Controller for getting fee codes and their details corresponding to area of law.
@@ -16,13 +16,15 @@ import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponseV1;
 @RequiredArgsConstructor
 public class FeeCodesController implements FeeCodesApi {
 
+    private final FeeCodesService feeCodesService;
+
     @Override
     public ResponseEntity<FeeCodesResponseV1> getFeeCodesV1(String areaOfLaw) {
         log.info("Getting fee codes (v1)");
-//        service call here
+        FeeCodesResponseV1 feeCodesResponseV1 = feeCodesService.getFeeCodesV1(areaOfLaw);
         log.info("Successfully retrieved fee codes (v1)");
-//        return the fee codes and their details
-        return null;
+
+        return ResponseEntity.ok(feeCodesResponseV1);
     }
 
 }

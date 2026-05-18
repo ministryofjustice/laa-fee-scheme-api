@@ -11,10 +11,10 @@ paths:
         - name: areaOfLaw
           in: path
           required: true
-          description: Area of law to retrieve Fee Code details within that Area of Law
+          description: Area of law to retrieve Fee Codes within that Area of Law
           schema:
             type: string
-      summary: Get Fee Code details for area of law (v1)
+      summary: Get all Fee Code details for area of law (v1)
       operationId: getFeeCodesV1
       responses:
         '200':
@@ -37,7 +37,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: 'Internal server error'
-
   /api/v2/fee-details/{feeCode}:
     get:
       tags:
