@@ -3,6 +3,40 @@ info:
   version: 1.0.0
   title: Fee Scheme API
 paths:
+  /api/v1/fee-codes/{areaOfLaw}:
+    get:
+      tags:
+        - feeCodes
+      parameters:
+        - name: areaOfLaw
+          in: path
+          required: true
+          description: Area of law to retrieve Fee Codes within that Area of Law
+          schema:
+            type: string
+      summary: Get all Fee Code details for area of law (v1)
+      operationId: getFeeCodesV1
+      responses:
+        '200':
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeeCodesResponseV1"
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
+        '404':
+          description: 'Area of Law not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 'Internal server error'
   /api/v2/fee-details/{feeCode}:
     get:
       tags:
@@ -104,6 +138,40 @@ paths:
 
 components:
   schemas:
+    FeeCodeDetailsV1:
+      required:
+        - categoryOfLawCodes
+      properties:
+        feeCode:
+          type: string
+          description: "Fee code corresponding to a category of law."
+        areaOfLaw:
+          type: string
+          description: "Area of Law that was supplied in the request."
+        categoryOfLawCodes:
+          type: array
+          items:
+            type: string
+          description: "Category of law codes corresponding to fee code."
+        feeCodeDescription:
+          type: string
+          description: "Description of fee code."
+        feeType:
+          type: string
+          description: "Type of fee, Fixed, Hourly, disbursement only."
+
+    FeeCodesResponseV1:
+      type: object
+      description: "List of all fee codes within an area of law."
+      required:
+        - feeCodes
+      properties:
+        feeCodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeeCodeDetailsV1'
+            description: "Fee code details."
+
     FeeDetailsResponseV2:
       required:
         - categoryOfLawCodes
