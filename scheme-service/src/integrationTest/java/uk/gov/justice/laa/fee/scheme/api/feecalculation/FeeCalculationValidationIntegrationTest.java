@@ -24,10 +24,13 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   @Test
   void shouldReturnBadRequestWhenDuplicateFieldPresent() throws Exception {
 
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
+    mockMvc
+        .perform(
+            post(URI)
+                .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
                 {
                   "feeCode": "MDAS2B",
                   "feeCode": "MDAS2B",
@@ -39,25 +42,32 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
                   "numberOfMediationSessions": 1
                 }
                 """)
-            .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
-        .andExpect(content().json("""
+        .andExpect(
+            content()
+                .json(
+                    """
             {
               "status": 400,
               "error": "Bad Request",
               "message": "Request body is invalid JSON"
             }
-            """, LENIENT));
+            """,
+                    LENIENT));
   }
 
   @Test
   void shouldReturnBadRequestWhenMissingFieldAndCorrelationIdProvided() throws Exception {
     String correlationId = "a51433f8-a78c-47ef-bd31-837b95467220";
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .header(HEADER_CORRELATION_ID, correlationId)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
+    mockMvc
+        .perform(
+            post(URI)
+                .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+                .header(HEADER_CORRELATION_ID, correlationId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
                 {
                   "claimId": "claim_123",
                   "startDate": "2019-09-30",
@@ -67,17 +77,20 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
                   "numberOfMediationSessions": 1
                 }
                 """)
-            .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(header().string(HEADER_CORRELATION_ID, correlationId));
   }
 
   @Test
   void shouldReturnBadRequestWhenMissingField() throws Exception {
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
+    mockMvc
+        .perform(
+            post(URI)
+                .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
                 {
                   "claimId": "claim_123",
                   "startDate": "2019-09-30",
@@ -87,23 +100,30 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
                   "numberOfMediationSessions": 1
                 }
                 """)
-            .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
-        .andExpect(content().json("""
+        .andExpect(
+            content()
+                .json(
+                    """
             {
               "status": 400,
               "error": "Bad Request",
               "message": "feeCode: must not be null"
             }
-            """, LENIENT));
+            """,
+                    LENIENT));
   }
 
   @Test
   void shouldReturnBadRequestWhenRequestHasInvalidFieldValueFormat() throws Exception {
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
+    mockMvc
+        .perform(
+            post(URI)
+                .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
                 {
                   "claimId": "claim_123",
                   "startDate": "2022-99-99",
@@ -113,23 +133,30 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
                   "numberOfMediationSessions": 1
                 }
                 """)
-            .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
-        .andExpect(content().json("""
+        .andExpect(
+            content()
+                .json(
+                    """
             {
               "status": 400,
               "error": "Bad Request",
               "message": "Invalid value: 2022-99-99 for field: startDate expects a LocalDate"
             }
-            """, LENIENT));
+            """,
+                    LENIENT));
   }
 
   @Test
   void shouldReturnBadRequestWhenRequestHasInvalidFieldValueType() throws Exception {
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
+    mockMvc
+        .perform(
+            post(URI)
+                .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
                 {
                   "feeCode": "MHL03",
                   "claimId": "claim_123",
@@ -142,42 +169,54 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
                   "boltOns": 1
                 }
                 """)
-            .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
-        .andExpect(content().json("""
+        .andExpect(
+            content()
+                .json(
+                    """
             {
               "status": 400,
               "error": "Bad Request",
               "message": "Invalid value for field: boltOns expects a BoltOnType"
             }
-            """, LENIENT));
+            """,
+                    LENIENT));
   }
 
   @Test
   void shouldReturnBadRequestWhenRequestIsMalformedJson() throws Exception {
     String malformedJson = "{\"feeCode\":\"ASMS\",}";
 
-    mockMvc.perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(malformedJson)
-            .accept(MediaType.APPLICATION_JSON))
+    mockMvc
+        .perform(
+            post(URI)
+                .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(malformedJson)
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
-        .andExpect(content().json("""
+        .andExpect(
+            content()
+                .json(
+                    """
             {
               "status": 400,
               "error": "Bad Request",
               "message": "Request body is invalid JSON"
             }
-            """, LENIENT));
+            """,
+                    LENIENT));
   }
 
   @Test
   void shouldReturnUnauthorizedResponseWhenAuthorizationHeaderIsMissing() throws Exception {
     mockMvc
-        .perform(post(URI)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
+        .perform(
+            post(URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
                 {
                   "feeCode": "ASMS",
                   "claimId": "claim_123",
@@ -190,25 +229,31 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
                   "vatIndicator": true
                    }
                 """)
-            .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
+        .andExpect(
+            content()
+                .json(
+                    """
             {
               "code": 401,
               "status": "UNAUTHORIZED",
               "message": "No API access token provided."
             }
-            """, STRICT));
+            """,
+                    STRICT));
   }
 
   @Test
   void shouldReturnUnauthorizedResponseWhenAuthTokenIsInvalid() throws Exception {
     mockMvc
-        .perform(post(URI)
-            .header(HttpHeaders.AUTHORIZATION, "BLAH")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
+        .perform(
+            post(URI)
+                .header(HttpHeaders.AUTHORIZATION, "BLAH")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
                 {
                   "feeCode": "ASMS",
                   "claimId": "claim_123",
@@ -221,25 +266,31 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
                   "vatIndicator": true
                    }
                 """)
-            .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
+        .andExpect(
+            content()
+                .json(
+                    """
             {
               "code": 401,
               "status": "UNAUTHORIZED",
               "message": "Invalid API access token provided."
             }
-            """, STRICT));
+            """,
+                    STRICT));
   }
 
   @Test
   void shouldReturnMethodNotAllowedErrorWhenNotHttpPostRequestMethod() throws Exception {
     mockMvc
-        .perform(get(URI)
-            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
+        .perform(
+            get(URI)
+                .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
                 {
                   "feeCode": "ASMS",
                   "claimId": "claim_123",
@@ -252,21 +303,26 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
                   "vatIndicator": true
                    }
                 """)
-            .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isMethodNotAllowed())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json("""
+        .andExpect(
+            content()
+                .json(
+                    """
             {
               "status": 405,
               "error": "Method Not Allowed",
               "message": "Request method 'GET' is not supported"
             }
-            """, LENIENT));
+            """,
+                    LENIENT));
   }
 
   @Test
   void shouldReturnValidationErrorWhenFeeCodeIsInvalid() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "BLAH",
           "claimId": "claim_123",
@@ -279,7 +335,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "BLAH",
           "claimId": "claim_123",
@@ -296,7 +354,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @Test
   void shouldReturnValidationErrorWhenCivilFeeCodeAndStartDateIsTooFarInThePast() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "DISC",
           "claimId": "claim_123",
@@ -309,7 +368,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "DISC",
           "claimId": "claim_123",
@@ -326,7 +387,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @Test
   void shouldReturnValidationErrorWhenCrimeFeeCodeAndStartDateIsInvalid() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "INVC",
           "claimId": "claim_123",
@@ -337,7 +399,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "INVC",
           "claimId": "claim_123",
@@ -354,7 +418,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @Test
   void shouldReturnValidationErrorWhenCrimeFeeCodeAndPoliceStationIdIsInvalid() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "INVC",
           "claimId": "claim_123",
@@ -365,7 +430,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "INVC",
           "claimId": "claim_123",
@@ -382,7 +449,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @Test
   void shouldReturnValidationErrorWhenCrimeFeeCodeAndPoliceSchemeIdIsInvalid() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "INVC",
           "claimId": "claim_123",
@@ -392,7 +460,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "INVC",
           "claimId": "claim_123",
@@ -409,7 +479,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @Test
   void shouldReturnValidationErrorWhenCrimeFeeCodeAndUfnIsMissing() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "INVK",
           "claimId": "claim_123",
@@ -419,7 +490,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "INVK",
           "claimId": "claim_123",
@@ -436,12 +509,14 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @ParameterizedTest
   @CsvSource({
-      "PROJ5, MAGS_COURT_FS2022",
-      "YOUK2, YOUTH_COURT_FS2024",
-      "PROW, SEND_HEAR_FS2022",
+    "PROJ5, MAGS_COURT_FS2022",
+    "YOUK2, YOUTH_COURT_FS2024",
+    "PROW, SEND_HEAR_FS2022",
   })
-  void shouldReturnValidationErrorWhenCriminalProceedingsMissingRepOrderDate(String feeCode) throws Exception {
-    String request = """ 
+  void shouldReturnValidationErrorWhenCriminalProceedingsMissingRepOrderDate(String feeCode)
+      throws Exception {
+    String request =
+        """
         {
           "feeCode": "%s",
           "claimId": "claim_123",
@@ -450,9 +525,12 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "disbursementVatAmount": 24.67,
           "vatIndicator": true
         }
-        """.formatted(feeCode);
+        """
+            .formatted(feeCode);
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "%s",
           "claimId": "claim_123",
@@ -464,13 +542,16 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               }
           ]
         }
-        """.formatted(feeCode));
+        """
+            .formatted(feeCode));
   }
 
   @ParameterizedTest
   @ValueSource(strings = {"PROP1", "PROP2"})
-  void shouldReturnValidationErrorWhenPreOrderCoverNetCostOverUpperCostLimit(String feeCode) throws Exception {
-    String request = """ 
+  void shouldReturnValidationErrorWhenPreOrderCoverNetCostOverUpperCostLimit(String feeCode)
+      throws Exception {
+    String request =
+        """
         {
           "feeCode": "%s",
           "claimId": "claim_123",
@@ -482,9 +563,12 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "disbursementVatAmount": 11.07,
           "vatIndicator": true
         }
-        """.formatted(feeCode);
+        """
+            .formatted(feeCode);
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "%s",
           "claimId": "claim_123",
@@ -496,12 +580,14 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             }
           ]
         }
-        """.formatted(feeCode));
+        """
+            .formatted(feeCode));
   }
 
   @Test
   void shouldReturnValidationErrorWhenCrimeFeeCodeAndRepOrderDateIsInvalid() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "PROJ5",
           "claimId": "claim_123",
@@ -513,7 +599,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "PROJ5",
           "claimId": "claim_123",
@@ -530,7 +618,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @Test
   void shouldReturnValidationErrorWhenCrimeFeeCodeAndUfnIsInvalid() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "INVB1",
           "claimId": "claim_123",
@@ -542,7 +631,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "INVB1",
           "claimId": "claim_123",
@@ -557,10 +648,10 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         """);
   }
 
-
   @Test
   void shouldReturnValidationErrorWhenFamilyFeeCodeAndLondonRateIsMissing() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "FPB010",
           "claimId": "claim_123",
@@ -571,7 +662,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "FPB010",
           "claimId": "claim_123",
@@ -587,8 +680,10 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
-  void shouldReturnValidationErrorWhenMediationFeeCodeAndNoOfMediationSessionsIsMissing() throws Exception {
-    String request = """ 
+  void shouldReturnValidationErrorWhenMediationFeeCodeAndNoOfMediationSessionsIsMissing()
+      throws Exception {
+    String request =
+        """
         {
           "feeCode": "MDAS2B",
           "claimId": "claim_123",
@@ -599,7 +694,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "MDAS2B",
           "claimId": "claim_123",
@@ -616,7 +713,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @Test
   void shouldReturnValidationWarningForFamilyFee() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "FPB010",
           "claimId": "claim_123",
@@ -629,7 +727,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "FPB010",
           "claimId": "claim_123",
@@ -658,11 +758,11 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @ParameterizedTest
   @CsvSource({
-      "IMCF, WARIA1, Costs have been capped at £600 without an Immigration Priority Authority Number. "
+    "IMCF, WARIA1, Costs have been capped at £600 without an Immigration Priority Authority Number. "
         + "Disbursement costs exceed the Disbursement Limit., false, 2173.72, 250.6, 650.0, 600.0, 1092.0, 0",
-      "IALB, WARIA2, Costs have been capped at £400 without an Immigration Priority Authority Number. "
+    "IALB, WARIA2, Costs have been capped at £400 without an Immigration Priority Authority Number. "
         + "Disbursement costs exceed the Disbursement Limit., false, 1158.92, 114.8, 450.0, 400.0, 413.0, 0",
-      "IACE, WARIA3, The claim exceeds the Escape Case Threshold. "
+    "IACE, WARIA3, The claim exceeds the Escape Case Threshold. "
         + "An Escape Case Claim must be submitted for further costs to be paid., true, 1116.12, 166.0, 50.0, 50.0, 669.0, 1500"
   })
   void shouldReturnValidationWarningForImmigrationAndAsylumFixedFee(
@@ -675,9 +775,10 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
       double requestedDisbursementAmount,
       double disbursementAmount,
       double fixedFeeAmount,
-      double netProfitCosts
-  ) throws Exception {
-    String request = """ 
+      double netProfitCosts)
+      throws Exception {
+    String request =
+        """
         {
           "feeCode": "%s",
           "claimId": "claim_123",
@@ -689,9 +790,12 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "jrFormFilling": 50.00,
           "netProfitCosts": "%s"
         }
-        """.formatted(feeCode, requestedDisbursementAmount, netProfitCosts);
+        """
+            .formatted(feeCode, requestedDisbursementAmount, netProfitCosts);
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "%s",
           "schemeId": "IMM_ASYLM_FS2023",
@@ -717,13 +821,24 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "jrFormFillingAmount": 50.0
           }
         }
-        """.formatted(feeCode, warningType, warningMessage, escapeFlag, totalAmount, calculatedVatAmount, requestedDisbursementAmount, disbursementAmount,
-        fixedFeeAmount));
+        """
+            .formatted(
+                feeCode,
+                warningType,
+                warningMessage,
+                escapeFlag,
+                totalAmount,
+                calculatedVatAmount,
+                requestedDisbursementAmount,
+                disbursementAmount,
+                fixedFeeAmount));
   }
 
   @Test
-  void shouldReturnValidationWarningForImmigrationAndAsylumHourlyRateLegalHelpIA100() throws Exception {
-    String request = """ 
+  void shouldReturnValidationWarningForImmigrationAndAsylumHourlyRateLegalHelpIA100()
+      throws Exception {
+    String request =
+        """
         {
           "feeCode": "IA100",
           "claimId": "claim_123",
@@ -735,7 +850,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "IA100",
           "schemeId": "IMM_ASYLM_FS2013",
@@ -765,7 +882,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @Test
   void shouldReturnValidationWarningForImmigrationAndAsylumHourlyRateLegalHelp() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "IMXL",
           "claimId": "claim_123",
@@ -777,7 +895,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "IMXL",
           "schemeId": "IMM_ASYLM_FS2013",
@@ -812,7 +932,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @Test
   void shouldReturnValidationWarningForImmigrationAndAsylumHourlyRateClr() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "IAXC",
           "claimId": "claim_123",
@@ -824,7 +945,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "IAXC",
           "schemeId": "IMM_ASYLM_FS2013",
@@ -854,7 +977,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @Test
   void shouldReturnValidationWarningForImmigrationAndAsylumHourlyRateClrInterim() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "IACD",
           "claimId": "claim_123",
@@ -875,7 +999,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "IACD",
           "schemeId": "IMM_ASYLM_FS2020",
@@ -926,7 +1052,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @Test
   void shouldReturnValidationWarningForImmigrationAndAsylumDisbursementOnly() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "ICASD",
           "claimId": "claim_123",
@@ -936,7 +1063,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "ICASD",
           "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2013",
@@ -960,7 +1089,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @Test
   void shouldReturnValidationWarningForPoliceStationEscapeCase() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "INVC",
           "claimId": "claim_123",
@@ -976,7 +1106,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "INVC",
           "schemeId": "POL_FS2016",
@@ -1005,7 +1137,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @Test
   void shouldReturnValidationWarningForPoliceOther() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "INVA",
           "claimId": "claim_123",
@@ -1019,7 +1152,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "INVA",
           "schemeId": "POL_FS2016",
@@ -1051,7 +1186,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @Test
   void shouldReturnValidationWarningForAssociatedCivil() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "ASMS",
           "claimId": "claim_123",
@@ -1065,7 +1201,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "ASMS",
           "schemeId": "ASSOC_FS2016",
@@ -1094,7 +1232,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @Test
   void shouldReturnValidationWarningForAdvocacyAppealsReviews() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "PROH",
           "claimId": "claim_123",
@@ -1108,7 +1247,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "PROH",
           "schemeId": "AAR_FS2016",
@@ -1140,9 +1281,10 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @ParameterizedTest
   @CsvSource({
-      "PRIA, WARCRM6, The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid., "
+    "PRIA, WARCRM6, The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid., "
         + "true, 360.9, 40.15, 200.75",
-      "PRIB1, WARCRM5, Costs are included. Profit and Waiting Costs exceed the Lower Standard Fee Limit. An escape fee may be payable., "
+    "PRIB1, WARCRM5, Profit Costs and Waiting combined exceed the Lower Standard Fee Limit. A higher standard fee may be claimable instead. "
+        + "A claim amendment may be submitted to request the higher standard fee., "
         + "false, 364.72, 40.79, 203.93",
   })
   void shouldReturnValidationWarningForPrisonLaw(
@@ -1152,9 +1294,10 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
       boolean escapeFlag,
       double totalAmount,
       double calculatedVatAmount,
-      double fixedFeeAmount
-  ) throws Exception {
-    String request = """ 
+      double fixedFeeAmount)
+      throws Exception {
+    String request =
+        """
         {
           "feeCode": "%s",
           "claimId": "claim_123",
@@ -1165,9 +1308,12 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "vatIndicator": true,
           "netWaitingCosts": 150
         }
-        """.formatted(feeCode);
+        """
+            .formatted(feeCode);
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "%s",
           "schemeId": "PRISON_FS2016",
@@ -1191,12 +1337,21 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "fixedFeeAmount": %s
           }
         }
-        """.formatted(feeCode, warningType, warningMessage, escapeFlag, totalAmount, calculatedVatAmount, fixedFeeAmount));
+        """
+            .formatted(
+                feeCode,
+                warningType,
+                warningMessage,
+                escapeFlag,
+                totalAmount,
+                calculatedVatAmount,
+                fixedFeeAmount));
   }
 
   @Test
   void shouldReturnValidationWarningForMentalHealth() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "MHL03",
           "claimId": "claim_123",
@@ -1212,7 +1367,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "MHL03",
           "claimId": "claim_123",
@@ -1246,21 +1403,27 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @ParameterizedTest
   @CsvSource({
-      "CAPA, CAPA_FS2013, WAROTH2, 434.85, 47.8, 239.0",
-      "CLIN, CLIN_FS2013, WAROTH3, 382.05, 39.0, 195.0",
-      "COM, COM_FS2013, WAROTH4, 467.25, 53.2, 266.0",
-      "DEBT, DEBT_FS2013, WAROTH5, 364.05, 36.0, 180.0",
-      "EDUFIN, EDU_FS2013, WAROTH7, 474.45, 54.4, 272.0",
-      "ELA, ELA_FS2024, WAROTH6,  336.45, 31.4, 157.0",
-      "HOUS, HOUS_FS2013, WAROTH8, 336.45, 31.4, 157.0",
-      "MISCCON, MISC_FS2013, WAROTH9, 338.85, 31.8, 159.0",
-      "PUB, PUB_FS2013, WAROTH10, 458.85, 51.8, 259.0",
-      "WFB1, WB_FS2025, WAROTH11, 397.65, 41.6, 208.0"
+    "CAPA, CAPA_FS2013, WAROTH2, 434.85, 47.8, 239.0",
+    "CLIN, CLIN_FS2013, WAROTH3, 382.05, 39.0, 195.0",
+    "COM, COM_FS2013, WAROTH4, 467.25, 53.2, 266.0",
+    "DEBT, DEBT_FS2013, WAROTH5, 364.05, 36.0, 180.0",
+    "EDUFIN, EDU_FS2013, WAROTH7, 474.45, 54.4, 272.0",
+    "ELA, ELA_FS2024, WAROTH6,  336.45, 31.4, 157.0",
+    "HOUS, HOUS_FS2013, WAROTH8, 336.45, 31.4, 157.0",
+    "MISCCON, MISC_FS2013, WAROTH9, 338.85, 31.8, 159.0",
+    "PUB, PUB_FS2013, WAROTH10, 458.85, 51.8, 259.0",
+    "WFB1, WB_FS2025, WAROTH11, 397.65, 41.6, 208.0"
   })
-  void shouldReturnValidationWarningForOtherCivilCategories(String feeCode, String schemeId, String warningCode,
-                                                          String expectedTotal, String expectedVatAmount,
-                                                          String expectedFixedFeeAmount) throws Exception {
-    String request = """ 
+  void shouldReturnValidationWarningForOtherCivilCategories(
+      String feeCode,
+      String schemeId,
+      String warningCode,
+      String expectedTotal,
+      String expectedVatAmount,
+      String expectedFixedFeeAmount)
+      throws Exception {
+    String request =
+        """
         {
           "feeCode": "%s",
           "claimId": "claim_123",
@@ -1270,9 +1433,12 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "disbursementVatAmount": 24.67,
           "vatIndicator": true
         }
-        """.formatted(feeCode);
+        """
+            .formatted(feeCode);
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "%s",
           "schemeId": "%s",
@@ -1296,12 +1462,20 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "fixedFeeAmount": %s
           }
         }
-        """.formatted(feeCode, schemeId, warningCode, expectedTotal, expectedVatAmount, expectedFixedFeeAmount));
+        """
+            .formatted(
+                feeCode,
+                schemeId,
+                warningCode,
+                expectedTotal,
+                expectedVatAmount,
+                expectedFixedFeeAmount));
   }
 
   @Test
   void shouldReturnValidationWarningForDiscrimination() throws Exception {
-    String request = """ 
+    String request =
+        """
         {
           "feeCode": "DISC",
           "claimId": "claim_123",
@@ -1314,7 +1488,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         }
         """;
 
-    postAndExpect(request, """
+    postAndExpect(
+        request,
+        """
         {
           "feeCode": "DISC",
           "schemeId": "DISC_FS2013",
