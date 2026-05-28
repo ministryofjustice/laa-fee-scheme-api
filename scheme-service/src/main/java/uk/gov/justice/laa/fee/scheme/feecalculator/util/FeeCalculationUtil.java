@@ -119,6 +119,15 @@ public final class FeeCalculationUtil {
   }
 
   /**
+   * Check the disbursement VAT amount for a given value using the VAT rate.
+   */
+  public static boolean isDisbursementVatLimitReached(BigDecimal calculatedDisbursementVatAmount, BigDecimal enteredDisbursementVatAmount) {
+    log.info("Check disbursement VAT amount");
+    // If the entered amount is larger than the maximum calculated vat
+    return enteredDisbursementVatAmount.compareTo(calculatedDisbursementVatAmount) > 0;
+  }
+
+  /**
    * Calculate the total amount when only fees and VAT are applicable.
    */
   public static BigDecimal calculateTotalAmount(BigDecimal feeTotal, BigDecimal calculatedVatAmount) {
