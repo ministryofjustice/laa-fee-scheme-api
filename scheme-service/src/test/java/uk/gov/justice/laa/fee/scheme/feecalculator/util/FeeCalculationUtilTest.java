@@ -153,6 +153,19 @@ class FeeCalculationUtilTest {
     assertThat(totalAmount).isEqualTo(new BigDecimal("34.10"));
   }
 
+  @ParameterizedTest
+  @CsvSource(value = {
+          "13.04, 13.04, false",
+          "13.04, 14.04, true",
+          "13.04, 12.04, false",
+          "13.04, 00.00, false"
+  })
+  void isDisbursementVatLimitReached_shouldReturnBoolean(BigDecimal calculatedDisbursementVatAmount, BigDecimal enteredDisbursementVatAmount, boolean expectedResult) {
+    boolean result = FeeCalculationUtil.isDisbursementVatLimitReached(calculatedDisbursementVatAmount, enteredDisbursementVatAmount);
+
+    assertEquals(expectedResult, result);
+  }
+
   @Test
   void calculateTotalAmount_givenFeeAndDisbursements_returnsTotal() {
     BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(new BigDecimal("120.50"),
