@@ -1,11 +1,13 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_VAT_LIMIT_REACHED;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISCRIMINATION_ESCAPE_THRESHOLD;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isDisbursementVatLimitReached;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -82,6 +84,18 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
+    // Calculate disbursed vat amount using new logic
+    BigDecimal disbursementVatRate = vatRatesService.getVatRateForDate(startDate, true);
+    BigDecimal calculatedDisbursementVatAmount = calculateVatAmount(netDisbursementAmount, disbursementVatRate);
+    boolean isDisbursementVatLimitReached = isDisbursementVatLimitReached(calculatedDisbursementVatAmount, disbursementVatAmount);
+
+    if (isDisbursementVatLimitReached) {
+      // Set the disbursement VAT amount to the limit if the entered amount is greater than the limit
+      disbursementVatAmount = calculatedDisbursementVatAmount;
+      validationMessages.add(buildValidationWarning(WARN_DISBURSEMENT_VAT_LIMIT_REACHED,
+              "Entered disbursement VAT amount exceeds the calculated disbursement VAT limit"));
+    }
+
     // Calculate total amount
     BigDecimal totalAmount = calculateTotalAmount(feeTotal, calculatedVatAmount,
             netDisbursementAmount, disbursementVatAmount);
@@ -94,7 +108,7 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
         .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         // disbursement not capped, so requested and calculated will be same
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .disbursementVatAmount(disbursementVatAmount.doubleValue())
         .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .hourlyTotalAmount(toDouble(feeTotal))
         .netCostOfCounselAmount(feeCalculationRequest.getNetCostOfCounsel())
