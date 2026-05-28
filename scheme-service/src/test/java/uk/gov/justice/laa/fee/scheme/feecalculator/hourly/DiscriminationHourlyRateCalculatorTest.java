@@ -38,8 +38,11 @@ class DiscriminationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
   })
   void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double netProfitCosts, double costOfCounsel,
                                                     double expectedTotal, double expectedVat, double expectedHourlyTotal) {
-
     mockVatRatesService(vatIndicator);
+
+    if (!vatIndicator) {
+      mockVatRatesVatIndicatorTrue();
+    }
 
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel);
     FeeEntity feeEntity = buildFeeEntity();
@@ -60,8 +63,11 @@ class DiscriminationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
   void calculate_shouldReturnFeeCalculationResponseWithWarning(boolean vatIndicator, double netProfitCosts,
                                                                double costOfCounsel, double expectedTotal,
                                                                double expectedVat, double expectedHourlyTotal) {
-
     mockVatRatesService(vatIndicator);
+
+    if (!vatIndicator) {
+      mockVatRatesVatIndicatorTrue();
+    }
 
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel);
     FeeEntity feeEntity = buildFeeEntity();
@@ -76,6 +82,38 @@ class DiscriminationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .code(WarningType.WARN_DISCRIMINATION_ESCAPE_THRESHOLD.getCode())
         .type(WARNING)
         .build();
+
+    assertThat(result.getValidationMessages()).containsExactly(validationMessage);
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+          "false, 149.50, 300.50, 528.24, 0, 450.00",  // Under escape threshold (No VAT)
+          "true, 149.50, 300.50, 618.24, 90.00, 450.00",  // Under escape threshold limit (VAT applied)
+          "false, 199.50, 500.50, 778.24, 0, 700.00", // Equal to escape threshold limit (No VAT)
+          "true, 199.50, 500.50, 918.24, 140.00, 700.00" // Equal to escape threshold limit (VAT applied)
+  })
+  void calculate_shouldReturnFeeCalculationResponseWithDisbursementVatWarning(boolean vatIndicator, double netProfitCosts, double costOfCounsel,
+                                                    double expectedTotal, double expectedVat, double expectedHourlyTotal) {
+    mockVatRatesService(vatIndicator);
+
+    if (!vatIndicator) {
+      mockVatRatesVatIndicatorTrue();
+    }
+
+    FeeCalculationRequest feeCalculationRequest = buildRequestDisbursementVatLimit(vatIndicator, netProfitCosts, costOfCounsel);
+    FeeEntity feeEntity = buildFeeEntity();
+
+    FeeCalculationResponse result = discriminationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel,
+            expectedVat, expectedHourlyTotal, false);
+
+    ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
+            .message(WarningType.WARN_DISBURSEMENT_VAT_LIMIT_REACHED.getMessage())
+            .code(WarningType.WARN_DISBURSEMENT_VAT_LIMIT_REACHED.getCode())
+            .type(WARNING)
+            .build();
 
     assertThat(result.getValidationMessages()).containsExactly(validationMessage);
   }
@@ -99,6 +137,20 @@ class DiscriminationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .netDisbursementAmount(65.20)
         .disbursementVatAmount(13.04)
         .build();
+  }
+
+  private FeeCalculationRequest buildRequestDisbursementVatLimit(boolean vatIndicator, double netProfitCosts,
+                                             double costOfCounsel) {
+    return FeeCalculationRequest.builder()
+            .feeCode("DISC")
+            .claimId("claim_123")
+            .startDate(LocalDate.of(2025, 5, 12))
+            .netProfitCosts(netProfitCosts)
+            .netCostOfCounsel(costOfCounsel)
+            .vatIndicator(vatIndicator)
+            .netDisbursementAmount(65.20)
+            .disbursementVatAmount(14.04)
+            .build();
   }
 
   private FeeEntity buildFeeEntity() {
