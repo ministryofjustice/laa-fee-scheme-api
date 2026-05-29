@@ -13,6 +13,8 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -143,6 +145,27 @@ class FeeCalculationUtilTest {
     assertThatThrownBy(() -> FeeCalculationUtil.getFeeClaimStartDate(POLICE_STATION, request))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining("ERRCRM13 - UFN must be in the correct format.");
+  }
+
+  @Test
+  void getFeeCaseConcludedDate_shouldReturnCaseConcludedDate() {
+    FeeCalculationRequest request = getFeeCalculationRequest();
+    LocalDate caseConcludedDate =  LocalDate.now();
+    request.setCaseConcludedDate(caseConcludedDate);
+
+    LocalDate result = FeeCalculationUtil.getCaseConcludedDate(request);
+
+    assertEquals(caseConcludedDate, result);
+  }
+
+  @Test
+  void getFeeCaseConcludedDate_shouldThrowException_ifCaseConcludedIsNotFound() {
+    FeeCalculationRequest request = getFeeCalculationRequest();
+    request.setCaseConcludedDate(null);
+
+    assertThatThrownBy(() -> FeeCalculationUtil.getCaseConcludedDate(request))
+            .isInstanceOf(CaseConcludedDateRequiredException.class)
+            .hasMessageContaining("Case Concluded Date is required for feeCode: " + request.getFeeCode());
   }
 
   @Test
