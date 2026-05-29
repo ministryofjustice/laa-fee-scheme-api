@@ -13,8 +13,6 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -31,9 +29,8 @@ class FeeCalculationUtilTest {
 
   @Test
   void getFeeClaimStartDate_returnsStartDate() {
-    FeeCalculationRequest feeDataRequest = FeeCalculationRequest.builder()
-        .startDate(LocalDate.of(2022, 12, 1))
-        .build();
+    FeeCalculationRequest feeDataRequest =
+        FeeCalculationRequest.builder().startDate(LocalDate.of(2022, 12, 1)).build();
 
     LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(COMMUNITY_CARE, feeDataRequest);
 
@@ -42,9 +39,8 @@ class FeeCalculationUtilTest {
 
   @Test
   void getFeeClaimStartDate_returnsUfnDate() {
-    FeeCalculationRequest feeDataRequest = FeeCalculationRequest.builder()
-        .uniqueFileNumber("011222/456")
-        .build();
+    FeeCalculationRequest feeDataRequest =
+        FeeCalculationRequest.builder().uniqueFileNumber("011222/456").build();
 
     LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(POLICE_STATION, feeDataRequest);
 
@@ -53,9 +49,8 @@ class FeeCalculationUtilTest {
 
   @Test
   void getFeeClaimStartDate_returnsRepOrder() {
-    FeeCalculationRequest feeDataRequest = FeeCalculationRequest.builder()
-        .representationOrderDate(LocalDate.of(2022, 12, 1))
-        .build();
+    FeeCalculationRequest feeDataRequest =
+        FeeCalculationRequest.builder().representationOrderDate(LocalDate.of(2022, 12, 1)).build();
 
     LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(MAGISTRATES_COURT, feeDataRequest);
 
@@ -64,33 +59,36 @@ class FeeCalculationUtilTest {
 
   @Test
   void getFeeClaimStartDate_returnsCaseConcludedDate() {
-    FeeCalculationRequest feeDataRequest = FeeCalculationRequest.builder()
-        .caseConcludedDate(LocalDate.of(2022, 12, 1))
-        .build();
+    FeeCalculationRequest feeDataRequest =
+        FeeCalculationRequest.builder().caseConcludedDate(LocalDate.of(2022, 12, 1)).build();
 
-    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(ADVICE_ASSISTANCE_ADVOCACY, feeDataRequest);
+    LocalDate result =
+        FeeCalculationUtil.getFeeClaimStartDate(ADVICE_ASSISTANCE_ADVOCACY, feeDataRequest);
 
     assertThat(result).isEqualTo(LocalDate.of(2022, 12, 1));
   }
 
   @ParameterizedTest
   @CsvSource({
-      "COMMUNITY_CARE, CASE_START_DATE",
-      "POLICE_STATION, UFN",
-      "MAGISTRATES_COURT, REP_ORDER_DATE",
+    "COMMUNITY_CARE, CASE_START_DATE",
+    "POLICE_STATION, UFN",
+    "MAGISTRATES_COURT, REP_ORDER_DATE",
   })
-  void getFeeClaimStartDateType_givenCategoryType_returnsClaimStartType(CategoryType categoryType, ClaimStartDateType expectedResult) {
+  void getFeeClaimStartDateType_givenCategoryType_returnsClaimStartType(
+      CategoryType categoryType, ClaimStartDateType expectedResult) {
     FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
-    ClaimStartDateType result = FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeDataRequest);
+    ClaimStartDateType result =
+        FeeCalculationUtil.getFeeClaimStartDateType(categoryType, feeDataRequest);
 
     assertThat(result).isEqualTo(expectedResult);
   }
 
   @ParameterizedTest
-  @EnumSource(value = CategoryType.class, names = {
-      "MAGISTRATES_COURT", "YOUTH_COURT"
-  })
-  void getFeeClaimStartDate_returnsRepresentationOrderDate_forMagistratesAndYouthCourts(CategoryType categoryType) {
+  @EnumSource(
+      value = CategoryType.class,
+      names = {"MAGISTRATES_COURT", "YOUTH_COURT"})
+  void getFeeClaimStartDate_returnsRepresentationOrderDate_forMagistratesAndYouthCourts(
+      CategoryType categoryType) {
     FeeCalculationRequest feeDataRequest = getFeeCalculationRequest();
     LocalDate repOrderDate = LocalDate.of(2023, 12, 12);
     feeDataRequest.setRepresentationOrderDate(repOrderDate);
@@ -100,30 +98,38 @@ class FeeCalculationUtilTest {
   }
 
   @ParameterizedTest
-  @CsvSource(value = {
-      "ADVOCACY_APPEALS_REVIEWS, PROH, 2025-11-11, 090925/abc, 2025-11-11",
-      "ADVOCACY_APPEALS_REVIEWS, PROH1, 2025-11-11, 090925/abc, 2025-11-11",
-      "ADVOCACY_APPEALS_REVIEWS, PROH2, 2025-11-11, 090925/abc, 2025-11-11",
-      "ADVOCACY_APPEALS_REVIEWS, PROH, , 090925/abc, 2025-09-09",
-      "ADVOCACY_APPEALS_REVIEWS, APPA, , 090925/abc, 2025-09-09",
-      "ADVOCACY_APPEALS_REVIEWS, APPB, , 090925/abc, 2025-09-09"
-  })
-  void getFeeClaimStartDate_returnsStartDate_forOtherCategories(String categoryType, String feeCode, String repOrderDate, String ufn,
-                                                LocalDate expectedDate) {
-    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode(feeCode)
-        .claimId("claim_123")
-        .representationOrderDate(nonNull(repOrderDate) ? LocalDate.parse(repOrderDate) : null)
-        .uniqueFileNumber(ufn)
-        .netProfitCosts(10.0)
-        .netDisbursementAmount(10.0)
-        .disbursementVatAmount(10.0)
-        .vatIndicator(true)
-        .netTravelCosts(10.0)
-        .netWaitingCosts(10.0)
-        .build();
+  @CsvSource(
+      value = {
+        "ADVOCACY_APPEALS_REVIEWS, PROH, 2025-11-11, 090925/abc, 2025-11-11",
+        "ADVOCACY_APPEALS_REVIEWS, PROH1, 2025-11-11, 090925/abc, 2025-11-11",
+        "ADVOCACY_APPEALS_REVIEWS, PROH2, 2025-11-11, 090925/abc, 2025-11-11",
+        "ADVOCACY_APPEALS_REVIEWS, PROH, , 090925/abc, 2025-09-09",
+        "ADVOCACY_APPEALS_REVIEWS, APPA, , 090925/abc, 2025-09-09",
+        "ADVOCACY_APPEALS_REVIEWS, APPB, , 090925/abc, 2025-09-09"
+      })
+  void getFeeClaimStartDate_returnsStartDate_forOtherCategories(
+      String categoryType,
+      String feeCode,
+      String repOrderDate,
+      String ufn,
+      LocalDate expectedDate) {
+    FeeCalculationRequest feeCalculationRequest =
+        FeeCalculationRequest.builder()
+            .feeCode(feeCode)
+            .claimId("claim_123")
+            .representationOrderDate(nonNull(repOrderDate) ? LocalDate.parse(repOrderDate) : null)
+            .uniqueFileNumber(ufn)
+            .netProfitCosts(10.0)
+            .netDisbursementAmount(10.0)
+            .disbursementVatAmount(10.0)
+            .vatIndicator(true)
+            .netTravelCosts(10.0)
+            .netWaitingCosts(10.0)
+            .build();
 
-    LocalDate result = FeeCalculationUtil.getFeeClaimStartDate(CategoryType.valueOf(categoryType), feeCalculationRequest);
+    LocalDate result =
+        FeeCalculationUtil.getFeeClaimStartDate(
+            CategoryType.valueOf(categoryType), feeCalculationRequest);
     assertEquals(expectedDate, result);
   }
 
@@ -150,7 +156,7 @@ class FeeCalculationUtilTest {
   @Test
   void getFeeCaseConcludedDate_shouldReturnCaseConcludedDate() {
     FeeCalculationRequest request = getFeeCalculationRequest();
-    LocalDate caseConcludedDate =  LocalDate.now();
+    LocalDate caseConcludedDate = LocalDate.now();
     request.setCaseConcludedDate(caseConcludedDate);
 
     LocalDate result = FeeCalculationUtil.getCaseConcludedDate(request);
@@ -164,65 +170,76 @@ class FeeCalculationUtilTest {
     request.setCaseConcludedDate(null);
 
     assertThatThrownBy(() -> FeeCalculationUtil.getCaseConcludedDate(request))
-            .isInstanceOf(CaseConcludedDateRequiredException.class)
-            .hasMessageContaining("Case Concluded Date is required for feeCode: " + request.getFeeCode());
+        .isInstanceOf(CaseConcludedDateRequiredException.class)
+        .hasMessageContaining(
+            "Case Concluded Date is required for feeCode: " + request.getFeeCode());
   }
 
   @Test
   void calculateVatAmount_shouldReturnResult() {
-    BigDecimal totalAmount = FeeCalculationUtil.calculateVatAmount(new BigDecimal("170.50"),
-        new BigDecimal("20.00"));
+    BigDecimal totalAmount =
+        FeeCalculationUtil.calculateVatAmount(new BigDecimal("170.50"), new BigDecimal("20.00"));
 
     assertThat(totalAmount).isEqualTo(new BigDecimal("34.10"));
   }
 
   @ParameterizedTest
-  @CsvSource(value = {
-          "13.04, 13.04, false",
-          "13.04, 14.04, true",
-          "13.04, 12.04, false",
-          "13.04, 00.00, false"
-  })
-  void isDisbursementVatLimitReached_shouldReturnBoolean(BigDecimal calculatedDisbursementVatAmount, BigDecimal enteredDisbursementVatAmount, boolean expectedResult) {
-    boolean result = FeeCalculationUtil.isDisbursementVatLimitReached(calculatedDisbursementVatAmount, enteredDisbursementVatAmount);
+  @CsvSource(
+      value = {
+        "13.04, 13.04, false",
+        "13.04, 14.04, true",
+        "13.04, 12.04, false",
+        "13.04, 00.00, false"
+      })
+  void isDisbursementVatLimitReached_shouldReturnBoolean(
+      BigDecimal calculatedDisbursementVatAmount,
+      BigDecimal enteredDisbursementVatAmount,
+      boolean expectedResult) {
+    boolean result =
+        FeeCalculationUtil.isDisbursementVatLimitReached(
+            calculatedDisbursementVatAmount, enteredDisbursementVatAmount);
 
     assertEquals(expectedResult, result);
   }
 
   @Test
   void calculateTotalAmount_givenFeeAndDisbursements_returnsTotal() {
-    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(new BigDecimal("120.50"),
-        new BigDecimal("24.10"),
-        new BigDecimal("67.52"),
-        new BigDecimal("13.50"));
+    BigDecimal totalAmount =
+        FeeCalculationUtil.calculateTotalAmount(
+            new BigDecimal("120.50"),
+            new BigDecimal("24.10"),
+            new BigDecimal("67.52"),
+            new BigDecimal("13.50"));
 
     assertThat(totalAmount).isEqualTo(new BigDecimal("225.62"));
   }
 
   @Test
   void calculateTotalAmount_givenFee_returnsTotal() {
-    BigDecimal totalAmount = FeeCalculationUtil.calculateTotalAmount(new BigDecimal("120.50"),
-        new BigDecimal("24.10"));
+    BigDecimal totalAmount =
+        FeeCalculationUtil.calculateTotalAmount(new BigDecimal("120.50"), new BigDecimal("24.10"));
 
     assertThat(totalAmount).isEqualTo(new BigDecimal("144.60"));
   }
 
   @Test
   void filterBoltOnFeeDetails_andNullForRequest() {
-    BoltOnFeeDetails boltOnFeeDetails = BoltOnFeeDetails.builder()
-        .boltOnTotalFeeAmount(null)
-        .boltOnAdjournedHearingCount(null)
-        .boltOnAdjournedHearingFee(null)
-        .boltOnCmrhOralCount(null)
-        .boltOnCmrhOralFee(null)
-        .boltOnCmrhTelephoneCount(null)
-        .boltOnCmrhTelephoneFee(null)
-        .boltOnHomeOfficeInterviewCount(null)
-        .boltOnHomeOfficeInterviewFee(null)
-        .boltOnSubstantiveHearingFee(null)
-        .build();
+    BoltOnFeeDetails boltOnFeeDetails =
+        BoltOnFeeDetails.builder()
+            .boltOnTotalFeeAmount(null)
+            .boltOnAdjournedHearingCount(null)
+            .boltOnAdjournedHearingFee(null)
+            .boltOnCmrhOralCount(null)
+            .boltOnCmrhOralFee(null)
+            .boltOnCmrhTelephoneCount(null)
+            .boltOnCmrhTelephoneFee(null)
+            .boltOnHomeOfficeInterviewCount(null)
+            .boltOnHomeOfficeInterviewFee(null)
+            .boltOnSubstantiveHearingFee(null)
+            .build();
 
-    BoltOnFeeDetails boltOnFeeDetailResponse = FeeCalculationUtil.filterBoltOnFeeDetails(boltOnFeeDetails);
+    BoltOnFeeDetails boltOnFeeDetailResponse =
+        FeeCalculationUtil.filterBoltOnFeeDetails(boltOnFeeDetails);
 
     assertThat(boltOnFeeDetailResponse).isNull();
   }
@@ -246,9 +263,9 @@ class FeeCalculationUtilTest {
     FeeCalculationRequest request = getFeeCalculationRequest();
     request.setStartDate(null);
 
-    assertThrows(StartDateRequiredException.class, () ->
-        FeeCalculationUtil.getFeeClaimStartDate(MEDIATION, request)
-    );
+    assertThrows(
+        StartDateRequiredException.class,
+        () -> FeeCalculationUtil.getFeeClaimStartDate(MEDIATION, request));
   }
 
   @Test
@@ -256,8 +273,8 @@ class FeeCalculationUtilTest {
     FeeCalculationRequest request = getFeeCalculationRequest();
     request.setCaseConcludedDate(null);
 
-    assertThrows(CaseConcludedDateRequiredException.class, () ->
-        FeeCalculationUtil.getFeeClaimStartDate(ADVICE_ASSISTANCE_ADVOCACY, request)
-    );
+    assertThrows(
+        CaseConcludedDateRequiredException.class,
+        () -> FeeCalculationUtil.getFeeClaimStartDate(ADVICE_ASSISTANCE_ADVOCACY, request));
   }
 }
