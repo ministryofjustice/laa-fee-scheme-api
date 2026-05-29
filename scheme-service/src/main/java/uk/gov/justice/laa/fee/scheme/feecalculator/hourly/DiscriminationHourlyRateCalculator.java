@@ -59,13 +59,14 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
 
     log.info("Calculate Discrimination hourly rate fee");
 
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal netCostOfCounsel = toBigDecimal(feeCalculationRequest.getNetCostOfCounsel());
 
     BigDecimal feeTotal = netProfitCosts.add(netCostOfCounsel);
 
     // Escape case logic
-    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     BigDecimal escapeThresholdLimit = feeEntity.getEscapeThresholdLimit();
     boolean isEscaped = isEscapedCase(feeTotal, escapeThresholdLimit);
 
