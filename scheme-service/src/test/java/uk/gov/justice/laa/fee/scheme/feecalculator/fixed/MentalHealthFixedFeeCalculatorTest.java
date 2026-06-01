@@ -59,8 +59,8 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .vatRateApplied(vatIndicator ? 20.0 : null)
         .disbursementAmount(50.50)
         .requestedNetDisbursementAmount(50.50)
-        .disbursementVatAmount(20.15)
         .requestedDisbursementVatAmount(20.15)
+        .disbursementVatAmount(10.1)
         .fixedFeeAmount(fixedFee)
         .calculatedVatAmount(calculatedVat)
         .boltOnFeeDetails(BoltOnFeeDetails.builder()
@@ -88,12 +88,28 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .feeCode(feeCode)
         .claimId("claim_123")
         .startDate(LocalDate.of(2025, 7, 29))
+        .caseConcludedDate(LocalDate.of(2025, 7, 29))
         .netDisbursementAmount(50.50)
-        .disbursementVatAmount(20.15)
+        .disbursementVatAmount(10.1)
         .vatIndicator(vatIndicator)
         .boltOns(BoltOnType.builder().boltOnAdjournedHearing(boltOnNumber).build())
         .netProfitCosts(requestedNetProfitCosts)
         .build();
+  }
+
+  private static FeeCalculationRequest buildFeeCalculationDisbursementVatLimitRequest(String feeCode, boolean vatIndicator,
+                                                                  Integer boltOnNumber, Double requestedNetProfitCosts) {
+    return FeeCalculationRequest.builder()
+            .feeCode(feeCode)
+            .claimId("claim_123")
+            .startDate(LocalDate.of(2025, 7, 29))
+            .caseConcludedDate(LocalDate.of(2025, 7, 29))
+            .netDisbursementAmount(50.50)
+            .disbursementVatAmount(13.12)
+            .vatIndicator(vatIndicator)
+            .boltOns(BoltOnType.builder().boltOnAdjournedHearing(boltOnNumber).build())
+            .netProfitCosts(requestedNetProfitCosts)
+            .build();
   }
 
   @Nested
@@ -102,16 +118,16 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     public static Stream<Arguments> testData() {
       return Stream.of(
           arguments("MHL01, with Vat, no bolt ons", "MHL01", 253.0, true, 50.6, null,
-              0.0, null, 374.25),
+              0.0, null, 364.2),
 
           arguments("MHL01, without vat, no bolt ons", "MHL01", 253.0, false, 0.0, null,
-              0.0, null, 323.65),
+              0.0, null, 313.6),
 
           arguments("MHL05, with Vat, has bolt ons", "MHL05", 263.0, true, 112.6, 3,
-              300.0, 300.0, 746.25),
+              300.0, 300.0, 736.2),
 
           arguments("MHL05, without vat, has bolt ons", "MHL05", 263.0, false, 0.0, 3,
-              300.0, 300.0, 633.65)
+              300.0, 300.0, 623.6)
       );
     }
 
@@ -139,6 +155,10 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
       mockVatRatesService(vatIndicator);
 
+      if (!vatIndicator) {
+        mockVatRatesVatIndicatorTrue();
+      }
+
       FeeCalculationRequest feeData = buildFeeCalculationRequest(feeCode, vatIndicator, boltOnNumber, null);
       FeeEntity feeEntity = buildFeeEntity(feeCode, fixedFee, null);
 
@@ -162,19 +182,19 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
       return Stream.of(
           argumentsEscapeCase("MHL01, with Vat, no bolt ons, escaped", "MHL01", 263.0,
               1000.0, true, 52.6, null,
-              0.0, null, 386.25, true, 759.0),
+              0.0, null, 376.2, true, 759.0),
 
           argumentsEscapeCase("MHL05, with Vat, has bolt ons, escaped", "MHL05", 321.0,
               1020.0, true, 124.2, 3,
-              300.0, 300.0, 815.85, true, 321.0),
+              300.0, 300.0, 805.8, true, 321.0),
 
           argumentsEscapeCase("MHL05, with Vat, has bolt ons, not escaped", "MHL05", 321.0,
               111.0, true, 124.2, 3,
-              300.0, 300.0, 815.85, false, 321.0),
+              300.0, 300.0, 805.8, false, 321.0),
 
           argumentsEscapeCase("MHL10, with Vat, has bolt ons, cannot escape", "MHL05", 129.0,
               1010.0, true, 85.8, 3,
-              300.0, 300.0, 585.45, false, null)
+              300.0, 300.0, 575.4, false, null)
       );
     }
 
@@ -230,6 +250,81 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
       assertThat(response)
           .usingRecursiveComparison()
           .isEqualTo(expectedResponse);
+    }
+
+  }
+
+  @Nested
+  class MentalHealthDisbursementVatLimitTest {
+
+    public static Stream<Arguments> testDataVatLimit() {
+      return Stream.of(
+              argumentsVatLimit("MHL01, with Vat, no bolt ons", "MHL01", 253.0, true, 50.6, null,
+                      0.0, null, 364.2),
+
+              argumentsVatLimit("MHL01, without vat, no bolt ons", "MHL01", 253.0, false, 0.0, null,
+                      0.0, null, 313.6),
+
+              argumentsVatLimit("MHL05, with Vat, has bolt ons", "MHL05", 263.0, true, 112.6, 3,
+                      300.0, 300.0, 736.2),
+
+              argumentsVatLimit("MHL05, without vat, has bolt ons", "MHL05", 263.0, false, 0.0, 3,
+                      300.0, 300.0, 623.6)
+      );
+    }
+
+    private static Arguments argumentsVatLimit(String scenario, String feeCode, double fixedFee, boolean vat, Double calculatedVat,
+                                       Integer boltOnNumber, Double boltOnTotalFeeAmount, Double boltOnAdjournedHearingFee,
+                                       double expectedTotal) {
+
+      return Arguments.of(scenario, feeCode, fixedFee, vat, calculatedVat, boltOnNumber, boltOnTotalFeeAmount,
+              boltOnAdjournedHearingFee, expectedTotal);
+    }
+
+    @ParameterizedTest
+    @MethodSource("testDataVatLimit")
+    void getFee_whenMentalHealth_AndDisbursementVatLimit(
+          String description,
+          String feeCode,
+          double fixedFee,
+          boolean vatIndicator,
+          Double calculatedVat,
+          Integer boltOnNumber,
+          Double boltOnTotalFeeAmount,
+          Double boltOnAdjournedHearingFee,
+          double expectedTotal
+    ) {
+
+      mockVatRatesService(vatIndicator);
+
+      if (!vatIndicator) {
+        mockVatRatesVatIndicatorTrue();
+      }
+
+      FeeCalculationRequest feeData = buildFeeCalculationDisbursementVatLimitRequest(
+              feeCode, vatIndicator, boltOnNumber, null);
+      FeeEntity feeEntity = buildFeeEntity(feeCode, fixedFee, null);
+
+      FeeCalculationResponse response = mentalhealthFixedFeeCalculator.calculate(feeData, feeEntity);
+
+      List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+      boolean hasEscaped = false;
+
+      ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
+              .message(WarningType.WARN_DISBURSEMENT_VAT_LIMIT_REACHED.getMessage())
+              .code(WarningType.WARN_DISBURSEMENT_VAT_LIMIT_REACHED.getCode())
+              .type(WARNING)
+              .build();
+      validationMessages.add(validationMessage);
+
+
+      FeeCalculation expectedCalculation = buildFeeCalculation(fixedFee, vatIndicator, calculatedVat, boltOnNumber,
+              boltOnTotalFeeAmount, boltOnAdjournedHearingFee, expectedTotal);
+      FeeCalculationResponse expectedResponse = buildExpectedResponse(feeCode, expectedCalculation, hasEscaped, validationMessages);
+
+      assertThat(response)
+              .usingRecursiveComparison()
+              .isEqualTo(expectedResponse);
     }
 
   }
