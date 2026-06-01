@@ -39,6 +39,8 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
 
     log.info("Starting fee calculation for {}", feeEntity.getCategoryType());
 
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+
     //Step 1: get Fixed Fee Amount
     BigDecimal fixedFeeAmount = defaultToZeroIfNull(feeEntity.getFixedFee());
 
@@ -54,14 +56,13 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
 
     //Step 5: get Disbursements
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+    BigDecimal disbursementVatAmount = calculateDisbursementVAT(feeCalculationRequest, vatRatesService, validationMessages);
 
     //Step 6: calculate Total Amount
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount, netDisbursementAmount,
         disbursementVatAmount);
 
     //Step 7: check if escaped, if eligible
-    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     boolean isEscaped = false;
     if (canEscape) {
       isEscaped = handleEscapeCase(feeCalculationRequest, feeEntity, validationMessages);
@@ -94,5 +95,9 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
   protected boolean handleEscapeCase(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
                                      List<ValidationMessagesInner> messages) {
     return false;
+  }
+
+  protected BigDecimal calculateDisbursementVAT(FeeCalculationRequest feeCalculationRequest, VatRatesService vatRatesService, List<ValidationMessagesInner> validationMessages) {
+    return toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
   }
 }
