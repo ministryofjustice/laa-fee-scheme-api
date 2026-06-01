@@ -168,10 +168,11 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "DISC",
           "claimId": "claim_123",
           "startDate": "2019-09-30",
+          "caseConcludedDate": "2021-11-05",
           "netProfitCosts": 239.06,
           "netCostOfCounsel": 79.19,
           "netDisbursementAmount": 100.21,
-          "disbursementVatAmount": 20.12,
+          "disbursementVatAmount": 20.04,
           "vatIndicator": true
         }
         """;
@@ -183,13 +184,13 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "claimId": "claim_123",
           "escapeCaseFlag": false,
           "feeCalculation": {
-            "totalAmount": 502.23,
+            "totalAmount": 502.15,
             "vatIndicator": true,
             "vatRateApplied": 20.00,
             "calculatedVatAmount": 63.65,
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
-            "disbursementVatAmount": 20.12,
+            "disbursementVatAmount": 20.04,
             "requestedDisbursementVatAmount": 20.12,
             "hourlyTotalAmount": 318.25,
             "netCostOfCounselAmount": 79.19,
