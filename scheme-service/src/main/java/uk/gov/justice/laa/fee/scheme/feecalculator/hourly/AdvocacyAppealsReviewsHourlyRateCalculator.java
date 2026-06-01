@@ -6,6 +6,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUti
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.validateAndCapDisbursementVat;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isOverUpperCostLimit;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -76,9 +77,13 @@ public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator
     BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatIndicator);
     BigDecimal calculatedVatAmount = calculateVatAmount(profitAndAdditionalCosts, vatRate);
 
+    // Validate and cap disbursement VAT
+    BigDecimal disbursementVatAmount = validateAndCapDisbursementVat(
+        requestedNetDisbursementAmount, requestedNetDisbursementVatAmount, vatRate, validationMessages);
+
     // Calculate total amount
     BigDecimal totalAmount = calculateTotalAmount(profitAndAdditionalCosts,
-        calculatedVatAmount, requestedNetDisbursementAmount, requestedNetDisbursementVatAmount);
+        calculatedVatAmount, requestedNetDisbursementAmount, disbursementVatAmount);
 
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
@@ -87,7 +92,7 @@ public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .disbursementVatAmount(toDoubleOrNull(disbursementVatAmount))
         .hourlyTotalAmount(toDouble(profitAndAdditionalCosts))
         .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
         .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())

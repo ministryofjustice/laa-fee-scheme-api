@@ -218,6 +218,7 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .isEqualTo(expectedResponse);
   }
 
+
   @ParameterizedTest
   @MethodSource("testPoliceOtherData")
   void test_whenPoliceStation_shouldReturnFeeWithWarning(

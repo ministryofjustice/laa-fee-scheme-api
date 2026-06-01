@@ -29,6 +29,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.entity.PoliceStationFeesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -66,7 +67,7 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .policeStationSchemeId("1001")
         .policeStationId("NE001")
         .netDisbursementAmount(50.50)
-        .disbursementVatAmount(20.15)
+        .disbursementVatAmount(10.10)
         .uniqueFileNumber("121222/452")
         .netProfitCosts(676.0)
         .build();
@@ -77,13 +78,13 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
-        .totalAmount(311.32)
+        .totalAmount(301.27)
         .vatIndicator(Boolean.TRUE)
         .vatRateApplied(20.0)
         .calculatedVatAmount(40.11)
         .disbursementAmount(50.5)
         .requestedNetDisbursementAmount(50.5)
-        .disbursementVatAmount(20.15)
+        .disbursementVatAmount(10.10)
         .fixedFeeAmount(200.56)
         .build();
 
@@ -119,7 +120,7 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .policeStationSchemeId("1001")
         .policeStationId(null)
         .netDisbursementAmount(50.50)
-        .disbursementVatAmount(20.15)
+        .disbursementVatAmount(10.10)
         .uniqueFileNumber("121222/452")
         .netProfitCosts(676.0)
         .build();
@@ -130,13 +131,13 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);
 
     FeeCalculation expectedCalculation = FeeCalculation.builder()
-        .totalAmount(311.32)
+        .totalAmount(301.27)
         .vatIndicator(Boolean.TRUE)
         .vatRateApplied(20.0)
         .calculatedVatAmount(40.11)
         .disbursementAmount(50.5)
         .requestedNetDisbursementAmount(50.5)
-        .disbursementVatAmount(20.15)
+        .disbursementVatAmount(10.10)
         .fixedFeeAmount(200.56)
         .build();
 
@@ -210,11 +211,20 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .calculatedVatAmount(expectedCalculatedVat)
         .build();
 
+    List<ValidationMessagesInner> expectedMessages = new ArrayList<>();
+    if (vatIndicator) {
+      expectedMessages.add(ValidationMessagesInner.builder()
+          .message(WarningType.WARN_DISBURSEMENT_VAT_EXCEEDED.getMessage())
+          .code(WarningType.WARN_DISBURSEMENT_VAT_EXCEEDED.getCode())
+          .type(WARNING)
+          .build());
+    }
+
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode(feeCode)
         .claimId("claim_123")
         .schemeId(feeSchemeCode)
-        .validationMessages(new ArrayList<>())
+        .validationMessages(expectedMessages)
         .escapeCaseFlag(false)
         .feeCalculation(expectedCalculation)
         .build();
@@ -469,7 +479,7 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   public static Stream<Arguments> testPoliceStationAttendanceClaims() {
     return Stream.of(
         arguments("INVC Police Fee Code, VAT applied", "INVC", "NE001",
-            "1001", "121221/7899", true, 87.93,
+            "1001", "121221/7899", true, 77.88,
             new BigDecimal("14.4"), "POL_2016", 2.88, 14.4),
 
         arguments("INVC Police Fee Code, VAT not applied", "INVC", "NE013",
@@ -520,9 +530,11 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
                                      String feeSchemeCode,
                                      double expectedCalculatedVat,
                                      double fixedFeeAmount) {
-
+    // When vatIndicator=true, disbVat 20.15 gets capped to 10.10 (20% of 50.5)
+    // When vatIndicator=false, vatRate=0 so cap is skipped and disbVat stays 20.15
+    double expectedDisbVat = vatIndicator ? 10.10 : 20.15;
     return Arguments.of(testDescription, feeCode, policeStationId, policeStationSchemeId, uniqueFileNumber, vatIndicator,
-        expectedTotal, fixedFee, feeSchemeCode, expectedCalculatedVat, 50.5, 20.15, fixedFeeAmount);
+        expectedTotal, fixedFee, feeSchemeCode, expectedCalculatedVat, 50.5, expectedDisbVat, fixedFeeAmount);
   }
 
   private FeeEntity buildFixedFeeEntity(String feeCode, FeeSchemesEntity feeSchemesEntity, BigDecimal fixedFee) {

@@ -5,6 +5,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.CASE_CONCLU
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.CASE_START_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.REP_ORDER_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.UFN;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_VAT_EXCEEDED;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.service.FeeCodeConstants.FEE_CODE_PROH_TYPE;
 
@@ -116,6 +117,35 @@ public final class FeeCalculationUtil {
     return value.multiply(vatRate)
         .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)
         .setScale(2, RoundingMode.HALF_UP);
+  }
+
+  /**
+   * Validates the disbursement VAT amount against the maximum allowed (vatRate% of netDisbursementAmount).
+   * If the submitted amount exceeds the max, it is capped and a warning is added.
+   *
+   * @param netDisbursementAmount  the net disbursement amount
+   * @param submittedDisbVatAmount the disbursement VAT amount as submitted
+   * @param vatRate                the applicable VAT rate (e.g. 20.00), used to derive the max
+   * @param validationMessages     list to add warnings to
+   * @return the capped (or original) disbursement VAT amount
+   */
+  public static BigDecimal validateAndCapDisbursementVat(BigDecimal netDisbursementAmount,
+                                                         BigDecimal submittedDisbVatAmount,
+                                                         BigDecimal vatRate,
+                                                         List<ValidationMessagesInner> validationMessages) {
+    if (vatRate.compareTo(BigDecimal.ZERO) <= 0) {
+      return submittedDisbVatAmount;
+    }
+
+    BigDecimal maxDisbVat = calculateVatAmount(netDisbursementAmount, vatRate);
+
+    if (submittedDisbVatAmount.compareTo(maxDisbVat) > 0) {
+      log.warn("Disbursement VAT {} exceeds maximum allowed {}. Capping to {}.", submittedDisbVatAmount, maxDisbVat, maxDisbVat);
+      validationMessages.add(buildValidationWarning(WARN_DISBURSEMENT_VAT_EXCEEDED,
+          "Disbursement VAT exceeds " + vatRate + "% of net disbursements"));
+      return maxDisbVat;
+    }
+    return submittedDisbVatAmount;
   }
 
   /**

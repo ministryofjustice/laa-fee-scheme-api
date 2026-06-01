@@ -3,6 +3,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ASSOCIATED_CIVIL;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_VAT_EXCEEDED;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -31,9 +32,9 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   @ParameterizedTest
   @CsvSource({
       "false, 10.00, 20.00, 170.33, 0",  // Under escape threshold (No VAT)
-      "true, 10.00, 20.00, 180.33, 10.00",  // Under escape threshold limit (VAT applied)
+      "true, 10.00, 20.00, 180.13, 10.00",  // Under escape threshold limit (VAT applied)
       "false, 80.00, 20.00, 170.33, 0", // Equal to escape threshold limit (No VAT)
-      "true, 80.00, 20.00, 180.33, 10.00" // Equal to escape threshold limit (VAT applied)
+      "true, 80.00, 20.00, 180.13, 10.00" // Equal to escape threshold limit (VAT applied)
   })
   void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double netTravelCosts,
                                                     double netWaitingCosts, double expectedTotal,
@@ -53,7 +54,7 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   @ParameterizedTest
   @CsvSource({
       "false, 90.00, 20.00, 170.33, 0", // Over escape threshold limit (No VAT)
-      "true, 90.00, 20.00, 180.33, 10.00" // Over escape threshold limit (VAT applied)
+      "true, 90.00, 20.00, 180.13, 10.00" // Over escape threshold limit (VAT applied)
   })
   void calculate_shouldReturnFeeCalculationResponseWithWarning(boolean vatIndicator, double netTravelCosts,
                                                                double netWaitingCosts, double expectedTotal,
@@ -68,13 +69,22 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, true);
 
-    ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
+    ValidationMessagesInner escapeMessage = ValidationMessagesInner.builder()
         .message(WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD.getMessage())
         .code(WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD.getCode())
         .type(WARNING)
         .build();
 
-    assertThat(result.getValidationMessages()).containsExactly(validationMessage);
+    if (vatIndicator) {
+      ValidationMessagesInner vatCapMessage = ValidationMessagesInner.builder()
+          .message(WARN_DISBURSEMENT_VAT_EXCEEDED.getMessage())
+          .code(WARN_DISBURSEMENT_VAT_EXCEEDED.getCode())
+          .type(WARNING)
+          .build();
+      assertThat(result.getValidationMessages()).containsExactly(vatCapMessage, escapeMessage);
+    } else {
+      assertThat(result.getValidationMessages()).containsExactly(escapeMessage);
+    }
   }
 
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netTravelCosts,
@@ -118,7 +128,8 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(vat);
     assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(100.11);
     assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(100.11);
-    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.22);
+    // vatIndicator=true: disbVat capped from 20.22 to 20.02 (20% of 100.11); vatIndicator=false: rate=0, cap skipped
+    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(vatIndicator ? 20.02 : 20.22);
     assertThat(feeCalculation.getFixedFeeAmount()).isEqualTo(50);
   }
 

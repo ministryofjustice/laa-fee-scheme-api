@@ -30,7 +30,7 @@ class SendingHearingFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   @ParameterizedTest
   @CsvSource({
       "false, 270.33, 0",
-      "true, 300.33, 30.00"
+      "true, 300.13, 30.00"
   })
   void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double expectedTotal,
                                                     double expectedVat) {
@@ -72,7 +72,7 @@ class SendingHearingFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(vat);
     assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(100.11);
     assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(100.11);
-    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.22);
+    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(vatIndicator ? 20.02 : 20.22);
     assertThat(feeCalculation.getFixedFeeAmount()).isEqualTo(150);
   }
 
