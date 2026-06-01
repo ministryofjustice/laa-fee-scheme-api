@@ -5,18 +5,20 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MENTAL_HEALTH;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.DISB_ONLY;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 @ExtendWith(MockitoExtension.class)
-class MentalHealthDisbursementOnlyCalculatorTest {
+class MentalHealthDisbursementOnlyCalculatorTest extends BaseFeeCalculatorTest {
 
   @InjectMocks
   MentalHealthDisbursementOnlyCalculator mentalHealthDisbursementOnlyCalculator;
@@ -24,6 +26,8 @@ class MentalHealthDisbursementOnlyCalculatorTest {
 
   @Test
   void calculate_whenMentalHealthClaimSubmittedOnlyForDisbursement_returnSuccess() {
+
+    mockVatRatesService(false);
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("MHLDIS")
@@ -47,12 +51,14 @@ class MentalHealthDisbursementOnlyCalculatorTest {
         .disbursementAmount(1200.0)
         .requestedNetDisbursementAmount(1200.0)
         .disbursementVatAmount(150.0)
+        .requestedDisbursementVatAmount(150.0)
         .build();
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode("MHLDIS")
         .schemeId("MHL_DISB_FS2013")
         .claimId("claim_123")
+        .validationMessages(new ArrayList<>())
         .feeCalculation(expectedCalculation)
         .build();
 

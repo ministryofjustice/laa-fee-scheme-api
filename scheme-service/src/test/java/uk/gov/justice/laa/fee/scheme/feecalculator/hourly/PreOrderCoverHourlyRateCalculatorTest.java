@@ -98,6 +98,7 @@ class PreOrderCoverHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementAmount(netDisbursementAmount)
         .requestedNetDisbursementAmount(netDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)
+        .requestedDisbursementVatAmount(disbursementVatAmount)
         .hourlyTotalAmount(hourlyTotalAmount)
         .netProfitCostsAmount(requestedProfitCosts)
         .requestedNetProfitCostsAmount(requestedProfitCosts)

@@ -3,6 +3,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.validateAndCapDisbursementVat;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -54,14 +55,18 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
 
     //Step 5: get Disbursements
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+    BigDecimal requestedDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+
+    //Step 5a: validate and cap disbursement VAT
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+    BigDecimal disbursementVatAmount = validateAndCapDisbursementVat(
+        netDisbursementAmount, requestedDisbursementVatAmount, vatRate, validationMessages);
 
     //Step 6: calculate Total Amount
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount, netDisbursementAmount,
         disbursementVatAmount);
 
     //Step 7: check if escaped, if eligible
-    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     boolean isEscaped = false;
     if (canEscape) {
       isEscaped = handleEscapeCase(feeCalculationRequest, feeEntity, validationMessages);
@@ -76,6 +81,7 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
         .disbursementAmount(toDoubleOrNull(netDisbursementAmount))
         .requestedNetDisbursementAmount(toDoubleOrNull(netDisbursementAmount))
         .disbursementVatAmount(toDoubleOrNull(disbursementVatAmount))
+        .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .build();
 

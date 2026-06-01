@@ -143,6 +143,7 @@ class PrisonLawFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           .calculatedVatAmount(expectedCalculatedVat)
           .disbursementAmount(100.0)
           .disbursementVatAmount(20.0)
+          .requestedDisbursementVatAmount(20.0)
           .requestedNetDisbursementAmount(100.0)
           .build();
 
@@ -262,6 +263,7 @@ class PrisonLawFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           .calculatedVatAmount(expectedCalculatedVat)
           .disbursementAmount(100.0)
           .disbursementVatAmount(20.0)
+          .requestedDisbursementVatAmount(20.0)
           .requestedNetDisbursementAmount(100.0)
           .build();
 

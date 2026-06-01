@@ -89,6 +89,7 @@ class AdviceAssistanceAdvocacyHourlyRateCalculatorTest extends BaseFeeCalculator
         .disbursementAmount(netDisbursementAmount)
         .requestedNetDisbursementAmount(netDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)
+        .requestedDisbursementVatAmount(disbursementVatAmount)
         .hourlyTotalAmount(hourlyTotalAmount)
         .netProfitCostsAmount(requestedProfitCosts)
         .requestedNetProfitCostsAmount(requestedProfitCosts)
