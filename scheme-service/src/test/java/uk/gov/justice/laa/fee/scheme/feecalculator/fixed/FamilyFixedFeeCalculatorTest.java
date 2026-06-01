@@ -35,19 +35,24 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @ParameterizedTest
   @CsvSource(value = {
-      "false, 500, 170.33", // No VAT
-      "true, 500, 180.33", // VAT applied
-      "true, null, 180.33" // No escape threshold limit
+      "false, 500, 170.13", // No VAT
+      "true, 500, 180.13", // VAT applied
+      "true, null, 180.13" // No escape threshold limit
   }, nullValues = "null")
   void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, String escapeThreshold, double expectedTotal) {
     mockVatRatesService(vatIndicator);
+
+    if (!vatIndicator) {
+      mockVatRatesVatIndicatorTrue();
+    }
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("COM")
         .startDate(LocalDate.of(2025, 5, 12))
         .vatIndicator(vatIndicator)
         .netDisbursementAmount(100.11)
-        .disbursementVatAmount(20.22)
+        .disbursementVatAmount(20.02)
+        .caseConcludedDate(LocalDate.of(2025, 5, 12))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
@@ -64,6 +69,52 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThat(result.getFeeCode()).isEqualTo("COM");
     assertThat(result.getEscapeCaseFlag()).isFalse();
     assertThat(result.getValidationMessages()).isEmpty();
+    assertThat(result.getFeeCalculation()).isNotNull();
+    assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
+  }
+
+  @ParameterizedTest
+  @CsvSource(value = {
+          "false, 500, 170.13", // No VAT
+          "true, 500, 180.13", // VAT applied
+          "true, null, 180.13" // No escape threshold limit
+  }, nullValues = "null")
+  void calculate_shouldReturnFeeCalculationResponse_withDisbursementLimitWarning(boolean vatIndicator, String escapeThreshold, double expectedTotal) {
+    mockVatRatesService(vatIndicator);
+
+    if (!vatIndicator) {
+      mockVatRatesVatIndicatorTrue();
+    }
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+            .feeCode("COM")
+            .startDate(LocalDate.of(2025, 5, 12))
+            .vatIndicator(vatIndicator)
+            .netDisbursementAmount(100.11)
+            .disbursementVatAmount(22.22)
+            .caseConcludedDate(LocalDate.of(2025, 5, 12))
+            .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+            .feeCode("COM")
+            .feeScheme(FeeSchemesEntity.builder().schemeCode("COM_FS2013").build())
+            .fixedFee(new BigDecimal("50.00"))
+            .escapeThresholdLimit(escapeThreshold != null ? new BigDecimal(escapeThreshold) : null)
+            .categoryType(COMMUNITY_CARE)
+            .build();
+
+    FeeCalculationResponse result = familyFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    ValidationMessagesInner validationMessage =
+            ValidationMessagesInner.builder()
+                    .message(WarningType.WARN_DISBURSEMENT_VAT_LIMIT_REACHED.getMessage())
+                    .code(WarningType.WARN_DISBURSEMENT_VAT_LIMIT_REACHED.getCode())
+                    .type(WARNING)
+                    .build();
+
+    assertThat(result.getValidationMessages()).containsExactly(validationMessage);
+    assertThat(result).isNotNull();
+    assertThat(result.getFeeCode()).isEqualTo("COM");
     assertThat(result.getFeeCalculation()).isNotNull();
     assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
   }
@@ -86,6 +137,7 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .feeCode("FPB010")
         .claimId("claim_124")
         .startDate(LocalDate.of(2025, 1, 1))
+        .caseConcludedDate(LocalDate.of(2025, 5, 12))
         .vatIndicator(true)
         .netDisbursementAmount(129.45)
         .disbursementVatAmount(25.89)
