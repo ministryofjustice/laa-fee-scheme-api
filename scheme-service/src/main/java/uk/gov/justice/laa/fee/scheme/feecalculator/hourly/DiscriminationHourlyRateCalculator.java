@@ -5,6 +5,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISCRIMINATION_ESCAPE_THRESHOLD;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateDisbursementVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
@@ -31,9 +32,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
-/**
- * Calculate the discrimination fee for a given fee entity and fee calculation request.
- */
+/** Calculate the discrimination fee for a given fee entity and fee calculation request. */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -47,15 +46,16 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
   }
 
   /**
-   * Calculated fee based on the provided fee entity and fee calculation request.
-   * the fee entity containing fee details
+   * Calculated fee based on the provided fee entity and fee calculation request. the fee entity
+   * containing fee details
    *
    * @param feeCalculationRequest the request containing fee calculation data
-   * @param feeEntity             the fee entity containing fee details
+   * @param feeEntity the fee entity containing fee details
    * @return FeeCalculationResponse with calculated fee
    */
   @Override
-  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+  public FeeCalculationResponse calculate(
+      FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
 
     log.info("Calculate Discrimination hourly rate fee");
 
@@ -71,8 +71,9 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
     boolean isEscaped = isEscapedCase(feeTotal, escapeThresholdLimit);
 
     if (isEscaped) {
-      validationMessages.add(buildValidationWarning(WARN_DISCRIMINATION_ESCAPE_THRESHOLD,
-          "Fee total exceeds escape threshold limit"));
+      validationMessages.add(
+          buildValidationWarning(
+              WARN_DISCRIMINATION_ESCAPE_THRESHOLD, "Fee total exceeds escape threshold limit"));
       feeTotal = escapeThresholdLimit;
     }
 
@@ -89,36 +90,33 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
     // Calculate disbursed vat amount
     LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
     BigDecimal disbursementVatRate = vatRatesService.getVatRateForDate(caseConcludedDate, true);
-    BigDecimal calculatedDisbursementVatAmount = calculateVatAmount(netDisbursementAmount, disbursementVatRate);
-    boolean isDisbursementVatLimitReached = isDisbursementVatLimitReached(calculatedDisbursementVatAmount, disbursementVatAmount);
-
-    if (isDisbursementVatLimitReached) {
-      // Set the disbursement VAT amount to the limit if the entered amount is greater than the limit
-      disbursementVatAmount = calculatedDisbursementVatAmount;
-      validationMessages.add(buildValidationWarning(WARN_DISBURSEMENT_VAT_LIMIT_REACHED,
-              "Entered disbursement VAT amount exceeds the calculated disbursement VAT limit"));
-    }
+    disbursementVatAmount =
+        calculateDisbursementVatAmount(
+            netDisbursementAmount, disbursementVatAmount, disbursementVatRate, validationMessages);
 
     // Calculate total amount
-    BigDecimal totalAmount = calculateTotalAmount(feeTotal, calculatedVatAmount,
-            netDisbursementAmount, disbursementVatAmount);
+    BigDecimal totalAmount =
+        calculateTotalAmount(
+            feeTotal, calculatedVatAmount, netDisbursementAmount, disbursementVatAmount);
 
-    FeeCalculation feeCalculation = FeeCalculation.builder()
-        .totalAmount(toDouble(totalAmount))
-        .vatIndicator(vatIndicator)
-        .vatRateApplied(toDoubleOrNull(vatRate))
-        .calculatedVatAmount(toDouble(calculatedVatAmount))
-        .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        // disbursement not capped, so requested and calculated will be same
-        .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        .disbursementVatAmount(disbursementVatAmount.doubleValue())
-        .hourlyTotalAmount(toDouble(feeTotal))
-        .netCostOfCounselAmount(feeCalculationRequest.getNetCostOfCounsel())
-        .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
-        // net profit cost not capped, so requested and calculated will be same
-        .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
-        .build();
+    FeeCalculation feeCalculation =
+        FeeCalculation.builder()
+            .totalAmount(toDouble(totalAmount))
+            .vatIndicator(vatIndicator)
+            .vatRateApplied(toDoubleOrNull(vatRate))
+            .calculatedVatAmount(toDouble(calculatedVatAmount))
+            .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            // disbursement not capped, so requested and calculated will be same
+            .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
+            .disbursementVatAmount(toDouble(disbursementVatAmount))
+            .hourlyTotalAmount(toDouble(feeTotal))
+            .netCostOfCounselAmount(feeCalculationRequest.getNetCostOfCounsel())
+            .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+            // net profit cost not capped, so requested and calculated will be same
+            .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
+            .build();
 
-    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, validationMessages, isEscaped);
+    return buildFeeCalculationResponse(
+        feeCalculationRequest, feeEntity, feeCalculation, validationMessages, isEscaped);
   }
 }

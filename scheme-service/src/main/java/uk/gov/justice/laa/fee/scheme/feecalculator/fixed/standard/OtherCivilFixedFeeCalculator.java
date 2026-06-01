@@ -11,6 +11,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PUBLIC_LAW;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.WELFARE_BENEFITS;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_VAT_LIMIT_REACHED;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateDisbursementVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.isDisbursementVatLimitReached;
@@ -63,25 +64,19 @@ public class OtherCivilFixedFeeCalculator extends StandardFixedFeeCalculator {
   }
 
   @Override
-  protected BigDecimal calculateDisbursementVat(
-      FeeCalculationRequest feeCalculationRequest,
-      VatRatesService vatRatesService,
-      List<ValidationMessagesInner> validationMessages) {
+  protected BigDecimal calculateDisbursementVat(FeeCalculationRequest feeCalculationRequest,
+                                                VatRatesService vatRatesService,
+                                                List<ValidationMessagesInner> validationMessages) {
+
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
     // Calculate disbursed vat amount
     LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
     BigDecimal disbursementVatRate = vatRatesService.getVatRateForDate(caseConcludedDate, true);
-    BigDecimal calculatedDisbursementVatAmount = calculateVatAmount(netDisbursementAmount, disbursementVatRate);
-    boolean isDisbursementVatLimitReached = isDisbursementVatLimitReached(calculatedDisbursementVatAmount, disbursementVatAmount);
-
-    if (isDisbursementVatLimitReached) {
-      // Set the disbursement VAT amount to the limit if the entered amount is greater than the limit
-      disbursementVatAmount = calculatedDisbursementVatAmount;
-      validationMessages.add(buildValidationWarning(WARN_DISBURSEMENT_VAT_LIMIT_REACHED,
-              "Entered disbursement VAT amount exceeds the calculated disbursement VAT limit"));
-    }
+    disbursementVatAmount =
+            calculateDisbursementVatAmount(
+                    netDisbursementAmount, disbursementVatAmount, disbursementVatRate, validationMessages);
 
     return disbursementVatAmount;
   }
