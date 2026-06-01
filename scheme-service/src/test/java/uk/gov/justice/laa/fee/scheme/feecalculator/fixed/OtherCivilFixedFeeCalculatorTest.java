@@ -42,15 +42,19 @@ class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @ParameterizedTest
   @CsvSource({
-      "false, 200.00, 370.33, 0",  // Under escape threshold (No VAT)
-      "true, 200.00, 420.33, 50",  // Under escape threshold limit (VAT applied)
-      "false, 500.00, 370.33, 0", // Equal to escape threshold limit (No VAT)
-      "true, 500.00, 420.33, 50" // Equal to escape threshold limit (VAT applied)
+      "false, 200.00, 370.13, 0",  // Under escape threshold (No VAT)
+      "true, 200.00, 420.13, 50",  // Under escape threshold limit (VAT applied)
+      "false, 500.00, 370.13, 0", // Equal to escape threshold limit (No VAT)
+      "true, 500.00, 420.13, 50" // Equal to escape threshold limit (VAT applied)
   })
   void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double netProfitCosts,
                                                     double expectedTotal, double expectedVat) {
 
     mockVatRatesService(vatIndicator);
+
+    if (!vatIndicator) {
+      mockVatRatesVatIndicatorTrue();
+    }
 
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts);
     FeeEntity feeEntity = buildFeeEntity();
@@ -62,13 +66,17 @@ class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @ParameterizedTest
   @CsvSource({
-      "false, 501.00, 370.33, 0", // Over escape threshold limit (No VAT)
-      "true, 501.00, 420.33, 50" // Over escape threshold limit (VAT applied)
+      "false, 501.00, 370.13, 0", // Over escape threshold limit (No VAT)
+      "true, 501.00, 420.13, 50" // Over escape threshold limit (VAT applied)
   })
   void calculate_shouldReturnFeeCalculationResponseWithWarning(boolean vatIndicator, double netProfitCosts,
                                                                double expectedTotal, double expectedVat) {
 
     mockVatRatesService(vatIndicator);
+
+    if (!vatIndicator) {
+      mockVatRatesVatIndicatorTrue();
+    }
 
     FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts);
     FeeEntity feeEntity = buildFeeEntity();
@@ -88,6 +96,38 @@ class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThat(result.getValidationMessages()).containsExactly(validationMessage);
   }
 
+  @ParameterizedTest
+  @CsvSource({
+      "false, 200.00, 370.13, 0",  // Under escape threshold (No VAT)
+      "true, 200.00, 420.13, 50",  // Under escape threshold limit (VAT applied)
+      "false, 500.00, 370.13, 0", // Equal to escape threshold limit (No VAT)
+      "true, 500.00, 420.13, 50" // Equal to escape threshold limit (VAT applied)
+  })
+  void calculate_shouldReturnFeeCalculationResponseWithWarningOnDisbursementVAT(boolean vatIndicator, double netProfitCosts,
+                                                               double expectedTotal, double expectedVat) {
+    mockVatRatesService(vatIndicator);
+
+    if (!vatIndicator) {
+      mockVatRatesVatIndicatorTrue();
+    }
+
+    FeeCalculationRequest feeCalculationRequest = buildRequestDisbursementVatOverLimit(vatIndicator, netProfitCosts);
+    FeeEntity feeEntity = buildFeeEntity();
+
+    FeeCalculationResponse result = feeCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    assertFeeCalculationDisbursementVatOverLimit(result, expectedTotal, vatIndicator, expectedVat, false);
+
+    ValidationMessagesInner validationMessage =
+            ValidationMessagesInner.builder()
+                    .message(WarningType.WARN_DISBURSEMENT_VAT_LIMIT_REACHED.getMessage())
+                    .code(WarningType.WARN_DISBURSEMENT_VAT_LIMIT_REACHED.getCode())
+                    .type(WARNING)
+                    .build();
+
+    assertThat(result.getValidationMessages()).containsExactly(validationMessage);
+  }
+
   @Test
   void calculate_givenInvalidCategoryThrowsException() {
 
@@ -98,6 +138,7 @@ class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .claimId("claim_123")
         .uniqueFileNumber("04052025/224")
         .startDate(LocalDate.of(2025, 4, 5))
+        .caseConcludedDate(LocalDate.of(2025, 5, 12))
         .vatIndicator(true)
         .netProfitCosts(501.00)
         .netDisbursementAmount(370.00)
@@ -130,11 +171,25 @@ class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .feeCode("CAPA")
         .claimId("claim_123")
         .startDate(LocalDate.of(2025, 4, 5))
+        .caseConcludedDate(LocalDate.of(2025, 5, 12))
         .vatIndicator(vatIndicator)
         .netProfitCosts(netProfitCosts)
         .netDisbursementAmount(100.11)
-        .disbursementVatAmount(20.22)
+        .disbursementVatAmount(20.02)
         .build();
+  }
+
+  private FeeCalculationRequest buildRequestDisbursementVatOverLimit(boolean vatIndicator, double netProfitCosts) {
+    return FeeCalculationRequest.builder()
+            .feeCode("CAPA")
+            .claimId("claim_123")
+            .startDate(LocalDate.of(2025, 4, 5))
+            .caseConcludedDate(LocalDate.of(2025, 5, 12))
+            .vatIndicator(vatIndicator)
+            .netProfitCosts(netProfitCosts)
+            .netDisbursementAmount(100.11)
+            .disbursementVatAmount(22.02)
+            .build();
   }
 
   private FeeEntity buildFeeEntity() {
@@ -163,7 +218,27 @@ class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(vat);
     assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(100.11);
     assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(100.11);
-    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.22);
+    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.02);
+    assertThat(feeCalculation.getFixedFeeAmount()).isEqualTo(250);
+  }
+
+  private void assertFeeCalculationDisbursementVatOverLimit(FeeCalculationResponse response, double total, boolean vatIndicator, double vat,
+                                    boolean escapeFlag) {
+    assertThat(response).isNotNull();
+    assertThat(response.getFeeCode()).isEqualTo("CAPA");
+    assertThat(response.getClaimId()).isEqualTo("claim_123");
+    assertThat(response.getSchemeId()).isEqualTo("CAPA_FS2013");
+    assertThat(response.getEscapeCaseFlag()).isEqualTo(escapeFlag);
+
+    FeeCalculation feeCalculation = response.getFeeCalculation();
+    assertThat(feeCalculation).isNotNull();
+    assertThat(feeCalculation.getTotalAmount()).isEqualTo(total);
+    assertThat(feeCalculation.getVatIndicator()).isEqualTo(vatIndicator);
+    assertThat(feeCalculation.getVatRateApplied()).isEqualTo(vatIndicator ? 20.0 : null);
+    assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(vat);
+    assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(100.11);
+    assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(100.11);
+    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.02);
     assertThat(feeCalculation.getFixedFeeAmount()).isEqualTo(250);
   }
 }
