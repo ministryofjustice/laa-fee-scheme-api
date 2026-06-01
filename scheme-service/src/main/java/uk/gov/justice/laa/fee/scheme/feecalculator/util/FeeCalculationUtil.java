@@ -5,6 +5,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.CASE_CONCLU
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.CASE_START_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.REP_ORDER_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.UFN;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_VAT_LIMIT_REACHED;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.service.FeeCodeConstants.FEE_CODE_PROH_TYPE;
 
@@ -128,6 +129,33 @@ public final class FeeCalculationUtil {
         .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)
         .setScale(2, RoundingMode.HALF_UP);
   }
+
+  /**
+   * Calculate the VAT amount for disbursement VAT and give a warning if their original value
+   * exceeds the limit.
+   *
+   * @param netDisbursementAmount BigDecimal
+   * @param disbursementVatAmount BigDecimal
+   * @param disbursementVatRate BigDecimal
+   * @param validationMessages List<ValidationMessagesInner>
+   * @return BigDecimal
+   */
+  public static BigDecimal calculateDisbursementVatAmount(BigDecimal netDisbursementAmount,
+                                                          BigDecimal disbursementVatAmount,
+                                                          BigDecimal disbursementVatRate,
+                                                          List<ValidationMessagesInner> validationMessages) {
+
+      BigDecimal calculatedDisbursementVatAmount = calculateVatAmount(netDisbursementAmount, disbursementVatRate);
+
+      if (isDisbursementVatLimitReached(calculatedDisbursementVatAmount, disbursementVatAmount)) {
+        // Set the disbursement VAT amount to the limit if the entered amount is greater than the limit
+        disbursementVatAmount = calculatedDisbursementVatAmount;
+        validationMessages.add(buildValidationWarning(WARN_DISBURSEMENT_VAT_LIMIT_REACHED,
+                "Entered disbursement VAT amount exceeds the calculated disbursement VAT limit"));
+      }
+
+      return disbursementVatAmount;
+    }
 
   /**
    * Check the disbursement VAT amount for a given value using the VAT rate.

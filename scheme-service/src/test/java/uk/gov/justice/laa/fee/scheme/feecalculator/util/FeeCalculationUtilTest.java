@@ -13,6 +13,9 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -24,6 +27,7 @@ import uk.gov.justice.laa.fee.scheme.exception.StartDateRequiredException;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 class FeeCalculationUtilTest {
 
@@ -181,6 +185,25 @@ class FeeCalculationUtilTest {
         FeeCalculationUtil.calculateVatAmount(new BigDecimal("170.50"), new BigDecimal("20.00"));
 
     assertThat(totalAmount).isEqualTo(new BigDecimal("34.10"));
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+      value = {
+        "13.10, 13.10",
+        "34.10, 36.50",
+        "12.04, 12.04",
+        "05.05, 05.05"
+      })
+  void calculateDisbursementVatAmount_shouldReturnResult(BigDecimal expectedDisbursementVat, BigDecimal disbursementVat) {
+    BigDecimal totalAmount =
+        FeeCalculationUtil.calculateDisbursementVatAmount(
+            (new BigDecimal("170.50")),
+            (disbursementVat),
+            (new BigDecimal("20.00")),
+            (new ArrayList<ValidationMessagesInner>()));
+
+    assertThat(totalAmount).isEqualTo(expectedDisbursementVat);
   }
 
   @ParameterizedTest
