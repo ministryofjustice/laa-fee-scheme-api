@@ -63,7 +63,10 @@ public class OtherCivilFixedFeeCalculator extends StandardFixedFeeCalculator {
   }
 
   @Override
-  protected BigDecimal calculateDisbursementVAT(FeeCalculationRequest feeCalculationRequest, VatRatesService vatRatesService, List<ValidationMessagesInner> validationMessages) {
+  protected BigDecimal calculateDisbursementVat(
+      FeeCalculationRequest feeCalculationRequest,
+      VatRatesService vatRatesService,
+      List<ValidationMessagesInner> validationMessages) {
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
