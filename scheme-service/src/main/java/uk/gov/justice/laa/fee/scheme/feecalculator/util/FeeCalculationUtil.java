@@ -137,7 +137,7 @@ public final class FeeCalculationUtil {
    * @param netDisbursementAmount BigDecimal
    * @param disbursementVatAmount BigDecimal
    * @param disbursementVatRate BigDecimal
-   * @param validationMessages List<ValidationMessagesInner>
+   * @param validationMessages list of validation messages
    * @return BigDecimal
    */
   public static BigDecimal calculateDisbursementVatAmount(BigDecimal netDisbursementAmount,
@@ -145,17 +145,17 @@ public final class FeeCalculationUtil {
                                                           BigDecimal disbursementVatRate,
                                                           List<ValidationMessagesInner> validationMessages) {
 
-      BigDecimal calculatedDisbursementVatAmount = calculateVatAmount(netDisbursementAmount, disbursementVatRate);
+    BigDecimal calculatedDisbursementVatAmount = calculateVatAmount(netDisbursementAmount, disbursementVatRate);
 
-      if (isDisbursementVatLimitReached(calculatedDisbursementVatAmount, disbursementVatAmount)) {
-        // Set the disbursement VAT amount to the limit if the entered amount is greater than the limit
-        disbursementVatAmount = calculatedDisbursementVatAmount;
-        validationMessages.add(buildValidationWarning(WARN_DISBURSEMENT_VAT_LIMIT_REACHED,
-                "Entered disbursement VAT amount exceeds the calculated disbursement VAT limit"));
-      }
-
-      return disbursementVatAmount;
+    if (isDisbursementVatLimitReached(calculatedDisbursementVatAmount, disbursementVatAmount)) {
+      // Set the disbursement VAT amount to the limit if the entered amount is greater than the limit
+      disbursementVatAmount = calculatedDisbursementVatAmount;
+      validationMessages.add(buildValidationWarning(WARN_DISBURSEMENT_VAT_LIMIT_REACHED,
+              "Entered disbursement VAT amount exceeds the calculated disbursement VAT limit"));
     }
+
+    return disbursementVatAmount;
+  }
 
   /**
    * Check the disbursement VAT amount for a given value using the VAT rate.
