@@ -161,6 +161,21 @@ class PrisonLawFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   }
 
+  @Test
+  void test_whenPrisonLawFeeCodeOutsideEscapeSets_shouldReturnFalseEscapeFlagWithNoWarnings() {
+    mockVatRatesService(false);
+
+    FeeCalculationRequest feeCalculationRequest = buildFeeCalculationRequest("PRIZ",
+        "121221/799", false, 100.00, 20.00, 500.0, 300.0);
+
+    FeeEntity feeEntity = buildFeeEntity("PRIZ", 150.00, 250.0, 250.0);
+
+    FeeCalculationResponse response = prisonLawFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    assertThat(response.getEscapeCaseFlag()).isFalse();
+    assertThat(response.getValidationMessages()).isEmpty();
+  }
+
   @Nested
   class PrisonLawEscapeCaseTest {
 

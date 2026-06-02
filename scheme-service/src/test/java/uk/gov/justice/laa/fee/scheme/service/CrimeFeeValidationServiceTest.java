@@ -168,6 +168,70 @@ class CrimeFeeValidationServiceTest {
     assertThat(result.getFeeScheme().getSchemeCode()).isEqualTo("POL_FS2022");
   }
 
+  @ParameterizedTest
+  @CsvSource({
+      "''",       // empty
+      "'   '"     // whitespace only
+  })
+  void getValidFeeEntity_whenCrimeFeeCodeAndUfnIsBlank_shouldThrowUfnMissing(String ufn) {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("INVC")
+        .startDate(LocalDate.of(2022, 1, 1))
+        .vatIndicator(Boolean.TRUE)
+        .policeStationSchemeId("1003")
+        .policeStationId("NA2093")
+        .uniqueFileNumber(ufn)
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022")
+        .validFrom(LocalDate.of(2022, 1, 1)).build();
+
+    FeeEntity feeEntity = policeStationFeeEntity(feeSchemesEntity);
+
+    List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+    assertThatThrownBy(() -> crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERR_CRIME_UFN_MISSING)
+        .hasMessage("ERRCRM7 - Enter a UFN.");
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "''",       // empty
+      "'   '"     // whitespace only
+  })
+  void getValidFeeEntity_whenAdviceAssistanceAdvocacyPRODAndUfnIsBlank_shouldReturnValidResponse(String ufn) {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("PROD")
+        .uniqueFileNumber(ufn)
+        .caseConcludedDate(LocalDate.of(2021, 12, 31))
+        .vatIndicator(Boolean.TRUE)
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("AAA_FS2016")
+        .validFrom(LocalDate.of(2021, 12, 31)).build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("PROD")
+        .feeScheme(feeSchemesEntity)
+        .categoryType(ADVICE_ASSISTANCE_ADVOCACY)
+        .feeType(FeeType.HOURLY)
+        .build();
+
+    List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+    FeeEntity result = crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest);
+
+    assertThat(result).isNotNull();
+    assertThat(result.getFeeCode()).isEqualTo("PROD");
+    assertThat(result.getFeeScheme().getSchemeCode()).isEqualTo("AAA_FS2016");
+  }
+
   @Test
   void getValidFeeEntity_whenAdviceAssistanceAdvocacyClaimSubmitted_shouldReturnValidResponse() {
 

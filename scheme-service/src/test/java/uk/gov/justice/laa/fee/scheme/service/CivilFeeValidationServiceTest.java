@@ -3,6 +3,7 @@ package uk.gov.justice.laa.fee.scheme.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.DISCRIMINATION;
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CIVIL_START_DATE_TOO_OLD;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_FAMILY_LONDON_RATE;
@@ -51,6 +52,19 @@ class CivilFeeValidationServiceTest {
         .categoryType(CategoryType.FAMILY)
         .feeType(FeeType.FIXED)
         .build();
+  }
+
+  @Test
+  void getValidFeeEntity_whenFeeEntityListIsEmpty_shouldThrowException() {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("DISC")
+        .startDate(LocalDate.of(2025, 5, 1))
+        .build();
+
+    assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(List.of(), feeCalculationRequest))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERR_ALL_FEE_CODE)
+        .hasMessage("ERRALL1 - Enter a valid Fee Code.");
   }
 
   @Test
