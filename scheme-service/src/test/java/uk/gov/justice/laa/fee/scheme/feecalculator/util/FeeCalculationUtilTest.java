@@ -14,8 +14,6 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
