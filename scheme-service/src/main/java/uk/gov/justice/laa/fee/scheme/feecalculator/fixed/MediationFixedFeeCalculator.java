@@ -102,12 +102,12 @@ public class MediationFixedFeeCalculator implements FeeCalculator {
     // Calculate disbursed vat amount
     LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
     BigDecimal disbursementVatRate = vatRatesService.getVatRateForDate(caseConcludedDate, true);
-    disbursementVatAmount =
+    BigDecimal calculatedDisbursementVatAmount =
             calculateDisbursementVatAmount(
                     netDisbursementAmount, disbursementVatAmount, disbursementVatRate, validationMessages);
 
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount,
-        netDisbursementAmount, disbursementVatAmount);
+        netDisbursementAmount, calculatedDisbursementVatAmount);
 
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
@@ -116,8 +116,8 @@ public class MediationFixedFeeCalculator implements FeeCalculator {
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
-        .disbursementVatAmount(disbursementVatAmount.doubleValue())
+        .disbursementVatAmount(toDouble(calculatedDisbursementVatAmount))
+        .requestedDisbursementVatAmount(toDouble(disbursementVatAmount))
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .build();
 

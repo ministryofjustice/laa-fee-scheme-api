@@ -281,7 +281,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
             "disbursementVatAmount": 20.04,
-            "requestedDisbursementVatAmount": 20.12,
+            "requestedDisbursementVatAmount": 20.04,
             "fixedFeeAmount": 168.00
           }
         }
@@ -319,7 +319,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
             "disbursementVatAmount": 20.04,
-            "requestedDisbursementVatAmount": 20.12,
+            "requestedDisbursementVatAmount": 20.04,
             "fixedFeeAmount": 450.00,
             "boltOnFeeDetails": {
               "boltOnTotalFeeAmount": 351.00,

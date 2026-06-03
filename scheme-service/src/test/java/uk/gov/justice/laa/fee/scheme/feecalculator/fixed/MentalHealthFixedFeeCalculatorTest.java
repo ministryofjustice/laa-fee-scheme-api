@@ -61,6 +61,7 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .requestedNetDisbursementAmount(50.50)
         .requestedDisbursementVatAmount(20.15)
         .disbursementVatAmount(10.1)
+        .requestedDisbursementVatAmount(10.1)
         .fixedFeeAmount(fixedFee)
         .calculatedVatAmount(calculatedVat)
         .boltOnFeeDetails(BoltOnFeeDetails.builder()
@@ -69,6 +70,27 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
             .boltOnAdjournedHearingCount(boltOnNumber)
             .build())
         .build();
+  }
+
+  private static FeeCalculation buildFeeCalculationDisbursementVatLimitReached(double fixedFee, boolean vatIndicator, Double calculatedVat,
+                                                    Integer boltOnNumber, Double boltOnTotalFeeAmount,
+                                                    Double boltOnAdjournedHearingFee, double expectedTotal) {
+    return FeeCalculation.builder()
+            .totalAmount(expectedTotal)
+            .vatIndicator(vatIndicator)
+            .vatRateApplied(vatIndicator ? 20.0 : null)
+            .disbursementAmount(50.50)
+            .requestedNetDisbursementAmount(50.50)
+            .disbursementVatAmount(10.1)
+            .requestedDisbursementVatAmount(13.12)
+            .fixedFeeAmount(fixedFee)
+            .calculatedVatAmount(calculatedVat)
+            .boltOnFeeDetails(BoltOnFeeDetails.builder()
+                    .boltOnTotalFeeAmount(boltOnTotalFeeAmount)
+                    .boltOnAdjournedHearingFee(boltOnAdjournedHearingFee)
+                    .boltOnAdjournedHearingCount(boltOnNumber)
+                    .build())
+            .build();
   }
 
   private static FeeEntity buildFeeEntity(String feeCode, double fixedFee, Double escapeThresholdLimit) {
@@ -318,7 +340,7 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
       validationMessages.add(validationMessage);
 
 
-      FeeCalculation expectedCalculation = buildFeeCalculation(fixedFee, vatIndicator, calculatedVat, boltOnNumber,
+      FeeCalculation expectedCalculation = buildFeeCalculationDisbursementVatLimitReached(fixedFee, vatIndicator, calculatedVat, boltOnNumber,
               boltOnTotalFeeAmount, boltOnAdjournedHearingFee, expectedTotal);
       FeeCalculationResponse expectedResponse = buildExpectedResponse(feeCode, expectedCalculation, hasEscaped, validationMessages);
 

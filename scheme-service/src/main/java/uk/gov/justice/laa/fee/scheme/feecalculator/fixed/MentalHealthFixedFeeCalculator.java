@@ -104,6 +104,7 @@ public class MentalHealthFixedFeeCalculator implements FeeCalculator {
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .disbursementVatAmount(toDouble(disbursementVatAmount))
+        .requestedDisbursementVatAmount(toDouble(requestedDisbursementVatAmount))
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .boltOnFeeDetails(filterBoltOnFeeDetails(boltOnFeeDetails))
         .build();

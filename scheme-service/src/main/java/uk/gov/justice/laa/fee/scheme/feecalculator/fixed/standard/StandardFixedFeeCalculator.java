@@ -55,13 +55,14 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
     // Step 5: get Disbursements
     BigDecimal netDisbursementAmount =
         toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    BigDecimal disbursementVatAmount =
+    BigDecimal calculatedDisbursementVatAmount =
         calculateDisbursementVat(feeCalculationRequest, vatRatesService, validationMessages);
+    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
     // Step 6: calculate Total Amount
     BigDecimal totalAmount =
         calculateTotalAmount(
-            fixedFeeAmount, calculatedVatAmount, netDisbursementAmount, disbursementVatAmount);
+            fixedFeeAmount, calculatedVatAmount, netDisbursementAmount, calculatedDisbursementVatAmount);
 
     // Step 7: check if escaped, if eligible
     boolean isEscaped = false;
@@ -69,18 +70,19 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
       isEscaped = handleEscapeCase(feeCalculationRequest, feeEntity, validationMessages);
     }
 
-    //Step 8: build FeeCalculation
-    FeeCalculation feeCalculation = FeeCalculation.builder()
-        .totalAmount(toDouble(totalAmount))
-        .vatIndicator(vatIndicator)
-        .vatRateApplied(toDoubleOrNull(vatRate))
-        .calculatedVatAmount(toDouble(calculatedVatAmount))
-        .disbursementAmount(toDoubleOrNull(netDisbursementAmount))
-        .requestedNetDisbursementAmount(toDoubleOrNull(netDisbursementAmount))
-        .disbursementVatAmount(toDoubleOrNull(disbursementVatAmount))
-        .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
-        .fixedFeeAmount(toDouble(fixedFeeAmount))
-        .build();
+    // Step 8: build FeeCalculation
+    FeeCalculation feeCalculation =
+        FeeCalculation.builder()
+            .totalAmount(toDouble(totalAmount))
+            .vatIndicator(vatIndicator)
+            .vatRateApplied(toDoubleOrNull(vatRate))
+            .calculatedVatAmount(toDouble(calculatedVatAmount))
+            .disbursementAmount(toDoubleOrNull(netDisbursementAmount))
+            .requestedNetDisbursementAmount(toDoubleOrNull(netDisbursementAmount))
+            .disbursementVatAmount(toDoubleOrNull(calculatedDisbursementVatAmount))
+            .requestedDisbursementVatAmount(toDoubleOrNull(disbursementVatAmount))
+            .fixedFeeAmount(toDouble(fixedFeeAmount))
+            .build();
 
     // step 9: build response
     log.info("Build fee calculation response");
