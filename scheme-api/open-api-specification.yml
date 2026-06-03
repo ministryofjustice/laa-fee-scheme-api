@@ -337,7 +337,7 @@ components:
         requestedDisbursementVatAmount:
           type: number
           format: double
-          description: "The disbursement Vat amount as originally requested."
+          description: "The requested disbursement Vat amount."
         hourlyTotalAmount:
           type: number
           format: double
