@@ -88,14 +88,14 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
     // Calculate disbursed vat amount
     LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
     BigDecimal disbursementVatRate = vatRatesService.getVatRateForDate(caseConcludedDate, true);
-    disbursementVatAmount =
+    BigDecimal calculatedDisbursementVatAmount =
         calculateDisbursementVatAmount(
             netDisbursementAmount, disbursementVatAmount, disbursementVatRate, validationMessages);
 
     // Calculate total amount
     BigDecimal totalAmount =
         calculateTotalAmount(
-            feeTotal, calculatedVatAmount, netDisbursementAmount, disbursementVatAmount);
+            feeTotal, calculatedVatAmount, netDisbursementAmount, calculatedDisbursementVatAmount);
 
     FeeCalculation feeCalculation =
         FeeCalculation.builder()
@@ -106,7 +106,8 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
             .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
             // disbursement not capped, so requested and calculated will be same
             .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-            .disbursementVatAmount(toDouble(disbursementVatAmount))
+            .disbursementVatAmount(toDouble(calculatedDisbursementVatAmount))
+            .requestedDisbursementVatAmount(toDouble(disbursementVatAmount))
             .hourlyTotalAmount(toDouble(feeTotal))
             .netCostOfCounselAmount(feeCalculationRequest.getNetCostOfCounsel())
             .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())

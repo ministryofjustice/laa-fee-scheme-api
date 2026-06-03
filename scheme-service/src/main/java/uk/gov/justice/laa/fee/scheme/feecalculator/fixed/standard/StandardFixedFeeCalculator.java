@@ -55,13 +55,14 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
     // Step 5: get Disbursements
     BigDecimal netDisbursementAmount =
         toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    BigDecimal disbursementVatAmount =
+    BigDecimal calculatedDisbursementVatAmount =
         calculateDisbursementVat(feeCalculationRequest, vatRatesService, validationMessages);
+    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
     // Step 6: calculate Total Amount
     BigDecimal totalAmount =
         calculateTotalAmount(
-            fixedFeeAmount, calculatedVatAmount, netDisbursementAmount, disbursementVatAmount);
+            fixedFeeAmount, calculatedVatAmount, netDisbursementAmount, calculatedDisbursementVatAmount);
 
     // Step 7: check if escaped, if eligible
     boolean isEscaped = false;
@@ -78,7 +79,8 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
             .calculatedVatAmount(toDouble(calculatedVatAmount))
             .disbursementAmount(toDoubleOrNull(netDisbursementAmount))
             .requestedNetDisbursementAmount(toDoubleOrNull(netDisbursementAmount))
-            .disbursementVatAmount(toDoubleOrNull(disbursementVatAmount))
+            .disbursementVatAmount(toDoubleOrNull(calculatedDisbursementVatAmount))
+            .requestedDisbursementVatAmount(toDoubleOrNull(disbursementVatAmount))
             .fixedFeeAmount(toDouble(fixedFeeAmount))
             .build();
 

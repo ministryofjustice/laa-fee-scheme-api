@@ -159,6 +159,7 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementAmount(129.45)
         .requestedNetDisbursementAmount(129.45)
         .disbursementVatAmount(25.89)
+        .requestedDisbursementVatAmount(25.89)
         .fixedFeeAmount(263.00)
         .calculatedVatAmount(52.60)
         .build();

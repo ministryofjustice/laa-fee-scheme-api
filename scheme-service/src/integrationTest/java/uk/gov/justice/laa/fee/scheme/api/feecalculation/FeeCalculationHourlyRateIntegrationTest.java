@@ -188,6 +188,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
             "disbursementVatAmount": 20.04,
+            "requestedDisbursementVatAmount": 20.04,
             "hourlyTotalAmount": 318.25,
             "netCostOfCounselAmount": 79.19,
             "netProfitCostsAmount": 239.06,
