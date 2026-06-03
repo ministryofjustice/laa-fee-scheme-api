@@ -443,6 +443,37 @@ class CrimeFeeValidationServiceTest {
   }
 
 
+  @ParameterizedTest
+  @CsvSource({"PROH", "PROH1", "PROH2"})
+  void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndOnlyUfnSupplied_shouldReturnValidResponse(String feeCode) {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode(feeCode)
+        .representationOrderDate(null)
+        .uniqueFileNumber("010525/456")
+        .vatIndicator(Boolean.TRUE)
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2022")
+        .validFrom(LocalDate.of(2022, 10, 1)).build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode(feeCode)
+        .feeScheme(feeSchemesEntity)
+        .fixedFee(new BigDecimal("200"))
+        .categoryType(ADVOCACY_APPEALS_REVIEWS)
+        .feeType(FeeType.FIXED).build();
+
+    List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+    FeeEntity result = crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest);
+
+    assertThat(result).isNotNull();
+    assertThat(result.getFeeCode()).isEqualTo(feeCode);
+    assertThat(result.getFeeScheme().getSchemeCode()).isEqualTo("MAGS_COURT_FS2022");
+  }
+
   @Test
   void getValidFeeEntity_whenAdvocacyAssistanceFeeCodeAndRepOrderDateSupplied_shouldReturnValidResponse() {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()

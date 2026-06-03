@@ -451,6 +451,34 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
   }
 
   @Test
+  void calculateFee_whenNetProfitCostsAndNetDisbursementAmountAreNull_shouldReturnNullAmounts() {
+    mockVatRatesService(false);
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("IA100")
+        .startDate(LocalDate.of(2025, 5, 11))
+        .vatIndicator(false)
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("IA100")
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
+        .categoryType(IMMIGRATION_ASYLUM)
+        .feeType(HOURLY)
+        .totalLimit(new BigDecimal("100.00"))
+        .build();
+
+    FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    assertThat(result).isNotNull();
+    FeeCalculation feeCalculation = result.getFeeCalculation();
+    assertThat(feeCalculation.getDisbursementAmount()).isNull();
+    assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isNull();
+    assertThat(feeCalculation.getNetProfitCostsAmount()).isNull();
+    assertThat(feeCalculation.getRequestedNetProfitCostsAmount()).isNull();
+  }
+
+  @Test
   void getSupportedCategories_shouldReturnEmptySet() {
     Set<CategoryType> result = immigrationAsylumHourlyRateCalculator.getSupportedCategories();
 
