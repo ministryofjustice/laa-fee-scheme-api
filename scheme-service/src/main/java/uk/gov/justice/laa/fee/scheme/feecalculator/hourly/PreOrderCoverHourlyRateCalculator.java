@@ -77,9 +77,10 @@ public class PreOrderCoverHourlyRateCalculator implements FeeCalculator {
     BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatIndicator);
     BigDecimal calculatedVatAmount = calculateVatAmount(profitAndAdditionalCosts, vatRate);
 
-    // Validate and cap disbursement VAT
-    BigDecimal disbursementVatAmount = validateAndCapDisbursementVat(
-        requestedNetDisbursementAmount, requestedNetDisbursementVatAmount, vatRate, validationMessages);
+    // Validate and cap disbursement VAT (only when VAT applies)
+    BigDecimal disbursementVatAmount = Boolean.TRUE.equals(vatIndicator)
+        ? validateAndCapDisbursementVat(requestedNetDisbursementAmount, requestedNetDisbursementVatAmount, vatRate, validationMessages)
+        : requestedNetDisbursementVatAmount;
 
     BigDecimal totalAmount = calculateTotalAmount(profitAndAdditionalCosts,
         calculatedVatAmount, requestedNetDisbursementAmount, disbursementVatAmount);

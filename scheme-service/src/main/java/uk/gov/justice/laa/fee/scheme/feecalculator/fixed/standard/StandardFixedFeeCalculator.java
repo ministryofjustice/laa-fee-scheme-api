@@ -57,10 +57,11 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal requestedDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    //Step 5a: validate and cap disbursement VAT
+    //Step 5a: validate and cap disbursement VAT (only when VAT applies)
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    BigDecimal disbursementVatAmount = validateAndCapDisbursementVat(
-        netDisbursementAmount, requestedDisbursementVatAmount, vatRate, validationMessages);
+    BigDecimal disbursementVatAmount = Boolean.TRUE.equals(vatIndicator)
+        ? validateAndCapDisbursementVat(netDisbursementAmount, requestedDisbursementVatAmount, vatRate, validationMessages)
+        : requestedDisbursementVatAmount;
 
     //Step 6: calculate Total Amount
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount, netDisbursementAmount,

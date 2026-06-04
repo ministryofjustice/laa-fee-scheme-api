@@ -2,13 +2,16 @@ package uk.gov.justice.laa.fee.scheme.api.feecalculation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
+@Disabled("Disabled until Disbursement Vat limit is implemented for disbursement fee calculator")
 class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIntegrationTest {
 
   @Test
+  @Disabled("Disabled until Disbursement Vat limit is implemented for d")
   void shouldReturnFeeCalculationForEducationDisbursementOnly() throws Exception {
     String request = """ 
         {

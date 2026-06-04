@@ -69,9 +69,10 @@ public class AdviceAssistanceAdvocacyHourlyRateCalculator implements FeeCalculat
     BigDecimal vatRate = vatRatesService.getVatRateForDate(caseConcludedDate, vatIndicator);
     BigDecimal calculatedVatAmount = calculateVatAmount(profitAndAdditionalCosts, vatRate);
 
-    // Validate and cap disbursement VAT
-    BigDecimal disbursementVatAmount = validateAndCapDisbursementVat(
-        requestedNetDisbursementAmount, requestedNetDisbursementVatAmount, vatRate, validationMessages);
+    // Validate and cap disbursement VAT (only when VAT applies)
+    BigDecimal disbursementVatAmount = Boolean.TRUE.equals(vatIndicator)
+        ? validateAndCapDisbursementVat(requestedNetDisbursementAmount, requestedNetDisbursementVatAmount, vatRate, validationMessages)
+        : requestedNetDisbursementVatAmount;
 
     // Calculate total amount
     BigDecimal totalAmount = calculateTotalAmount(profitAndAdditionalCosts,

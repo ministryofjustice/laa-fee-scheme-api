@@ -19,15 +19,13 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
-import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
-class ImmigrationAsylumDisbursementOnlyCalculatorTest extends BaseFeeCalculatorTest {
-
+class ImmigrationAsylumDisbursementOnlyCalculatorTest {
 
   @InjectMocks
   ImmigrationAsylumDisbursementOnlyCalculator immigrationAsylumDisbursementOnlyCalculator;
@@ -74,8 +72,6 @@ class ImmigrationAsylumDisbursementOnlyCalculatorTest extends BaseFeeCalculatorT
       boolean hasWarning
   ) {
 
-    mockVatRatesService(false); // vatIndicator not set → rate=0 → cap skipped
-
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .claimId("claim_123")
@@ -110,7 +106,6 @@ class ImmigrationAsylumDisbursementOnlyCalculatorTest extends BaseFeeCalculatorT
         .disbursementAmount(netDisbursementAmount)
         .requestedNetDisbursementAmount(requestedNetDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)
-        .requestedDisbursementVatAmount(disbursementVatAmount)
         .build();
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()

@@ -64,10 +64,11 @@ public class UndesignatedCourtFixedFeeCalculator implements FeeCalculator {
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal requestedDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    // Validate and cap disbursement VAT
+    // Validate and cap disbursement VAT (only when VAT applies)
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    BigDecimal disbursementVatAmount = validateAndCapDisbursementVat(
-        requestedNetDisbursementAmount, requestedDisbursementVatAmount, vatRate, validationMessages);
+    BigDecimal disbursementVatAmount = Boolean.TRUE.equals(vatIndicator)
+        ? validateAndCapDisbursementVat(requestedNetDisbursementAmount, requestedDisbursementVatAmount, vatRate, validationMessages)
+        : requestedDisbursementVatAmount;
 
     // Calculate total amount
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAndAdditionalCosts, calculatedVatAmount,

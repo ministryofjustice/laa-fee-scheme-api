@@ -172,7 +172,6 @@ class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(vat);
     assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(100.11);
     assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(100.11);
-    // vatIndicator=true: 20.22 capped to 20.02 (20% of 100.11); vatIndicator=false: rate=0, cap skipped
     assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(vatIndicator ? 20.02 : 20.22);
     assertThat(feeCalculation.getRequestedDisbursementVatAmount()).isEqualTo(20.22);
     assertThat(feeCalculation.getFixedFeeAmount()).isEqualTo(250);
