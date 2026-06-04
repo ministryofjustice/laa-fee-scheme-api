@@ -32,9 +32,9 @@ class EducationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   @ParameterizedTest
   @CsvSource({
       "false, 200.00, 370.33, 0",  // Under escape threshold (No VAT)
-      "true, 200.00, 420.33, 50",  // Under escape threshold limit (VAT applied)
+      "true, 200.00, 420.13, 50",  // Under escape threshold limit (VAT applied)
       "false, 500.00, 370.33, 0", // Equal to escape threshold limit (No VAT)
-      "true, 500.00, 420.33, 50" // Equal to escape threshold limit (VAT applied)
+      "true, 500.00, 420.13, 50" // Equal to escape threshold limit (VAT applied)
   })
   void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double netProfitCosts,
                                                     double expectedTotal, double expectedVat) {
@@ -52,7 +52,7 @@ class EducationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   @ParameterizedTest
   @CsvSource({
       "false, 501.00, 370.33, 0", // Over escape threshold limit (No VAT)
-      "true, 501.00, 420.33, 50" // Over escape threshold limit (VAT applied)
+      "true, 501.00, 420.13, 50" // Over escape threshold limit (VAT applied)
   })
   void calculate_shouldReturnFeeCalculationResponseWithWarning(boolean vatIndicator, double netProfitCosts,
                                                                double expectedTotal, double expectedVat) {
@@ -66,13 +66,22 @@ class EducationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, true);
 
-    ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
+    ValidationMessagesInner escapeMessage = ValidationMessagesInner.builder()
         .message(WarningType.WARN_EDUCATION_ESCAPE_THRESHOLD.getMessage())
         .code(WarningType.WARN_EDUCATION_ESCAPE_THRESHOLD.getCode())
         .type(WARNING)
         .build();
 
-    assertThat(result.getValidationMessages()).containsExactly(validationMessage);
+    if (vatIndicator) {
+      ValidationMessagesInner vatCapMessage = ValidationMessagesInner.builder()
+          .message(WarningType.WARN_DISBURSEMENT_VAT_EXCEEDED.getMessage())
+          .code(WarningType.WARN_DISBURSEMENT_VAT_EXCEEDED.getCode())
+          .type(WARNING)
+          .build();
+      assertThat(result.getValidationMessages()).containsExactly(vatCapMessage, escapeMessage);
+    } else {
+      assertThat(result.getValidationMessages()).containsExactly(escapeMessage);
+    }
   }
 
   private FeeCalculationRequest buildRequest(boolean vatIndicator, double netProfitCosts) {
@@ -113,7 +122,9 @@ class EducationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(vat);
     assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(100.11);
     assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(100.11);
-    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.22);
+    // vatIndicator=true: 20.22 capped to 20.02 (20% of 100.11); vatIndicator=false: rate=0, cap skipped
+    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(vatIndicator ? 20.02 : 20.22);
+    assertThat(feeCalculation.getRequestedDisbursementVatAmount()).isEqualTo(20.22);
     assertThat(feeCalculation.getFixedFeeAmount()).isEqualTo(250);
   }
 

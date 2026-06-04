@@ -13,17 +13,22 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.exception.CaseConcludedDateRequiredException;
 import uk.gov.justice.laa.fee.scheme.exception.StartDateRequiredException;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
+
 
 class FeeCalculationUtilTest {
 
@@ -213,6 +218,37 @@ class FeeCalculationUtilTest {
     assertThrows(StartDateRequiredException.class, () ->
         FeeCalculationUtil.getFeeClaimStartDate(MEDIATION, request)
     );
+  }
+
+  @Test
+  void validateAndCapDisbursementVat_whenSubmittedAmountWithinLimit_returnsOriginalAmount() {
+    List<ValidationMessagesInner> messages = new ArrayList<>();
+    BigDecimal result = FeeCalculationUtil.validateAndCapDisbursementVat(
+        new BigDecimal("100.00"), new BigDecimal("20.00"), new BigDecimal("20.00"), messages);
+
+    assertThat(result).isEqualTo(new BigDecimal("20.00"));
+    assertThat(messages).isEmpty();
+  }
+
+  @Test
+  void validateAndCapDisbursementVat_whenSubmittedAmountExceedsLimit_capsToMaxAndAddsWarning() {
+    List<ValidationMessagesInner> messages = new ArrayList<>();
+    BigDecimal result = FeeCalculationUtil.validateAndCapDisbursementVat(
+        new BigDecimal("100.00"), new BigDecimal("30.00"), new BigDecimal("20.00"), messages);
+
+    assertThat(result).isEqualTo(new BigDecimal("20.00"));
+    assertThat(messages).hasSize(1);
+    assertThat(messages.get(0).getCode()).isEqualTo(WarningType.WARN_DISBURSEMENT_VAT_EXCEEDED.getCode());
+  }
+
+  @Test
+  void validateAndCapDisbursementVat_whenSubmittedAmountEqualsLimit_returnsOriginalAmount() {
+    List<ValidationMessagesInner> messages = new ArrayList<>();
+    BigDecimal result = FeeCalculationUtil.validateAndCapDisbursementVat(
+        new BigDecimal("100.00"), new BigDecimal("20.00"), new BigDecimal("20.00"), messages);
+
+    assertThat(result).isEqualTo(new BigDecimal("20.00"));
+    assertThat(messages).isEmpty();
   }
 
   @Test

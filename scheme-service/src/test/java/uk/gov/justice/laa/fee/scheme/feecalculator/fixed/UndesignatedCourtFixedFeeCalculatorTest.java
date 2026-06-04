@@ -102,6 +102,7 @@ class UndesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           .disbursementAmount(request.getNetDisbursementAmount())
           .requestedNetDisbursementAmount(request.getNetDisbursementAmount())
           .disbursementVatAmount(request.getDisbursementVatAmount())
+          .requestedDisbursementVatAmount(request.getDisbursementVatAmount())
           .netTravelCostsAmount(expectedNetTravel)
           .netWaitingCostsAmount(expectedNetWaiting)
           .fixedFeeAmount(fixedFee)

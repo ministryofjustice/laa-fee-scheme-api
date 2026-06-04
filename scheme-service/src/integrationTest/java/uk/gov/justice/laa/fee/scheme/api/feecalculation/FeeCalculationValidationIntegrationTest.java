@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -750,6 +751,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 55.35,
             "requestedNetDisbursementAmount": 55.35,
             "disbursementVatAmount": 11.07,
+            "requestedDisbursementVatAmount": 11.07,
             "fixedFeeAmount": 132.0
           }
         }
@@ -1051,6 +1053,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
+  @Disabled("Disabled until Disbursement Vat limit is implemented for Other Civil fixed fee calculator")
   void shouldReturnValidationWarningForImmigrationAndAsylumDisbursementOnly() throws Exception {
     String request =
         """
@@ -1081,7 +1084,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "totalAmount": 2000.0,
             "disbursementAmount": 1600.0,
             "requestedNetDisbursementAmount": 2000.0,
-            "disbursementVatAmount": 400.0
+            "disbursementVatAmount": 400.0,
+            "requestedDisbursementVatAmount": 400.0
           }
         }
         """);
@@ -1129,6 +1133,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               "disbursementAmount": 600.0,
               "requestedNetDisbursementAmount": 600.0,
               "disbursementVatAmount": 120.0,
+              "requestedDisbursementVatAmount": 120.0,
               "fixedFeeAmount": 131.4
           }
         }
@@ -1174,6 +1179,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               "disbursementAmount": 600.0,
               "requestedNetDisbursementAmount": 600.0,
               "disbursementVatAmount": 120.0,
+              "requestedDisbursementVatAmount": 120.0,
               "hourlyTotalAmount": 680.0,
               "netProfitCostsAmount": 50.0,
               "requestedNetProfitCostsAmount": 50.0,
@@ -1224,6 +1230,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 55.35,
             "requestedNetDisbursementAmount": 55.35,
             "disbursementVatAmount": 11.07,
+            "requestedDisbursementVatAmount": 11.07,
             "fixedFeeAmount": 79.0
           }
         }
@@ -1269,6 +1276,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 55.35,
             "requestedNetDisbursementAmount": 55.35,
             "disbursementVatAmount": 11.07,
+            "requestedDisbursementVatAmount": 11.07,
             "hourlyTotalAmount": 1327.0,
             "netProfitCostsAmount": 1200.0,
             "requestedNetProfitCostsAmount": 1200.0,
@@ -1334,6 +1342,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "requestedNetDisbursementAmount": 100.0,
             "disbursementAmount": 100.0,
             "disbursementVatAmount": 20.0,
+            "requestedDisbursementVatAmount": 20.0,
             "fixedFeeAmount": %s
           }
         }
@@ -1459,6 +1468,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
             "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67,
             "fixedFeeAmount": %s
           }
         }

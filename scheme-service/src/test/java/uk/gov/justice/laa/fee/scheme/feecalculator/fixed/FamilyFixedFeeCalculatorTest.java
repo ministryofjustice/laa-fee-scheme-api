@@ -36,8 +36,8 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   @ParameterizedTest
   @CsvSource(value = {
       "false, 500, 170.33", // No VAT
-      "true, 500, 180.33", // VAT applied
-      "true, null, 180.33" // No escape threshold limit
+      "true, 500, 180.13", // VAT applied
+      "true, null, 180.13" // No escape threshold limit
   }, nullValues = "null")
   void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, String escapeThreshold, double expectedTotal) {
     mockVatRatesService(vatIndicator);
@@ -107,6 +107,7 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementAmount(129.45)
         .requestedNetDisbursementAmount(129.45)
         .disbursementVatAmount(25.89)
+        .requestedDisbursementVatAmount(25.89)
         .fixedFeeAmount(263.00)
         .calculatedVatAmount(52.60)
         .build();

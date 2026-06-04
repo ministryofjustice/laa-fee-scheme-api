@@ -198,6 +198,7 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementAmount(inputDisbursementAmount)
         .requestedNetDisbursementAmount(inputDisbursementAmount)
         .disbursementVatAmount(inputDisbursementVatAmount)
+        .requestedDisbursementVatAmount(inputDisbursementVatAmount)
         .calculatedVatAmount(expectedCalculatedVat)
         .netProfitCostsAmount(inputNetProfitCosts)
         .requestedNetProfitCostsAmount(inputNetProfitCosts)
@@ -217,6 +218,7 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .usingRecursiveComparison()
         .isEqualTo(expectedResponse);
   }
+
 
   @ParameterizedTest
   @MethodSource("testPoliceOtherData")
@@ -269,6 +271,7 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementAmount(inputDisbursementAmount)
         .requestedNetDisbursementAmount(inputDisbursementAmount)
         .disbursementVatAmount(inputDisbursementVatAmount)
+        .requestedDisbursementVatAmount(inputDisbursementVatAmount)
         .calculatedVatAmount(expectedCalculatedVat)
         .netProfitCostsAmount(inputNetProfitCosts)
         .requestedNetProfitCostsAmount(inputNetProfitCosts)
