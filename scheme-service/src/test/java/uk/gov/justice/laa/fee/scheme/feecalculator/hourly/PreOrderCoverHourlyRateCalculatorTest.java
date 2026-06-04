@@ -8,7 +8,9 @@ import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -17,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -29,6 +32,12 @@ class PreOrderCoverHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
   @InjectMocks
   PreOrderCoverHourlyRateCalculator preOrderCoverHourlyRateCalculator;
 
+  @Test
+  void getSupportedCategories_shouldReturnPreOrderCover() {
+    Set<CategoryType> result = preOrderCoverHourlyRateCalculator.getSupportedCategories();
+
+    assertThat(result).containsExactly(PRE_ORDER_COVER);
+  }
 
   public static Stream<Arguments> testData() {
     return Stream.of(

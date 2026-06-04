@@ -2,6 +2,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 
 import java.util.Set;
@@ -19,6 +20,7 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.disbursement.ImmigrationAsylu
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.ImmigrationAsylumFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.hourly.ImmigrationAsylumHourlyRateCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 
 @ExtendWith(MockitoExtension.class)
 class ImmigrationAsylumFeeCalculatorTest {
@@ -47,8 +49,21 @@ class ImmigrationAsylumFeeCalculatorTest {
         .categoryType(categoryType)
         .feeType(feeType)
         .build();
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder().feeCode("STUB").build();
 
-    immigrationAsylumFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+    switch (feeType) {
+      case FIXED -> when(immigrationAsylumFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity))
+          .thenReturn(expectedResponse);
+      case HOURLY -> when(immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity))
+          .thenReturn(expectedResponse);
+      case DISB_ONLY -> when(immigrationAsylumDisbursementOnlyCalculator.calculate(feeCalculationRequest, feeEntity))
+          .thenReturn(expectedResponse);
+      default -> throw new IllegalArgumentException("Unsupported fee type: " + feeType);
+    }
+
+    FeeCalculationResponse actual = immigrationAsylumFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    assertThat(actual).isSameAs(expectedResponse);
 
     switch (feeType) {
       case FIXED -> verify(immigrationAsylumFixedFeeCalculator).calculate(feeCalculationRequest, feeEntity);

@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.fee.scheme.enums.CaseType.CIVIL;
@@ -21,6 +22,7 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculatorFactory;
 import uk.gov.justice.laa.fee.scheme.feecalculator.ImmigrationAsylumFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard.PrisonLawFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.service.validation.CivilFeeValidationService;
 import uk.gov.justice.laa.fee.scheme.service.validation.CrimeFeeValidationService;
 
@@ -68,13 +70,17 @@ class FeeCalculationServiceTest {
         .escapeThresholdLimit(new BigDecimal("700.00"))
         .build();
 
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder().feeCode("FEE123").build();
+
     when(feeDetailsService.getCaseType(feeCalculationRequest)).thenReturn(CIVIL);
     when(feeDataService.getFeeEntities("FEE123")).thenReturn(List.of(feeEntity));
     when(civilFeeValidationService.getValidFeeEntity(List.of(feeEntity), feeCalculationRequest)).thenReturn(feeEntity);
     when(feeCalculatorFactory.getCalculator(IMMIGRATION_ASYLUM)).thenReturn(immigrationCalculator);
+    when(immigrationCalculator.calculate(feeCalculationRequest, feeEntity)).thenReturn(expectedResponse);
 
-    feeCalculationService.calculateFee(feeCalculationRequest);
+    FeeCalculationResponse actual = feeCalculationService.calculateFee(feeCalculationRequest);
 
+    assertThat(actual).isSameAs(expectedResponse);
     verify(civilFeeValidationService).getValidFeeEntity(List.of(feeEntity), feeCalculationRequest);
     verify(feeCalculatorFactory).getCalculator(IMMIGRATION_ASYLUM);
     verify(immigrationCalculator).calculate(feeCalculationRequest, feeEntity);

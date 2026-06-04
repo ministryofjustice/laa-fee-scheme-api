@@ -9,7 +9,9 @@ import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEn
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -18,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -29,6 +32,13 @@ class AdvocacyAppealsReviewsHourlyRateCalculatorTest extends BaseFeeCalculatorTe
 
   @InjectMocks
   AdvocacyAppealsReviewsHourlyRateCalculator calculator;
+
+  @Test
+  void getSupportedCategories_shouldReturnAdvocacyAppealsReviews() {
+    Set<CategoryType> result = calculator.getSupportedCategories();
+
+    assertThat(result).containsExactly(ADVOCACY_APPEALS_REVIEWS);
+  }
 
   public static Stream<Arguments> testData() {
     return Stream.of(

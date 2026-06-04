@@ -62,6 +62,8 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("COM");
+    assertThat(result.getEscapeCaseFlag()).isFalse();
+    assertThat(result.getValidationMessages()).isEmpty();
     assertThat(result.getFeeCalculation()).isNotNull();
     assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
   }
