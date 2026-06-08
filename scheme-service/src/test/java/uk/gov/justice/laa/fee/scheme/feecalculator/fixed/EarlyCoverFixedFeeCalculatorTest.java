@@ -3,6 +3,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +42,7 @@ class EarlyCoverFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .claimId("claim_123")
         .uniqueFileNumber("121222/452")
         .vatIndicator(vatIndicator)
+        .caseConcludedDate(LocalDate.of(2023, 1, 30))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
