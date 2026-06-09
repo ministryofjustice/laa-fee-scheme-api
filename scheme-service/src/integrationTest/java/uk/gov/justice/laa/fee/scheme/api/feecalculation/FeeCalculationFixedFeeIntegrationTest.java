@@ -85,6 +85,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
             "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67,
             "fixedFeeAmount": %s
           }
         }
@@ -161,6 +162,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
             "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67,
             "fixedFeeAmount": 132.0
           }
         }
@@ -260,7 +262,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "claimId": "claim_123",
           "startDate": "2019-09-30",
           "netDisbursementAmount": 100.21,
-          "disbursementVatAmount": 20.12,
+          "disbursementVatAmount": 20.04,
           "vatIndicator": true,
           "numberOfMediationSessions": 1,
           "caseConcludedDate": "2020-12-06"
@@ -273,13 +275,14 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "MED_FS2013",
           "claimId": "claim_123",
           "feeCalculation": {
-            "totalAmount": 321.93,
+            "totalAmount": 321.85,
             "vatIndicator": true,
             "vatRateApplied": 20.00,
             "calculatedVatAmount": 33.60,
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
-            "disbursementVatAmount": 20.12,
+            "disbursementVatAmount": 20.04,
+            "requestedDisbursementVatAmount": 20.04,
             "fixedFeeAmount": 168.00
           }
         }
@@ -294,7 +297,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "claimId": "claim_123",
           "startDate": "2021-11-05",
           "netDisbursementAmount": 100.21,
-          "disbursementVatAmount": 20.12,
+          "disbursementVatAmount": 20.04,
           "vatIndicator": true,
           "boltOns": {
             "boltOnAdjournedHearing": 3.00
@@ -310,13 +313,14 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "claimId": "claim_123",
           "escapeCaseFlag": false,
           "feeCalculation": {
-            "totalAmount": 1081.53,
+            "totalAmount": 1081.45,
             "vatIndicator": true,
             "vatRateApplied": 20.00,
             "calculatedVatAmount": 160.20,
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
-            "disbursementVatAmount": 20.12,
+            "disbursementVatAmount": 20.04,
+            "requestedDisbursementVatAmount": 20.04,
             "fixedFeeAmount": 450.00,
             "boltOnFeeDetails": {
               "boltOnTotalFeeAmount": 351.00,
@@ -357,6 +361,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
             "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67,
             "fixedFeeAmount": 272.0
           }
         }
@@ -407,6 +412,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
             "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67,
             "fixedFeeAmount": %s
           }
         }
@@ -529,6 +535,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
             "disbursementAmount": 100.0,
             "requestedNetDisbursementAmount": 100.0,
             "disbursementVatAmount": 20.0,
+            "requestedDisbursementVatAmount": 20.0,
             "fixedFeeAmount": %s
           }
         }

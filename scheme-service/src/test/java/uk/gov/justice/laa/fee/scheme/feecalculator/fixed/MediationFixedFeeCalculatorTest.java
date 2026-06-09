@@ -4,9 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MEDIATION;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_MEDIATION_SESSIONS;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -19,11 +21,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
 class MediationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
@@ -33,22 +37,43 @@ class MediationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   public static Stream<Arguments> testData() {
     return Stream.of(
-        arguments("1 mediation session, VAT applied", "MDAS2B", true, 1, 130.65, null,
-            50.5, 20.15, 50, 10),
-        arguments("1 mediation session, no VAT", "MDAS2B", false, 1, 120.65, null,
-            50.5, 20.15, 50, 0),
-        arguments("2 mediation sessions, VAT applied", "MDAS2B", true, 2, 190.65, null,
-            50.5, 20.15, 100, 20),
-        arguments("2 mediation sessions, no VAT", "MDAS2B", false, 2, 170.65, null,
-            50.5, 20.15, 100, 0),
-        arguments("More than 1 mediation session, VAT applied", "MDAS2B", true, 3, 190.65, null,
-            50.5, 20.15, 100, 20),
-        arguments("More than 1 mediation session, no VAT", "MDAS2B", false, 3, 170.65, null,
-            50.5, 20.15, 100, 0),
-        arguments("No mediation sessions, VAT applied", "ASSA", true, null, 161.25, new BigDecimal("75.50"),
-            50.5, 20.15, 75.5, 15.1),
-        arguments("No mediation sessions, no VAT", "ASSA", false, null, 146.15, new BigDecimal("75.50"),
-            50.5, 20.15, 75.5, 0)
+        arguments("1 mediation session, VAT applied", "MDAS2B", true, 1, 120.6, null,
+            50.5, 10.1, 50, 10),
+        arguments("1 mediation session, no VAT", "MDAS2B", false, 1, 110.6, null,
+            50.5, 10.1, 50, 0),
+        arguments("2 mediation sessions, VAT applied", "MDAS2B", true, 2, 180.6, null,
+            50.5, 10.1, 100, 20),
+        arguments("2 mediation sessions, no VAT", "MDAS2B", false, 2, 160.6, null,
+            50.5, 10.1, 100, 0),
+        arguments("More than 1 mediation session, VAT applied", "MDAS2B", true, 3, 180.6, null,
+            50.5, 10.1, 100, 20),
+        arguments("More than 1 mediation session, no VAT", "MDAS2B", false, 3, 160.6, null,
+            50.5, 10.1, 100, 0),
+        arguments("No mediation sessions, VAT applied", "ASSA", true, null, 151.2, new BigDecimal("75.50"),
+            50.5, 10.1, 75.5, 15.1),
+        arguments("No mediation sessions, no VAT", "ASSA", false, null, 136.1, new BigDecimal("75.50"),
+            50.5, 10.1, 75.5, 0)
+    );
+  }
+
+  public static Stream<Arguments> disbursementTestData() {
+    return Stream.of(
+            arguments("1 mediation session, VAT applied", "MDAS2B", true, 1, 120.6, null,
+                    50.5, 10.1, 50, 10),
+            arguments("1 mediation session, no VAT", "MDAS2B", false, 1, 110.6, null,
+                    50.5, 10.1, 50, 0),
+            arguments("2 mediation sessions, VAT applied", "MDAS2B", true, 2, 180.6, null,
+                    50.5, 10.1, 100, 20),
+            arguments("2 mediation sessions, no VAT", "MDAS2B", false, 2, 160.6, null,
+                    50.5, 10.1, 100, 0),
+            arguments("More than 1 mediation session, VAT applied", "MDAS2B", true, 3, 180.6, null,
+                    50.5, 10.1, 100, 20),
+            arguments("More than 1 mediation session, no VAT", "MDAS2B", false, 3, 160.6, null,
+                    50.5, 10.1, 100, 0),
+            arguments("No mediation sessions, VAT applied", "ASSA", true, null, 151.2, new BigDecimal("75.50"),
+                    50.5, 10.1, 75.5, 15.1),
+            arguments("No mediation sessions, no VAT", "ASSA", false, null, 136.1, new BigDecimal("75.50"),
+                    50.5, 10.1, 75.5, 0)
     );
   }
 
@@ -76,13 +101,18 @@ class MediationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     mockVatRatesService(vatIndicator);
 
+    if (!vatIndicator) {
+      mockVatRatesVatIndicatorTrue();
+    }
+
     FeeCalculationRequest feeData = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .claimId("claim_123")
         .startDate(LocalDate.of(2025, 7, 29))
         .netDisbursementAmount(50.50)
-        .disbursementVatAmount(20.15)
+        .disbursementVatAmount(10.10)
         .vatIndicator(vatIndicator)
+        .caseConcludedDate(LocalDate.of(2025, 7, 29))
         .numberOfMediationSessions(numberOfMediationSessions)
         .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
@@ -106,6 +136,7 @@ class MediationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementAmount(expectedDisbursementAmount)
         .requestedNetDisbursementAmount(expectedDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)
+        .requestedDisbursementVatAmount(disbursementVatAmount)
         .fixedFeeAmount(expectedFixedFee)
         .calculatedVatAmount(expectedCalculatedVat)
         .build();
@@ -122,6 +153,81 @@ class MediationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .isEqualTo(expectedResponse);
   }
 
+  @ParameterizedTest
+  @MethodSource("disbursementTestData")
+  void getFee_whenMediation_andDisbursementVatOverLimit(
+          String description,
+          String feeCode,
+          boolean vatIndicator,
+          Integer numberOfMediationSessions,
+          double expectedTotal,
+          BigDecimal fixedFee,
+          double expectedDisbursementAmount,
+          double disbursementVatAmount,
+          double expectedFixedFee,
+          double expectedCalculatedVat
+  ) {
+
+    mockVatRatesService(vatIndicator);
+
+    if (!vatIndicator) {
+      mockVatRatesVatIndicatorTrue();
+    }
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+            .feeCode(feeCode)
+            .claimId("claim_123")
+            .startDate(LocalDate.of(2025, 7, 29))
+            .netDisbursementAmount(50.50)
+            .disbursementVatAmount(13.26)
+            .vatIndicator(vatIndicator)
+            .caseConcludedDate(LocalDate.of(2025, 7, 29))
+            .numberOfMediationSessions(numberOfMediationSessions)
+            .build();
+
+
+    FeeEntity feeEntity = FeeEntity.builder()
+            .feeCode(feeCode)
+            .feeScheme(FeeSchemesEntity.builder().schemeCode("MED_FS2013").build())
+            .fixedFee(fixedFee)
+            .mediationFeeLower(new BigDecimal("50"))
+            .mediationFeeHigher(new BigDecimal("100"))
+            .categoryType(MEDIATION)
+            .build();
+
+    FeeCalculationResponse response = mediationFeeCalculator.calculate(feeData, feeEntity);
+
+    ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
+            .message(WarningType.WARN_DISBURSEMENT_VAT_LIMIT_REACHED.getMessage())
+            .code(WarningType.WARN_DISBURSEMENT_VAT_LIMIT_REACHED.getCode())
+            .type(WARNING)
+            .build();
+
+    FeeCalculation expectedCalculation = FeeCalculation.builder()
+            .totalAmount(expectedTotal)
+            .vatIndicator(vatIndicator)
+            .vatRateApplied(vatIndicator ? 20.0 : null)
+            .disbursementAmount(expectedDisbursementAmount)
+            .requestedNetDisbursementAmount(expectedDisbursementAmount)
+            .disbursementVatAmount(disbursementVatAmount)
+            .requestedDisbursementVatAmount(feeData.getDisbursementVatAmount())
+            .fixedFeeAmount(expectedFixedFee)
+            .calculatedVatAmount(expectedCalculatedVat)
+            .build();
+
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
+            .feeCode(feeCode)
+            .schemeId("MED_FS2013")
+            .claimId("claim_123")
+            .feeCalculation(expectedCalculation)
+            .validationMessages(List.of(validationMessage))
+            .build();
+
+    assertThat(response)
+            .usingRecursiveComparison()
+            .isEqualTo(expectedResponse);
+  }
+
   @Test
   void getFee_whenMediationSessionIsNull_thenThrowsException() {
 
@@ -133,6 +239,7 @@ class MediationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementVatAmount(20.15)
         .vatIndicator(true)
         .numberOfMediationSessions(0)
+        .caseConcludedDate(LocalDate.of(2025, 7, 29))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()

@@ -3,10 +3,13 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.FAMILY;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_FAMILY_ESCAPE_THRESHOLD;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateDisbursementVatAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Component;
@@ -49,5 +52,23 @@ public class FamilyFixedFeeCalculator extends StandardFixedFeeCalculator {
     }
 
     return escaped;
+  }
+
+  @Override
+  protected BigDecimal calculateDisbursementVat(FeeCalculationRequest feeCalculationRequest,
+                                                VatRatesService vatRatesService,
+                                                List<ValidationMessagesInner> validationMessages) {
+
+    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+
+    // Calculate disbursed vat amount
+    LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
+    BigDecimal disbursementVatRate = vatRatesService.getVatRateForDate(caseConcludedDate, true);
+    disbursementVatAmount =
+            calculateDisbursementVatAmount(
+                    netDisbursementAmount, disbursementVatAmount, disbursementVatRate, validationMessages);
+
+    return disbursementVatAmount;
   }
 }

@@ -87,6 +87,7 @@ class DesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           .disbursementAmount(request.getNetDisbursementAmount())
           .requestedNetDisbursementAmount(request.getNetDisbursementAmount())
           .disbursementVatAmount(request.getDisbursementVatAmount())
+          .requestedDisbursementVatAmount(request.getDisbursementVatAmount())
           .fixedFeeAmount(fixedFee)
           .calculatedVatAmount(expectedVat)
           .build();
