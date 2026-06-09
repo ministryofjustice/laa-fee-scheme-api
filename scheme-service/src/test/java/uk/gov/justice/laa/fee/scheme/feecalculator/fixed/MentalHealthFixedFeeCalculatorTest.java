@@ -92,6 +92,7 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .vatIndicator(vatIndicator)
         .boltOns(BoltOnType.builder().boltOnAdjournedHearing(boltOnNumber).build())
         .netProfitCosts(requestedNetProfitCosts)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
   }
 
