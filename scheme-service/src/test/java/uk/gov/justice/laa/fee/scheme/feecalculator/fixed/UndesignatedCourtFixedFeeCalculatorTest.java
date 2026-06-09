@@ -81,6 +81,7 @@ class UndesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           .vatIndicator(vatIndicator)
           .netTravelCosts(requestedNetTravel)
           .netWaitingCosts(requestedNetWaiting)
+          .caseConcludedDate(LocalDate.of(2026, 1, 30))
           .build();
     }
 

@@ -138,11 +138,11 @@ class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .claimId("claim_123")
         .uniqueFileNumber("04052025/224")
         .startDate(LocalDate.of(2025, 4, 5))
-        .caseConcludedDate(LocalDate.of(2025, 5, 12))
         .vatIndicator(true)
         .netProfitCosts(501.00)
         .netDisbursementAmount(370.00)
         .disbursementVatAmount(74.00)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
@@ -171,10 +171,10 @@ class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .feeCode("CAPA")
         .claimId("claim_123")
         .startDate(LocalDate.of(2025, 4, 5))
-        .caseConcludedDate(LocalDate.of(2025, 5, 12))
         .vatIndicator(vatIndicator)
         .netProfitCosts(netProfitCosts)
         .netDisbursementAmount(100.11)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .disbursementVatAmount(20.02)
         .build();
   }

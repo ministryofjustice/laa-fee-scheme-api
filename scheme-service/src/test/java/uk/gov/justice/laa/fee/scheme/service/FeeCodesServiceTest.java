@@ -3,6 +3,7 @@ package uk.gov.justice.laa.fee.scheme.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -67,7 +68,7 @@ class FeeCodesServiceTest {
     FeeCategoryMappingEntity mapping =
         buildMapping("FEE123", "desc", FeeType.FIXED, AreaOfLawType.LEGAL_HELP, "AAP");
 
-    when(feeCategoryMappingRepository.findByCategoryOfLawTypeAreaOfLawTypeCode(any()))
+    when(feeCategoryMappingRepository.findByCategoryOfLawTypeAreaOfLawTypeCode(eq(AreaOfLawType.LEGAL_HELP)))
         .thenReturn(List.of(mapping));
 
     FeeCodesResponseV1 response = feeCodesService.getFeeCodesV1(area);

@@ -67,6 +67,8 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     assertThat(result).isNotNull();
     assertThat(result.getFeeCode()).isEqualTo("COM");
+    assertThat(result.getEscapeCaseFlag()).isFalse();
+    assertThat(result.getValidationMessages()).isEmpty();
     assertThat(result.getFeeCalculation()).isNotNull();
     assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
   }
@@ -135,11 +137,11 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .feeCode("FPB010")
         .claimId("claim_124")
         .startDate(LocalDate.of(2025, 1, 1))
-        .caseConcludedDate(LocalDate.of(2025, 5, 12))
         .vatIndicator(true)
         .netDisbursementAmount(129.45)
         .disbursementVatAmount(25.89)
         .netProfitCosts(400.00)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()

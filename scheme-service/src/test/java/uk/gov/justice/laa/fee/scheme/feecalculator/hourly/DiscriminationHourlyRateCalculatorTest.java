@@ -179,6 +179,7 @@ class DiscriminationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .vatIndicator(vatIndicator)
         .netDisbursementAmount(65.20)
         .disbursementVatAmount(13.04)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
   }
 

@@ -38,6 +38,19 @@ class DateUtilTest {
   }
 
   @Test
+  void testFiveCharInputString_shouldThrow() {
+    assertThatThrownBy(() -> DateUtil.toLocalDate("12032"))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Date string length less than 6 characters: 12032");
+  }
+
+  @Test
+  void testExactlySixCharInputString_shouldParse() {
+    LocalDate result = DateUtil.toLocalDate("120325");
+    assertThat(result).isEqualTo(LocalDate.of(2025, 3, 12));
+  }
+
+  @Test
   void testNullInputString() {
     assertThat(DateUtil.toLocalDate(null)).isNull();
   }

@@ -5,7 +5,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_PREORDER_C
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isOverUpperCostLimit;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -71,9 +71,9 @@ public class PreOrderCoverHourlyRateCalculator implements FeeCalculator {
     }
 
     // Calculate VAT if applicable
+    LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
     Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
-    LocalDate startDate = getFeeClaimStartDate(PRE_ORDER_COVER, feeCalculationRequest);
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatIndicator);
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(caseConcludedDate, vatIndicator);
     BigDecimal calculatedVatAmount = calculateVatAmount(profitAndAdditionalCosts, vatRate);
 
     BigDecimal totalAmount = calculateTotalAmount(profitAndAdditionalCosts,

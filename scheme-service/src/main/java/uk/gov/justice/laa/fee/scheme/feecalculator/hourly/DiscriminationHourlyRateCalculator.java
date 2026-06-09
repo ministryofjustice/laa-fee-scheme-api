@@ -76,9 +76,9 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
     }
 
     // Calculate VAT if applicable
-    LocalDate startDate = feeCalculationRequest.getStartDate();
+    LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
     Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatIndicator);
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(caseConcludedDate, vatIndicator);
     BigDecimal calculatedVatAmount = calculateVatAmount(feeTotal, vatRate);
 
     // Get disbursements
@@ -86,7 +86,6 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
     // Calculate disbursed vat amount
-    LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
     BigDecimal disbursementVatRate = vatRatesService.getVatRateForDate(caseConcludedDate, true);
     BigDecimal calculatedDisbursementVatAmount =
         calculateDisbursementVatAmount(

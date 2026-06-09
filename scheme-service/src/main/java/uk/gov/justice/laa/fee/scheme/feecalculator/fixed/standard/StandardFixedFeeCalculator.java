@@ -2,7 +2,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard;
 
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -22,7 +22,10 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
-/** Standard Fixed Fee Calculator. Fixed Fee plus Disbursements. */
+/**
+ * Standard Fixed Fee Calculator.
+ * Fixed Fee plus Disbursements.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public abstract class StandardFixedFeeCalculator implements FeeCalculator {
@@ -41,13 +44,12 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
     // Step 1: get Fixed Fee Amount
     BigDecimal fixedFeeAmount = defaultToZeroIfNull(feeEntity.getFixedFee());
 
-    // Step 2: get Start Date
-    LocalDate claimStartDate =
-        getFeeClaimStartDate(feeEntity.getCategoryType(), feeCalculationRequest);
+    //Step 2: get case Conclusion Date to calculate VAT if applicable
+    LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
 
     // Step 3: get VAT Rate
     Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatIndicator);
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(caseConcludedDate, vatIndicator);
 
     // Step 4: Calculate VAT Amount
     BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAmount, vatRate);
