@@ -171,7 +171,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "netCostOfCounsel": 79.19,
           "netDisbursementAmount": 100.21,
           "disbursementVatAmount": 20.04,
-          "vatIndicator": true
+          "vatIndicator": true,
           "caseConcludedDate": "2020-12-06"
         }
         """;
