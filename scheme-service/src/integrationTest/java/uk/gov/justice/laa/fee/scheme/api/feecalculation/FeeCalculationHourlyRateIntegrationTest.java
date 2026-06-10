@@ -170,7 +170,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "netProfitCosts": 239.06,
           "netCostOfCounsel": 79.19,
           "netDisbursementAmount": 100.21,
-          "disbursementVatAmount": 20.04,
+          "disbursementVatAmount": 20.12,
           "vatIndicator": true,
           "caseConcludedDate": "2020-12-06"
         }
@@ -183,14 +183,13 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "claimId": "claim_123",
           "escapeCaseFlag": false,
           "feeCalculation": {
-            "totalAmount": 502.15,
+            "totalAmount": 502.23,
             "vatIndicator": true,
             "vatRateApplied": 20.00,
             "calculatedVatAmount": 63.65,
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
-            "disbursementVatAmount": 20.04,
-            "requestedDisbursementVatAmount": 20.04,
+            "disbursementVatAmount": 20.12,
             "hourlyTotalAmount": 318.25,
             "netCostOfCounselAmount": 79.19,
             "netProfitCostsAmount": 239.06,

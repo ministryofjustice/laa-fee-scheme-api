@@ -26,136 +26,56 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 @ExtendWith(MockitoExtension.class)
 class DiscriminationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
 
-  @InjectMocks DiscriminationHourlyRateCalculator discriminationHourlyRateCalculator;
+  @InjectMocks
+  DiscriminationHourlyRateCalculator discriminationHourlyRateCalculator;
 
   @ParameterizedTest
   @CsvSource({
-    "false, 149.50, 300.50, 528.24, 0, 450.00", // Under escape threshold (No VAT)
-    "true, 149.50, 300.50, 618.24, 90.00, 450.00", // Under escape threshold limit (VAT applied)
-    "false, 199.50, 500.50, 778.24, 0, 700.00", // Equal to escape threshold limit (No VAT)
-    "true, 199.50, 500.50, 918.24, 140.00, 700.00" // Equal to escape threshold limit (VAT applied)
+      "false, 149.50, 300.50, 528.24, 0, 450.00",  // Under escape threshold (No VAT)
+      "true, 149.50, 300.50, 618.24, 90.00, 450.00",  // Under escape threshold limit (VAT applied)
+      "false, 199.50, 500.50, 778.24, 0, 700.00", // Equal to escape threshold limit (No VAT)
+      "true, 199.50, 500.50, 918.24, 140.00, 700.00" // Equal to escape threshold limit (VAT applied)
   })
-  void calculate_shouldReturnFeeCalculationResponse(
-      boolean vatIndicator,
-      double netProfitCosts,
-      double costOfCounsel,
-      double expectedTotal,
-      double expectedVat,
-      double expectedHourlyTotal) {
+  void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double netProfitCosts, double costOfCounsel,
+                                                    double expectedTotal, double expectedVat, double expectedHourlyTotal) {
+
     mockVatRatesService(vatIndicator);
 
-    if (!vatIndicator) {
-      mockVatRatesVatIndicatorTrue();
-    }
-
-    FeeCalculationRequest feeCalculationRequest =
-        buildRequest(vatIndicator, netProfitCosts, costOfCounsel);
+    FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel);
     FeeEntity feeEntity = buildFeeEntity();
 
-    FeeCalculationResponse result =
-        discriminationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
+    FeeCalculationResponse result = discriminationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
 
-    assertFeeCalculation(
-        result,
-        expectedTotal,
-        vatIndicator,
-        netProfitCosts,
-        costOfCounsel,
-        expectedVat,
-        expectedHourlyTotal,
-        false);
+    assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel,
+        expectedVat, expectedHourlyTotal, false);
 
     assertThat(result.getValidationMessages()).isEmpty();
   }
 
   @ParameterizedTest
   @CsvSource({
-    "false, 300.50, 500.50, 778.24, 0, 700.00", // Over escape threshold limit (No VAT)
-    "true, 300.50, 500.50, 918.24, 140.00, 700.00" // Over escape threshold limit (VAT applied)
+      "false, 300.50, 500.50, 778.24, 0, 700.00", // Over escape threshold limit (No VAT)
+      "true, 300.50, 500.50, 918.24, 140.00, 700.00"  // Over escape threshold limit (VAT applied)
   })
-  void calculate_shouldReturnFeeCalculationResponseWithWarning(
-      boolean vatIndicator,
-      double netProfitCosts,
-      double costOfCounsel,
-      double expectedTotal,
-      double expectedVat,
-      double expectedHourlyTotal) {
+  void calculate_shouldReturnFeeCalculationResponseWithWarning(boolean vatIndicator, double netProfitCosts,
+                                                               double costOfCounsel, double expectedTotal,
+                                                               double expectedVat, double expectedHourlyTotal) {
+
     mockVatRatesService(vatIndicator);
 
-    if (!vatIndicator) {
-      mockVatRatesVatIndicatorTrue();
-    }
-
-    FeeCalculationRequest feeCalculationRequest =
-        buildRequest(vatIndicator, netProfitCosts, costOfCounsel);
+    FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts, costOfCounsel);
     FeeEntity feeEntity = buildFeeEntity();
 
-    FeeCalculationResponse result =
-        discriminationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
+    FeeCalculationResponse result = discriminationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
 
-    assertFeeCalculation(
-        result,
-        expectedTotal,
-        vatIndicator,
-        netProfitCosts,
-        costOfCounsel,
-        expectedVat,
-        expectedHourlyTotal,
-        true);
+    assertFeeCalculation(result, expectedTotal, vatIndicator, netProfitCosts, costOfCounsel, expectedVat,
+        expectedHourlyTotal, true);
 
-    ValidationMessagesInner validationMessage =
-        ValidationMessagesInner.builder()
-            .message(WarningType.WARN_DISCRIMINATION_ESCAPE_THRESHOLD.getMessage())
-            .code(WarningType.WARN_DISCRIMINATION_ESCAPE_THRESHOLD.getCode())
-            .type(WARNING)
-            .build();
-
-    assertThat(result.getValidationMessages()).containsExactly(validationMessage);
-  }
-
-  @ParameterizedTest
-  @CsvSource({
-    "false, 149.50, 300.50, 528.24, 0, 450.00", // Under escape threshold (No VAT)
-    "true, 149.50, 300.50, 618.24, 90.00, 450.00", // Under escape threshold limit (VAT applied)
-    "false, 199.50, 500.50, 778.24, 0, 700.00", // Equal to escape threshold limit (No VAT)
-    "true, 199.50, 500.50, 918.24, 140.00, 700.00" // Equal to escape threshold limit (VAT applied)
-  })
-  void calculate_shouldReturnFeeCalculationResponseWithDisbursementVatWarning(
-      boolean vatIndicator,
-      double netProfitCosts,
-      double costOfCounsel,
-      double expectedTotal,
-      double expectedVat,
-      double expectedHourlyTotal) {
-    mockVatRatesService(vatIndicator);
-
-    if (!vatIndicator) {
-      mockVatRatesVatIndicatorTrue();
-    }
-
-    FeeCalculationRequest feeCalculationRequest =
-        buildRequestDisbursementVatLimit(vatIndicator, netProfitCosts, costOfCounsel);
-    FeeEntity feeEntity = buildFeeEntity();
-
-    FeeCalculationResponse result =
-        discriminationHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
-
-    assertFeeCalculation(
-        result,
-        expectedTotal,
-        vatIndicator,
-        netProfitCosts,
-        costOfCounsel,
-        expectedVat,
-        expectedHourlyTotal,
-        false);
-
-    ValidationMessagesInner validationMessage =
-        ValidationMessagesInner.builder()
-            .message(WarningType.WARN_DISBURSEMENT_VAT_LIMIT_REACHED.getMessage())
-            .code(WarningType.WARN_DISBURSEMENT_VAT_LIMIT_REACHED.getCode())
-            .type(WARNING)
-            .build();
+    ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
+        .message(WarningType.WARN_DISCRIMINATION_ESCAPE_THRESHOLD.getMessage())
+        .code(WarningType.WARN_DISCRIMINATION_ESCAPE_THRESHOLD.getCode())
+        .type(WARNING)
+        .build();
 
     assertThat(result.getValidationMessages()).containsExactly(validationMessage);
   }
@@ -167,34 +87,18 @@ class DiscriminationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
     assertThat(result).containsExactly(DISCRIMINATION);
   }
 
-  private FeeCalculationRequest buildRequest(
-      boolean vatIndicator, double netProfitCosts, double costOfCounsel) {
+  private FeeCalculationRequest buildRequest(boolean vatIndicator, double netProfitCosts,
+                                             double costOfCounsel) {
     return FeeCalculationRequest.builder()
         .feeCode("DISC")
         .claimId("claim_123")
         .startDate(LocalDate.of(2025, 5, 12))
-        .caseConcludedDate(LocalDate.of(2025, 5, 12))
         .netProfitCosts(netProfitCosts)
         .netCostOfCounsel(costOfCounsel)
         .vatIndicator(vatIndicator)
         .netDisbursementAmount(65.20)
         .disbursementVatAmount(13.04)
         .caseConcludedDate(LocalDate.of(2026, 1, 30))
-        .build();
-  }
-
-  private FeeCalculationRequest buildRequestDisbursementVatLimit(
-      boolean vatIndicator, double netProfitCosts, double costOfCounsel) {
-    return FeeCalculationRequest.builder()
-        .feeCode("DISC")
-        .claimId("claim_123")
-        .startDate(LocalDate.of(2025, 5, 12))
-        .caseConcludedDate(LocalDate.of(2025, 5, 12))
-        .netProfitCosts(netProfitCosts)
-        .netCostOfCounsel(costOfCounsel)
-        .vatIndicator(vatIndicator)
-        .netDisbursementAmount(65.20)
-        .disbursementVatAmount(14.04)
         .build();
   }
 
@@ -207,15 +111,9 @@ class DiscriminationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .build();
   }
 
-  private void assertFeeCalculation(
-      FeeCalculationResponse response,
-      double total,
-      boolean vatIndicator,
-      double netProfitCosts,
-      double costOfCounsel,
-      double expectedVat,
-      double expectedHourlyTotal,
-      boolean expectedEscapeFlag) {
+  private void assertFeeCalculation(FeeCalculationResponse response, double total, boolean vatIndicator,
+                                    double netProfitCosts, double costOfCounsel, double expectedVat,
+                                    double expectedHourlyTotal, boolean expectedEscapeFlag) {
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("DISC");
     assertThat(response.getClaimId()).isEqualTo("claim_123");

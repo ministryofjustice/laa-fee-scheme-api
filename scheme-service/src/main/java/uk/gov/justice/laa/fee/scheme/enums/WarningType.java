@@ -10,9 +10,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum WarningType {
-  WARN_DISBURSEMENT_VAT_LIMIT_REACHED("WARALL1", "Value entered exceeds the VAT threshold for the net disbursement amount claimed. "
-      + "Costs have been capped at the maximum VAT amount claimable."),
-
   WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT(
       "WARCRM3", "Costs are included. The Net Costs exceeds the Upper Costs Limitation."),
 

@@ -2,7 +2,6 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MEDIATION;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateDisbursementVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
@@ -12,8 +11,6 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +24,6 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 /**
@@ -87,8 +83,6 @@ public class MediationFixedFeeCalculator implements FeeCalculator {
 
     log.info("Get fields from fee calculation request");
 
-    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-
     // Calculate VAT if applicable
     LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
     Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
@@ -98,14 +92,8 @@ public class MediationFixedFeeCalculator implements FeeCalculator {
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    // Calculate disbursed vat amount
-    BigDecimal disbursementVatRate = vatRatesService.getVatRateForDate(caseConcludedDate, true);
-    BigDecimal calculatedDisbursementVatAmount =
-            calculateDisbursementVatAmount(
-                    netDisbursementAmount, disbursementVatAmount, disbursementVatRate, validationMessages);
-
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount,
-        netDisbursementAmount, calculatedDisbursementVatAmount);
+        netDisbursementAmount, disbursementVatAmount);
 
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
@@ -114,11 +102,10 @@ public class MediationFixedFeeCalculator implements FeeCalculator {
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        .disbursementVatAmount(toDouble(calculatedDisbursementVatAmount))
-        .requestedDisbursementVatAmount(toDouble(disbursementVatAmount))
+        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .build();
 
-    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, validationMessages);
+    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation);
   }
 }
