@@ -177,7 +177,6 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .netTravelCosts(inputNetTravelCosts)
         .netWaitingCosts(inputNetWaitingCosts)
         .uniqueFileNumber(UFN)
-        .caseConcludedDate(startDate.plusDays(15))
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
@@ -249,7 +248,6 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .netTravelCosts(inputNetTravelCosts)
         .netWaitingCosts(inputNetWaitingCosts)
         .uniqueFileNumber(UFN)
-        .caseConcludedDate(startDate.plusDays(10))
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();

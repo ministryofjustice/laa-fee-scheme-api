@@ -53,7 +53,6 @@ class StandardFixedFeeCalculatorTest {
         .vatIndicator(false)
         .netDisbursementAmount(0.0)
         .disbursementVatAmount(0.0)
-        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()

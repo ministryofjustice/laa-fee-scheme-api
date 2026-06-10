@@ -5,7 +5,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ADVOCACY_APPE
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isOverUpperCostLimit;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -71,9 +71,9 @@ public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator
     }
 
     // Calculate VAT if applicable
-    LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
+    LocalDate startDate = getFeeClaimStartDate(ADVOCACY_APPEALS_REVIEWS, feeCalculationRequest);
     Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(caseConcludedDate, vatIndicator);
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatIndicator);
     BigDecimal calculatedVatAmount = calculateVatAmount(profitAndAdditionalCosts, vatRate);
 
     // Calculate total amount

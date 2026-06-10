@@ -4,11 +4,10 @@ import static java.util.Objects.nonNull;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateDisbursementVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.filterBoltOnFeeDetails;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
@@ -60,34 +59,27 @@ public class MentalHealthFixedFeeCalculator implements FeeCalculator {
 
     log.info("Calculate Mediation fixed fee");
 
-    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-
     BoltOnFeeDetails boltOnFeeDetails = BoltOnUtil.calculateBoltOnAmounts(feeCalculationRequest, feeEntity);
     BigDecimal fixedFeeAmount = defaultToZeroIfNull(feeEntity.getFixedFee());
     BigDecimal fixedFeeAndAdditionalCosts = fixedFeeAmount
         .add(toBigDecimal(boltOnFeeDetails.getBoltOnTotalFeeAmount()));
 
     // Calculate VAT if applicable
-    LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
+    LocalDate claimStartDate = getFeeClaimStartDate(feeEntity.getCategoryType(), feeCalculationRequest);
     Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(caseConcludedDate, vatIndicator);
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatIndicator);
     BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAndAdditionalCosts, vatRate);
 
     // Get disbursements
     BigDecimal requestNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal requestedDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    // Calculate disbursed vat amount
-    BigDecimal disbursementVatRate = vatRatesService.getVatRateForDate(caseConcludedDate, true);
-    BigDecimal disbursementVatAmount =
-            calculateDisbursementVatAmount(
-                    requestNetDisbursementAmount, requestedDisbursementVatAmount, disbursementVatRate, validationMessages);
-
     // Calculate total amount
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAndAdditionalCosts, calculatedVatAmount,
-        requestNetDisbursementAmount, disbursementVatAmount);
+        requestNetDisbursementAmount, requestedDisbursementVatAmount);
 
     // Escape case logic
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     boolean escapeCaseFlag = false;
     if (nonNull(feeEntity.getEscapeThresholdLimit())) {
       escapeCaseFlag = isEscaped(feeCalculationRequest, feeEntity, boltOnFeeDetails, validationMessages);
@@ -100,8 +92,7 @@ public class MentalHealthFixedFeeCalculator implements FeeCalculator {
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        .disbursementVatAmount(toDouble(disbursementVatAmount))
-        .requestedDisbursementVatAmount(toDouble(requestedDisbursementVatAmount))
+        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .boltOnFeeDetails(filterBoltOnFeeDetails(boltOnFeeDetails))
         .build();
