@@ -12,7 +12,6 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUti
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.filterBoltOnFeeDetails;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitType.DISBURSEMENT;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitType.PROFIT_COST;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitType.TOTAL;
@@ -130,9 +129,9 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
 
 
     // Calculate VAT if applicable
-    LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
+    LocalDate startDate = feeCalculationRequest.getStartDate();
     Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(caseConcludedDate, vatIndicator);
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatIndicator);
     // VAT is calculated on net profit costs only
     BigDecimal calculatedVatAmount = calculateVatAmount(netProfitCosts, vatRate);
 

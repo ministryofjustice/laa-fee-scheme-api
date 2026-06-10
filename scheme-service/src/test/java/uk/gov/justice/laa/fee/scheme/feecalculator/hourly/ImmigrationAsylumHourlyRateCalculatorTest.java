@@ -67,7 +67,6 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementVatAmount(disbursementVat)
         .vatIndicator(vatIndicator)
         .immigrationPriorAuthorityNumber(priorAuthority)
-        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = buildFeeEntity(feeCode);
@@ -173,7 +172,6 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementVatAmount(disbursementVat)
         .vatIndicator(vatIndicator)
         .immigrationPriorAuthorityNumber(priorAuthority)
-        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
@@ -237,7 +235,6 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .detentionTravelAndWaitingCosts(detentionTravelAndWaitingCosts)
         .jrFormFilling(jrFormFilling)
         .vatIndicator(false)
-        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = buildFeeEntity("IAXL");
@@ -461,7 +458,6 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .feeCode("IA100")
         .startDate(LocalDate.of(2025, 5, 11))
         .vatIndicator(false)
-        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()

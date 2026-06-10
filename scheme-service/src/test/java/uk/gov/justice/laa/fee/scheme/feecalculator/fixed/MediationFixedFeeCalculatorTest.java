@@ -84,7 +84,6 @@ class MediationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementVatAmount(20.15)
         .vatIndicator(vatIndicator)
         .numberOfMediationSessions(numberOfMediationSessions)
-        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
 

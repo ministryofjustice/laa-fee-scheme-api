@@ -108,17 +108,6 @@ public final class FeeCalculationUtil {
   }
 
   /**
-   * Return the case concluded date for a fee calculation request.
-   *
-   * @param feeCalculationRequest FeeCalculationRequest
-   * @return LocalDate
-   */
-  public static LocalDate getCaseConcludedDate(FeeCalculationRequest feeCalculationRequest) {
-    return Optional.ofNullable(feeCalculationRequest.getCaseConcludedDate())
-            .orElseThrow(() -> new CaseConcludedDateRequiredException(feeCalculationRequest.getFeeCode()));
-  }
-
-  /**
    * Calculate the VAT amount for a given value using the VAT rate.
    */
   public static BigDecimal calculateVatAmount(BigDecimal value, BigDecimal vatRate) {

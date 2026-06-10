@@ -21,8 +21,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "netWaitingCosts": 11.5,
           "netDisbursementAmount": 55.35,
           "disbursementVatAmount": 11.07,
-          "vatIndicator": true,
-          "caseConcludedDate": "2026-06-06"
+          "vatIndicator": true
         }
         """;
 
@@ -67,8 +66,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "representationOrderDate": "%s",
           "netDisbursementAmount": 123.38,
           "disbursementVatAmount": 24.67,
-          "vatIndicator": true,
-          "caseConcludedDate": "2026-06-06"
+          "vatIndicator": true
         }
         """.formatted(feeCode, representationOrderDate);
 
@@ -110,8 +108,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "uniqueFileNumber": "%s",
           "netDisbursementAmount": 123.38,
           "disbursementVatAmount": 24.67,
-          "vatIndicator": true,
-          "caseConcludedDate": "2026-12-06"
+          "vatIndicator": true
         }
         """.formatted(feeCode, uniqueFileNumber);
 
@@ -142,8 +139,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "netDisbursementAmount": 123.38,
           "disbursementVatAmount": 24.67,
           "londonRate": true,
-          "vatIndicator": true,
-          "caseConcludedDate": "2023-12-06"
+          "vatIndicator": true
         }
         """;
 
@@ -244,8 +240,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "disbursementVatAmount": 20.12,
           "vatIndicator": true,
           "detentionTravelAndWaitingCosts": 111.00,
-          "jrFormFilling": 50.00,
-          "caseConcludedDate": "2026-12-06"
+          "jrFormFilling": 50.00
         """.formatted(feeCode, startDate);
     request = (boltOn != null) ? request + ", \"boltOns\": { \"boltOn%s\": 1 }}".formatted(boltOn) : request + "}";
 
@@ -262,8 +257,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "netDisbursementAmount": 100.21,
           "disbursementVatAmount": 20.12,
           "vatIndicator": true,
-          "numberOfMediationSessions": 1,
-          "caseConcludedDate": "2020-12-06"
+          "numberOfMediationSessions": 1
         }
         """;
 
@@ -298,8 +292,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "vatIndicator": true,
           "boltOns": {
             "boltOnAdjournedHearing": 3.00
-          },
-          "caseConcludedDate": "2026-12-06"
+          }
         }
         """;
 
@@ -338,8 +331,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "netProfitCosts": 239.06,
           "netDisbursementAmount": 123.38,
           "disbursementVatAmount": 24.67,
-          "vatIndicator": true,
-          "caseConcludedDate": "2026-12-06"
+          "vatIndicator": true
         }
         """;
 
@@ -388,8 +380,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "netProfitCosts": 239.06,
           "netDisbursementAmount": 123.38,
           "disbursementVatAmount": 24.67,
-          "vatIndicator": true,
-          "caseConcludedDate": "2026-12-06"
+          "vatIndicator": true
         }
         """.formatted(feeCode);
 
@@ -422,8 +413,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "uniqueFileNumber": "12122019/242",
           "policeStationId": "NE001",
           "policeStationSchemeId": "1001",
-          "vatIndicator": true,
-          "caseConcludedDate": "2026-06-06"
+          "vatIndicator": true
         }
         """;
 
@@ -458,8 +448,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "uniqueFileNumber": "%s",
           "policeStationId": "NE001",
           "policeStationSchemeId": "1001",
-          "vatIndicator": false,
-          "caseConcludedDate": "2026-06-06"
+          "vatIndicator": false
         }
         """.formatted(ufn);
 
@@ -510,8 +499,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "netWaitingCosts": 200,
           "netDisbursementAmount": 100,
           "disbursementVatAmount": 20,
-          "vatIndicator": true,
-          "caseConcludedDate": "2026-06-06"
+          "vatIndicator": true
         }
         """.formatted(feeCode, ufn);
 
@@ -554,8 +542,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "claimId": "claim_123",
           "uniqueFileNumber": "%s",
           "representationOrderDate": "%s",
-          "vatIndicator": true,
-          "caseConcludedDate": "2026-06-06"
+          "vatIndicator": true
         }
         """.formatted(feeCode, uniqueFileNumber, representationOrderDate);
 
@@ -601,8 +588,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "disbursementVatAmount": 24.67,
           "vatIndicator": true,
           "netWaitingCosts": %s,
-          "netTravelCosts": %s,
-          "caseConcludedDate": "2026-06-06"
+          "netTravelCosts": %s
         }
         """.formatted(feeCode, representationOrderDate, netWaitingCosts, netTravelCosts);
 

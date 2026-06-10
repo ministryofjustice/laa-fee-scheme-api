@@ -102,7 +102,6 @@ class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .netProfitCosts(501.00)
         .netDisbursementAmount(370.00)
         .disbursementVatAmount(74.00)
-        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
@@ -135,7 +134,6 @@ class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .netProfitCosts(netProfitCosts)
         .netDisbursementAmount(100.11)
         .disbursementVatAmount(20.22)
-        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
   }
 

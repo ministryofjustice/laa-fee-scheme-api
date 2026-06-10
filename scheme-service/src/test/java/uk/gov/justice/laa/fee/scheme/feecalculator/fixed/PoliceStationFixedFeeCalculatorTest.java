@@ -12,7 +12,6 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_POLICE_STA
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -70,7 +69,6 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementVatAmount(20.15)
         .uniqueFileNumber("121222/452")
         .netProfitCosts(676.0)
-        .caseConcludedDate(LocalDate.of(2023, 1, 30))
         .build();
 
     when(policeStationFeesRepository.findPoliceStationFeeByPoliceStationIdAndFeeSchemeCode("NE001",
@@ -124,7 +122,6 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementVatAmount(20.15)
         .uniqueFileNumber("121222/452")
         .netProfitCosts(676.0)
-        .caseConcludedDate(LocalDate.of(2023, 1, 30))
         .build();
 
     when(policeStationFeesRepository.findPoliceStationFeeByPsSchemeIdAndFeeSchemeCode(any(),
@@ -186,7 +183,6 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementVatAmount(20.15)
         .uniqueFileNumber(uniqueFileNumber)
         .netProfitCosts(0.00)
-        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
@@ -255,7 +251,6 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .netTravelCosts(0.00)
         .netWaitingCosts(0.00)
         .netProfitCosts(0.00)
-        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
@@ -296,7 +291,6 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .netWaitingCosts(40.0)
         .netDisbursementAmount(300.0)
         .disbursementVatAmount(60.0)
-        .caseConcludedDate(LocalDate.of(2023, 1, 30))
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
@@ -442,7 +436,6 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .netTravelCosts(20.00)
         .netWaitingCosts(10.00)
         .netProfitCosts(50.00)
-        .caseConcludedDate(LocalDate.of(2023, 1, 30))
         .build();
 
     FeeCalculationResponse response = policeStationFixedFeeCalculator.calculate(feeData, feeEntity);

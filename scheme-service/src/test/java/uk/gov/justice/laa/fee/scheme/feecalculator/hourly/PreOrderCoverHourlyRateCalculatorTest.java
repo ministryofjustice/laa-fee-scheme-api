@@ -7,7 +7,6 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_PREORDER_C
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -90,7 +89,6 @@ class PreOrderCoverHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .vatIndicator(vatIndicator)
         .netTravelCosts(requestedTravelCosts)
         .netWaitingCosts(requestedWaitingCosts)
-        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()

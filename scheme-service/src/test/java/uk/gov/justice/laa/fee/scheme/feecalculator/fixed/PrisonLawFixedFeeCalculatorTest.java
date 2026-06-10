@@ -76,7 +76,6 @@ class PrisonLawFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementVatAmount(disbursementVatAmount)
         .netProfitCosts(profitCosts)
         .netWaitingCosts(waitingCosts)
-        .caseConcludedDate(LocalDate.of(2018, 1, 30))
         .build();
   }
 

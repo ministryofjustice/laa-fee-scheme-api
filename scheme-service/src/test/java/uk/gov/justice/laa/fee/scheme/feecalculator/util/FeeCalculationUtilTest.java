@@ -206,27 +206,6 @@ class FeeCalculationUtilTest {
   }
 
   @Test
-  void getCaseConcludedDate_returnsCaseConcludedDate() {
-    FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .caseConcludedDate(LocalDate.of(2022, 12, 1))
-        .build();
-
-    LocalDate result = FeeCalculationUtil.getCaseConcludedDate(request);
-
-    assertThat(result).isEqualTo(LocalDate.of(2022, 12, 1));
-  }
-
-  @Test
-  void getCaseConcludedDate_shouldThrowException_ifCaseConcludedDateIsNull() {
-    FeeCalculationRequest request = getFeeCalculationRequest();
-    request.setCaseConcludedDate(null);
-
-    assertThatThrownBy(() -> FeeCalculationUtil.getCaseConcludedDate(request))
-        .isInstanceOf(CaseConcludedDateRequiredException.class)
-        .hasMessageContaining("Case Concluded Date is required for feeCode: ABC");
-  }
-
-  @Test
   void shouldThrowException_ifStartDateIsNull() {
     FeeCalculationRequest request = getFeeCalculationRequest();
     request.setStartDate(null);

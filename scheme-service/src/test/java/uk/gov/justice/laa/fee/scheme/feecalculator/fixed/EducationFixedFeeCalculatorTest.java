@@ -84,7 +84,6 @@ class EducationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .netProfitCosts(netProfitCosts)
         .netDisbursementAmount(100.11)
         .disbursementVatAmount(20.22)
-        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
   }
 
