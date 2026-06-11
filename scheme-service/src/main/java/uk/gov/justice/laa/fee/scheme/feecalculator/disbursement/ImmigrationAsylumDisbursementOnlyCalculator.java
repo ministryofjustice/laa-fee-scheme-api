@@ -61,6 +61,7 @@ public class ImmigrationAsylumDisbursementOnlyCalculator implements FeeCalculato
         .disbursementAmount(nonNull(feeCalculationRequest.getNetDisbursementAmount()) ? toDouble(netDisbursementAmount) : null)
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .build();
 
     return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, validationMessages);

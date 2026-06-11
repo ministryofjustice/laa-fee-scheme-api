@@ -88,6 +88,7 @@ public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator
         .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .hourlyTotalAmount(toDouble(profitAndAdditionalCosts))
         .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
         .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())

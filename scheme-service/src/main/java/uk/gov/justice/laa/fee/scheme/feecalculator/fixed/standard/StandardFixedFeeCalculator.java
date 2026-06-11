@@ -76,6 +76,7 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
         .disbursementAmount(toDoubleOrNull(netDisbursementAmount))
         .requestedNetDisbursementAmount(toDoubleOrNull(netDisbursementAmount))
         .disbursementVatAmount(toDoubleOrNull(disbursementVatAmount))
+        .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .build();
 
