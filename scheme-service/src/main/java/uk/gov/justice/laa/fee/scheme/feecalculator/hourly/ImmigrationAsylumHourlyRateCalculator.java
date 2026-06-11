@@ -284,6 +284,7 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
         .disbursementAmount(nonNull(feeCalculationRequest.getNetDisbursementAmount()) ? toDouble(disbursementAmount) : null)
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .hourlyTotalAmount(toDouble(hourlyTotalAmount))
         .netProfitCostsAmount(nonNull(feeCalculationRequest.getNetProfitCosts()) ? toDouble(netProfitCostsAmount) : null)
         .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
