@@ -39,6 +39,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
            "disbursementAmount": 55.35,
            "requestedNetDisbursementAmount": 55.35,
            "disbursementVatAmount": 11.07,
+           "requestedDisbursementVatAmount": 11.07,
            "fixedFeeAmount": 79.0
           }
         }
@@ -83,6 +84,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
             "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67,
             "fixedFeeAmount": %s
           }
         }
@@ -136,6 +138,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "feeCode": "FPB010",
           "claimId": "claim_123",
           "startDate": "2022-02-01",
+          "caseConcludedDate": "2023-11-05",
           "netDisbursementAmount": 123.38,
           "disbursementVatAmount": 24.67,
           "londonRate": true,
@@ -157,6 +160,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
             "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67,
             "fixedFeeAmount": 132.0
           }
         }
@@ -198,6 +202,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
             "disbursementVatAmount": 20.12,
+            "requestedDisbursementVatAmount": 20.12,
             "fixedFeeAmount": %s,
             "detentionTravelAndWaitingCostsAmount": 111.00,
             "jrFormFillingAmount": 50
@@ -219,6 +224,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
             "disbursementVatAmount": 20.12,
+            "requestedDisbursementVatAmount": 20.12,
             "fixedFeeAmount": %s,
             "detentionTravelAndWaitingCostsAmount": 111.00,
             "jrFormFillingAmount": 50,
@@ -254,8 +260,9 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "feeCode": "MDAS2B",
           "claimId": "claim_123",
           "startDate": "2019-09-30",
+          "caseConcludedDate": "2021-11-05",
           "netDisbursementAmount": 100.21,
-          "disbursementVatAmount": 20.12,
+          "disbursementVatAmount": 20.04,
           "vatIndicator": true,
           "numberOfMediationSessions": 1
         }
@@ -267,13 +274,14 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "MED_FS2013",
           "claimId": "claim_123",
           "feeCalculation": {
-            "totalAmount": 321.93,
+            "totalAmount": 321.85,
             "vatIndicator": true,
             "vatRateApplied": 20.00,
             "calculatedVatAmount": 33.60,
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
-            "disbursementVatAmount": 20.12,
+            "disbursementVatAmount": 20.04,
+            "requestedDisbursementVatAmount": 20.04,
             "fixedFeeAmount": 168.00
           }
         }
@@ -287,8 +295,9 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "feeCode": "MHL03",
           "claimId": "claim_123",
           "startDate": "2021-11-05",
+          "caseConcludedDate": "2021-11-05",
           "netDisbursementAmount": 100.21,
-          "disbursementVatAmount": 20.12,
+          "disbursementVatAmount": 20.04,
           "vatIndicator": true,
           "boltOns": {
             "boltOnAdjournedHearing": 3.00
@@ -303,13 +312,14 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "claimId": "claim_123",
           "escapeCaseFlag": false,
           "feeCalculation": {
-            "totalAmount": 1081.53,
+            "totalAmount": 1081.45,
             "vatIndicator": true,
             "vatRateApplied": 20.00,
             "calculatedVatAmount": 160.20,
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
-            "disbursementVatAmount": 20.12,
+            "disbursementVatAmount": 20.04,
+            "requestedDisbursementVatAmount": 20.04,
             "fixedFeeAmount": 450.00,
             "boltOnFeeDetails": {
               "boltOnTotalFeeAmount": 351.00,
@@ -349,6 +359,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
             "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67,
             "fixedFeeAmount": 272.0
           }
         }
@@ -377,6 +388,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "feeCode": "%s",
           "claimId": "claim_123",
           "startDate": "2025-02-01",
+          "caseConcludedDate": "2026-11-05",
           "netProfitCosts": 239.06,
           "netDisbursementAmount": 123.38,
           "disbursementVatAmount": 24.67,
@@ -398,6 +410,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
             "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67,
             "fixedFeeAmount": %s
           }
         }
@@ -517,6 +530,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
             "disbursementAmount": 100.0,
             "requestedNetDisbursementAmount": 100.0,
             "disbursementVatAmount": 20.0,
+            "requestedDisbursementVatAmount": 20.0,
             "fixedFeeAmount": %s
           }
         }
@@ -605,6 +619,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
             "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67,
             "netWaitingCostsAmount": %s,
             "netTravelCostsAmount": %s,
             "fixedFeeAmount": %s

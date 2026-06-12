@@ -120,6 +120,7 @@ class AdvocacyAppealsReviewsHourlyRateCalculatorTest extends BaseFeeCalculatorTe
         .disbursementAmount(netDisbursementAmount)
         .requestedNetDisbursementAmount(netDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)
+        .requestedDisbursementVatAmount(disbursementVatAmount)
         .hourlyTotalAmount(hourlyTotalAmount)
         .netProfitCostsAmount(requestedProfitCosts)
         .requestedNetProfitCostsAmount(requestedProfitCosts)

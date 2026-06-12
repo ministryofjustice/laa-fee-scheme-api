@@ -719,9 +719,10 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "FPB010",
           "claimId": "claim_123",
           "startDate": "2023-04-01",
+          "caseConcludedDate": "2023-05-01",
           "netProfitCosts": 400.20,
           "netDisbursementAmount": 55.35,
-          "disbursementVatAmount": 11.07,
+          "disbursementVatAmount": 10.07,
           "londonRate": false,
           "vatIndicator": true
         }
@@ -743,13 +744,14 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           ],
           "escapeCaseFlag": true,
           "feeCalculation": {
-            "totalAmount": 224.82,
+            "totalAmount": 223.82,
             "vatIndicator": true,
             "vatRateApplied": 20.0,
             "calculatedVatAmount": 26.4,
             "disbursementAmount": 55.35,
             "requestedNetDisbursementAmount": 55.35,
-            "disbursementVatAmount": 11.07,
+            "disbursementVatAmount": 10.07,
+            "requestedDisbursementVatAmount": 10.07,
             "fixedFeeAmount": 132.0
           }
         }
@@ -816,6 +818,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "requestedNetDisbursementAmount": %s,
             "disbursementAmount": %s,
             "disbursementVatAmount": 70.12,
+            "requestedDisbursementVatAmount": 70.12,
             "fixedFeeAmount": %s,
             "detentionTravelAndWaitingCostsAmount": 111.0,
             "jrFormFillingAmount": 50.0
@@ -872,6 +875,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 825.7,
             "requestedNetDisbursementAmount": 825.7,
             "disbursementVatAmount": 25.14,
+            "requestedDisbursementVatAmount": 25.14,
             "hourlyTotalAmount": 100.0,
             "netProfitCostsAmount": 1160.89,
             "requestedNetProfitCostsAmount": 1160.89
@@ -922,6 +926,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 400.0,
             "requestedNetDisbursementAmount": 825.7,
             "disbursementVatAmount": 25.14,
+            "requestedDisbursementVatAmount": 25.14,
             "hourlyTotalAmount": 900.0,
             "netProfitCostsAmount": 500.0,
             "requestedNetProfitCostsAmount": 1160.89
@@ -967,6 +972,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 825.7,
             "requestedNetDisbursementAmount": 825.7,
             "disbursementVatAmount": 25.14,
+            "requestedDisbursementVatAmount": 25.14,
             "hourlyTotalAmount": 1600.0,
             "netProfitCostsAmount": 1160.89,
             "requestedNetProfitCostsAmount": 1160.89
@@ -1031,6 +1037,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 125.7,
             "requestedNetDisbursementAmount": 125.7,
             "disbursementVatAmount": 25.14,
+            "requestedDisbursementVatAmount": 25.14,
             "hourlyTotalAmount": 2485.0,
             "netProfitCostsAmount": 1116.89,
             "requestedNetProfitCostsAmount": 1116.89,
@@ -1081,7 +1088,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "totalAmount": 2000.0,
             "disbursementAmount": 1600.0,
             "requestedNetDisbursementAmount": 2000.0,
-            "disbursementVatAmount": 400.0
+            "disbursementVatAmount": 400.0,
+            "requestedDisbursementVatAmount": 400.0
           }
         }
         """);
@@ -1129,6 +1137,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               "disbursementAmount": 600.0,
               "requestedNetDisbursementAmount": 600.0,
               "disbursementVatAmount": 120.0,
+              "requestedDisbursementVatAmount": 120.0,
               "fixedFeeAmount": 131.4
           }
         }
@@ -1174,6 +1183,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               "disbursementAmount": 600.0,
               "requestedNetDisbursementAmount": 600.0,
               "disbursementVatAmount": 120.0,
+              "requestedDisbursementVatAmount": 120.0,
               "hourlyTotalAmount": 680.0,
               "netProfitCostsAmount": 50.0,
               "requestedNetProfitCostsAmount": 50.0,
@@ -1224,6 +1234,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 55.35,
             "requestedNetDisbursementAmount": 55.35,
             "disbursementVatAmount": 11.07,
+            "requestedDisbursementVatAmount": 11.07,
             "fixedFeeAmount": 79.0
           }
         }
@@ -1269,6 +1280,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 55.35,
             "requestedNetDisbursementAmount": 55.35,
             "disbursementVatAmount": 11.07,
+            "requestedDisbursementVatAmount": 11.07,
             "hourlyTotalAmount": 1327.0,
             "netProfitCostsAmount": 1200.0,
             "requestedNetProfitCostsAmount": 1200.0,
@@ -1334,6 +1346,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "requestedNetDisbursementAmount": 100.0,
             "disbursementAmount": 100.0,
             "disbursementVatAmount": 20.0,
+            "requestedDisbursementVatAmount": 20.0,
             "fixedFeeAmount": %s
           }
         }
@@ -1349,6 +1362,65 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
+  void shouldReturnValidationWarningForDisbursementVatLimit() throws Exception {
+    String request = """ 
+        {
+          "feeCode": "MHL03",
+          "claimId": "claim_123",
+          "startDate": "2025-02-01",
+          "caseConcludedDate": "2025-02-01",
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 80.00,
+          "netProfitCosts": 1000,
+          "netCostOfCounsel": 500,
+          "vatIndicator": true,
+          "boltOns": {
+              "boltOnAdjournedHearing": 1
+          }
+        }
+        """;
+
+    postAndExpect(
+        request,
+        """
+        {
+          "feeCode": "MHL03",
+          "claimId": "claim_123",
+          "schemeId": "MHL_FS2013",
+          "validationMessages": [
+              {
+                  "type": "WARNING",
+                  "code": "WARALL1",
+                  "message": "Value entered exceeds the VAT threshold for the net disbursement amount claimed. Costs have been capped at the maximum VAT amount claimable."
+              },
+              {
+                  "type": "WARNING",
+                  "code": "WARMH1",
+                  "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
+              }
+          ],
+          "escapeCaseFlag": true,
+          "feeCalculation": {
+              "totalAmount": 828.46,
+              "vatIndicator": true,
+              "vatRateApplied": 20.0,
+              "calculatedVatAmount": 113.4,
+              "disbursementAmount": 123.38,
+              "requestedNetDisbursementAmount": 123.38,
+              "disbursementVatAmount": 24.68,
+              "requestedDisbursementVatAmount": 80.0,
+              "fixedFeeAmount": 450.0,
+              "boltOnFeeDetails": {
+                  "boltOnTotalFeeAmount": 117.0,
+                  "boltOnAdjournedHearingCount": 1,
+                  "boltOnAdjournedHearingFee": 117.0
+              }
+          }
+        }
+        """);
+  }
+
+  @Test
   void shouldReturnValidationWarningForMentalHealth() throws Exception {
     String request =
         """
@@ -1356,8 +1428,9 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "MHL03",
           "claimId": "claim_123",
           "startDate": "2025-02-01",
+          "caseConcludedDate": "2026-11-05",
           "netDisbursementAmount": 123.38,
-          "disbursementVatAmount": 24.67,
+          "disbursementVatAmount": 21.67,
           "netProfitCosts": 1000,
           "netCostOfCounsel": 500,
           "vatIndicator": true,
@@ -1383,13 +1456,14 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           ],
           "escapeCaseFlag": true,
           "feeCalculation": {
-              "totalAmount": 828.45,
+              "totalAmount": 825.45,
               "vatIndicator": true,
               "vatRateApplied": 20.0,
               "calculatedVatAmount": 113.4,
               "disbursementAmount": 123.38,
               "requestedNetDisbursementAmount": 123.38,
-              "disbursementVatAmount": 24.67,
+              "disbursementVatAmount": 21.67,
+              "requestedDisbursementVatAmount": 21.67,
               "fixedFeeAmount": 450.0,
               "boltOnFeeDetails": {
                   "boltOnTotalFeeAmount": 117.0,
@@ -1428,6 +1502,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "%s",
           "claimId": "claim_123",
           "startDate": "2025-06-01",
+          "caseConcludedDate": "2026-11-05",
           "netProfitCosts": 1000.0,
           "netDisbursementAmount": 123.38,
           "disbursementVatAmount": 24.67,
@@ -1459,6 +1534,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
             "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67,
             "fixedFeeAmount": %s
           }
         }
@@ -1480,10 +1556,11 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "DISC",
           "claimId": "claim_123",
           "startDate": "2019-09-30",
+          "caseConcludedDate": "2021-11-05",
           "netProfitCosts": 900,
           "netCostOfCounsel": 79.19,
           "netDisbursementAmount": 100.21,
-          "disbursementVatAmount": 20.12,
+          "disbursementVatAmount": 20.04,
           "vatIndicator": true
         }
         """;
@@ -1504,13 +1581,14 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           ],
           "escapeCaseFlag": true,
           "feeCalculation": {
-            "totalAmount": 960.33,
+            "totalAmount": 960.25,
             "vatIndicator": true,
             "vatRateApplied": 20.0,
             "calculatedVatAmount": 140.0,
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
-            "disbursementVatAmount": 20.12,
+            "disbursementVatAmount": 20.04,
+            "requestedDisbursementVatAmount": 20.04,
             "hourlyTotalAmount": 700.0,
             "netProfitCostsAmount": 900.0,
             "requestedNetProfitCostsAmount": 900.0,

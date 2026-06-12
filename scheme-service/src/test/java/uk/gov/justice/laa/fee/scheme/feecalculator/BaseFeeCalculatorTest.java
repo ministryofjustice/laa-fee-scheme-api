@@ -1,25 +1,29 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
-/**
- * Helper test class for Vat service.
- */
+/** Helper test class for Vat service. */
 @ExtendWith(MockitoExtension.class)
 public abstract class BaseFeeCalculatorTest {
 
-  @Mock
-  VatRatesService vatRatesService;
+  @Mock VatRatesService vatRatesService;
 
   protected void mockVatRatesService(Boolean vatIndicator) {
     when(vatRatesService.getVatRateForDate(any(), any()))
         .thenReturn(vatIndicator ? new BigDecimal("20.00") : BigDecimal.ZERO);
+  }
+
+  protected void mockVatRatesVatIndicatorTrue() {
+    when(vatRatesService.getVatRateForDate(any(LocalDate.class), eq(true)))
+        .thenReturn(new BigDecimal("20.00"));
   }
 }

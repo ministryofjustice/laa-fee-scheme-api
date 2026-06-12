@@ -106,6 +106,7 @@ class ImmigrationAsylumDisbursementOnlyCalculatorTest {
         .disbursementAmount(netDisbursementAmount)
         .requestedNetDisbursementAmount(requestedNetDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)
+        .requestedDisbursementVatAmount(disbursementVatAmount)
         .build();
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()

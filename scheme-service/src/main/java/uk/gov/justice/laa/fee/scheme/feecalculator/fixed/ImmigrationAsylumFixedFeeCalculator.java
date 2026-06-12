@@ -130,6 +130,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
         .disbursementAmount(nonNull(feeCalculationRequest.getNetDisbursementAmount()) ? toDouble(netDisbursementAmount) : null)
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .detentionTravelAndWaitingCostsAmount(feeCalculationRequest.getDetentionTravelAndWaitingCosts())
         .jrFormFillingAmount(feeCalculationRequest.getJrFormFilling())

@@ -46,6 +46,7 @@ class EducationDisbursementOnlyCalculatorTest {
         .disbursementAmount(1200.0)
         .requestedNetDisbursementAmount(1200.0)
         .disbursementVatAmount(150.0)
+        .requestedDisbursementVatAmount(150.0)
         .build();
 
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
