@@ -723,7 +723,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "netDisbursementAmount": 55.35,
           "disbursementVatAmount": 11.07,
           "londonRate": false,
-          "vatIndicator": true
+          "vatIndicator": true,
+          "caseConcludedDate": "2024-12-06"
         }
         """;
 

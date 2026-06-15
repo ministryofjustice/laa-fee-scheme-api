@@ -21,7 +21,8 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "netWaitingCosts": 11.5,
           "netDisbursementAmount": 55.35,
           "disbursementVatAmount": 11.07,
-          "vatIndicator": true
+          "vatIndicator": true,
+          "caseConcludedDate": "2026-06-06"
         }
         """;
 

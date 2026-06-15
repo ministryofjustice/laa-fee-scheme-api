@@ -76,7 +76,8 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "disbursementVatAmount": 10,
           "vatIndicator": true,
           "netTravelCosts": 50,
-          "netWaitingCosts": 50
+          "netWaitingCosts": 50,
+          "caseConcludedDate": "2020-12-06"
         }
         """.formatted(feeCode, uniqueFileNumber, netProfitCostsAmount);
 

@@ -6,6 +6,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ASSOCIATED_CI
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -89,6 +90,7 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .netWaitingCosts(netWaitingCosts)
         .netDisbursementAmount(100.11)
         .disbursementVatAmount(20.22)
+        .caseConcludedDate(LocalDate.of(2016, 12, 12))
         .build();
   }
 
