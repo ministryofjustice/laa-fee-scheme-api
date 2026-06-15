@@ -15,7 +15,6 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "PROD",
           "claimId": "claim_123",
-          "caseConcludedDate": "2024-12-06",
           "netProfitCosts": 500,
           "netDisbursementAmount": 100,
           "disbursementVatAmount": 20,
