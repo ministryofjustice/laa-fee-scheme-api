@@ -87,6 +87,11 @@ public enum WarningType {
 
   WARN_POLICE_STATIONS_ESCAPE_THRESHOLD("WARCRM8", getEscapeMessage()),
 
+  WARN_DISBURSEMENT_VAT_EXCEEDED(
+      "WARALL1",
+      "Value entered exceeds the VAT threshold for the net disbursement amount claimed."
+          + " Costs have been capped at the maximum VAT amount claimable."),
+
   WARN_PRISON_HAS_ESCAPED("WARCRM6", getEscapeMessage()),
   WARN_PRISON_MAY_HAVE_ESCAPED(
       "WARCRM5",

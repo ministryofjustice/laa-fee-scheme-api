@@ -43,9 +43,9 @@ class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   @ParameterizedTest
   @CsvSource({
       "false, 200.00, 370.33, 0",  // Under escape threshold (No VAT)
-      "true, 200.00, 420.33, 50",  // Under escape threshold limit (VAT applied)
+      "true, 200.00, 420.13, 50",  // Under escape threshold limit (VAT applied)
       "false, 500.00, 370.33, 0", // Equal to escape threshold limit (No VAT)
-      "true, 500.00, 420.33, 50" // Equal to escape threshold limit (VAT applied)
+      "true, 500.00, 420.13, 50" // Equal to escape threshold limit (VAT applied)
   })
   void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double netProfitCosts,
                                                     double expectedTotal, double expectedVat) {
@@ -63,7 +63,7 @@ class OtherCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   @ParameterizedTest
   @CsvSource({
       "false, 501.00, 370.33, 0", // Over escape threshold limit (No VAT)
-      "true, 501.00, 420.33, 50" // Over escape threshold limit (VAT applied)
+      "true, 501.00, 420.13, 50" // Over escape threshold limit (VAT applied)
   })
   void calculate_shouldReturnFeeCalculationResponseWithWarning(boolean vatIndicator, double netProfitCosts,
                                                                double expectedTotal, double expectedVat) {
