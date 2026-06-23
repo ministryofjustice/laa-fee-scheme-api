@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ErrorType {
   ERR_ALL_FEE_CODE("ERRALL1", "Enter a valid Fee Code."),
+  ERR_ALL_CASE_CONCLUDED_DATE("ERRALL2", "Case Concluded Date must be completed in order to claim VAT."
+      + " Resubmit with case concluded date entered."),
   ERR_CIVIL_START_DATE("ERRCIV1", "Fee Code is not valid for the Case Start Date."),
   ERR_CIVIL_START_DATE_TOO_OLD("ERRCIV2", "Case Start Date is too far in the past."),
   ERR_CRIME_POLICE_SCHEME_ID("ERRCRM4", "Enter a valid Scheme ID."),
