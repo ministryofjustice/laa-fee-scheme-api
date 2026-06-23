@@ -262,7 +262,8 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "netDisbursementAmount": 100.21,
           "disbursementVatAmount": 20.12,
           "vatIndicator": true,
-          "numberOfMediationSessions": 1
+          "numberOfMediationSessions": 1,
+          "caseConcludedDate": "2026-02-01"
         }
         """;
 
