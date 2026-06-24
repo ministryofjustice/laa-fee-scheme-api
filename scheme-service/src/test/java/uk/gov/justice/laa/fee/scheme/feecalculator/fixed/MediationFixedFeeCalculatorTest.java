@@ -105,6 +105,7 @@ class MediationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementAmount(expectedDisbursementAmount)
         .requestedNetDisbursementAmount(expectedDisbursementAmount)
         .disbursementVatAmount(disbursementVatAmount)
+        .requestedDisbursementVatAmount(disbursementVatAmount)
         .fixedFeeAmount(expectedFixedFee)
         .calculatedVatAmount(expectedCalculatedVat)
         .build();
