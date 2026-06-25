@@ -1075,13 +1075,19 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               "type": "WARNING",
               "code": "WARIA11",
               "message": "Costs have been capped without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit."
+            },
+            {
+              "type": "WARNING",
+              "code": "WARALL1",
+              "message": "Value entered exceeds the VAT threshold for the net disbursement amount claimed. Costs have been capped at the maximum VAT amount claimable."
             }
           ],
           "feeCalculation": {
-            "totalAmount": 2000.0,
+            "totalAmount": 1920.0,
             "disbursementAmount": 1600.0,
             "requestedNetDisbursementAmount": 2000.0,
-            "disbursementVatAmount": 400.0
+            "disbursementVatAmount": 320.0,
+            "requestedDisbursementVatAmount": 400.0
           }
         }
         """);
