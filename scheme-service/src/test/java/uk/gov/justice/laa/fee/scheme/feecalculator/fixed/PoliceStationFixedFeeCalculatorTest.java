@@ -84,6 +84,7 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementAmount(50.5)
         .requestedNetDisbursementAmount(50.5)
         .disbursementVatAmount(20.15)
+        .requestedDisbursementVatAmount(20.15)
         .fixedFeeAmount(200.56)
         .build();
 
@@ -137,6 +138,7 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementAmount(50.5)
         .requestedNetDisbursementAmount(50.5)
         .disbursementVatAmount(20.15)
+        .requestedDisbursementVatAmount(20.15)
         .fixedFeeAmount(200.56)
         .build();
 
@@ -206,6 +208,7 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementAmount(expectedDisbursementAmount)
         .requestedNetDisbursementAmount(50.5)
         .disbursementVatAmount(disbursementVatAmount)
+        .requestedDisbursementVatAmount(disbursementVatAmount)
         .fixedFeeAmount(expectedFixedFee)
         .calculatedVatAmount(expectedCalculatedVat)
         .build();
@@ -316,6 +319,7 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .calculatedVatAmount(40.0)
         .disbursementAmount(300.0)
         .disbursementVatAmount(60.0)
+        .requestedDisbursementVatAmount(60.0)
         .requestedNetDisbursementAmount(300.00)
         .build();
 

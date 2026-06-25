@@ -60,6 +60,7 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementAmount(50.50)
         .requestedNetDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
+        .requestedDisbursementVatAmount(20.15)
         .fixedFeeAmount(fixedFee)
         .calculatedVatAmount(calculatedVat)
         .boltOnFeeDetails(BoltOnFeeDetails.builder()

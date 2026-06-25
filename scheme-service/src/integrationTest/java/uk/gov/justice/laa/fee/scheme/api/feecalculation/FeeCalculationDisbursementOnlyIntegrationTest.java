@@ -29,7 +29,8 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
             "totalAmount": 148.05,
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
-            "disbursementVatAmount": 24.67
+            "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67
            }
         }
         """);
@@ -86,7 +87,8 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
             "totalAmount": 1350.0,
             "disbursementAmount": 1200.0,
             "requestedNetDisbursementAmount": 1200.0,
-            "disbursementVatAmount": 150.0
+            "disbursementVatAmount": 150.0,
+            "requestedDisbursementVatAmount": 150.0
             }
           }
         """);

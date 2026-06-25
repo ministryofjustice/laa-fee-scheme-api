@@ -750,6 +750,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 55.35,
             "requestedNetDisbursementAmount": 55.35,
             "disbursementVatAmount": 11.07,
+            "requestedDisbursementVatAmount": 11.07,
             "fixedFeeAmount": 132.0
           }
         }
@@ -816,6 +817,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "requestedNetDisbursementAmount": %s,
             "disbursementAmount": %s,
             "disbursementVatAmount": 70.12,
+            "requestedDisbursementVatAmount": 70.12,
             "fixedFeeAmount": %s,
             "detentionTravelAndWaitingCostsAmount": 111.0,
             "jrFormFillingAmount": 50.0
@@ -872,6 +874,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 825.7,
             "requestedNetDisbursementAmount": 825.7,
             "disbursementVatAmount": 25.14,
+            "requestedDisbursementVatAmount": 25.14,
             "hourlyTotalAmount": 100.0,
             "netProfitCostsAmount": 1160.89,
             "requestedNetProfitCostsAmount": 1160.89
@@ -922,6 +925,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 400.0,
             "requestedNetDisbursementAmount": 825.7,
             "disbursementVatAmount": 25.14,
+            "requestedDisbursementVatAmount": 25.14,
             "hourlyTotalAmount": 900.0,
             "netProfitCostsAmount": 500.0,
             "requestedNetProfitCostsAmount": 1160.89
@@ -967,6 +971,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 825.7,
             "requestedNetDisbursementAmount": 825.7,
             "disbursementVatAmount": 25.14,
+            "requestedDisbursementVatAmount": 25.14,
             "hourlyTotalAmount": 1600.0,
             "netProfitCostsAmount": 1160.89,
             "requestedNetProfitCostsAmount": 1160.89
@@ -1031,6 +1036,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 125.7,
             "requestedNetDisbursementAmount": 125.7,
             "disbursementVatAmount": 25.14,
+            "requestedDisbursementVatAmount": 25.14,
             "hourlyTotalAmount": 2485.0,
             "netProfitCostsAmount": 1116.89,
             "requestedNetProfitCostsAmount": 1116.89,
@@ -1135,6 +1141,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               "disbursementAmount": 600.0,
               "requestedNetDisbursementAmount": 600.0,
               "disbursementVatAmount": 120.0,
+              "requestedDisbursementVatAmount": 120.0,
               "fixedFeeAmount": 131.4
           }
         }
@@ -1180,6 +1187,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               "disbursementAmount": 600.0,
               "requestedNetDisbursementAmount": 600.0,
               "disbursementVatAmount": 120.0,
+              "requestedDisbursementVatAmount": 120.0,
               "hourlyTotalAmount": 680.0,
               "netProfitCostsAmount": 50.0,
               "requestedNetProfitCostsAmount": 50.0,
@@ -1230,6 +1238,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 55.35,
             "requestedNetDisbursementAmount": 55.35,
             "disbursementVatAmount": 11.07,
+            "requestedDisbursementVatAmount": 11.07,
             "fixedFeeAmount": 79.0
           }
         }
@@ -1275,6 +1284,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 55.35,
             "requestedNetDisbursementAmount": 55.35,
             "disbursementVatAmount": 11.07,
+            "requestedDisbursementVatAmount": 11.07,
             "hourlyTotalAmount": 1327.0,
             "netProfitCostsAmount": 1200.0,
             "requestedNetProfitCostsAmount": 1200.0,
@@ -1340,6 +1350,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "requestedNetDisbursementAmount": 100.0,
             "disbursementAmount": 100.0,
             "disbursementVatAmount": 20.0,
+            "requestedDisbursementVatAmount": 20.0,
             "fixedFeeAmount": %s
           }
         }
@@ -1396,6 +1407,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               "disbursementAmount": 123.38,
               "requestedNetDisbursementAmount": 123.38,
               "disbursementVatAmount": 24.67,
+              "requestedDisbursementVatAmount": 24.67,
               "fixedFeeAmount": 450.0,
               "boltOnFeeDetails": {
                   "boltOnTotalFeeAmount": 117.0,
@@ -1465,6 +1477,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
             "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67,
             "fixedFeeAmount": %s
           }
         }
@@ -1517,6 +1530,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
             "disbursementVatAmount": 20.12,
+            "requestedDisbursementVatAmount": 20.12,
             "hourlyTotalAmount": 700.0,
             "netProfitCostsAmount": 900.0,
             "requestedNetProfitCostsAmount": 900.0,

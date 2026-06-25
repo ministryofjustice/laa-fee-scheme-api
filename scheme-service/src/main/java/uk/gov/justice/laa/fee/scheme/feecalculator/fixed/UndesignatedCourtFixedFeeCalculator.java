@@ -72,6 +72,7 @@ public class UndesignatedCourtFixedFeeCalculator implements FeeCalculator {
         .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .netWaitingCostsAmount(feeCalculationRequest.getNetWaitingCosts())
         .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())

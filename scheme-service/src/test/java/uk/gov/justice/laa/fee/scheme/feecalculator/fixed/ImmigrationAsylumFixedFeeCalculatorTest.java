@@ -156,6 +156,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           .disbursementAmount(requestedDisbursementAmount)
           .requestedNetDisbursementAmount(feeData.getNetDisbursementAmount())
           .disbursementVatAmount(disbursementVatAmount)
+          .requestedDisbursementVatAmount(disbursementVatAmount)
           .detentionTravelAndWaitingCostsAmount(detentionTravelAndWaitingCosts)
           .jrFormFillingAmount(jrFormfilling)
           .boltOnFeeDetails(BoltOnFeeDetails.builder()
