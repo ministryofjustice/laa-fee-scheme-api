@@ -7,6 +7,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ADVOCACY_APPE
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -100,6 +101,7 @@ class AdvocacyAppealsReviewsHourlyRateCalculatorTest extends BaseFeeCalculatorTe
         .vatIndicator(vatIndicator)
         .netTravelCosts(requestedTravelCosts)
         .netWaitingCosts(requestedWaitingCosts)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
