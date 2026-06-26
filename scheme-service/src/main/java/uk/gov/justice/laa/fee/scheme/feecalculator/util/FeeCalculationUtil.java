@@ -112,6 +112,21 @@ public final class FeeCalculationUtil {
   }
 
   /**
+   * Return the case concluded date for a fee calculation request.
+   *
+   * @param feeCalculationRequest FeeCalculationRequest
+   * @return LocalDate
+   */
+  public static LocalDate getCaseConcludedDate(FeeCalculationRequest feeCalculationRequest) {
+
+    Boolean isVatRequired = feeCalculationRequest.getVatIndicator();
+    if (isVatRequired != null && isVatRequired && feeCalculationRequest.getCaseConcludedDate() == null) {
+      throw new CaseConcludedDateRequiredException(feeCalculationRequest.getFeeCode());
+    }
+    return feeCalculationRequest.getCaseConcludedDate();
+  }
+
+  /**
    * Calculate the VAT amount for a given value using the VAT rate.
    */
   public static BigDecimal calculateVatAmount(BigDecimal value, BigDecimal vatRate) {

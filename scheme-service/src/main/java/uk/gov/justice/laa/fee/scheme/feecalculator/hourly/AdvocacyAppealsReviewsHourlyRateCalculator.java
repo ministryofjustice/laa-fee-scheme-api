@@ -5,14 +5,12 @@ import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ADVOCACY_APPE
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isOverUpperCostLimit;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -71,9 +69,8 @@ public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator
     }
 
     // Calculate VAT if applicable
-    LocalDate startDate = getFeeClaimStartDate(ADVOCACY_APPEALS_REVIEWS, feeCalculationRequest);
-    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatIndicator);
+    BigDecimal vatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest);
+
     BigDecimal calculatedVatAmount = calculateVatAmount(profitAndAdditionalCosts, vatRate);
 
     // Calculate total amount
@@ -82,7 +79,7 @@ public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator
 
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
-        .vatIndicator(vatIndicator)
+        .vatIndicator(feeCalculationRequest.getVatIndicator())
         .vatRateApplied(toDoubleOrNull(vatRate))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())

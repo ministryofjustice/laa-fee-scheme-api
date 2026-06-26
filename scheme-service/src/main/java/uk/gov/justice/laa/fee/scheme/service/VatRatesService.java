@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.entity.VatRatesEntity;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.repository.VatRatesRepository;
 
 /**
@@ -47,5 +50,17 @@ public class VatRatesService {
 
     log.info("Retrieved VAT Rate: {}", vatRatesEntity.getVatRate());
     return vatRatesEntity.getVatRate();
+  }
+
+  /**
+   * Returns the VAT rate derived from the fee calculation request,
+   * resolving the case concluded date and VAT indicator from the request.
+   *
+   * @param feeCalculationRequest the fee calculation request
+   * @return the VAT rate
+   */
+  public BigDecimal getVatRateForRequest(FeeCalculationRequest feeCalculationRequest) {
+    LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
+    return getVatRateForDate(caseConcludedDate, feeCalculationRequest.getVatIndicator());
   }
 }

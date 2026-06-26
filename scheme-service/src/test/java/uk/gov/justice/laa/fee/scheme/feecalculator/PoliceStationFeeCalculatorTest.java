@@ -9,6 +9,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -50,6 +51,7 @@ class PoliceStationFeeCalculatorTest {
         .uniqueFileNumber("121222/452")
         .travelAndWaitingCosts(45.0)
         .netProfitCosts(676.0)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
@@ -106,6 +108,7 @@ class PoliceStationFeeCalculatorTest {
         .uniqueFileNumber("121222/452")
         .travelAndWaitingCosts(23.00)
         .netProfitCosts(450.90)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()

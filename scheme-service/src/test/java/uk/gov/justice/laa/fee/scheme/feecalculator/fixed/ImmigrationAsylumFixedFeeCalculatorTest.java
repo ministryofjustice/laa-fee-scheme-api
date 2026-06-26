@@ -64,6 +64,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
               .build())
           .detentionTravelAndWaitingCosts(detentionTravelAndWaitingCosts)
           .jrFormFilling(jrFormFilling)
+          .caseConcludedDate(LocalDate.of(2026, 1, 30))
           .build();
     }
 
@@ -265,6 +266,7 @@ class ImmigrationAsylumFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
               .boltOnCmrhOral(4)
               .boltOnSubstantiveHearing(Boolean.TRUE)
               .build())
+          .caseConcludedDate(LocalDate.of(2026, 1, 30))
           .build();
     }
 

@@ -82,6 +82,7 @@ class AdviceAssistanceAdvocacyHourlyRateCalculatorTest extends BaseFeeCalculator
         .vatIndicator(vatIndicator)
         .netTravelCosts(requestedTravelCosts)
         .netWaitingCosts(requestedWaitingCosts)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()

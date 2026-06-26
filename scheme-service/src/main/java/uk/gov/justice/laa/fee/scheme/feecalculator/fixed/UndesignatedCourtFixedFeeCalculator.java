@@ -9,7 +9,6 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,9 +50,7 @@ public class UndesignatedCourtFixedFeeCalculator implements FeeCalculator {
         .add(requestedWaitingCosts);
 
     // Calculate VAT if applicable
-    LocalDate startDate = feeCalculationRequest.getRepresentationOrderDate();
-    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatIndicator);
+    BigDecimal vatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest);
     BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAndAdditionalCosts, vatRate);
 
     // Get disbursements
@@ -66,7 +63,7 @@ public class UndesignatedCourtFixedFeeCalculator implements FeeCalculator {
 
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
-        .vatIndicator(vatIndicator)
+        .vatIndicator(feeCalculationRequest.getVatIndicator())
         .vatRateApplied(toDoubleOrNull(vatRate))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())

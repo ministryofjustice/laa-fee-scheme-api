@@ -43,7 +43,7 @@ class StandardFixedFeeCalculatorTest {
 
   @Test
   void handleEscapeCase_defaultImplementation_returnsFalse() {
-    when(vatRatesService.getVatRateForDate(any(), any())).thenReturn(BigDecimal.ZERO);
+    when(vatRatesService.getVatRateForRequest(any())).thenReturn(BigDecimal.ZERO);
 
     TestStandardFixedFeeCalculator calculator = new TestStandardFixedFeeCalculator(vatRatesService);
 
@@ -53,6 +53,7 @@ class StandardFixedFeeCalculatorTest {
         .vatIndicator(false)
         .netDisbursementAmount(0.0)
         .disbursementVatAmount(0.0)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
