@@ -16,7 +16,8 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
           "claimId": "claim_123",
           "startDate": "2025-02-01",
           "netDisbursementAmount": 123.38,
-          "disbursementVatAmount": 24.67
+          "disbursementVatAmount": 24.67,
+          "caseConcludedDate": "2026-02-01"
         }
         """;
 
@@ -45,7 +46,8 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
           "claimId": "claim_123",
           "startDate": "2013-04-01",
           "netDisbursementAmount": 55.35,
-          "disbursementVatAmount": 11.07
+          "disbursementVatAmount": 11.07,
+          "caseConcludedDate": "2026-02-01"
         }
         """;
 
@@ -75,7 +77,8 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
           "claimId": "claim_123",
           "startDate": "2022-07-29",
           "netDisbursementAmount": 1200.0,
-          "disbursementVatAmount": 150.0
+          "disbursementVatAmount": 150.0,
+          "caseConcludedDate": "2026-02-01"
         }
         """;
 

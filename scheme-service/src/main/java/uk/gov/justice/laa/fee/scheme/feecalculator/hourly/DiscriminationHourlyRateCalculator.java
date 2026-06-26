@@ -12,7 +12,6 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -73,9 +72,8 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
     }
 
     // Calculate VAT if applicable
-    LocalDate startDate = feeCalculationRequest.getStartDate();
-    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatIndicator);
+    BigDecimal vatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest);
+
     BigDecimal calculatedVatAmount = calculateVatAmount(feeTotal, vatRate);
 
     // Get disbursements
@@ -88,7 +86,7 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
 
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
-        .vatIndicator(vatIndicator)
+        .vatIndicator(feeCalculationRequest.getVatIndicator())
         .vatRateApplied(toDoubleOrNull(vatRate))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
