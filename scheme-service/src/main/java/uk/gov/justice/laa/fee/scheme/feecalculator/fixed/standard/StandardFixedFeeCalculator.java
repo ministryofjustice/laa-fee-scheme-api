@@ -43,25 +43,25 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
     //Step 2: get VAT Rate
     BigDecimal vatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest);
 
-    //Step 4: Calculate VAT Amount
+    //Step 3: Calculate VAT Amount
     BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAmount, vatRate);
 
-    //Step 5: get Disbursements
+    //Step 4: get Disbursements
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
-    //Step 6: calculate Total Amount
+    //Step 5: calculate Total Amount
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount, netDisbursementAmount,
         disbursementVatAmount);
 
-    //Step 7: check if escaped, if eligible
+    //Step 6: check if escaped, if eligible
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     boolean isEscaped = false;
     if (canEscape) {
       isEscaped = handleEscapeCase(feeCalculationRequest, feeEntity, validationMessages);
     }
 
-    //Step 8: build FeeCalculation
+    //Step 7: build FeeCalculation
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
         .vatIndicator(feeCalculationRequest.getVatIndicator())
@@ -74,7 +74,7 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .build();
 
-    //step 9: build response
+    //step 8: build response
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
