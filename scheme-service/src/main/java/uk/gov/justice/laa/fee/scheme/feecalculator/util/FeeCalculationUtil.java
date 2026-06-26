@@ -5,6 +5,9 @@ import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.CASE_CONCLU
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.CASE_START_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.REP_ORDER_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.UFN;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_VAT_CAPPED;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitType.DISBURSEMENT_VAT;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.checkLimitAndCapIfExceeded;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.service.FeeCodeConstants.FEE_CODE_PROH_TYPE;
 
@@ -24,6 +27,7 @@ import uk.gov.justice.laa.fee.scheme.exception.CaseConcludedDateRequiredExceptio
 import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
 import uk.gov.justice.laa.fee.scheme.exception.StartDateRequiredException;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitContext;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -120,6 +124,17 @@ public final class FeeCalculationUtil {
       throw new CaseConcludedDateRequiredException(feeCalculationRequest.getFeeCode());
     }
     return feeCalculationRequest.getCaseConcludedDate();
+  }
+
+  /**
+   * Cap the disbursement VAT at the maximum claimable and add a warning if it is exceeded.
+   */
+  public static BigDecimal capDisbursementVat(BigDecimal netDisbursementAmount, BigDecimal requestedDisbursementVat,
+                                              BigDecimal vatRate, List<ValidationMessagesInner> validationMessages) {
+    BigDecimal maxDisbursementVat = calculateVatAmount(netDisbursementAmount, vatRate);
+    LimitContext limitContext =
+            new LimitContext(DISBURSEMENT_VAT, maxDisbursementVat, null, WARN_DISBURSEMENT_VAT_CAPPED);
+    return checkLimitAndCapIfExceeded(requestedDisbursementVat, limitContext, validationMessages);
   }
 
   /**

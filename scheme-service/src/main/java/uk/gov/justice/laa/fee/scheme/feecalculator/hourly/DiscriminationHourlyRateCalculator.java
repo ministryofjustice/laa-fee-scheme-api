@@ -6,6 +6,8 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUti
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.capDisbursementVat;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -78,11 +80,15 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
 
     // Get disbursements
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+    BigDecimal requestedDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+    BigDecimal disbursementVatRate = vatRatesService.getVatRateForDate(getCaseConcludedDate(feeCalculationRequest), true);
+    BigDecimal cappedDisbursementVatAmount =
+            capDisbursementVat(
+                    netDisbursementAmount, requestedDisbursementVatAmount, disbursementVatRate, validationMessages);
 
     // Calculate total amount
     BigDecimal totalAmount = calculateTotalAmount(feeTotal, calculatedVatAmount,
-            netDisbursementAmount, disbursementVatAmount);
+            netDisbursementAmount, cappedDisbursementVatAmount);
 
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
@@ -92,7 +98,7 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
         .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         // disbursement not capped, so requested and calculated will be same
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .disbursementVatAmount(toDouble(cappedDisbursementVatAmount))
         .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .hourlyTotalAmount(toDouble(feeTotal))
         .netCostOfCounselAmount(feeCalculationRequest.getNetCostOfCounsel())
