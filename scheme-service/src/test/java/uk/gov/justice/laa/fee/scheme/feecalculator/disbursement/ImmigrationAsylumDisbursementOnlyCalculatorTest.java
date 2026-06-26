@@ -79,6 +79,7 @@ class ImmigrationAsylumDisbursementOnlyCalculatorTest {
         .feeCode(feeCode)
         .claimId("claim_123")
         .startDate(LocalDate.of(2025, 7, 29))
+        .caseConcludedDate(LocalDate.of(2025, 7, 29))
         .netDisbursementAmount(requestedNetDisbursementAmount)
         .disbursementVatAmount(requestedDisbursementVatAmount)
         .immigrationPriorAuthorityNumber(immigrationPriorityAuthority)

@@ -106,7 +106,8 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
           "claimId": "claim_123",
           "startDate": "2013-04-01",
           "netDisbursementAmount": 100.00,
-          "disbursementVatAmount": 50.00
+          "disbursementVatAmount": 50.00,
+          "caseConcludedDate": "2026-02-01"
         }
         """;
 

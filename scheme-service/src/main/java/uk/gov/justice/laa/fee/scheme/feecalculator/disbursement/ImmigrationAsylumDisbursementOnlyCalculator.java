@@ -5,6 +5,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DIS
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.capDisbursementVat;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitType.DISBURSEMENT;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.checkLimitAndCapIfExceeded;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
@@ -60,7 +61,7 @@ public class ImmigrationAsylumDisbursementOnlyCalculator implements FeeCalculato
         disbursementLimitContext, validationMessages);
 
     Double requestedDisbursementVatAmount = feeCalculationRequest.getDisbursementVatAmount();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(feeCalculationRequest.getStartDate());
+    BigDecimal vatRate = vatRatesService.getVatRateForDate(getCaseConcludedDate(feeCalculationRequest));
     BigDecimal disbursementVatAmount = capDisbursementVat(netDisbursementAmount,
         toBigDecimal(requestedDisbursementVatAmount), vatRate, validationMessages);
 
