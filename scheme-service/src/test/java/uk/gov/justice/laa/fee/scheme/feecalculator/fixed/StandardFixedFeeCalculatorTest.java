@@ -43,7 +43,7 @@ class StandardFixedFeeCalculatorTest {
 
   @Test
   void handleEscapeCase_defaultImplementation_returnsFalse() {
-    when(vatRatesService.getVatRateForDate(any(), any())).thenReturn(BigDecimal.ZERO);
+    when(vatRatesService.getVatRateForRequest(any())).thenReturn(BigDecimal.ZERO);
 
     TestStandardFixedFeeCalculator calculator = new TestStandardFixedFeeCalculator(vatRatesService);
 
