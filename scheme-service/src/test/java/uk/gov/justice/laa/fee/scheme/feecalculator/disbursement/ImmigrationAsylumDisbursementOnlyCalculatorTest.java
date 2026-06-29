@@ -1,8 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.disbursement;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.DISB_ONLY;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_VAT_CAPPED;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -23,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
+import uk.gov.justice.laa.fee.scheme.exception.CaseConcludedDateRequiredException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -73,7 +76,8 @@ class ImmigrationAsylumDisbursementOnlyCalculatorTest {
       boolean hasVatWarning
   ) {
 
-    when(vatRatesService.getVatRateForDate(any(LocalDate.class))).thenReturn(BigDecimal.valueOf(20));
+    // lenient: the "no disbursement VAT claimed" row never looks up the rate
+    lenient().when(vatRatesService.getVatRateForDate(any(LocalDate.class))).thenReturn(BigDecimal.valueOf(20));
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
@@ -122,6 +126,28 @@ class ImmigrationAsylumDisbursementOnlyCalculatorTest {
     assertThat(response)
         .usingRecursiveComparison()
         .isEqualTo(expectedResponse);
+  }
+
+  @Test
+  void calculate_whenDisbursementVatClaimedWithoutCaseConcludedDate_throws() {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("ICASD")
+        .claimId("claim_123")
+        .startDate(LocalDate.of(2025, 7, 29))
+        .netDisbursementAmount(100.0)
+        .disbursementVatAmount(20.0)
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("ICASD")
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("IMM_ASYLM_FS2023").build())
+        .categoryType(IMMIGRATION_ASYLUM)
+        .feeType(DISB_ONLY)
+        .disbursementLimit(BigDecimal.valueOf(1600.0))
+        .build();
+
+    assertThatThrownBy(() -> immigrationAsylumDisbursementOnlyCalculator.calculate(feeCalculationRequest, feeEntity))
+        .isInstanceOf(CaseConcludedDateRequiredException.class);
   }
 
   private static ValidationMessagesInner buildWarning(String code, String message) {
