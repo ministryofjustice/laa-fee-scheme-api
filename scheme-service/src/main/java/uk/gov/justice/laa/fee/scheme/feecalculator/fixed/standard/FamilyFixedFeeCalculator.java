@@ -8,7 +8,6 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.i
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Component;

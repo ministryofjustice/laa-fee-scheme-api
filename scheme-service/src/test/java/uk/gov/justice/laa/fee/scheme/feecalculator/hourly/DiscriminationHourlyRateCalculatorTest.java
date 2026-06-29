@@ -112,10 +112,10 @@ class DiscriminationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
 
   @ParameterizedTest
   @CsvSource({
-          "false, 149.50, 300.50, 528.24, 0, 450.00", // Under escape threshold (No VAT)
-          "true, 149.50, 300.50, 618.24, 90.00, 450.00", // Under escape threshold limit (VAT applied)
-          "false, 199.50, 500.50, 778.24, 0, 700.00", // Equal to escape threshold limit (No VAT)
-          "true, 199.50, 500.50, 918.24, 140.00, 700.00" // Equal to escape threshold limit (VAT applied)
+    "false, 149.50, 300.50, 528.24, 0, 450.00", // Under escape threshold (No VAT)
+    "true, 149.50, 300.50, 618.24, 90.00, 450.00", // Under escape threshold limit (VAT applied)
+    "false, 199.50, 500.50, 778.24, 0, 700.00", // Equal to escape threshold limit (No VAT)
+    "true, 199.50, 500.50, 918.24, 140.00, 700.00" // Equal to escape threshold limit (VAT applied)
   })
   void calculate_shouldReturnFeeCalculationResponseWithDisbursementVatWarning(
           boolean vatIndicator,
