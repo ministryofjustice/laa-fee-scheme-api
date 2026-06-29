@@ -75,7 +75,6 @@ public class DiscriminationHourlyRateCalculator implements FeeCalculator {
 
     // Calculate VAT if applicable
     BigDecimal vatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest);
-
     BigDecimal calculatedVatAmount = calculateVatAmount(feeTotal, vatRate);
 
     // Get disbursements
