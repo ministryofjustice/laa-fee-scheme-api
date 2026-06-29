@@ -1511,7 +1511,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "netProfitCosts": 900,
           "netCostOfCounsel": 79.19,
           "netDisbursementAmount": 100.21,
-          "disbursementVatAmount": 20.12,
+          "disbursementVatAmount": 20.04,
           "vatIndicator": true,
           "caseConcludedDate": "2026-02-01"
         }
@@ -1533,18 +1533,77 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           ],
           "escapeCaseFlag": true,
           "feeCalculation": {
-            "totalAmount": 960.33,
+            "totalAmount": 960.25,
             "vatIndicator": true,
             "vatRateApplied": 20.0,
             "calculatedVatAmount": 140.0,
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
-            "disbursementVatAmount": 20.12,
-            "requestedDisbursementVatAmount": 20.12,
+            "disbursementVatAmount": 20.04,
+            "requestedDisbursementVatAmount": 20.04,
             "hourlyTotalAmount": 700.0,
             "netProfitCostsAmount": 900.0,
             "requestedNetProfitCostsAmount": 900.0,
             "netCostOfCounselAmount": 79.19
+          }
+        }
+        """);
+  }
+
+  @Test
+  void shouldReturnValidationWarningForDisbursementVatLimit() throws Exception {
+    String request = """ 
+        {
+          "feeCode": "MHL03",
+          "claimId": "claim_123",
+          "startDate": "2025-02-01",
+          "caseConcludedDate": "2025-02-01",
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 80.00,
+          "netProfitCosts": 1000,
+          "netCostOfCounsel": 500,
+          "vatIndicator": true,
+          "boltOns": {
+              "boltOnAdjournedHearing": 1
+          }
+        }
+        """;
+
+    postAndExpect(
+        request,
+        """
+        {
+          "feeCode": "MHL03",
+          "claimId": "claim_123",
+          "schemeId": "MHL_FS2013",
+          "validationMessages": [
+              {
+                  "type": "WARNING",
+                  "code": "WARALL1",
+                  "message": "Value entered exceeds the VAT threshold for the net disbursement amount claimed. Costs have been capped at the maximum VAT amount claimable."
+              },
+              {
+                  "type": "WARNING",
+                  "code": "WARMH1",
+                  "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
+              }
+          ],
+          "escapeCaseFlag": true,
+          "feeCalculation": {
+              "totalAmount": 828.46,
+              "vatIndicator": true,
+              "vatRateApplied": 20.0,
+              "calculatedVatAmount": 113.4,
+              "disbursementAmount": 123.38,
+              "requestedNetDisbursementAmount": 123.38,
+              "disbursementVatAmount": 24.68,
+              "requestedDisbursementVatAmount": 80.0,
+              "fixedFeeAmount": 450.0,
+              "boltOnFeeDetails": {
+                  "boltOnTotalFeeAmount": 117.0,
+                  "boltOnAdjournedHearingCount": 1,
+                  "boltOnAdjournedHearingFee": 117.0
+              }
           }
         }
         """);
