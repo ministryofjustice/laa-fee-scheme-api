@@ -69,7 +69,7 @@ public class ImmigrationAsylumDisbursementOnlyCalculator implements FeeCalculato
       if (caseConcludedDate == null) {
         throw new CaseConcludedDateRequiredException(feeCalculationRequest.getFeeCode());
       }
-      // Use the actual rate for the case concluded date, not gated on the VAT indicator (these claims don't send one).
+
       BigDecimal vatRate = vatRatesService.getVatRateForDate(caseConcludedDate);
       disbursementVatAmount = capDisbursementVat(netDisbursementAmount,
           toBigDecimal(requestedDisbursementVatAmount), vatRate, validationMessages);
