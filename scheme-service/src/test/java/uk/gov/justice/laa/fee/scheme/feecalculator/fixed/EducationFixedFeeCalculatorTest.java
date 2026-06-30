@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_VAT_EXCEEDED;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -31,10 +32,10 @@ class EducationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @ParameterizedTest
   @CsvSource({
-      "false, 200.00, 370.33, 0",  // Under escape threshold (No VAT)
-      "true, 200.00, 420.33, 50",  // Under escape threshold limit (VAT applied)
-      "false, 500.00, 370.33, 0", // Equal to escape threshold limit (No VAT)
-      "true, 500.00, 420.33, 50" // Equal to escape threshold limit (VAT applied)
+      "false, 200.00, 370.13, 0",  // Under escape threshold (No VAT)
+      "true, 200.00, 420.13, 50",  // Under escape threshold limit (VAT applied)
+      "false, 500.00, 370.13, 0", // Equal to escape threshold limit (No VAT)
+      "true, 500.00, 420.13, 50" // Equal to escape threshold limit (VAT applied)
   })
   void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double netProfitCosts,
                                                     double expectedTotal, double expectedVat) {
@@ -51,8 +52,8 @@ class EducationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @ParameterizedTest
   @CsvSource({
-      "false, 501.00, 370.33, 0", // Over escape threshold limit (No VAT)
-      "true, 501.00, 420.33, 50" // Over escape threshold limit (VAT applied)
+      "false, 501.00, 370.13, 0", // Over escape threshold limit (No VAT)
+      "true, 501.00, 420.13, 50" // Over escape threshold limit (VAT applied)
   })
   void calculate_shouldReturnFeeCalculationResponseWithWarning(boolean vatIndicator, double netProfitCosts,
                                                                double expectedTotal, double expectedVat) {
@@ -83,7 +84,7 @@ class EducationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .vatIndicator(vatIndicator)
         .netProfitCosts(netProfitCosts)
         .netDisbursementAmount(100.11)
-        .disbursementVatAmount(20.22)
+        .disbursementVatAmount(20.02)
         .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
   }
@@ -114,8 +115,41 @@ class EducationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(vat);
     assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(100.11);
     assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(100.11);
-    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.22);
+    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.02);
     assertThat(feeCalculation.getFixedFeeAmount()).isEqualTo(250);
+  }
+
+  @Test
+  void calculate_shouldReturnFeeCalculationResponseWithDisbursementVatWarning() {
+    mockVatRatesService(true);
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("EDUFIN")
+        .claimId("claim_123")
+        .startDate(LocalDate.of(2025, 4, 5))
+        .vatIndicator(true)
+        .netProfitCosts(200.00)
+        .netDisbursementAmount(100.11)
+        .disbursementVatAmount(20.15) // exceeds max cap of 20.02 (20% of 100.11)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
+        .build();
+
+    FeeEntity feeEntity = buildFeeEntity();
+
+    FeeCalculationResponse result = educationFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    assertThat(result).isNotNull();
+    FeeCalculation feeCalculation = result.getFeeCalculation();
+    assertThat(feeCalculation.getTotalAmount()).isEqualTo(420.13); // 250 + 50 + 100.11 + 20.02 (capped)
+    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.02); // capped
+    assertThat(feeCalculation.getRequestedDisbursementVatAmount()).isEqualTo(20.15); // original submitted
+
+    ValidationMessagesInner expectedWarning = ValidationMessagesInner.builder()
+        .message(WARN_DISBURSEMENT_VAT_EXCEEDED.getMessage())
+        .code(WARN_DISBURSEMENT_VAT_EXCEEDED.getCode())
+        .type(WARNING)
+        .build();
+    assertThat(result.getValidationMessages()).containsExactly(expectedWarning);
   }
 
   @Test

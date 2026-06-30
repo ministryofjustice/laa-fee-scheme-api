@@ -31,10 +31,10 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @ParameterizedTest
   @CsvSource({
-      "false, 10.00, 20.00, 170.33, 0",  // Under escape threshold (No VAT)
-      "true, 10.00, 20.00, 180.33, 10.00",  // Under escape threshold limit (VAT applied)
-      "false, 80.00, 20.00, 170.33, 0", // Equal to escape threshold limit (No VAT)
-      "true, 80.00, 20.00, 180.33, 10.00" // Equal to escape threshold limit (VAT applied)
+      "false, 10.00, 20.00, 170.13, 0",  // Under escape threshold (No VAT)
+      "true, 10.00, 20.00, 180.13, 10.00",  // Under escape threshold limit (VAT applied)
+      "false, 80.00, 20.00, 170.13, 0", // Equal to escape threshold limit (No VAT)
+      "true, 80.00, 20.00, 180.13, 10.00" // Equal to escape threshold limit (VAT applied)
   })
   void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double netTravelCosts,
                                                     double netWaitingCosts, double expectedTotal,
@@ -53,8 +53,8 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @ParameterizedTest
   @CsvSource({
-      "false, 90.00, 20.00, 170.33, 0", // Over escape threshold limit (No VAT)
-      "true, 90.00, 20.00, 180.33, 10.00" // Over escape threshold limit (VAT applied)
+      "false, 90.00, 20.00, 170.13, 0", // Over escape threshold limit (No VAT)
+      "true, 90.00, 20.00, 180.13, 10.00" // Over escape threshold limit (VAT applied)
   })
   void calculate_shouldReturnFeeCalculationResponseWithWarning(boolean vatIndicator, double netTravelCosts,
                                                                double netWaitingCosts, double expectedTotal,
@@ -89,7 +89,7 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .netTravelCosts(netTravelCosts)
         .netWaitingCosts(netWaitingCosts)
         .netDisbursementAmount(100.11)
-        .disbursementVatAmount(20.22)
+        .disbursementVatAmount(20.02)
         .caseConcludedDate(LocalDate.of(2016, 12, 12))
         .build();
   }
@@ -120,7 +120,7 @@ class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThat(feeCalculation.getCalculatedVatAmount()).isEqualTo(vat);
     assertThat(feeCalculation.getDisbursementAmount()).isEqualTo(100.11);
     assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(100.11);
-    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.22);
+    assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.02);
     assertThat(feeCalculation.getFixedFeeAmount()).isEqualTo(50);
   }
 

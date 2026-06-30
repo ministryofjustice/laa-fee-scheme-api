@@ -379,20 +379,27 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "schemeId": "POL_FS2022",
           "claimId": "claim_123",
           "feeCalculation": {
-            "totalAmount": 148.12,
+            "totalAmount": 138.07,
             "vatIndicator": true,
             "vatRateApplied": 20.0,
             "calculatedVatAmount": 12.91,
             "disbursementAmount": 50.5,
             "requestedNetDisbursementAmount": 50.5,
-            "disbursementVatAmount": 20.15,
+            "disbursementVatAmount": 10.1,
             "requestedDisbursementVatAmount": 20.15,
             "hourlyTotalAmount": 115.06,
             "netProfitCostsAmount": 34.56,
             "requestedNetProfitCostsAmount": 34.56,
             "netTravelCostsAmount": 20.0,
             "netWaitingCostsAmount": 10.0
-          }
+          },
+          "validationMessages": [
+            {
+              "code": "WARALL1",
+              "message": "Value entered exceeds the VAT threshold for the net disbursement amount claimed. Costs have been capped at the maximum VAT amount claimable.",
+              "type": "WARNING"
+            }
+          ]
         }
         """);
   }

@@ -4,6 +4,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_POLICE_OTHER_
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.validateAndCapDisbursementVat;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isOverUpperCostLimit;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -57,7 +58,7 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
 
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-
+    BigDecimal requestedDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
     BigDecimal travelCosts = toBigDecimal(feeCalculationRequest.getNetTravelCosts());
 
     BigDecimal waitingCosts = toBigDecimal(feeCalculationRequest.getNetWaitingCosts());
@@ -75,7 +76,9 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
     BigDecimal vatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest);
     BigDecimal calculatedVatAmount = calculateVatAmount(vatEligibleFeeTotal, vatRate);
 
-    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+    // Validate and cap disbursement VAT
+    BigDecimal disbursementVatAmount = validateAndCapDisbursementVat(
+        netDisbursementAmount, requestedDisbursementVatAmount, vatRate, validationMessages);
 
     // Calculate total amount
     BigDecimal totalAmount = feeTotal.add(calculatedVatAmount).add(disbursementVatAmount);
@@ -86,9 +89,8 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
         .vatRateApplied(toDoubleOrNull(vatRate))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        // disbursement not capped, so requested and calculated will be same
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .disbursementVatAmount(toDoubleOrNull(disbursementVatAmount))
         .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .hourlyTotalAmount(toDouble(feeTotal))
         .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())
