@@ -75,11 +75,12 @@ public class PreOrderCoverHourlyRateCalculator implements FeeCalculator {
     BigDecimal calculatedVatAmount = calculateVatAmount(profitAndAdditionalCosts, vatRate);
 
     // Validate and cap disbursement VAT
-    BigDecimal disbursementVatAmount = validateAndCapDisbursementVat(
-        requestedNetDisbursementAmount, requestedNetDisbursementVatAmount, vatRate, validationMessages);
+    BigDecimal disbursementVatAmount = Boolean.TRUE.equals(feeCalculationRequest.getVatIndicator())
+        ? validateAndCapDisbursementVat(requestedNetDisbursementAmount, requestedNetDisbursementVatAmount,
+        vatRate, validationMessages) : BigDecimal.ZERO;
 
     BigDecimal totalAmount = calculateTotalAmount(profitAndAdditionalCosts,
-        calculatedVatAmount, requestedNetDisbursementAmount, requestedNetDisbursementVatAmount);
+        calculatedVatAmount, requestedNetDisbursementAmount, disbursementVatAmount);
 
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))

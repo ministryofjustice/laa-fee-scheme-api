@@ -63,16 +63,18 @@ public class AdviceAssistanceAdvocacyHourlyRateCalculator implements FeeCalculat
 
     // Calculate VAT if applicable
     BigDecimal vatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest);
+    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
 
     BigDecimal calculatedVatAmount = calculateVatAmount(profitAndAdditionalCosts, vatRate);
 
-    // Validate and cap disbursement VAT
-    BigDecimal disbursementVatAmount = validateAndCapDisbursementVat(
-        requestedNetDisbursementAmount, requestedNetDisbursementVatAmount, vatRate, validationMessages);
+    // Validate and cap disbursement VAT (only when VAT applies)
+    BigDecimal disbursementVatAmount = Boolean.TRUE.equals(vatIndicator)
+        ? validateAndCapDisbursementVat(requestedNetDisbursementAmount, requestedNetDisbursementVatAmount, vatRate, validationMessages)
+        : BigDecimal.ZERO;
 
     // Calculate total amount
     BigDecimal totalAmount = calculateTotalAmount(profitAndAdditionalCosts,
-        calculatedVatAmount, requestedNetDisbursementAmount, requestedNetDisbursementVatAmount);
+        calculatedVatAmount, requestedNetDisbursementAmount, disbursementVatAmount);
 
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
@@ -90,6 +92,6 @@ public class AdviceAssistanceAdvocacyHourlyRateCalculator implements FeeCalculat
         .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())
         .build();
 
-    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation);
+    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, validationMessages);
   }
 }

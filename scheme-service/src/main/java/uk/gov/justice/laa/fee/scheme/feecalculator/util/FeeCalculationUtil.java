@@ -136,7 +136,7 @@ public final class FeeCalculationUtil {
 
   /**
    * Validates the disbursement VAT amount against the maximum allowed (vatRate% of netDisbursementAmount).
-   * If the submitted amount exceeds the max, it is capped and a warning is added.
+   * If the submitted amount exceeds the max, it is capped and a warning message is added.
    *
    * @param netDisbursementAmount  the net disbursement amount
    * @param submittedDisbVatAmount the disbursement VAT amount as submitted
@@ -148,9 +148,6 @@ public final class FeeCalculationUtil {
                                                          BigDecimal submittedDisbVatAmount,
                                                          BigDecimal vatRate,
                                                          List<ValidationMessagesInner> validationMessages) {
-    if (vatRate.compareTo(BigDecimal.ZERO) <= 0) {
-      return submittedDisbVatAmount;
-    }
 
     BigDecimal maxDisbVat = calculateVatAmount(netDisbursementAmount, vatRate);
 

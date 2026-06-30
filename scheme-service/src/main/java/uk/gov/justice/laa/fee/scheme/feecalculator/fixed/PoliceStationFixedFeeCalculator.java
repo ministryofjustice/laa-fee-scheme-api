@@ -96,7 +96,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     BigDecimal disbursementVatAmount = Boolean.TRUE.equals(vatIndicator)
         ? validateAndCapDisbursementVat(requestedNetDisbursementAmount, requestedDisbursementVatAmount, vatRate, validationMessages)
-        : requestedDisbursementVatAmount;
+        : BigDecimal.ZERO;
 
     // Calculate total amount
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount,

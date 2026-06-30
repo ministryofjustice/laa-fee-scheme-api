@@ -77,8 +77,9 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
     BigDecimal calculatedVatAmount = calculateVatAmount(vatEligibleFeeTotal, vatRate);
 
     // Validate and cap disbursement VAT
-    BigDecimal disbursementVatAmount = validateAndCapDisbursementVat(
-        netDisbursementAmount, requestedDisbursementVatAmount, vatRate, validationMessages);
+    BigDecimal disbursementVatAmount = Boolean.TRUE.equals(feeCalculationRequest.getVatIndicator())
+        ? validateAndCapDisbursementVat(netDisbursementAmount, requestedDisbursementVatAmount,
+        vatRate, validationMessages) : BigDecimal.ZERO;
 
     // Calculate total amount
     BigDecimal totalAmount = feeTotal.add(calculatedVatAmount).add(disbursementVatAmount);
