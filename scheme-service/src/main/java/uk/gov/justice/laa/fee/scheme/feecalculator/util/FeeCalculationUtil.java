@@ -128,9 +128,6 @@ public final class FeeCalculationUtil {
    */
   public static BigDecimal capDisbursementVat(BigDecimal netDisbursementAmount, BigDecimal requestedDisbursementVat,
                                               BigDecimal vatRate, List<ValidationMessagesInner> validationMessages) {
-    System.out.println("Inside Fee CalculationUtil.capDisbursementVat : " + netDisbursementAmount);
-    System.out.println("Inside Fee CalculationUtil.requestedDisbursementVat : " + requestedDisbursementVat);
-    System.out.println("Inside Fee CalculationUtil.vatRate : " + vatRate);
     BigDecimal maxDisbursementVat = calculateVatAmount(netDisbursementAmount, vatRate);
     LimitContext limitContext =
             new LimitContext(DISBURSEMENT_VAT, maxDisbursementVat, null, WARN_DISBURSEMENT_VAT_CAPPED);
