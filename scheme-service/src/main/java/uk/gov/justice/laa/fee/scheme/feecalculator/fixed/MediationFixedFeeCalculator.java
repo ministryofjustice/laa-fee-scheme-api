@@ -83,7 +83,10 @@ public class MediationFixedFeeCalculator implements FeeCalculator {
 
     log.info("Get fields from fee calculation request");
 
+
+    // TODO: Revisit the logic below when ticket LFSP-533 is taken up for development.
     // Calculate VAT if applicable
+
     LocalDate claimStartDate = getFeeClaimStartDate(feeEntity.getCategoryType(), feeCalculationRequest);
     Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
     BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatIndicator);
@@ -103,6 +106,7 @@ public class MediationFixedFeeCalculator implements FeeCalculator {
         .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .build();
 

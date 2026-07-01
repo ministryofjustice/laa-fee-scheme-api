@@ -45,6 +45,7 @@ class MagistratesYouthCourtFeeCalculatorTest {
         .vatIndicator(true)
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
@@ -93,6 +94,7 @@ class MagistratesYouthCourtFeeCalculatorTest {
         .vatIndicator(true)
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()

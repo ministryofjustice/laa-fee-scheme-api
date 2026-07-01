@@ -4,13 +4,11 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVICE_ASSISTANCE
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,9 +56,8 @@ public class AdviceAssistanceAdvocacyHourlyRateCalculator implements FeeCalculat
         .add(requestedWaitingCosts);
 
     // Calculate VAT if applicable
-    LocalDate caseConcludedDate = getFeeClaimStartDate(ADVICE_ASSISTANCE_ADVOCACY, feeCalculationRequest);
-    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(caseConcludedDate, vatIndicator);
+    BigDecimal vatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest);
+
     BigDecimal calculatedVatAmount = calculateVatAmount(profitAndAdditionalCosts, vatRate);
 
     // Calculate total amount
@@ -69,12 +66,13 @@ public class AdviceAssistanceAdvocacyHourlyRateCalculator implements FeeCalculat
 
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
-        .vatIndicator(vatIndicator)
+        .vatIndicator(feeCalculationRequest.getVatIndicator())
         .vatRateApplied(toDoubleOrNull(vatRate))
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .hourlyTotalAmount(toDouble(profitAndAdditionalCosts))
         .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
         .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())

@@ -177,6 +177,7 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .netTravelCosts(inputNetTravelCosts)
         .netWaitingCosts(inputNetWaitingCosts)
         .uniqueFileNumber(UFN)
+        .caseConcludedDate(startDate.plusDays(15))
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
@@ -198,6 +199,7 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementAmount(inputDisbursementAmount)
         .requestedNetDisbursementAmount(inputDisbursementAmount)
         .disbursementVatAmount(inputDisbursementVatAmount)
+        .requestedDisbursementVatAmount(inputDisbursementVatAmount)
         .calculatedVatAmount(expectedCalculatedVat)
         .netProfitCostsAmount(inputNetProfitCosts)
         .requestedNetProfitCostsAmount(inputNetProfitCosts)
@@ -248,6 +250,7 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .netTravelCosts(inputNetTravelCosts)
         .netWaitingCosts(inputNetWaitingCosts)
         .uniqueFileNumber(UFN)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
@@ -269,6 +272,7 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementAmount(inputDisbursementAmount)
         .requestedNetDisbursementAmount(inputDisbursementAmount)
         .disbursementVatAmount(inputDisbursementVatAmount)
+        .requestedDisbursementVatAmount(inputDisbursementVatAmount)
         .calculatedVatAmount(expectedCalculatedVat)
         .netProfitCostsAmount(inputNetProfitCosts)
         .requestedNetProfitCostsAmount(inputNetProfitCosts)

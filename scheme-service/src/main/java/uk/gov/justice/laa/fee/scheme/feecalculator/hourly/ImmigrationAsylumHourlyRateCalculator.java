@@ -22,7 +22,6 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -129,9 +128,7 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
 
 
     // Calculate VAT if applicable
-    LocalDate startDate = feeCalculationRequest.getStartDate();
-    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatIndicator);
+    BigDecimal vatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest);
     // VAT is calculated on net profit costs only
     BigDecimal calculatedVatAmount = calculateVatAmount(netProfitCosts, vatRate);
 
@@ -175,9 +172,8 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
     BigDecimal feeWithoutDisbursements = netProfitCosts.add(netCostOfCounsel);
 
     // Calculate VAT if applicable
-    LocalDate startDate = feeCalculationRequest.getStartDate();
-    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatIndicator);
+    BigDecimal vatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest);
+
     BigDecimal calculatedVatAmount = calculateVatAmount(feeWithoutDisbursements, vatRate);
 
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
@@ -233,9 +229,8 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
     BigDecimal feeWithoutDisbursements = netProfitCosts.add(netCostOfCounsel).add(boltsOnTotal);
 
     // Calculate VAT if applicable
-    LocalDate startDate = feeCalculationRequest.getStartDate();
-    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(startDate, vatIndicator);
+    BigDecimal vatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest);
+
     BigDecimal calculatedVatAmount = calculateVatAmount(feeWithoutDisbursements, vatRate);
 
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
@@ -284,6 +279,7 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
         .disbursementAmount(nonNull(feeCalculationRequest.getNetDisbursementAmount()) ? toDouble(disbursementAmount) : null)
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .hourlyTotalAmount(toDouble(hourlyTotalAmount))
         .netProfitCostsAmount(nonNull(feeCalculationRequest.getNetProfitCosts()) ? toDouble(netProfitCostsAmount) : null)
         .requestedNetProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())

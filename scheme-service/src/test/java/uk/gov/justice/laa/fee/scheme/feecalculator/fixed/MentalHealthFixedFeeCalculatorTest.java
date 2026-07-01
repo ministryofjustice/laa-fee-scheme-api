@@ -60,6 +60,7 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementAmount(50.50)
         .requestedNetDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
+        .requestedDisbursementVatAmount(20.15)
         .fixedFeeAmount(fixedFee)
         .calculatedVatAmount(calculatedVat)
         .boltOnFeeDetails(BoltOnFeeDetails.builder()
@@ -92,6 +93,7 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .vatIndicator(vatIndicator)
         .boltOns(BoltOnType.builder().boltOnAdjournedHearing(boltOnNumber).build())
         .netProfitCosts(requestedNetProfitCosts)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
   }
 

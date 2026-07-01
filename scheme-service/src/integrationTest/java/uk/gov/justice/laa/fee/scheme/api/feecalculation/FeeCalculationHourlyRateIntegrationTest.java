@@ -15,13 +15,13 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "PROD",
           "claimId": "claim_123",
-          "caseConcludedDate": "2024-12-06",
           "netProfitCosts": 500,
           "netDisbursementAmount": 100,
           "disbursementVatAmount": 20,
           "vatIndicator": true,
           "netTravelCosts": 50,
-          "netWaitingCosts": 50
+          "netWaitingCosts": 50,
+          "caseConcludedDate": "2026-02-01"
         }
         """;
 
@@ -38,6 +38,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
               "disbursementAmount": 100.0,
               "requestedNetDisbursementAmount": 100.0,
               "disbursementVatAmount": 20.0,
+              "requestedDisbursementVatAmount": 20.0,
               "hourlyTotalAmount": 600.0,
               "netProfitCostsAmount": 500.0,
               "requestedNetProfitCostsAmount": 500.0,
@@ -76,7 +77,8 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "disbursementVatAmount": 10,
           "vatIndicator": true,
           "netTravelCosts": 50,
-          "netWaitingCosts": 50
+          "netWaitingCosts": 50,
+          "caseConcludedDate": "2020-12-06"
         }
         """.formatted(feeCode, uniqueFileNumber, netProfitCostsAmount);
 
@@ -92,6 +94,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 80.0,
             "requestedNetDisbursementAmount": 80.0,
             "disbursementVatAmount": 10.0,
+            "requestedDisbursementVatAmount": 10.0,
             "hourlyTotalAmount": %s,
             "netProfitCostsAmount": %s,
             "requestedNetProfitCostsAmount": %s,
@@ -131,7 +134,8 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "disbursementVatAmount": 10,
           "vatIndicator": true,
           "netTravelCosts": 50,
-          "netWaitingCosts": 50
+          "netWaitingCosts": 50,
+          "caseConcludedDate": "2026-02-01"
         }
         """.formatted(feeCode, representationOrderDate, uniqueFileNumber, netProfitCostsAmount);
 
@@ -147,6 +151,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 80.0,
             "requestedNetDisbursementAmount": 80.0,
             "disbursementVatAmount": 10.0,
+            "requestedDisbursementVatAmount": 10.0,
             "hourlyTotalAmount": %s,
             "netProfitCostsAmount": %s,
             "requestedNetProfitCostsAmount": %s,
@@ -169,7 +174,8 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "netCostOfCounsel": 79.19,
           "netDisbursementAmount": 100.21,
           "disbursementVatAmount": 20.12,
-          "vatIndicator": true
+          "vatIndicator": true,
+          "caseConcludedDate": "2026-02-01"
         }
         """;
 
@@ -187,6 +193,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
             "disbursementVatAmount": 20.12,
+            "requestedDisbursementVatAmount": 20.12,
             "hourlyTotalAmount": 318.25,
             "netCostOfCounselAmount": 79.19,
             "netProfitCostsAmount": 239.06,
@@ -212,7 +219,8 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "netCostOfCounsel": 356.90,
           "netDisbursementAmount": 125.70,
           "disbursementVatAmount": 25.14,
-          "vatIndicator": true
+          "vatIndicator": true,
+          "caseConcludedDate": "2026-02-01"
         }
         """.formatted(feeCode);
 
@@ -229,6 +237,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 125.70,
             "requestedNetDisbursementAmount": 125.70,
             "disbursementVatAmount": 25.14,
+            "requestedDisbursementVatAmount": 25.14,
             "hourlyTotalAmount": 599.49,
             "netProfitCostsAmount": 116.89,
             "requestedNetProfitCostsAmount": 116.89,
@@ -262,7 +271,8 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
               "boltOnCmrhTelephone": 1,
               "boltOnSubstantiveHearing": true
           },
-          "vatIndicator": true
+          "vatIndicator": true,
+          "caseConcludedDate": "2026-02-01"
         }
         """.formatted(feeCode);
 
@@ -279,6 +289,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 125.70,
             "requestedNetDisbursementAmount": 125.70,
             "disbursementVatAmount": 25.14,
+            "requestedDisbursementVatAmount": 25.14,
             "hourlyTotalAmount": %s,
             "netProfitCostsAmount": 116.89,
             "requestedNetProfitCostsAmount": 116.89,
@@ -316,7 +327,8 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "netProfitCosts": %s,
           "netDisbursementAmount": 100,
           "disbursementVatAmount": 20,
-          "vatIndicator": true
+          "vatIndicator": true,
+          "caseConcludedDate": "2026-02-01"
         }
         """.formatted(feeCode, netProfitCosts);
 
@@ -333,6 +345,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 100.0,
             "requestedNetDisbursementAmount": 100.0,
             "disbursementVatAmount": 20.0,
+            "requestedDisbursementVatAmount": 20.0,
             "hourlyTotalAmount": %s,
             "netProfitCostsAmount": %s,
             "requestedNetProfitCostsAmount": %s
@@ -355,7 +368,8 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "disbursementVatAmount": 20.15,
           "netTravelCosts": 20.0,
           "netWaitingCosts": 10.0,
-          "vatIndicator": true
+          "vatIndicator": true,
+          "caseConcludedDate": "2026-02-01"
         }
         """;
 
@@ -372,6 +386,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
             "disbursementAmount": 50.5,
             "requestedNetDisbursementAmount": 50.5,
             "disbursementVatAmount": 20.15,
+            "requestedDisbursementVatAmount": 20.15,
             "hourlyTotalAmount": 115.06,
             "netProfitCostsAmount": 34.56,
             "requestedNetProfitCostsAmount": 34.56,
@@ -400,7 +415,8 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "disbursementVatAmount": 2.1,
           "netTravelCosts": 11.35,
           "netWaitingCosts": 12.22,
-          "vatIndicator": true
+          "vatIndicator": true,
+          "caseConcludedDate": "2026-02-01"
         }
         """.formatted(feeCode, ufn);
 
@@ -417,6 +433,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
               "disbursementAmount": 10.5,
               "requestedNetDisbursementAmount": 10.5,
               "disbursementVatAmount": 2.1,
+              "requestedDisbursementVatAmount": 2.1,
               "hourlyTotalAmount": 34.13,
               "netProfitCostsAmount": 10.56,
               "requestedNetProfitCostsAmount": 10.56,

@@ -67,6 +67,7 @@ class DesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           .netDisbursementAmount(100.00)
           .disbursementVatAmount(20.00)
           .vatIndicator(vatIndicator)
+          .caseConcludedDate(LocalDate.of(2025, 10, 30))
           .build();
     }
 
@@ -86,6 +87,7 @@ class DesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           .disbursementAmount(request.getNetDisbursementAmount())
           .requestedNetDisbursementAmount(request.getNetDisbursementAmount())
           .disbursementVatAmount(request.getDisbursementVatAmount())
+          .requestedDisbursementVatAmount(request.getDisbursementVatAmount())
           .fixedFeeAmount(fixedFee)
           .calculatedVatAmount(expectedVat)
           .build();

@@ -16,7 +16,8 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
           "claimId": "claim_123",
           "startDate": "2025-02-01",
           "netDisbursementAmount": 123.38,
-          "disbursementVatAmount": 24.67
+          "disbursementVatAmount": 24.67,
+          "caseConcludedDate": "2026-02-01"
         }
         """;
 
@@ -29,7 +30,8 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
             "totalAmount": 148.05,
             "disbursementAmount": 123.38,
             "requestedNetDisbursementAmount": 123.38,
-            "disbursementVatAmount": 24.67
+            "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67
            }
         }
         """);
@@ -44,7 +46,8 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
           "claimId": "claim_123",
           "startDate": "2013-04-01",
           "netDisbursementAmount": 55.35,
-          "disbursementVatAmount": 11.07
+          "disbursementVatAmount": 11.07,
+          "caseConcludedDate": "2026-02-01"
         }
         """;
 
@@ -57,7 +60,8 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
             "totalAmount": 66.42,
             "disbursementAmount": 55.35,
             "requestedNetDisbursementAmount": 55.35,
-            "disbursementVatAmount": 11.07
+            "disbursementVatAmount": 11.07,
+            "requestedDisbursementVatAmount": 11.07
             }
           }
         }
@@ -73,7 +77,8 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
           "claimId": "claim_123",
           "startDate": "2022-07-29",
           "netDisbursementAmount": 1200.0,
-          "disbursementVatAmount": 150.0
+          "disbursementVatAmount": 150.0,
+          "caseConcludedDate": "2026-02-01"
         }
         """;
 
@@ -86,7 +91,8 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
             "totalAmount": 1350.0,
             "disbursementAmount": 1200.0,
             "requestedNetDisbursementAmount": 1200.0,
-            "disbursementVatAmount": 150.0
+            "disbursementVatAmount": 150.0,
+            "requestedDisbursementVatAmount": 150.0
             }
           }
         }

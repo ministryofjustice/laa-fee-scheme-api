@@ -81,6 +81,7 @@ class UndesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           .vatIndicator(vatIndicator)
           .netTravelCosts(requestedNetTravel)
           .netWaitingCosts(requestedNetWaiting)
+          .caseConcludedDate(LocalDate.of(2026, 1, 30))
           .build();
     }
 
@@ -102,6 +103,7 @@ class UndesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           .disbursementAmount(request.getNetDisbursementAmount())
           .requestedNetDisbursementAmount(request.getNetDisbursementAmount())
           .disbursementVatAmount(request.getDisbursementVatAmount())
+          .requestedDisbursementVatAmount(request.getDisbursementVatAmount())
           .netTravelCostsAmount(expectedNetTravel)
           .netWaitingCostsAmount(expectedNetWaiting)
           .fixedFeeAmount(fixedFee)

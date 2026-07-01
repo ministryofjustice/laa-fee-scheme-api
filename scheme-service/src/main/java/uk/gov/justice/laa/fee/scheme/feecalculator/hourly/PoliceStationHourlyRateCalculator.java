@@ -4,14 +4,12 @@ import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_POLICE_OTHER_
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getFeeClaimStartDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isOverUpperCostLimit;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -74,9 +72,7 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
     }
 
     // Calculate VAT if applicable
-    LocalDate claimStartDate = getFeeClaimStartDate(CategoryType.POLICE_STATION, feeCalculationRequest);
-    Boolean vatIndicator = feeCalculationRequest.getVatIndicator();
-    BigDecimal vatRate = vatRatesService.getVatRateForDate(claimStartDate, vatIndicator);
+    BigDecimal vatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest);
     BigDecimal calculatedVatAmount = calculateVatAmount(vatEligibleFeeTotal, vatRate);
 
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
@@ -93,6 +89,7 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
         // disbursement not capped, so requested and calculated will be same
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .hourlyTotalAmount(toDouble(feeTotal))
         .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())
         .netWaitingCostsAmount(feeCalculationRequest.getNetWaitingCosts())

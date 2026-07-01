@@ -48,6 +48,7 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .vatIndicator(vatIndicator)
         .netDisbursementAmount(100.11)
         .disbursementVatAmount(20.22)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
@@ -90,6 +91,7 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .netDisbursementAmount(129.45)
         .disbursementVatAmount(25.89)
         .netProfitCosts(400.00)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
@@ -109,6 +111,7 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .disbursementAmount(129.45)
         .requestedNetDisbursementAmount(129.45)
         .disbursementVatAmount(25.89)
+        .requestedDisbursementVatAmount(25.89)
         .fixedFeeAmount(263.00)
         .calculatedVatAmount(52.60)
         .build();
