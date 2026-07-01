@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
@@ -86,6 +87,23 @@ public class PrisonLawFixedFeeCalculator extends StandardFixedFeeCalculator {
     }
     log.warn("Case has not escaped");
     return false;
+  }
+
+  @Override
+  protected BigDecimal capDisbursementVat(FeeCalculationRequest feeCalculationRequest,
+                                          VatRatesService vatRatesService,
+                                          List<ValidationMessagesInner> validationMessages) {
+
+    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+
+    // Calculate disbursed vat amount
+    BigDecimal disbursementVatRate = vatRatesService.getVatRate(feeCalculationRequest, Boolean.TRUE);
+    disbursementVatAmount =
+        FeeCalculationUtil.capDisbursementVat(
+            netDisbursementAmount, disbursementVatAmount, disbursementVatRate, validationMessages);
+
+    return disbursementVatAmount;
   }
 
 }

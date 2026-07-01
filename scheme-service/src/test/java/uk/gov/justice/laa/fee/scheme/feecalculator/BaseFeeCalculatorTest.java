@@ -1,9 +1,12 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,5 +26,10 @@ public abstract class BaseFeeCalculatorTest {
     lenient().when(vatRatesService.getVatRateForDate(any(), any())).thenReturn(vatRate);
     lenient().when(vatRatesService.getVatRateForRequest(any())).thenReturn(vatRate);
     lenient().when(vatRatesService.getVatRate(any(), any())).thenReturn(new BigDecimal("20.00"));
+  }
+
+  protected void mockVatRatesVatIndicatorTrue() {
+    when(vatRatesService.getVatRateForDate(any(LocalDate.class), eq(true)))
+        .thenReturn(new BigDecimal("20.00"));
   }
 }
