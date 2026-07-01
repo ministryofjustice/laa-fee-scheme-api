@@ -119,11 +119,8 @@ public final class FeeCalculationUtil {
    */
   public static LocalDate getCaseConcludedDate(FeeCalculationRequest feeCalculationRequest) {
 
-    Boolean isVatRequired = feeCalculationRequest.getVatIndicator();
-    if (isVatRequired != null && isVatRequired && feeCalculationRequest.getCaseConcludedDate() == null) {
-      throw new CaseConcludedDateRequiredException(feeCalculationRequest.getFeeCode());
-    }
-    return feeCalculationRequest.getCaseConcludedDate();
+    return Optional.ofNullable(feeCalculationRequest.getCaseConcludedDate())
+            .orElseThrow(() -> new CaseConcludedDateRequiredException(feeCalculationRequest.getFeeCode()));
   }
 
   /**

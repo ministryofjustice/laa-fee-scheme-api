@@ -232,32 +232,6 @@ class FeeCalculationUtilTest {
   }
 
   @Test
-  void getCaseConcludedDate_returnsNull_whenVatIndicatorIsFalseAndCaseConcludedDateIsNull() {
-    FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .feeCode("ABC")
-        .vatIndicator(Boolean.FALSE)
-        .caseConcludedDate(null)
-        .build();
-
-    LocalDate result = FeeCalculationUtil.getCaseConcludedDate(request);
-
-    assertThat(result).isNull();
-  }
-
-  @Test
-  void getCaseConcludedDate_returnsNull_whenVatIndicatorIsNullAndCaseConcludedDateIsNull() {
-    FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .feeCode("ABC")
-        .vatIndicator(null)
-        .caseConcludedDate(null)
-        .build();
-
-    LocalDate result = FeeCalculationUtil.getCaseConcludedDate(request);
-
-    assertThat(result).isNull();
-  }
-
-  @Test
   void getCaseConcludedDate_shouldThrowValidationException_whenVatIndicatorIsTrueAndCaseConcludedDateIsNull() {
     FeeCalculationRequest request = getFeeCalculationRequest();
     request.setCaseConcludedDate(null);
