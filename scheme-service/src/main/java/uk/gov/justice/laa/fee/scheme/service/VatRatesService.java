@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDateFromFeeRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -44,6 +45,18 @@ public class VatRatesService {
   }
 
   /**
+   * Returns the VAT rate applicable for a given date, regardless of the VAT indicator.
+   *
+   * @param date the date to apply the VAT
+   * @return the VAT rate
+   */
+  public BigDecimal getVatRateForDate(LocalDate date) {
+    VatRatesEntity vatRatesEntity = vatRatesRepository.findTopByStartDateLessThanEqualOrderByStartDateDesc(date);
+    log.info("Retrieved VAT Rate: {}", vatRatesEntity.getVatRate());
+    return vatRatesEntity.getVatRate();
+  }
+
+  /**
    * Returns the VAT rate derived from the fee calculation request,
    * resolving the case concluded date and VAT indicator from the request.
    *
@@ -54,4 +67,18 @@ public class VatRatesService {
     LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
     return getVatRateForDate(caseConcludedDate, feeCalculationRequest.getVatIndicator());
   }
+
+  /**
+   * Returns the VAT rate derived from the fee calculation request,
+   * resolving the case concluded date and VAT indicator from the request.
+   *
+   * @param feeCalculationRequest the fee calculation request
+   * @param vatIndicator     the VAT indicator to use for determining the VAT rate
+   * @return the VAT rate
+   */
+  public BigDecimal getVatRate(FeeCalculationRequest feeCalculationRequest, Boolean vatIndicator) {
+    LocalDate caseConcludedDate = getCaseConcludedDateFromFeeRequest(feeCalculationRequest);
+    return getVatRateForDate(caseConcludedDate, vatIndicator);
+  }
+
 }

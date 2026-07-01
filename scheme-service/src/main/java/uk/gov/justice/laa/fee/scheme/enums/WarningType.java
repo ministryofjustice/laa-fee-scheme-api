@@ -13,6 +13,11 @@ public enum WarningType {
   WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT(
       "WARCRM3", "Costs are included. The Net Costs exceeds the Upper Costs Limitation."),
 
+  WARN_DISBURSEMENT_VAT_CAPPED(
+    "WARALL1",
+    "Value entered exceeds the VAT threshold for the net disbursement amount claimed. "
+            + "Costs have been capped at the maximum VAT amount claimable."),
+
   WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD("WARCRM4", getEscapeMessage()),
 
   WARN_CLAIM_AGNST_PUB_AUTH_ESCAPE_THRESHOLD(
@@ -86,11 +91,6 @@ public enum WarningType {
       "WARCRM7", "Costs have been included. Net Costs exceed the Upper Cost Limitation."),
 
   WARN_POLICE_STATIONS_ESCAPE_THRESHOLD("WARCRM8", getEscapeMessage()),
-
-  WARN_DISBURSEMENT_VAT_EXCEEDED(
-      "WARALL1",
-      "Value entered exceeds the VAT threshold for the net disbursement amount claimed."
-          + " Costs have been capped at the maximum VAT amount claimable."),
 
   WARN_PRISON_HAS_ESCAPED("WARCRM6", getEscapeMessage()),
   WARN_PRISON_MAY_HAVE_ESCAPED(

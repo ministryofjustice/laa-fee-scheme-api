@@ -2,7 +2,6 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard;
 
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.validateAndCapDisbursementVat;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -38,6 +37,8 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
 
     log.info("Starting fee calculation for {}", feeEntity.getCategoryType());
 
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+
     //Step 1: get Fixed Fee Amount
     BigDecimal fixedFeeAmount = defaultToZeroIfNull(feeEntity.getFixedFee());
 
@@ -49,25 +50,19 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
 
     //Step 4: get Disbursements
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    BigDecimal requestedDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+    BigDecimal cappedDisbursementVatAmount = capDisbursementVat(feeCalculationRequest, vatRatesService, validationMessages);
 
-    //Step 5a: validate and cap disbursement VAT
-    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    BigDecimal disbursementVatAmount = Boolean.TRUE.equals(feeCalculationRequest.getVatIndicator())
-        ? validateAndCapDisbursementVat(netDisbursementAmount, requestedDisbursementVatAmount, vatRate, validationMessages)
-        : BigDecimal.ZERO;
-
-    //Step 6: calculate Total Amount
+    //Step 5: calculate Total Amount
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount, netDisbursementAmount,
-        disbursementVatAmount);
+        cappedDisbursementVatAmount);
 
-    //Step 7: check if escaped, if eligible
+    //Step 6: check if escaped, if eligible
     boolean isEscaped = false;
     if (canEscape) {
       isEscaped = handleEscapeCase(feeCalculationRequest, feeEntity, validationMessages);
     }
 
-    //Step 8: build FeeCalculation
+    //Step 7: build FeeCalculation
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
         .vatIndicator(feeCalculationRequest.getVatIndicator())
@@ -75,12 +70,12 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(toDoubleOrNull(netDisbursementAmount))
         .requestedNetDisbursementAmount(toDoubleOrNull(netDisbursementAmount))
-        .disbursementVatAmount(toDoubleOrNull(disbursementVatAmount))
+        .disbursementVatAmount(toDoubleOrNull(cappedDisbursementVatAmount))
         .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .build();
 
-    //step 9: build response
+    //step 8: build response
     log.info("Build fee calculation response");
     return FeeCalculationResponse.builder()
         .feeCode(feeCalculationRequest.getFeeCode())
@@ -95,5 +90,12 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
   protected boolean handleEscapeCase(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
                                      List<ValidationMessagesInner> messages) {
     return false;
+  }
+
+  protected BigDecimal capDisbursementVat(
+          FeeCalculationRequest feeCalculationRequest,
+          VatRatesService vatRatesService,
+          List<ValidationMessagesInner> validationMessages) {
+    return toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
   }
 }

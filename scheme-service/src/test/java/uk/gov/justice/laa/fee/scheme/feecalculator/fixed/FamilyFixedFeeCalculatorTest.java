@@ -3,7 +3,6 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.FAMILY;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_VAT_EXCEEDED;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -36,9 +35,9 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @ParameterizedTest
   @CsvSource(value = {
-      "false, 500, 170.13", // No VAT
-      "true, 500, 180.13", // VAT applied
-      "true, null, 180.13" // No escape threshold limit
+      "false, 500, 170.33", // No VAT
+      "true, 500, 180.33", // VAT applied
+      "true, null, 180.33" // No escape threshold limit
   }, nullValues = "null")
   void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, String escapeThreshold, double expectedTotal) {
     mockVatRatesService(vatIndicator);
@@ -48,7 +47,7 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .startDate(LocalDate.of(2025, 5, 12))
         .vatIndicator(vatIndicator)
         .netDisbursementAmount(100.11)
-        .disbursementVatAmount(20.02)
+        .disbursementVatAmount(20.22)
         .caseConcludedDate(LocalDate.of(2026, 1, 30))
         .build();
 
@@ -140,42 +139,6 @@ class FamilyFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .usingRecursiveComparison()
         .isEqualTo(expectedResponse);
 
-  }
-
-  @Test
-  void calculate_shouldReturnFeeCalculationResponseWithDisbursementVatWarning() {
-    mockVatRatesService(true);
-
-    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
-        .feeCode("COM")
-        .startDate(LocalDate.of(2025, 5, 12))
-        .vatIndicator(true)
-        .netDisbursementAmount(100.11)
-        .disbursementVatAmount(20.15) // exceeds max cap of 20.02 (20% of 100.11)
-        .caseConcludedDate(LocalDate.of(2026, 1, 30))
-        .build();
-
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("COM")
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("COM_FS2013").build())
-        .fixedFee(new BigDecimal("50.00"))
-        .escapeThresholdLimit(new BigDecimal("500.00"))
-        .categoryType(COMMUNITY_CARE)
-        .build();
-
-    FeeCalculationResponse result = familyFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
-
-    assertThat(result).isNotNull();
-    assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(180.13); // 50 + 10 + 100.11 + 20.02 (capped)
-    assertThat(result.getFeeCalculation().getDisbursementVatAmount()).isEqualTo(20.02); // capped
-    assertThat(result.getFeeCalculation().getRequestedDisbursementVatAmount()).isEqualTo(20.15); // original submitted
-
-    ValidationMessagesInner expectedWarning = ValidationMessagesInner.builder()
-        .message(WARN_DISBURSEMENT_VAT_EXCEEDED.getMessage())
-        .code(WARN_DISBURSEMENT_VAT_EXCEEDED.getCode())
-        .type(WARNING)
-        .build();
-    assertThat(result.getValidationMessages()).containsExactly(expectedWarning);
   }
 
 }

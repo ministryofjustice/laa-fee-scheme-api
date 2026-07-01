@@ -5,7 +5,9 @@ import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.CASE_CONCLU
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.CASE_START_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.REP_ORDER_DATE;
 import static uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType.UFN;
-import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_VAT_EXCEEDED;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_VAT_CAPPED;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitType.DISBURSEMENT_VAT;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.checkLimitAndCapIfExceeded;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 import static uk.gov.justice.laa.fee.scheme.service.FeeCodeConstants.FEE_CODE_PROH_TYPE;
 
@@ -25,6 +27,7 @@ import uk.gov.justice.laa.fee.scheme.exception.CaseConcludedDateRequiredExceptio
 import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
 import uk.gov.justice.laa.fee.scheme.exception.StartDateRequiredException;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitContext;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnFeeDetails;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -124,6 +127,34 @@ public final class FeeCalculationUtil {
   }
 
   /**
+   * Return the case concluded date for a fee calculation request.
+   *
+   * @param feeCalculationRequest FeeCalculationRequest
+   * @return LocalDate
+   */
+  public static LocalDate getCaseConcludedDateFromFeeRequest(FeeCalculationRequest feeCalculationRequest) {
+
+    if (feeCalculationRequest.getCaseConcludedDate() == null) {
+      throw new CaseConcludedDateRequiredException(feeCalculationRequest.getFeeCode());
+    }
+    return feeCalculationRequest.getCaseConcludedDate();
+  }
+
+  /**
+   * Cap the disbursement VAT at the maximum claimable and add a warning if it is exceeded.
+   */
+  public static BigDecimal capDisbursementVat(BigDecimal netDisbursementAmount, BigDecimal requestedDisbursementVat,
+                                              BigDecimal vatRate, List<ValidationMessagesInner> validationMessages) {
+    System.out.println("Inside Fee CalculationUtil.capDisbursementVat : " + netDisbursementAmount);
+    System.out.println("Inside Fee CalculationUtil.requestedDisbursementVat : " + requestedDisbursementVat);
+    System.out.println("Inside Fee CalculationUtil.vatRate : " + vatRate);
+    BigDecimal maxDisbursementVat = calculateVatAmount(netDisbursementAmount, vatRate);
+    LimitContext limitContext =
+            new LimitContext(DISBURSEMENT_VAT, maxDisbursementVat, null, WARN_DISBURSEMENT_VAT_CAPPED);
+    return checkLimitAndCapIfExceeded(requestedDisbursementVat, limitContext, validationMessages);
+  }
+
+  /**
    * Calculate the VAT amount for a given value using the VAT rate.
    */
   public static BigDecimal calculateVatAmount(BigDecimal value, BigDecimal vatRate) {
@@ -132,32 +163,6 @@ public final class FeeCalculationUtil {
     return value.multiply(vatRate)
         .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)
         .setScale(2, RoundingMode.HALF_UP);
-  }
-
-  /**
-   * Validates the disbursement VAT amount against the maximum allowed (vatRate% of netDisbursementAmount).
-   * If the submitted amount exceeds the max, it is capped and a warning message is added.
-   *
-   * @param netDisbursementAmount  the net disbursement amount
-   * @param submittedDisbVatAmount the disbursement VAT amount as submitted
-   * @param vatRate                the applicable VAT rate (e.g. 20.00), used to derive the max
-   * @param validationMessages     list to add warnings to
-   * @return the capped (or original) disbursement VAT amount
-   */
-  public static BigDecimal validateAndCapDisbursementVat(BigDecimal netDisbursementAmount,
-                                                         BigDecimal submittedDisbVatAmount,
-                                                         BigDecimal vatRate,
-                                                         List<ValidationMessagesInner> validationMessages) {
-
-    BigDecimal maxDisbVat = calculateVatAmount(netDisbursementAmount, vatRate);
-
-    if (submittedDisbVatAmount.compareTo(maxDisbVat) > 0) {
-      log.warn("Disbursement VAT {} exceeds maximum allowed {}. Capping to {}.", submittedDisbVatAmount, maxDisbVat, maxDisbVat);
-      validationMessages.add(buildValidationWarning(WARN_DISBURSEMENT_VAT_EXCEEDED,
-          "Disbursement VAT exceeds " + vatRate + "% of net disbursements"));
-      return maxDisbVat;
-    }
-    return submittedDisbVatAmount;
   }
 
   /**

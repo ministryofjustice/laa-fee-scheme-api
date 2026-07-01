@@ -113,4 +113,67 @@ class VatRatesServiceTest {
         .isInstanceOf(CaseConcludedDateRequiredException.class)
         .hasMessageContaining("Case Concluded Date is required for feeCode: ABC");
   }
+
+  @Test
+  void getVatRateForDate_withNoVatIndicator_shouldReturnVatRate() {
+    LocalDate date = LocalDate.of(2025, 3, 15);
+
+    VatRatesEntity vatRatesEntity = VatRatesEntity.builder()
+        .startDate(date)
+        .vatRate(new BigDecimal("20.00"))
+        .build();
+    when(vatRatesRepository.findTopByStartDateLessThanEqualOrderByStartDateDesc(date)).thenReturn(vatRatesEntity);
+
+    BigDecimal result = vatRatesService.getVatRateForDate(date);
+
+    assertThat(result).isEqualTo(new BigDecimal("20.00"));
+  }
+
+  @Test
+  void getVatRate_whenVatIndicatorIsTrueAndCaseConcludedDateIsSet_shouldReturnVatRate() {
+    LocalDate caseConcludedDate = LocalDate.of(2025, 6, 1);
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("ABC")
+        .vatIndicator(true)
+        .caseConcludedDate(caseConcludedDate)
+        .build();
+
+    VatRatesEntity vatRatesEntity = VatRatesEntity.builder()
+        .startDate(caseConcludedDate)
+        .vatRate(new BigDecimal("20.00"))
+        .build();
+    when(vatRatesRepository.findTopByStartDateLessThanEqualOrderByStartDateDesc(caseConcludedDate))
+        .thenReturn(vatRatesEntity);
+
+    BigDecimal result = vatRatesService.getVatRate(request, true);
+
+    assertThat(result).isEqualTo(new BigDecimal("20.00"));
+  }
+
+  @NullSource
+  @ValueSource(booleans = {false})
+  @ParameterizedTest
+  void getVatRate_whenVatIndicatorIsNullOrFalse_shouldReturnZero(Boolean vatIndicator) {
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("ABC")
+        .caseConcludedDate(LocalDate.of(2025, 6, 1))
+        .build();
+
+    BigDecimal result = vatRatesService.getVatRate(request, vatIndicator);
+
+    assertThat(result).isEqualTo(BigDecimal.ZERO);
+  }
+
+  @Test
+  void getVatRate_whenVatIndicatorIsTrueAndCaseConcludedDateIsNull_shouldThrowException() {
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("XYZ")
+        .vatIndicator(true)
+        .caseConcludedDate(null)
+        .build();
+
+    assertThatThrownBy(() -> vatRatesService.getVatRate(request, true))
+        .isInstanceOf(CaseConcludedDateRequiredException.class)
+        .hasMessageContaining("Case Concluded Date is required for feeCode: XYZ");
+  }
 }

@@ -1,6 +1,9 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ASSOCIATED_CIVIL;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
@@ -13,21 +16,34 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
+import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 @ExtendWith(MockitoExtension.class)
-class AssociatedCivilFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
+class AssociatedCivilFixedFeeCalculatorTest {
+
+  @Mock
+  VatRatesService vatRatesService;
 
   @InjectMocks
   AssociatedCivilFixedFeeCalculator associatedCivilFixedFeeCalculator;
+
+  private void mockVatRatesService(Boolean vatIndicator) {
+    BigDecimal vatRate = vatIndicator ? new BigDecimal("20.00") : BigDecimal.ZERO;
+    lenient().when(vatRatesService.getVatRateForDate(any(), any())).thenReturn(vatRate);
+    lenient().when(vatRatesService.getVatRateForRequest(any())).thenReturn(vatRate);
+    lenient().when(vatRatesService.getVatRate(any(), any())).thenReturn(new BigDecimal("20.00"));
+    // Disbursement VAT is always fetched with Boolean.TRUE regardless of vatIndicator
+    lenient().when(vatRatesService.getVatRateForDate(any(), eq(Boolean.TRUE))).thenReturn(new BigDecimal("20.00"));
+  }
 
   @ParameterizedTest
   @CsvSource({
