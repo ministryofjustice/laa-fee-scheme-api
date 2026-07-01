@@ -25,6 +25,11 @@ public enum WarningType {
 
   WARN_DEBT_ESCAPE_THRESHOLD("WAROTH5", getEscapeMessage(), CategoryType.DEBT),
 
+  WARN_DISBURSEMENT_VAT_CAPPED(
+      "WARALL1",
+      "Value entered exceeds the VAT threshold for the net disbursement amount claimed. "
+          + "Costs have been capped at the maximum VAT amount claimable."),
+
   WARN_DISCRIMINATION_ESCAPE_THRESHOLD("WAROTH1", getEscapeMessage(), CategoryType.DISCRIMINATION),
 
   WARN_EDUCATION_ESCAPE_THRESHOLD("WAROTH7", getEscapeMessage(), CategoryType.EDUCATION),
@@ -96,12 +101,7 @@ public enum WarningType {
   WARN_PUBLIC_LAW_ESCAPE_THRESHOLD("WAROTH10", getEscapeMessage(), CategoryType.PUBLIC_LAW),
 
   WARN_WELFARE_BENEFITS_ESCAPE_THRESHOLD(
-      "WAROTH11", getEscapeMessage(), CategoryType.WELFARE_BENEFITS),
-
-  WARN_DISBURSEMENT_VAT_CAPPED(
-      "WARALL1",
-      "Value entered exceeds the VAT threshold for the net disbursement amount claimed. "
-          + "Costs have been capped at the maximum VAT amount claimable.");
+      "WAROTH11", getEscapeMessage(), CategoryType.WELFARE_BENEFITS);
 
   private final String code;
   private final String message;
