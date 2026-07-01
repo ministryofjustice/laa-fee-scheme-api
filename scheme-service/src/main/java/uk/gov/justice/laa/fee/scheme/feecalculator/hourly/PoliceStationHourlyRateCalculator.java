@@ -78,7 +78,7 @@ public class PoliceStationHourlyRateCalculator implements FeeCalculator {
     BigDecimal calculatedVatAmount = calculateVatAmount(vatEligibleFeeTotal, vatRate);
 
     // Retrieve VAT rate for disbursement vat
-    BigDecimal disbursementVatRate = vatRatesService.getVatRate(feeCalculationRequest, Boolean.TRUE);
+    BigDecimal disbursementVatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest, Boolean.TRUE);
 
 
     // Validate and cap disbursement VAT

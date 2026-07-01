@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.service;
 
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDateFromFeeRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -73,12 +72,13 @@ public class VatRatesService {
    * resolving the case concluded date and VAT indicator from the request.
    *
    * @param feeCalculationRequest the fee calculation request
-   * @param vatIndicator     the VAT indicator to use for determining the VAT rate
+   * @param vatIndicator          indicates whether VAT is applicable, if true returns VAT rate otherwise BigDecimal.ZERO
    * @return the VAT rate
    */
-  public BigDecimal getVatRate(FeeCalculationRequest feeCalculationRequest, Boolean vatIndicator) {
-    LocalDate caseConcludedDate = getCaseConcludedDateFromFeeRequest(feeCalculationRequest);
+  public BigDecimal getVatRateForRequest(FeeCalculationRequest feeCalculationRequest, Boolean vatIndicator) {
+    LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
     return getVatRateForDate(caseConcludedDate, vatIndicator);
   }
+
 
 }

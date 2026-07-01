@@ -25,7 +25,7 @@ public abstract class BaseFeeCalculatorTest {
     BigDecimal vatRate = vatIndicator ? new BigDecimal("20.00") : BigDecimal.ZERO;
     lenient().when(vatRatesService.getVatRateForDate(any(), any())).thenReturn(vatRate);
     lenient().when(vatRatesService.getVatRateForRequest(any())).thenReturn(vatRate);
-    lenient().when(vatRatesService.getVatRate(any(), any())).thenReturn(new BigDecimal("20.00"));
+    lenient().when(vatRatesService.getVatRateForRequest(any(), any())).thenReturn(new BigDecimal("20.00"));
   }
 
   protected void mockVatRatesVatIndicatorTrue() {

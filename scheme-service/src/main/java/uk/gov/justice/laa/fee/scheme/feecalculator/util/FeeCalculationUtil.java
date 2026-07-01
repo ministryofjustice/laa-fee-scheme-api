@@ -118,27 +118,10 @@ public final class FeeCalculationUtil {
    * @return LocalDate
    */
   public static LocalDate getCaseConcludedDate(FeeCalculationRequest feeCalculationRequest) {
-
-    Boolean isVatRequired = feeCalculationRequest.getVatIndicator();
-    if (isVatRequired != null && isVatRequired && feeCalculationRequest.getCaseConcludedDate() == null) {
-      throw new CaseConcludedDateRequiredException(feeCalculationRequest.getFeeCode());
-    }
-    return feeCalculationRequest.getCaseConcludedDate();
+    return Optional.ofNullable(feeCalculationRequest.getCaseConcludedDate())
+        .orElseThrow(() -> new CaseConcludedDateRequiredException(feeCalculationRequest.getFeeCode()));
   }
 
-  /**
-   * Return the case concluded date for a fee calculation request.
-   *
-   * @param feeCalculationRequest FeeCalculationRequest
-   * @return LocalDate
-   */
-  public static LocalDate getCaseConcludedDateFromFeeRequest(FeeCalculationRequest feeCalculationRequest) {
-
-    if (feeCalculationRequest.getCaseConcludedDate() == null) {
-      throw new CaseConcludedDateRequiredException(feeCalculationRequest.getFeeCode());
-    }
-    return feeCalculationRequest.getCaseConcludedDate();
-  }
 
   /**
    * Cap the disbursement VAT at the maximum claimable and add a warning if it is exceeded.

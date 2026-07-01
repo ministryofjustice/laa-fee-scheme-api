@@ -41,7 +41,7 @@ class AssociatedCivilFixedFeeCalculatorTest {
     BigDecimal vatRate = vatIndicator ? new BigDecimal("20.00") : BigDecimal.ZERO;
     lenient().when(vatRatesService.getVatRateForDate(any(), any())).thenReturn(vatRate);
     lenient().when(vatRatesService.getVatRateForRequest(any())).thenReturn(vatRate);
-    lenient().when(vatRatesService.getVatRate(any(), any())).thenReturn(new BigDecimal("20.00"));
+    lenient().when(vatRatesService.getVatRateForRequest(any(), any())).thenReturn(new BigDecimal("20.00"));
     // Disbursement VAT is always fetched with Boolean.TRUE regardless of vatIndicator
     lenient().when(vatRatesService.getVatRateForDate(any(), eq(Boolean.TRUE))).thenReturn(new BigDecimal("20.00"));
   }

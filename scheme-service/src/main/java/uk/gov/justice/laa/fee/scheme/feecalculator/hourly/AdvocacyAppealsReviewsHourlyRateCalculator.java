@@ -75,7 +75,7 @@ public class AdvocacyAppealsReviewsHourlyRateCalculator implements FeeCalculator
     BigDecimal calculatedVatAmount = calculateVatAmount(profitAndAdditionalCosts, vatRate);
 
     // Validate and cap disbursement VAT (only when VAT applies)
-    BigDecimal disbursementVatRate = vatRatesService.getVatRate(feeCalculationRequest, Boolean.TRUE);
+    BigDecimal disbursementVatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest, Boolean.TRUE);
 
     System.out.println(" Inside calculator disbursementVatRate: " + disbursementVatRate);
     BigDecimal cappedDisbursementVatAmount =

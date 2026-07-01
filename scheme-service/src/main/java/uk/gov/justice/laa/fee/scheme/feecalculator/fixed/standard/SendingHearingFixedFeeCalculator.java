@@ -38,7 +38,7 @@ public class SendingHearingFixedFeeCalculator extends StandardFixedFeeCalculator
     BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
 
     // Calculate disbursed vat amount
-    BigDecimal disbursementVatRate = vatRatesService.getVatRate(feeCalculationRequest, Boolean.TRUE);
+    BigDecimal disbursementVatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest, Boolean.TRUE);
     disbursementVatAmount =
         FeeCalculationUtil.capDisbursementVat(
             netDisbursementAmount, disbursementVatAmount, disbursementVatRate, validationMessages);

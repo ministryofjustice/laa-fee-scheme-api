@@ -70,7 +70,7 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
     // Validate and cap disbursement VAT
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
 
-    BigDecimal disbursementVatRate = vatRatesService.getVatRate(feeCalculationRequest, Boolean.TRUE);
+    BigDecimal disbursementVatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest, Boolean.TRUE);
     BigDecimal cappedDisbursementVatAmount =
         capDisbursementVat(
             netDisbursementAmount, requestedDisbursementVatAmount, disbursementVatRate, validationMessages);

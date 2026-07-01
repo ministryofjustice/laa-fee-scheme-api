@@ -93,7 +93,7 @@ public class PoliceStationFixedFeeCalculator implements FeeCalculator {
 
     // Validate and cap disbursement VAT (only when VAT applies)
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
-    BigDecimal disbursementVatRate = vatRatesService.getVatRate(feeCalculationRequest, Boolean.TRUE);
+    BigDecimal disbursementVatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest, Boolean.TRUE);
     BigDecimal cappedDisbursementVatAmount =
         capDisbursementVat(
             requestedNetDisbursementAmount, requestedDisbursementVatAmount, disbursementVatRate, validationMessages);
