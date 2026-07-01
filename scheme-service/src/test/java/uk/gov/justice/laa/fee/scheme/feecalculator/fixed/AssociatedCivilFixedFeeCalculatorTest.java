@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ASSOCIATED_CIVIL;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_VAT_CAPPED;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
@@ -138,6 +139,40 @@ class AssociatedCivilFixedFeeCalculatorTest {
     assertThat(feeCalculation.getRequestedNetDisbursementAmount()).isEqualTo(100.11);
     assertThat(feeCalculation.getDisbursementVatAmount()).isEqualTo(20.02);
     assertThat(feeCalculation.getFixedFeeAmount()).isEqualTo(50);
+  }
+
+  @Test
+  void calculate_whenDisbursementVatExceedsCap_shouldReturnWarnDisbursementVatCapped() {
+
+    mockVatRatesService(true);
+
+    // disbursementVatAmount 30.00 > 20% of netDisbursementAmount 100.11 (max = 20.02)
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("ASMS")
+        .claimId("claim_123")
+        .uniqueFileNumber("020416/001")
+        .vatIndicator(true)
+        .netProfitCosts(400.00)
+        .netTravelCosts(10.00)
+        .netWaitingCosts(20.00)
+        .netDisbursementAmount(100.11)
+        .disbursementVatAmount(30.00)
+        .caseConcludedDate(LocalDate.of(2016, 12, 12))
+        .build();
+
+    FeeCalculationResponse result = associatedCivilFixedFeeCalculator.calculate(request, buildFeeEntity());
+
+    // fixedFee=50 + vatOnFixed=10 + netDisbAmt=100.11 + cappedDisbVat=20.02 = 180.13
+    assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(180.13);
+    assertThat(result.getFeeCalculation().getDisbursementVatAmount()).isEqualTo(20.02);
+    assertThat(result.getFeeCalculation().getRequestedDisbursementVatAmount()).isEqualTo(30.00);
+    assertThat(result.getValidationMessages()).containsExactly(
+        ValidationMessagesInner.builder()
+            .code(WARN_DISBURSEMENT_VAT_CAPPED.getCode())
+            .message(WARN_DISBURSEMENT_VAT_CAPPED.getMessage())
+            .type(WARNING)
+            .build()
+    );
   }
 
   @Test

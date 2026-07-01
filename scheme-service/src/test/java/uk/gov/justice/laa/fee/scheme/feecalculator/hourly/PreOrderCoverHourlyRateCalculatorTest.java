@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PRE_ORDER_COVER;
 import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_CRIME_PREORDER_COVER_UPPER_LIMIT;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_VAT_CAPPED;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -26,6 +28,7 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
 class PreOrderCoverHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
@@ -138,5 +141,47 @@ class PreOrderCoverHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
           .usingRecursiveComparison()
           .isEqualTo(expectedResponse);
     }
+  }
+
+  @Test
+  void calculate_whenDisbursementVatExceedsCap_shouldReturnWarnDisbursementVatCapped() {
+
+    mockVatRatesService(true);
+
+    // disbursementVatAmount 5.0 > 20% of netDisbursementAmount 10.0 (max = 2.00)
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("PROP1")
+        .claimId("claim_123")
+        .uniqueFileNumber("110425/123")
+        .netProfitCosts(10.0)
+        .netDisbursementAmount(10.0)
+        .disbursementVatAmount(5.0)
+        .vatIndicator(true)
+        .netTravelCosts(10.0)
+        .netWaitingCosts(10.0)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("PROP1")
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("POC_FS2022").build())
+        .categoryType(PRE_ORDER_COVER)
+        .feeType(HOURLY)
+        .upperCostLimit(BigDecimal.valueOf(100.0))
+        .build();
+
+    FeeCalculationResponse response = preOrderCoverHourlyRateCalculator.calculate(request, feeEntity);
+
+    // profitAndAdditional=30.0, vatOnProfit=6.0, netDisbAmt=10.0, cappedDisbVat=2.0 → total=48.0
+    assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(48.0);
+    assertThat(response.getFeeCalculation().getDisbursementVatAmount()).isEqualTo(2.0);
+    assertThat(response.getFeeCalculation().getRequestedDisbursementVatAmount()).isEqualTo(5.0);
+    assertThat(response.getValidationMessages()).containsExactly(
+        ValidationMessagesInner.builder()
+            .code(WARN_DISBURSEMENT_VAT_CAPPED.getCode())
+            .message(WARN_DISBURSEMENT_VAT_CAPPED.getMessage())
+            .type(WARNING)
+            .build()
+    );
   }
 }
