@@ -12,7 +12,6 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -21,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
-import uk.gov.justice.laa.fee.scheme.exception.CaseConcludedDateRequiredException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitContext;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -65,12 +63,7 @@ public class ImmigrationAsylumDisbursementOnlyCalculator implements FeeCalculato
     Double requestedDisbursementVatAmount = feeCalculationRequest.getDisbursementVatAmount();
     BigDecimal disbursementVatAmount = BigDecimal.ZERO;
     if (requestedDisbursementVatAmount != null) {
-      LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
-      if (caseConcludedDate == null) {
-        throw new CaseConcludedDateRequiredException(feeCalculationRequest.getFeeCode());
-      }
-
-      BigDecimal vatRate = vatRatesService.getVatRateForDate(caseConcludedDate);
+      BigDecimal vatRate = vatRatesService.getVatRateForDate(getCaseConcludedDate(feeCalculationRequest));
       disbursementVatAmount = capDisbursementVat(netDisbursementAmount,
           toBigDecimal(requestedDisbursementVatAmount), vatRate, validationMessages);
     }
