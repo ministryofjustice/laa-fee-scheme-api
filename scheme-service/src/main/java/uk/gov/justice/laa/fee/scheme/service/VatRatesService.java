@@ -79,6 +79,4 @@ public class VatRatesService {
     LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
     return getVatRateForDate(caseConcludedDate, vatIndicator);
   }
-
-
 }
