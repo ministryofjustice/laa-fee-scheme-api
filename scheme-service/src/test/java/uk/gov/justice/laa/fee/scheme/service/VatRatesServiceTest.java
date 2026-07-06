@@ -43,6 +43,21 @@ class VatRatesServiceTest {
     assertThat(result).isEqualTo(new BigDecimal("20.00"));
   }
 
+  @Test
+  void getVatRateForDate_shouldReturnVatRateRegardlessOfVatIndicator() {
+    LocalDate date = LocalDate.of(2025, 3, 15);
+
+    VatRatesEntity vatRatesEntity = VatRatesEntity.builder()
+        .startDate(date)
+        .vatRate(new BigDecimal("20.00"))
+        .build();
+    when(vatRatesRepository.findTopByStartDateLessThanEqualOrderByStartDateDesc(date)).thenReturn(vatRatesEntity);
+
+    BigDecimal result = vatRatesService.getVatRateForDate(date);
+
+    assertThat(result).isEqualTo(new BigDecimal("20.00"));
+  }
+
   @NullSource
   @ValueSource(booleans = {false})
   @ParameterizedTest
