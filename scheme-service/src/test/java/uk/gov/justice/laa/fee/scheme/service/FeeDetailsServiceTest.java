@@ -78,7 +78,14 @@ class FeeDetailsServiceTest {
   void getFeeDetailsV2_shouldReturnExpectedFeeDetails() {
     String feeCode = "FEE123";
 
-    CategoryOfLawTypeEntity categoryOfLawType = CategoryOfLawTypeEntity.builder().code("AAP").build();
+    AreaOfLawTypeEntity areaOfLawType = AreaOfLawTypeEntity.builder()
+        .code(AreaOfLawType.LEGAL_HELP)
+        .caseType(CaseType.CIVIL)
+        .build();
+    CategoryOfLawTypeEntity categoryOfLawType = CategoryOfLawTypeEntity.builder()
+        .code("AAP")
+        .areaOfLawType(areaOfLawType)
+        .build();
 
     // Mock FeeInformationEntity
     FeeInformationEntity feeInformation = mock(FeeInformationEntity.class);
@@ -96,6 +103,7 @@ class FeeDetailsServiceTest {
     assertThat(response.getCategoryOfLawCodes()).isEqualTo(List.of("AAP"));
     assertThat(response.getFeeCodeDescription()).isEqualTo("Claims Against Public Authorities Legal Help Fixed Fee");
     assertThat(response.getFeeType()).isEqualTo("FIXED");
+    assertThat(response.getAreaOfLaw()).isEqualTo("LEGAL_HELP");
   }
 
   @CsvSource({
@@ -106,12 +114,22 @@ class FeeDetailsServiceTest {
   @ParameterizedTest
   void getFeeDetailsV2_whenGivenAssociatedCivilFeeCode_shouldReturnExpectedFeeDetails(String feeCode, String description) {
 
+    AreaOfLawTypeEntity areaOfLawType = AreaOfLawTypeEntity.builder()
+        .code(AreaOfLawType.LEGAL_HELP)
+        .caseType(CaseType.CIVIL)
+        .build();
+    CategoryOfLawTypeEntity categoryOfLawType = CategoryOfLawTypeEntity.builder()
+        .code("AAP")
+        .areaOfLawType(areaOfLawType)
+        .build();
+
     // Mock FeeInformationEntity
     FeeInformationEntity feeInformation = mock(FeeInformationEntity.class);
     when(feeInformation.getFeeDescription()).thenReturn(description);
     when(feeInformation.getFeeType()).thenReturn(FeeType.FIXED);
 
     FeeCategoryMappingEntity feeCategoryMappingEntity = mock(FeeCategoryMappingEntity.class);
+    when(feeCategoryMappingEntity.getCategoryOfLawType()).thenReturn(categoryOfLawType);
     when(feeCategoryMappingEntity.getFeeCode()).thenReturn(feeInformation); // return mock
 
     when(feeCategoryMappingRepository.findByFeeCodeFeeCode(any())).thenReturn(Optional.of(feeCategoryMappingEntity));
@@ -121,6 +139,7 @@ class FeeDetailsServiceTest {
     assertThat(response.getCategoryOfLawCodes()).isEqualTo(List.of("APPEALS", "INVEST", "PRISON"));
     assertThat(response.getFeeCodeDescription()).isEqualTo(description);
     assertThat(response.getFeeType()).isEqualTo("FIXED");
+    assertThat(response.getAreaOfLaw()).isEqualTo("LEGAL_HELP");
   }
 
   @Test
