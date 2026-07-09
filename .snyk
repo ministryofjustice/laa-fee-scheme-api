@@ -10,4 +10,20 @@ ignore:
     - '*':
         reason: no fix available, not exploitable
         expires: 2099-01-01T00:00:00.000Z
+  SNYK-JAVA-ORGAPACHETOMCATEMBED-16643259:
+      - '*':
+          reason: no fix available, not exploitable
+          expires: 2099-01-01T00:00:00.000Z
+  SNYK-JAVA-ORGAPACHETOMCATEMBED-17732890:
+      - '*':
+          reason: no fix available, not exploitable
+          expires: 2099-01-01T00:00:00.000Z
+  SNYK-JAVA-ORGAPACHETOMCATEMBED-17733746:
+      - '*':
+          reason: no fix available, not exploitable
+          expires: 2099-01-01T00:00:00.000Z
+  SNYK-JAVA-CHQOSLOGBACK-17675439:
+      - '*':
+          reason: no fix available, not exploitable
+          expires: 2099-01-01T00:00:00.000Z
 patch: {}
