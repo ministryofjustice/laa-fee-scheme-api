@@ -231,6 +231,8 @@ class FeeCalculationUtilTest {
     assertThat(result).isEqualTo(LocalDate.of(2022, 12, 1));
   }
 
+
+
   @Test
   void getCaseConcludedDate_shouldThrowValidationException_whenVatIndicatorIsTrueAndCaseConcludedDateIsNull() {
     FeeCalculationRequest request = getFeeCalculationRequest();

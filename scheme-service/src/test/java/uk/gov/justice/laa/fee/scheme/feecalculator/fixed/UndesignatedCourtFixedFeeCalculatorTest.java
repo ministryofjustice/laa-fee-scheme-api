@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.YOUTH_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_VAT_CAPPED;
+import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -25,6 +27,7 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 
 @ExtendWith(MockitoExtension.class)
 class UndesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
@@ -188,6 +191,48 @@ class UndesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           feeCalculationRequest, vatIndicator, expectedTotal, expectedVat, expectedNetTravel, expectedNetWaiting);
 
       assertThat(response).usingRecursiveComparison().isEqualTo(expected);
+    }
+
+    @Test
+    void calculate_whenDisbursementVatExceedsCap_shouldReturnWarnDisbursementVatCapped() {
+
+      mockVatRatesService(true);
+
+      // disbursementVatAmount 30.00 > 20% of netDisbursementAmount 100.00 (max = 20.00)
+      FeeCalculationRequest request = FeeCalculationRequest.builder()
+          .feeCode("PROE1")
+          .claimId("claim_123")
+          .representationOrderDate(LocalDate.of(2025, 7, 29))
+          .netDisbursementAmount(100.00)
+          .disbursementVatAmount(30.00)
+          .vatIndicator(true)
+          .netTravelCosts(50.00)
+          .netWaitingCosts(60.00)
+          .caseConcludedDate(LocalDate.of(2026, 1, 30))
+          .build();
+
+      FeeEntity feeEntity = FeeEntity.builder()
+          .feeCode("PROE1")
+          .feeScheme(FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2022").build())
+          .fixedFee(new BigDecimal("223.88"))
+          .categoryType(MAGISTRATES_COURT)
+          .courtDesignationType(CourtDesignationType.UNDESIGNATED)
+          .feeType(FIXED)
+          .build();
+
+      FeeCalculationResponse response = calculator.calculate(request, feeEntity);
+
+      // fixedFeeAndAdditional=333.88, vatOnFixed=66.78, netDisbAmt=100.00, cappedDisbVat=20.00 → total=520.66
+      assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(520.66);
+      assertThat(response.getFeeCalculation().getDisbursementVatAmount()).isEqualTo(20.00);
+      assertThat(response.getFeeCalculation().getRequestedDisbursementVatAmount()).isEqualTo(30.00);
+      assertThat(response.getValidationMessages()).containsExactly(
+          ValidationMessagesInner.builder()
+              .code(WARN_DISBURSEMENT_VAT_CAPPED.getCode())
+              .message(WARN_DISBURSEMENT_VAT_CAPPED.getMessage())
+              .type(WARNING)
+              .build()
+      );
     }
 
   }

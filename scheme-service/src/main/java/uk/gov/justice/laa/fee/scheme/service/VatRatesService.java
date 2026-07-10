@@ -52,6 +52,7 @@ public class VatRatesService {
     return vatRatesEntity.getVatRate();
   }
 
+
   /**
    * Returns the VAT rate derived from the fee calculation request,
    * resolving the case concluded date and VAT indicator from the request.
@@ -62,5 +63,18 @@ public class VatRatesService {
   public BigDecimal getVatRateForRequest(FeeCalculationRequest feeCalculationRequest) {
     LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
     return getVatRateForDate(caseConcludedDate, feeCalculationRequest.getVatIndicator());
+  }
+
+  /**
+   * Returns the VAT rate derived from the fee calculation request,
+   * resolving the case concluded date and VAT indicator from the request.
+   *
+   * @param feeCalculationRequest the fee calculation request
+   * @param vatIndicator          indicates whether VAT is applicable, if true returns VAT rate otherwise BigDecimal.ZERO
+   * @return the VAT rate
+   */
+  public BigDecimal getVatRateForRequest(FeeCalculationRequest feeCalculationRequest, Boolean vatIndicator) {
+    LocalDate caseConcludedDate = getCaseConcludedDate(feeCalculationRequest);
+    return getVatRateForDate(caseConcludedDate, vatIndicator);
   }
 }
