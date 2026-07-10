@@ -77,7 +77,7 @@ class VatRatesServiceTest {
 
   @Test
   void getVatRateForRequest_whenVatIndicatorIsFalse_shouldReturnZero() {
-    LocalDate caseConcludedDate = LocalDate.of(2026, 05, 04);
+    LocalDate caseConcludedDate = LocalDate.of(2025, 6, 1);
     FeeCalculationRequest request = FeeCalculationRequest.builder()
         .feeCode("ABC")
         .vatIndicator(false)
@@ -91,7 +91,7 @@ class VatRatesServiceTest {
 
   @Test
   void getVatRateForRequest_whenVatIndicatorIsNull_shouldReturnZero() {
-    LocalDate caseConcludedDate = LocalDate.of(2026, 05, 04);
+    LocalDate caseConcludedDate = LocalDate.of(2025, 6, 1);
     FeeCalculationRequest request = FeeCalculationRequest.builder()
         .feeCode("ABC")
         .vatIndicator(null)

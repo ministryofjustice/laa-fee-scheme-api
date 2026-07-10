@@ -71,6 +71,7 @@ public class FeeDetailsService {
         .categoryOfLawCodes(categoryOfLawCodes)
         .feeCodeDescription(feeCategoryMapping.getFeeCode().getFeeDescription())
         .feeType(feeCategoryMapping.getFeeCode().getFeeType().toString())
+        .areaOfLaw(feeCategoryMapping.getCategoryOfLawType().getAreaOfLawType().getCode().toString())
         .build();
   }
 

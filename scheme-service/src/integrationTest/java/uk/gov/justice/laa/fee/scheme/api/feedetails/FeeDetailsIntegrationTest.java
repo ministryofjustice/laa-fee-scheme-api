@@ -76,16 +76,17 @@ class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
 
   private static Stream<Arguments> testCategoryOfLawCodes() {
     return Stream.of(
-        Arguments.of("CAPA", "Claims Against Public Authorities Legal Help Fixed Fee", List.of("AAP")),
-        Arguments.of("ASMS", "Legal Help and Associated Civil Work – Miscellaneous", List.of("APPEALS", "INVEST", "PRISON")),
-        Arguments.of("ASPL", "Legal Help and Associated Civil Work – Public Law", List.of("APPEALS", "INVEST", "PRISON")),
-        Arguments.of("ASAS", "Part 1 injunction Anti-Social Behaviour Crime and Policing Act 2014", List.of("APPEALS", "INVEST", "PRISON"))
+        Arguments.of("CAPA", "Claims Against Public Authorities Legal Help Fixed Fee", List.of("AAP"), "LEGAL_HELP"),
+        Arguments.of("ASMS", "Legal Help and Associated Civil Work – Miscellaneous", List.of("APPEALS", "INVEST", "PRISON"), "CRIME_LOWER"),
+        Arguments.of("ASPL", "Legal Help and Associated Civil Work – Public Law", List.of("APPEALS", "INVEST", "PRISON"), "CRIME_LOWER"),
+        Arguments.of("ASAS", "Part 1 injunction Anti-Social Behaviour Crime and Policing Act 2014", List.of("APPEALS", "INVEST", "PRISON"), "CRIME_LOWER"),
+        Arguments.of("ASSA", "Mediation Assesment (alone)", List.of("MEDI"), "MEDIATION")
     );
   }
 
   @MethodSource("testCategoryOfLawCodes")
   @ParameterizedTest
-  void shouldGetFeeDetailsV2WhenCorrelationIdProvided(String feeCode, String description, List<String> categoryOfLawCodes) throws Exception {
+  void shouldGetFeeDetailsV2WhenCorrelationIdProvided(String feeCode, String description, List<String> categoryOfLawCodes, String areaOfLawCode) throws Exception {
     String correlationId = "a51433f8-a78c-47ef-bd31-837b95467220";
     mockMvc
         .perform(get(API_V_2_FEE_DETAILS + feeCode)
@@ -93,6 +94,7 @@ class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
             .header(HEADER_CORRELATION_ID, correlationId))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.areaOfLaw").value(areaOfLawCode))
         .andExpect(jsonPath("$.categoryOfLawCodes").value(is(categoryOfLawCodes)))
         .andExpect(jsonPath("$.feeCodeDescription").value(description))
         .andExpect(jsonPath("$.feeType").value("FIXED"))
@@ -101,12 +103,13 @@ class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
 
   @MethodSource("testCategoryOfLawCodes")
   @ParameterizedTest
-  void shouldGetFeeDetailsV2WhenCorrelationIdNotProvided(String feeCode, String description, List<String> categoryOfLawCodes) throws Exception {
+  void shouldGetFeeDetailsV2WhenCorrelationIdNotProvided(String feeCode, String description, List<String> categoryOfLawCodes, String areaOfLawCode) throws Exception {
     mockMvc
         .perform(get(API_V_2_FEE_DETAILS + feeCode)
             .header(HttpHeaders.AUTHORIZATION, INT_TEST_TOKEN))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.areaOfLaw").value(areaOfLawCode))
         .andExpect(jsonPath("$.categoryOfLawCodes").value(is(categoryOfLawCodes)))
         .andExpect(jsonPath("$.feeCodeDescription").value(description))
         .andExpect(jsonPath("$.feeType").value("FIXED"))

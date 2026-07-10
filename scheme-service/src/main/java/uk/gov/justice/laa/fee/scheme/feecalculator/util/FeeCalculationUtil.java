@@ -118,20 +118,8 @@ public final class FeeCalculationUtil {
    * @return LocalDate
    */
   public static LocalDate getCaseConcludedDate(FeeCalculationRequest feeCalculationRequest) {
-
     return Optional.ofNullable(feeCalculationRequest.getCaseConcludedDate())
-            .orElseThrow(() -> new CaseConcludedDateRequiredException(feeCalculationRequest.getFeeCode()));
-  }
-
-  /**
-   * Cap the disbursement VAT at the maximum claimable and add a warning if it is exceeded.
-   */
-  public static BigDecimal capDisbursementVat(BigDecimal netDisbursementAmount, BigDecimal requestedDisbursementVat,
-                                              BigDecimal vatRate, List<ValidationMessagesInner> validationMessages) {
-    BigDecimal maxDisbursementVat = calculateVatAmount(netDisbursementAmount, vatRate);
-    LimitContext limitContext =
-            new LimitContext(DISBURSEMENT_VAT, maxDisbursementVat, null, WARN_DISBURSEMENT_VAT_CAPPED);
-    return checkLimitAndCapIfExceeded(requestedDisbursementVat, limitContext, validationMessages);
+        .orElseThrow(() -> new CaseConcludedDateRequiredException(feeCalculationRequest.getFeeCode()));
   }
 
   /**
@@ -168,6 +156,16 @@ public final class FeeCalculationUtil {
         .add(disbursementVatAmount);
   }
 
+  /**
+   * Cap the disbursement VAT at the maximum claimable and add a warning if it is exceeded.
+   */
+  public static BigDecimal capDisbursementVat(BigDecimal netDisbursementAmount, BigDecimal requestedDisbursementVat,
+                                              BigDecimal vatRate, List<ValidationMessagesInner> validationMessages) {
+    BigDecimal maxDisbursementVat = calculateVatAmount(netDisbursementAmount, vatRate);
+    LimitContext limitContext =
+        new LimitContext(DISBURSEMENT_VAT, maxDisbursementVat, null, WARN_DISBURSEMENT_VAT_CAPPED);
+    return checkLimitAndCapIfExceeded(requestedDisbursementVat, limitContext, validationMessages);
+  }
 
   /**
    * If bolts ons are null, return null for request.
