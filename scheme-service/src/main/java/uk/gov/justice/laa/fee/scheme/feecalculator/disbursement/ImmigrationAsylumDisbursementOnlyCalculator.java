@@ -4,6 +4,8 @@ import static java.util.Objects.nonNull;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_ONLY;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.capDisbursementVat;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitType.DISBURSEMENT;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.checkLimitAndCapIfExceeded;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
@@ -13,6 +15,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
@@ -23,13 +26,17 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
+import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 /**
  * Calculate the Immigration and asylum disbursement only fee for a given fee entity and fee calculation request.
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class ImmigrationAsylumDisbursementOnlyCalculator implements FeeCalculator {
+
+  private final VatRatesService vatRatesService;
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
@@ -37,7 +44,7 @@ public class ImmigrationAsylumDisbursementOnlyCalculator implements FeeCalculato
   }
 
   /**
-   * Calculated fee for Immigration and asylum disbursement only fee based on the provided fee entity and fee calculation request.
+   * Calculated fee for Immigration and asylum disbursement only fee based on the provided fee entity and request.
    */
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
@@ -45,7 +52,6 @@ public class ImmigrationAsylumDisbursementOnlyCalculator implements FeeCalculato
     log.info("Calculate Immigration and Asylum disbursements only");
 
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    BigDecimal requestedDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
     String immigrationPriorAuthorityNumber = feeCalculationRequest.getImmigrationPriorAuthorityNumber();
 
     List<ValidationMessagesInner> validationMessages = new ArrayList<>();
@@ -54,14 +60,22 @@ public class ImmigrationAsylumDisbursementOnlyCalculator implements FeeCalculato
     BigDecimal netDisbursementAmount = checkLimitAndCapIfExceeded(requestedNetDisbursementAmount,
         disbursementLimitContext, validationMessages);
 
-    BigDecimal totalAmount = calculateTotalAmount(netDisbursementAmount, requestedDisbursementVatAmount);
+    Double requestedDisbursementVatAmount = feeCalculationRequest.getDisbursementVatAmount();
+    BigDecimal disbursementVatAmount = BigDecimal.ZERO;
+    if (requestedDisbursementVatAmount != null) {
+      BigDecimal vatRate = vatRatesService.getVatRateForDate(getCaseConcludedDate(feeCalculationRequest));
+      disbursementVatAmount = capDisbursementVat(netDisbursementAmount,
+          toBigDecimal(requestedDisbursementVatAmount), vatRate, validationMessages);
+    }
+
+    BigDecimal totalAmount = calculateTotalAmount(netDisbursementAmount, disbursementVatAmount);
 
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
         .disbursementAmount(nonNull(feeCalculationRequest.getNetDisbursementAmount()) ? toDouble(netDisbursementAmount) : null)
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
-        .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .disbursementVatAmount(nonNull(requestedDisbursementVatAmount) ? toDouble(disbursementVatAmount) : null)
+        .requestedDisbursementVatAmount(requestedDisbursementVatAmount)
         .build();
 
     return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, validationMessages);
