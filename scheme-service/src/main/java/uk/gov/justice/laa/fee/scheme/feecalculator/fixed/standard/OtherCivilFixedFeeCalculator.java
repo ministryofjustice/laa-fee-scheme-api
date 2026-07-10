@@ -10,6 +10,7 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MISCELLANEOUS;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PUBLIC_LAW;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.WELFARE_BENEFITS;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
@@ -57,4 +59,21 @@ public class OtherCivilFixedFeeCalculator extends StandardFixedFeeCalculator {
     return escaped;
   }
 
+  @Override
+  protected BigDecimal capDisbursementVat(FeeCalculationRequest feeCalculationRequest,
+                                          VatRatesService vatRatesService,
+                                          List<ValidationMessagesInner> validationMessages) {
+
+    BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
+    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+
+    // Calculate disbursed vat amount
+    BigDecimal disbursementVatRate = vatRatesService.getVatRateForDate(
+            getCaseConcludedDate(feeCalculationRequest), true);
+    disbursementVatAmount =
+            FeeCalculationUtil.capDisbursementVat(
+                    netDisbursementAmount, disbursementVatAmount, disbursementVatRate, validationMessages);
+
+    return disbursementVatAmount;
+  }
 }
