@@ -10,7 +10,7 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
 
   @Test
   void shouldReturnFeeCalculationForEducationDisbursementOnly() throws Exception {
-    String request = """ 
+    String request = """
         {
           "feeCode": "EDUDIS",
           "claimId": "claim_123",
@@ -40,7 +40,7 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
 
   @Test
   void shouldReturnFeeCalculationForImmigrationDisbursementOnly() throws Exception {
-    String request = """ 
+    String request = """
         {
           "feeCode": "ICASD",
           "claimId": "claim_123",
@@ -64,14 +64,13 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
             "requestedDisbursementVatAmount": 11.07
             }
           }
-        }
         """);
     assertThat(actualResponse).isNotBlank();
   }
 
   @Test
   void shouldReturnFeeCalculationForMentalHealthDisbursementOnly() throws Exception {
-    String request = """ 
+    String request = """
         {
           "feeCode": "MHLDIS",
           "claimId": "claim_123",
@@ -95,6 +94,42 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
             "requestedDisbursementVatAmount": 150.0
             }
           }
+        """);
+    assertThat(actualResponse).isNotBlank();
+  }
+
+  @Test
+  void shouldCapDisbursementVatAndWarnWhenVatExceedsMaximum() throws Exception {
+    String request = """
+        {
+          "feeCode": "ICASD",
+          "claimId": "claim_123",
+          "startDate": "2013-04-01",
+          "netDisbursementAmount": 100.00,
+          "disbursementVatAmount": 50.00,
+          "caseConcludedDate": "2026-02-01"
+        }
+        """;
+
+    String actualResponse = postAndExpect(request, """
+        {
+          "feeCode": "ICASD",
+          "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2013",
+          "claimId": "claim_123",
+          "validationMessages": [
+            {
+              "type": "WARNING",
+              "code": "WARALL1",
+              "message": "Value entered exceeds the VAT threshold for the net disbursement amount claimed. Costs have been capped at the maximum VAT amount claimable."
+            }
+          ],
+          "feeCalculation": {
+            "totalAmount": 120.00,
+            "disbursementAmount": 100.00,
+            "requestedNetDisbursementAmount": 100.00,
+            "disbursementVatAmount": 20.00,
+            "requestedDisbursementVatAmount": 50.00
+           }
         }
         """);
     assertThat(actualResponse).isNotBlank();

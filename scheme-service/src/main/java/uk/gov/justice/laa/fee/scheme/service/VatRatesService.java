@@ -36,11 +36,20 @@ public class VatRatesService {
       return BigDecimal.ZERO;
     }
 
+    return getVatRateForDate(date);
+  }
+
+  /**
+   * Returns the VAT rate applicable for a given date, regardless of the VAT indicator.
+   *
+   * @param date the date to apply the VAT
+   * @return the VAT rate
+   */
+  public BigDecimal getVatRateForDate(LocalDate date) {
     VatRatesEntity vatRatesEntity = vatRatesRepository.findTopByStartDateLessThanEqualOrderByStartDateDesc(date);
-    BigDecimal vatRate = vatRatesEntity.getVatRate();
 
     log.info("Retrieved VAT Rate: {}", vatRatesEntity.getVatRate());
-    return vatRate;
+    return vatRatesEntity.getVatRate();
   }
 
   /**
