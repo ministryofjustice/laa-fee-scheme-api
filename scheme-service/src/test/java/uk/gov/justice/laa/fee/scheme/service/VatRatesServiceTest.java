@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.VatRatesEntity;
 import uk.gov.justice.laa.fee.scheme.exception.CaseConcludedDateRequiredException;
+import uk.gov.justice.laa.fee.scheme.exception.VatRateNotFoundException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.repository.VatRatesRepository;
 
@@ -145,6 +146,16 @@ class VatRatesServiceTest {
     BigDecimal result = vatRatesService.getVatRateForDate(date);
 
     assertThat(result).isEqualTo(new BigDecimal("20.00"));
+  }
+
+  @Test
+  void getVatRateForDate_whenNoVatRateForDate_shouldThrowVatRateNotFound() {
+    LocalDate date = LocalDate.of(1980, 1, 1);
+    when(vatRatesRepository.findTopByStartDateLessThanEqualOrderByStartDateDesc(date)).thenReturn(null);
+
+    assertThatThrownBy(() -> vatRatesService.getVatRateForDate(date))
+        .isInstanceOf(VatRateNotFoundException.class)
+        .hasMessageContaining("No VAT rate found for date: 1980-01-01");
   }
 
   @Test
