@@ -11,7 +11,6 @@ import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_SUM
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.capDisbursementVat;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.filterBoltOnFeeDetails;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitType.DISBURSEMENT;
@@ -24,7 +23,6 @@ import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -243,7 +241,8 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
     BigDecimal totalAmount = feeTotalWithBoltsOn.add(calculatedVatAmount).add(cappedDisbursementVatAmount);
 
     FeeCalculation feeCalculation = buildFeeCalculation(feeCalculationRequest, totalAmount, vatRate,
-        calculatedVatAmount, netDisbursementAmount, cappedDisbursementVatAmount, feeTotalWithBoltsOn, netProfitCosts, true, boltOnFeeDetails);
+        calculatedVatAmount, netDisbursementAmount, cappedDisbursementVatAmount, feeTotalWithBoltsOn,
+        netProfitCosts, true, boltOnFeeDetails);
 
     return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, validationMessages);
   }
