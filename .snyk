@@ -6,6 +6,14 @@ ignore:
     - '*':
         reason: no fix available, not exploitable
         expires: 2099-01-01T00:00:00.000Z
+  SNYK-JAVA-TOOLSJACKSONCORE-17972609:
+      - '*':
+          reason: no fix available, not exploitable
+          expires: 2099-01-01T00:00:00.000Z
+  SNYK-JAVA-COMFASTERXMLJACKSONCORE-17972608:
+      - '*':
+          reason: no fix available, not exploitable
+          expires: 2099-01-01T00:00:00.000Z
   SNYK-JAVA-ORGAPACHETOMCATEMBED-16691231:
     - '*':
         reason: no fix available, not exploitable
@@ -26,4 +34,5 @@ ignore:
       - '*':
           reason: no fix available, not exploitable
           expires: 2099-01-01T00:00:00.000Z
+
 patch: {}
