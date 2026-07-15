@@ -311,7 +311,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
             .caseConcludedDate(LocalDate.of(2026, 1, 30))
             .build();
 
-    FeeEntity feeEntity = buildFeeEntity("IAXL");
+    FeeEntity feeEntity = buildFeeEntity("IAXC");
 
     FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
 
@@ -337,7 +337,7 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
             .caseConcludedDate(LocalDate.of(2026, 1, 30))
             .build();
 
-    FeeEntity feeEntity = buildFeeEntity("IAXL");
+    FeeEntity feeEntity = buildFeeEntity("IMCD");
 
     FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
 
