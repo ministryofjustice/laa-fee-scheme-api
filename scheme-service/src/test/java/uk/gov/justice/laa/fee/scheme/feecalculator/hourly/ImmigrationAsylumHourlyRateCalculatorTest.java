@@ -102,22 +102,22 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
   static Stream<Arguments> feeTestDataLegalHelp() {
     return Stream.of(
         // under profit costs and disbursements limits
-        Arguments.of("IAXL", NO_VAT, NO_AUTHORITY, 166.25, 123.38, 20.67,
-            310.3, 0, 289.63, 166.25, 123.38, List.of()),
-        Arguments.of("IAXL", VAT, NO_AUTHORITY, 166.25, 123.38, 20.67,
-            343.55, 33.25, 289.63, 166.25, 123.38, List.of()),
+        Arguments.of("IAXL", NO_VAT, NO_AUTHORITY, 166.25, 123.38, 24.67,
+            314.3, 0, 289.63, 166.25, 123.38, List.of()),
+        Arguments.of("IAXL", VAT, NO_AUTHORITY, 166.25, 123.38, 24.67,
+            347.55, 33.25, 289.63, 166.25, 123.38, List.of()),
 
         // over profit costs limit "with" prior authority
-        Arguments.of("IAXL", NO_VAT, AUTHORITY, 919.16, 123.38, 20.67,
-            1063.21, 0, 1042.54, 919.16, 123.38, List.of()),
-        Arguments.of("IAXL", VAT, AUTHORITY, 919.16, 123.38, 20.67,
-            1247.04, 183.83, 1042.54, 919.16, 123.38, List.of()),
+        Arguments.of("IAXL", NO_VAT, AUTHORITY, 919.16, 123.38, 24.67,
+            1067.21, 0, 1042.54, 919.16, 123.38, List.of()),
+        Arguments.of("IAXL", VAT, AUTHORITY, 919.16, 123.38, 24.67,
+            1251.04, 183.83, 1042.54, 919.16, 123.38, List.of()),
 
         // over profit costs limit "without" prior authority
-        Arguments.of("IAXL", NO_VAT, NO_AUTHORITY, 919.16, 123.38, 20.67,
-            944.05, 0, 923.38, 800, 123.38, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP)),
-        Arguments.of("IAXL", VAT, NO_AUTHORITY, 919.16, 123.38, 20.67,
-            1104.05, 160, 923.38, 800, 123.38, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP)),
+        Arguments.of("IAXL", NO_VAT, NO_AUTHORITY, 919.16, 123.38, 24.67,
+            948.05, 0, 923.38, 800, 123.38, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP)),
+        Arguments.of("IAXL", VAT, NO_AUTHORITY, 919.16, 123.38, 24.67,
+            1108.05, 160, 923.38, 800, 123.38, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP)),
 
         // over disbursements limit "with" prior authority
         Arguments.of("IAXL", NO_VAT, AUTHORITY, 166.25, 425.17, 85.03,
@@ -144,20 +144,20 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
             1445.03, 160, 1200, 800, 400, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP, WARN_IMM_ASYLM_DISB_LEGAL_HELP)),
 
         // IMXL
-        Arguments.of("IMXL", NO_VAT, NO_AUTHORITY, 166.25, 123.38, 20.67,
-            310.3, 0, 289.63, 166.25, 123.38, List.of()),
+        Arguments.of("IMXL", NO_VAT, NO_AUTHORITY, 166.25, 123.38, 24.67,
+            314.3, 0, 289.63, 166.25, 123.38, List.of()),
 
         // IMXL over profit costs limit "without" prior authority
-        Arguments.of("IMXL", NO_VAT, NO_AUTHORITY, 919.16, 123.38, 20.67,
-            944.05, 0, 923.38, 800, 123.38, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP)),
+        Arguments.of("IMXL", NO_VAT, NO_AUTHORITY, 919.16, 123.38, 24.67,
+            948.05, 0, 923.38, 800, 123.38, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP)),
 
         // IMXL over disbursements limit "without" prior authority
         Arguments.of("IMXL", NO_VAT, NO_AUTHORITY, 166.25, 425.17, 85.03,
             651.28, 0, 566.25, 166.25, 400, List.of(WARN_IMM_ASYLM_DISB_LEGAL_HELP)),
 
         // IA100
-        Arguments.of("IA100", NO_VAT, NO_AUTHORITY, 166.25, 123.38, 20.67,
-            310.3, 0, 289.63, 166.25, 123.38, List.of())
+        Arguments.of("IA100", NO_VAT, NO_AUTHORITY, 166.25, 123.38, 24.67,
+            314.3, 0, 289.63, 166.25, 123.38, List.of())
     );
   }
 
