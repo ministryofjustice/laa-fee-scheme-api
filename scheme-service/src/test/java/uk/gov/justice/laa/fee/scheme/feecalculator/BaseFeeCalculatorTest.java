@@ -31,11 +31,6 @@ public abstract class BaseFeeCalculatorTest {
 
   protected void mockVatRatesVatIndicatorTrue() {
     when(vatRatesService.getVatRateForDate(any(LocalDate.class), eq(true)))
-        .thenReturn(new BigDecimal("20.00"));
-  }
-
-  protected void mockVatRatesVatIndicatorTrue() {
-    when(vatRatesService.getVatRateForDate(any(LocalDate.class), eq(true)))
             .thenReturn(new BigDecimal("20.00"));
   }
 }
