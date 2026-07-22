@@ -24,13 +24,13 @@ public abstract class BaseFeeCalculatorTest {
   protected void mockVatRatesService(Boolean vatIndicator) {
     BigDecimal vatRate = vatIndicator ? new BigDecimal("20.00") : BigDecimal.ZERO;
     lenient().when(vatRatesService.getVatRateForDate(any(), any())).thenReturn(vatRate);
-    lenient().when(vatRatesService.getVatRateForDate(any(), any())).thenReturn(vatRate);
+    lenient().when(vatRatesService.getVatRateForDate(any())).thenReturn(new BigDecimal("20.00"));
     lenient().when(vatRatesService.getVatRateForRequest(any())).thenReturn(vatRate);
     lenient().when(vatRatesService.getVatRateForRequest(any(), any())).thenReturn(new BigDecimal("20.00"));
   }
 
   protected void mockVatRatesVatIndicatorTrue() {
     when(vatRatesService.getVatRateForDate(any(LocalDate.class), eq(true)))
-            .thenReturn(new BigDecimal("20.00"));
+        .thenReturn(new BigDecimal("20.00"));
   }
 }

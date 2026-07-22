@@ -761,11 +761,11 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   @ParameterizedTest
   @CsvSource({
     "IMCF, WARIA1, Costs have been capped at £600 without an Immigration Priority Authority Number. "
-        + "Disbursement costs exceed the Disbursement Limit., false, 2173.72, 250.6, 650.0, 600.0, 1092.0, 0",
+        + "Disbursement costs exceed the Disbursement Limit., false, 2113.60, 250.6, 650.0, 600.0, 1092.0, 0",
     "IALB, WARIA2, Costs have been capped at £400 without an Immigration Priority Authority Number. "
-        + "Disbursement costs exceed the Disbursement Limit., false, 1158.92, 114.8, 450.0, 400.0, 413.0, 0",
+        + "Disbursement costs exceed the Disbursement Limit., false, 1098.80, 114.8, 450.0, 400.0, 413.0, 0",
     "IACE, WARIA3, The claim exceeds the Escape Case Threshold. "
-        + "An Escape Case Claim must be submitted for further costs to be paid., true, 1116.12, 166.0, 50.0, 50.0, 669.0, 1500"
+        + "An Escape Case Claim must be submitted for further costs to be paid., true, 1056.00, 166.0, 50.0, 50.0, 669.0, 1500"
   })
   void shouldReturnValidationWarningForImmigrationAndAsylumFixedFee(
       String feeCode,
@@ -786,7 +786,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "claimId": "claim_123",
           "startDate": "2024-09-30",
           "netDisbursementAmount": %s,
-          "disbursementVatAmount": 70.12,
+          "disbursementVatAmount": 10.00,
           "vatIndicator": true,
           "detentionTravelAndWaitingCosts": 111.00,
           "jrFormFilling": 50.00,
@@ -818,8 +818,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "calculatedVatAmount": %s,
             "requestedNetDisbursementAmount": %s,
             "disbursementAmount": %s,
-            "disbursementVatAmount": 70.12,
-            "requestedDisbursementVatAmount": 70.12,
+            "disbursementVatAmount": 10.00,
+            "requestedDisbursementVatAmount": 10.00,
             "fixedFeeAmount": %s,
             "detentionTravelAndWaitingCostsAmount": 111.0,
             "jrFormFillingAmount": 50.0

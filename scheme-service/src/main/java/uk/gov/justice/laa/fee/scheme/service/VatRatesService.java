@@ -4,11 +4,13 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUti
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.fee.scheme.entity.VatRatesEntity;
+import uk.gov.justice.laa.fee.scheme.exception.VatRateNotFoundException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.repository.VatRatesRepository;
 
@@ -46,7 +48,9 @@ public class VatRatesService {
    * @return the VAT rate
    */
   public BigDecimal getVatRateForDate(LocalDate date) {
-    VatRatesEntity vatRatesEntity = vatRatesRepository.findTopByStartDateLessThanEqualOrderByStartDateDesc(date);
+    VatRatesEntity vatRatesEntity =
+        Optional.ofNullable(vatRatesRepository.findTopByStartDateLessThanEqualOrderByStartDateDesc(date))
+            .orElseThrow(() -> new VatRateNotFoundException(date));
 
     log.info("Retrieved VAT Rate: {}", vatRatesEntity.getVatRate());
     return vatRatesEntity.getVatRate();
