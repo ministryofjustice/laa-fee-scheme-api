@@ -2,8 +2,10 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.HOURLY;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_VAT_CAPPED;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DETENTION_TRAVEL;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_LEGAL_HELP;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_JR_FORM_FILLING;
@@ -57,6 +59,10 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
                                                                      double expectedNetDisbursement, List<WarningType> expectedWarnings) {
 
     mockVatRatesService(vatIndicator);
+
+    if (!vatIndicator) {
+      mockVatRatesVatIndicatorTrue();
+    }
 
     FeeCalculationRequest
         feeCalculationRequest = FeeCalculationRequest.builder()
@@ -165,6 +171,10 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
 
     mockVatRatesService(vatIndicator);
 
+    if (!vatIndicator) {
+      mockVatRatesVatIndicatorTrue();
+    }
+
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .startDate(LocalDate.of(2025, 5, 11))
@@ -227,13 +237,14 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
                                                                                     Double jrFormFilling,
                                                                                     List<WarningType> expectedWarnings) {
     mockVatRatesService(false);
+    mockVatRatesVatIndicatorTrue();
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("IAXL")
         .startDate(LocalDate.of(2025, 5, 11))
         .netProfitCosts(166.25)
         .netDisbursementAmount(123.38)
-        .disbursementVatAmount(24.67)
+        .disbursementVatAmount(20.67)
         .detentionTravelAndWaitingCosts(detentionTravelAndWaitingCosts)
         .jrFormFilling(jrFormFilling)
         .vatIndicator(false)
@@ -258,6 +269,94 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
   }
 
   @ParameterizedTest
+  @MethodSource("disbursementVatWarningTestData")
+  void calculateFee_whenLegalHelpDisbursementVatOverLimit_shouldReturnWarning(Double disbursementVat, Double expectedTotal, List<WarningType> expectedWarnings) {
+    mockVatRatesService(false);
+    mockVatRatesVatIndicatorTrue();
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+            .feeCode("IAXL")
+            .startDate(LocalDate.of(2025, 5, 11))
+            .netProfitCosts(166.25)
+            .netDisbursementAmount(123.38)
+            .disbursementVatAmount(disbursementVat)
+            .vatIndicator(false)
+            .immigrationPriorAuthorityNumber("priorAuth")
+            .caseConcludedDate(LocalDate.of(2026, 1, 30))
+            .build();
+
+    FeeEntity feeEntity = buildFeeEntity("IAXL");
+
+    FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    assertThat(result).isNotNull();
+    assertEquals(result.getFeeCalculation().getTotalAmount(), expectedTotal);
+    assertWarnings(result.getValidationMessages(), expectedWarnings);
+  }
+
+  @ParameterizedTest
+  @MethodSource("disbursementVatWarningTestData")
+  void calculateFee_whenClrDisbursementVatOverLimit_shouldReturnWarning(Double disbursementVat, Double expectedTotal, List<WarningType> expectedWarnings) {
+    mockVatRatesService(false);
+    mockVatRatesVatIndicatorTrue();
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+            .feeCode("IAXC")
+            .startDate(LocalDate.of(2025, 5, 11))
+            .netProfitCosts(166.25)
+            .netDisbursementAmount(123.38)
+            .disbursementVatAmount(disbursementVat)
+            .vatIndicator(false)
+            .immigrationPriorAuthorityNumber("priorAuth")
+            .caseConcludedDate(LocalDate.of(2026, 1, 30))
+            .build();
+
+    FeeEntity feeEntity = buildFeeEntity("IAXC");
+
+    FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    assertThat(result).isNotNull();
+    assertEquals(result.getFeeCalculation().getTotalAmount(), expectedTotal);
+    assertWarnings(result.getValidationMessages(), expectedWarnings);
+  }
+
+  @ParameterizedTest
+  @MethodSource("disbursementVatWarningTestData")
+  void calculateFee_whenClrInterimDisbursementVatOverLimit_shouldReturnWarning(Double disbursementVat, Double expectedTotal, List<WarningType> expectedWarnings) {
+    mockVatRatesService(false);
+    mockVatRatesVatIndicatorTrue();
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+            .feeCode("IMCD")
+            .startDate(LocalDate.of(2025, 5, 11))
+            .netProfitCosts(166.25)
+            .netDisbursementAmount(123.38)
+            .disbursementVatAmount(disbursementVat)
+            .vatIndicator(false)
+            .immigrationPriorAuthorityNumber("priorAuth")
+            .caseConcludedDate(LocalDate.of(2026, 1, 30))
+            .build();
+
+    FeeEntity feeEntity = buildFeeEntity("IMCD");
+
+    FeeCalculationResponse result = immigrationAsylumHourlyRateCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    assertThat(result).isNotNull();
+    assertEquals(result.getFeeCalculation().getTotalAmount(), expectedTotal);
+    assertWarnings(result.getValidationMessages(), expectedWarnings);
+  }
+
+  static Stream<Arguments> disbursementVatWarningTestData() {
+    return Stream.of(
+            // Legal Help
+            Arguments.of(314.37, 314.31, List.of(WARN_DISBURSEMENT_VAT_CAPPED)),
+            Arguments.of(1000.10, 314.31,  List.of(WARN_DISBURSEMENT_VAT_CAPPED)),
+            Arguments.of(200.46, 314.31, List.of(WARN_DISBURSEMENT_VAT_CAPPED))
+    );
+  }
+
+
+  @ParameterizedTest
   @MethodSource("feeTestDataClr")
   void calculateFee_whenClr_shouldReturnFeeCalculationResponse(String feeCode, boolean vatIndicator, String priorAuthority,
                                                                double netProfitCosts, double netCostOfCounsel, double netDisbursement,
@@ -266,9 +365,14 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
 
     mockVatRatesService(vatIndicator);
 
+    if (!vatIndicator) {
+      mockVatRatesVatIndicatorTrue();
+    }
+
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .startDate(LocalDate.of(2025, 5, 11))
+        .caseConcludedDate(LocalDate.of(2025, 6, 12))
         .netProfitCosts(netProfitCosts)
         .netCostOfCounsel(netCostOfCounsel)
         .netDisbursementAmount(netDisbursement)
@@ -333,10 +437,13 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
                                                                        Double jrFormFilling, List<WarningType> expectedWarnings) {
 
     mockVatRatesService(false);
+    mockVatRatesVatIndicatorTrue();
+
 
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .startDate(LocalDate.of(2025, 5, 11))
+        .caseConcludedDate(LocalDate.of(2025, 6, 12))
         .netProfitCosts(486.78)
         .netCostOfCounsel(611.25)
         .netDisbursementAmount(152.34)
@@ -380,9 +487,15 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
                                                                       List<WarningType> expectedWarnings) {
 
     mockVatRatesService(vatIndicator);
+
+    if (!vatIndicator) {
+      mockVatRatesVatIndicatorTrue();
+    }
+
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode(feeCode)
         .startDate(LocalDate.of(2025, 5, 11))
+        .caseConcludedDate(LocalDate.of(2025, 6, 12))
         .netProfitCosts(netProfitCosts)
         .netCostOfCounsel(netCostOfCounsel)
         .boltOns(requestedBoltOns)
@@ -422,34 +535,34 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
   static Stream<Arguments> feeTestDataClrInterim() {
     return Stream.of(
         // under total limit
-        Arguments.of("IACD", NO_VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 611.25, 152.34, 30.46,
-            2054.83, 0, 2024.37, List.of()),
-        Arguments.of("IACD", VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 611.25, 152.34, 30.46,
-            2429.24, 374.41, 2024.37, List.of()),
+        Arguments.of("IACD", NO_VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 611.25, 152.34, 10.46,
+            2034.83, 0, 2024.37, List.of()),
+        Arguments.of("IACD", VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 611.25, 152.34, 10.46,
+            2409.24, 374.41, 2024.37, List.of()),
 
         // over total "with" prior authority
-        Arguments.of("IACD", NO_VAT, AUTHORITY, buildBoltOn(true), 486.78, 1008.17, 152.34, 30.46,
-            2451.75, 0, 2421.29, List.of()),
-        Arguments.of("IACD", VAT, AUTHORITY, buildBoltOn(true), 486.78, 1008.17, 152.34, 30.46,
-            2905.54, 453.79, 2421.29, List.of()),
+        Arguments.of("IACD", NO_VAT, AUTHORITY, buildBoltOn(true), 486.78, 1008.17, 152.34, 10.46,
+            2431.75, 0, 2421.29, List.of()),
+        Arguments.of("IACD", VAT, AUTHORITY, buildBoltOn(true), 486.78, 1008.17, 152.34, 10.46,
+            2885.54, 453.79, 2421.29, List.of()),
 
         // over total limit "without" prior authority
-        Arguments.of("IACD", NO_VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 1008.17, 152.34, 30.46,
-            2404.46, 0, 2374, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM)),
-        Arguments.of("IACD", VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 1008.17, 152.34, 30.46,
-            2858.25, 453.79, 2374, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM)),
+        Arguments.of("IACD", NO_VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 1008.17, 152.34, 10.46,
+            2384.46, 0, 2374, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM)),
+        Arguments.of("IACD", VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 1008.17, 152.34, 10.46,
+            2838.25, 453.79, 2374, List.of(WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM)),
 
         // substantive hearing bolt on = false
-        Arguments.of("IACD", NO_VAT, NO_AUTHORITY, buildBoltOn(false), 486.78, 611.25, 152.34, 30.46,
-            1752.83, 0, 1722.37, List.of()),
+        Arguments.of("IACD", NO_VAT, NO_AUTHORITY, buildBoltOn(false), 486.78, 611.25, 152.34, 10.46,
+            1732.83, 0, 1722.37, List.of()),
 
         // no bolt ons
-        Arguments.of("IACD", NO_VAT, NO_AUTHORITY, null, 486.78, 611.25, 152.34, 30.46,
-            1280.83, 0, 1250.37, List.of()),
+        Arguments.of("IACD", NO_VAT, NO_AUTHORITY, null, 486.78, 611.25, 152.34, 10.46,
+            1260.83, 0, 1250.37, List.of()),
 
         // IMCD
-        Arguments.of("IMCD", NO_VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 611.25, 152.34, 30.46,
-            2054.83, 0, 2024.37, List.of())
+        Arguments.of("IMCD", NO_VAT, NO_AUTHORITY, buildBoltOn(true), 486.78, 611.25, 152.34, 10.46,
+            2034.83, 0, 2024.37, List.of())
     );
   }
 
