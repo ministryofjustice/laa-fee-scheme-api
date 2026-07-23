@@ -1033,7 +1033,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARIA10",
-              "message": "JR/ form filling costs should only be completed for standard fee cases. JR/form filling on hourly rates claims should be reported within Profit Costs. The amount entered in JR/Form filling has not been paid."
+              "message": "JR/Form filling costs should only be completed for standard fee cases. JR/Form filling on hourly rates claims should be reported within Profit Costs. The amount entered in JR/Form filling has not been paid."
             }
           ],
           "feeCalculation": {

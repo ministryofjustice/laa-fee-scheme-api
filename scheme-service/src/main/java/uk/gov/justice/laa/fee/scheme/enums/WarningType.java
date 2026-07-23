@@ -71,8 +71,8 @@ public enum WarningType {
           + "The amount entered in Detention Travel and Waiting has not been paid."),
   WARN_IMM_ASYLM_JR_FORM_FILLING(
       "WARIA10",
-      "JR/ form filling costs should only be completed for standard fee cases. "
-          + "JR/form filling on hourly rates claims should be reported within Profit Costs. "
+      "JR/Form filling costs should only be completed for standard fee cases. "
+          + "JR/Form filling on hourly rates claims should be reported within Profit Costs. "
            + "The amount entered in JR/Form filling has not been paid."),
 
   WARN_IMM_ASYLM_DISB_ONLY(
