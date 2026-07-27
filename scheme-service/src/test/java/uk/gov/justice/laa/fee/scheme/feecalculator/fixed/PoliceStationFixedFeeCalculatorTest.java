@@ -373,7 +373,7 @@ class PoliceStationFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThatThrownBy(() -> policeStationFixedFeeCalculator.calculate(feeData, feeEntity))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CRIME_POLICE_STATION_ID)
-        .hasMessage("ERRCRM3 - Enter a valid Police station ID, Court ID, or Prison ID.");
+        .hasMessage("ERRCRM3 - Enter a valid Police station ID.");
   }
 
   @Test

@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum WarningType {
   WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT(
-      "WARCRM3", "Costs are included. The Net Costs exceeds the Upper Costs Limitation."),
+      "WARCRM3", "Net Costs entered exceeds the Upper Costs Limitation."),
 
   WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD("WARCRM4", getEscapeMessage()),
 

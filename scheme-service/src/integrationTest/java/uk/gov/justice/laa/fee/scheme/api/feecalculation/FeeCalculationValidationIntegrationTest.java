@@ -440,7 +440,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type":"ERROR",
               "code":"ERRCRM3",
-              "message":"Enter a valid Police station ID, Court ID, or Prison ID."
+              "message":"Enter a valid Police station ID."
             }
           ]
         }
@@ -1279,7 +1279,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARCRM3",
-              "message": "Costs are included. The Net Costs exceeds the Upper Costs Limitation."
+              "message": "Net Costs entered exceeds the Upper Costs Limitation."
             }
           ],
           "feeCalculation": {
