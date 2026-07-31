@@ -1,12 +1,12 @@
 plugins {
     id 'io.freefair.lombok' version '9.5.0'
     id 'uk.gov.justice.service.laa.laa-spring-boot-gradle-plugin'
-    id "io.sentry.jvm.gradle" version "6.14.0"
+    id "io.sentry.jvm.gradle" version "6.16.0"
     id 'info.solidsoft.pitest'
 }
 
 def versions = [
-        sentry 						: '8.48.0'
+        sentry 						: '8.50.1'
 ]
 
 test {
@@ -108,8 +108,8 @@ dependencies {
 
     implementation 'uk.gov.justice.service.laa:laa-spring-boot-starter-auth'
 
-    implementation 'org.flywaydb:flyway-core:12.11.0'
-    implementation 'org.flywaydb:flyway-database-postgresql:12.11.0'
+    implementation 'org.flywaydb:flyway-core:13.0.0'
+    implementation 'org.flywaydb:flyway-database-postgresql:13.0.0'
 
     implementation 'io.micrometer:micrometer-registry-prometheus:1.17.0'
 
