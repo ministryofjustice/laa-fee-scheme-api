@@ -62,7 +62,7 @@ public enum WarningType {
           + "and ensure the Immigration Prior Authority number is provided."),
   WARN_IMM_ASYLM_DISB_LEGAL_HELP(
       "WARIA7",
-      "Costs have been capped at the Total Costs Limit. "
+      "Disbursement costs have been capped at the applicable limit. "
           + "To claim any costs above the limit submit a claim amendment request "
           + "and ensure the Immigration Prior Authority number is provided."),
   WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP(

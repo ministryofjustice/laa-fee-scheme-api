@@ -918,7 +918,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARIA7",
-              "message": "Costs have been capped at the Total Costs Limit. To claim any costs above the limit submit a claim amendment request and ensure the Immigration Prior Authority number is provided."
+              "message": "Disbursement costs have been capped at the Total Costs Limit. To claim any costs above the limit submit a claim amendment request and ensure the Immigration Prior Authority number is provided."
             }
           ],
           "feeCalculation": {
