@@ -37,8 +37,9 @@ public enum WarningType {
 
   WARN_IMM_ASYLM_DISB_600_CLR(
       "WARIA1",
-      "Costs have been capped at £600 without an Immigration Priority "
-          + "Authority Number. Disbursement costs exceed the Disbursement Limit."),
+      "Disbursement costs have been capped at £600. "
+          + "To claim any costs above the limit submit a claim amendment request and ensure "
+          + "the Immigration Prior Authority number is provided."),
   WARN_IMM_ASYLM_DISB_400_LEGAL_HELP(
       "WARIA2",
       "Costs have been capped at £400 without an Immigration "
@@ -46,20 +47,24 @@ public enum WarningType {
   WARN_IMM_ASYLM_ESCAPE_THRESHOLD("WARIA3", getEscapeMessage(), CategoryType.IMMIGRATION_ASYLUM),
   WARN_IMM_ASYLM_PRIOR_AUTH_CLR(
       "WARIA4",
-      "Costs have been capped. The amount entered exceeds the Total "
-          + "Cost Limit. An Immigration Prior Authority number must be entered."),
+      "Costs have been capped at the Total Costs Limit. "
+          + "To claim any costs above the limit submit a claim amendment request "
+          + "and ensure the Immigration Prior Authority number is provided."),
   WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM(
       "WARIA5",
-      "Costs have been capped. The amount entered exceeds the "
-          + "Total Cost Limit. An Immigration Prior Authority number must be entered."),
+      "Costs have been capped at the Total Costs Limit. "
+          + "To claim any costs above the limit submit a claim amendment request "
+          + "and ensure the Immigration Prior Authority number is provided."),
   WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP(
       "WARIA6",
-      "Costs have been capped. The amount entered exceeds the"
-          + " Total Cost Limit. An Immigration Prior Authority number must be entered."),
+      "Costs have been capped at the Total Costs Limit. "
+          + "To claim any costs above the limit submit a claim amendment request "
+          + "and ensure the Immigration Prior Authority number is provided."),
   WARN_IMM_ASYLM_DISB_LEGAL_HELP(
       "WARIA7",
-      "Costs have been capped without an Immigration Priority Authority"
-          + " Number. Disbursement costs exceed the Disbursement Limit."),
+      "Costs have been capped at the Total Costs Limit. "
+          + "To claim any costs above the limit submit a claim amendment request "
+          + "and ensure the Immigration Prior Authority number is provided."),
   WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP(
       "WARIA8",
       "Costs have been capped. Costs for the Fee Code used cannot "
@@ -75,8 +80,9 @@ public enum WarningType {
 
   WARN_IMM_ASYLM_DISB_ONLY(
       "WARIA11",
-      "Costs have been capped without an Immigration Priority Authority Number. "
-          + "Disbursement costs exceed the Disbursement Limit."),
+      "Disbursement costs have been capped at the applicable limit. "
+          + "To claim any costs above the limit submit a claim amendment request "
+          + "and ensure the Immigration Prior Authority number is provided."),
 
   WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD("WARMH1", getEscapeMessage(), CategoryType.MENTAL_HEALTH),
 
