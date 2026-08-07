@@ -21,7 +21,7 @@ public enum ErrorType {
   ERR_CRIME_PREORDER_COVER_UPPER_LIMIT("ERRCRM10", "The costs reported exceed the Upper Costs Limit for this claim."
           + " The limit is not extendable."
           + " Resubmit your claim with reported costs under the specified limit."),
-  ERR_CRIME_REP_ORDER_DATE("ERRCRM12", "Fee code and representation order date are incompatible. "
+  ERR_CRIME_REP_ORDER_DATE("ERRCRM12", "Fee Code and representation order date are incompatible. "
           + "Check both fields and resubmit."),
   ERR_CRIME_REP_ORDER_DATE_MISSING("ERRCRM8", "Enter a representation order date."),
   ERR_CRIME_UFN_DATE("ERRCRM1", "Fee Code is not valid for the Case Start Date."),

@@ -609,7 +609,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type":"ERROR",
               "code":"ERRCRM12",
-              "message":"Fee code and representation order date are incompatible. Check both fields and resubmit."
+              "message":"Fee Code and representation order date are incompatible. Check both fields and resubmit."
             }
           ]
         }

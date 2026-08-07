@@ -372,7 +372,7 @@ class CrimeFeeValidationServiceTest {
     assertThatThrownBy(() -> crimeFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CRIME_REP_ORDER_DATE)
-        .hasMessage("ERRCRM12 - Fee code and representation order date are incompatible. Check both fields and resubmit.");
+        .hasMessage("ERRCRM12 - Fee Code and representation order date are incompatible. Check both fields and resubmit.");
   }
 
   @Test
