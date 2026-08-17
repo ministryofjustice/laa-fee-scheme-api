@@ -83,7 +83,7 @@ public enum WarningType {
   WARN_MISCELLANEOUS_ESCAPE_THRESHOLD("WAROTH9", getEscapeMessage(), CategoryType.MISCELLANEOUS),
 
   WARN_POLICE_OTHER_UPPER_LIMIT(
-      "WARCRM7", "Costs have been included. Net Costs exceed the Upper Cost Limitation."),
+      "WARCRM7", "Net Costs entered exceed the Upper Cost Limitation."),
 
   WARN_POLICE_STATIONS_ESCAPE_THRESHOLD("WARCRM8", getEscapeMessage()),
 

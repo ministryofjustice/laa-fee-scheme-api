@@ -409,7 +409,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type":"ERROR",
               "code":"ERRCRM1",
-              "message":"Fee Code is not valid for the Case Start Date."
+              "message":"Fee code and UFN date are incompatible. Check both fields and resubmit."
             }
           ]
         }
@@ -641,7 +641,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type":"ERROR",
               "code":"ERRCRM13",
-              "message":"UFN must be in the correct format."
+              "message":"UFN must be in the correct format. The first 6 characters must be DD/MM/YY followed by three numerical characters. Check the UFN and resubmit."
             }
           ]
         }
@@ -1180,7 +1180,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               {
                   "type": "WARNING",
                   "code": "WARCRM7",
-                  "message": "Costs have been included. Net Costs exceed the Upper Cost Limitation."
+                  "message": "Net Costs entered exceed the Upper Cost Limitation."
               }
           ],
           "feeCalculation": {
