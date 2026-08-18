@@ -48,7 +48,11 @@ fi
 cd "${REGRESSION_DIR}"
 
 if [[ ! -d node_modules ]]; then
-  npm ci
+   if [[ -f package-lock.json ]]; then
+     npm ci
+   else
+     npm install
+   fi
 fi
 
 if [[ "${DRY_RUN}" == "true" ]]; then

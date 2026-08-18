@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export class World {
-  attach!: (data: string | Buffer, mediaType?: string) => Promise<void>;
+  attach!: IWorldOptions['attach'];
   client: AxiosInstance;
   response?: AxiosResponse;
   requestBody?: Record<string, unknown>;
@@ -14,7 +14,6 @@ export class World {
   tags: string[] = [];
 
   constructor(options: IWorldOptions) {
-    // @ts-ignore
     this.attach = options.attach;
 
     const headers: Record<string, string> = {

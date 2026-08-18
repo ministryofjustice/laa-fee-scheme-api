@@ -31,7 +31,7 @@ Includes the following subprojects:
 
 ### Run cucumber regression tests
 
-The script has two modes. See `.env.example` for the required variables.
+The script has two modes. See `scheme-service/src/regressionTest/.env.example` for the required variables.
 
 #### Against local code
 
