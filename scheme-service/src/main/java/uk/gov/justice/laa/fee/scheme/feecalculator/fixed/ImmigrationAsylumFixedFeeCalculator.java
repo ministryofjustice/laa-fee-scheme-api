@@ -7,7 +7,9 @@ import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_ESC
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.capDisbursementVat;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.filterBoltOnFeeDetails;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.getCaseConcludedDate;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitType.DISBURSEMENT;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.checkLimitAndCapIfExceeded;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isEscapedCase;
@@ -70,8 +72,6 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
     log.info("Get fields from fee calculation request");
     // get the requested disbursement amount from feeCalculationRequest
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    // get the requested disbursement VAT amount from feeCalculationRequest
-    BigDecimal requestedDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
     // get the requested detentionTravelAndWaitingCosts amount from feeCalculationRequest
     BigDecimal requestedDetentionTravelAndWaitingCosts = toBigDecimal(feeCalculationRequest.getDetentionTravelAndWaitingCosts());
     // get the requested jrFormFilling amount from feeCalculationRequest
@@ -110,9 +110,13 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
 
     BigDecimal calculatedVatAmount = calculateVatAmount(fixedFeeAndAdditionalCosts, vatRate);
 
+    // cap the disbursement VAT at the applicable rate of the (capped) net disbursement
+    BigDecimal disbursementVatAmount =
+        capDisbursementVatForRequest(feeCalculationRequest, netDisbursementAmount, validationMessages);
+
     // Calculate total amount
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAndAdditionalCosts,
-        calculatedVatAmount, netDisbursementAmount, requestedDisbursementVatAmount);
+        calculatedVatAmount, netDisbursementAmount, disbursementVatAmount);
 
     boolean escapeCaseFlag = false;
     if (!FEE_CODES_NO_DISBURSEMENT_LIMIT_AND_NO_ESCAPE.contains(feeCalculationRequest.getFeeCode())) {
@@ -127,7 +131,7 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(nonNull(feeCalculationRequest.getNetDisbursementAmount()) ? toDouble(netDisbursementAmount) : null)
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .disbursementVatAmount(nonNull(feeCalculationRequest.getDisbursementVatAmount()) ? toDouble(disbursementVatAmount) : null)
         .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .detentionTravelAndWaitingCostsAmount(feeCalculationRequest.getDetentionTravelAndWaitingCosts())
@@ -136,6 +140,20 @@ public final class ImmigrationAsylumFixedFeeCalculator implements FeeCalculator 
         .build();
 
     return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, validationMessages, escapeCaseFlag);
+  }
+
+  /**
+   * Cap the disbursement VAT at the VAT rate (looked up by case concluded date) applied to the net disbursement.
+   */
+  private BigDecimal capDisbursementVatForRequest(FeeCalculationRequest feeCalculationRequest,
+      BigDecimal netDisbursementAmount, List<ValidationMessagesInner> validationMessages) {
+    BigDecimal requestedDisbursementVat = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+    if (BigDecimal.ZERO.compareTo(requestedDisbursementVat) == 0) {
+      return BigDecimal.ZERO;
+    }
+    BigDecimal disbursementVatRate = vatRatesService.getVatRateForDate(getCaseConcludedDate(feeCalculationRequest));
+    return capDisbursementVat(netDisbursementAmount, requestedDisbursementVat,
+        disbursementVatRate, validationMessages);
   }
 
   /**

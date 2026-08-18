@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -295,5 +296,50 @@ class PrisonLawFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           .usingRecursiveComparison()
           .isEqualTo(expectedResponse);
     }
+  }
+
+
+
+
+  @ParameterizedTest
+  @CsvSource(value = {
+      "false, 500, 170.13", // No VAT
+      "true, 500, 180.13", // VAT applied
+      "true, null, 180.13" // No escape threshold limit
+  }, nullValues = "null")
+  void calculate_shouldReturnFeeCalculationResponse_withDisbursementLimitWarning(boolean vatIndicator, String escapeThreshold, double expectedTotal) {
+    mockVatRatesService(vatIndicator);
+
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("PRIC2")
+        .startDate(LocalDate.of(2025, 5, 12))
+        .vatIndicator(vatIndicator)
+        .netDisbursementAmount(100.11)
+        .disbursementVatAmount(22.22)
+        .caseConcludedDate(LocalDate.of(2025, 5, 12))
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("PRIC2")
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("PRISON_FS2016").build())
+        .fixedFee(new BigDecimal("50.00"))
+        .escapeThresholdLimit(escapeThreshold != null ? new BigDecimal(escapeThreshold) : null)
+        .categoryType(PRISON_LAW)
+        .build();
+
+    FeeCalculationResponse result = prisonLawFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    ValidationMessagesInner validationMessage =
+        ValidationMessagesInner.builder()
+            .message(WarningType.WARN_DISBURSEMENT_VAT_CAPPED.getMessage())
+            .code(WarningType.WARN_DISBURSEMENT_VAT_CAPPED.getCode())
+            .type(WARNING)
+            .build();
+
+    assertThat(result.getValidationMessages()).containsExactly(validationMessage);
+    assertThat(result).isNotNull();
+    assertThat(result.getFeeCode()).isEqualTo("PRIC2");
+    assertThat(result.getFeeCalculation()).isNotNull();
+    assertThat(result.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
   }
 }

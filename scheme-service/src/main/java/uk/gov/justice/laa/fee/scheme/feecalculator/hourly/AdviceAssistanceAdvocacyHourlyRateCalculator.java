@@ -4,11 +4,14 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.ADVICE_ASSISTANCE
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildFeeCalculationResponse;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.capDisbursementVat;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDoubleOrNull;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,7 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
+import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 /**
@@ -45,6 +49,8 @@ public class AdviceAssistanceAdvocacyHourlyRateCalculator implements FeeCalculat
 
     log.info("Calculate Advice and Assistance and Advocacy Assistance by a court Duty Solicitor hourly rate fee");
 
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+
     BigDecimal requestedNetProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     BigDecimal requestedNetDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
     BigDecimal requestedNetDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
@@ -60,9 +66,15 @@ public class AdviceAssistanceAdvocacyHourlyRateCalculator implements FeeCalculat
 
     BigDecimal calculatedVatAmount = calculateVatAmount(profitAndAdditionalCosts, vatRate);
 
+    // Validate and cap disbursement VAT (only when VAT applies)
+    BigDecimal disbursementVatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest, Boolean.TRUE);
+    BigDecimal cappedDisbursementVatAmount =
+        capDisbursementVat(
+            requestedNetDisbursementAmount, requestedNetDisbursementVatAmount, disbursementVatRate, validationMessages);
+
     // Calculate total amount
     BigDecimal totalAmount = calculateTotalAmount(profitAndAdditionalCosts,
-        calculatedVatAmount, requestedNetDisbursementAmount, requestedNetDisbursementVatAmount);
+        calculatedVatAmount, requestedNetDisbursementAmount, cappedDisbursementVatAmount);
 
     FeeCalculation feeCalculation = FeeCalculation.builder()
         .totalAmount(toDouble(totalAmount))
@@ -71,7 +83,7 @@ public class AdviceAssistanceAdvocacyHourlyRateCalculator implements FeeCalculat
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .disbursementVatAmount(toDoubleOrNull(cappedDisbursementVatAmount))
         .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .hourlyTotalAmount(toDouble(profitAndAdditionalCosts))
         .netProfitCostsAmount(feeCalculationRequest.getNetProfitCosts())
@@ -80,6 +92,6 @@ public class AdviceAssistanceAdvocacyHourlyRateCalculator implements FeeCalculat
         .netTravelCostsAmount(feeCalculationRequest.getNetTravelCosts())
         .build();
 
-    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation);
+    return buildFeeCalculationResponse(feeCalculationRequest, feeEntity, feeCalculation, validationMessages);
   }
 }

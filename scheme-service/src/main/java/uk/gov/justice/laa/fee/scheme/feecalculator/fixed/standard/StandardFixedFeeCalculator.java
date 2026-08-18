@@ -37,6 +37,8 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
 
     log.info("Starting fee calculation for {}", feeEntity.getCategoryType());
 
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+
     //Step 1: get Fixed Fee Amount
     BigDecimal fixedFeeAmount = defaultToZeroIfNull(feeEntity.getFixedFee());
 
@@ -48,14 +50,13 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
 
     //Step 4: get Disbursements
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+    BigDecimal cappedDisbursementVatAmount = capDisbursementVat(feeCalculationRequest, vatRatesService, validationMessages);
 
     //Step 5: calculate Total Amount
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount, netDisbursementAmount,
-        disbursementVatAmount);
+        cappedDisbursementVatAmount);
 
     //Step 6: check if escaped, if eligible
-    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     boolean isEscaped = false;
     if (canEscape) {
       isEscaped = handleEscapeCase(feeCalculationRequest, feeEntity, validationMessages);
@@ -69,7 +70,7 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(toDoubleOrNull(netDisbursementAmount))
         .requestedNetDisbursementAmount(toDoubleOrNull(netDisbursementAmount))
-        .disbursementVatAmount(toDoubleOrNull(disbursementVatAmount))
+        .disbursementVatAmount(toDoubleOrNull(cappedDisbursementVatAmount))
         .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .build();
@@ -89,5 +90,12 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
   protected boolean handleEscapeCase(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity,
                                      List<ValidationMessagesInner> messages) {
     return false;
+  }
+
+  protected BigDecimal capDisbursementVat(
+          FeeCalculationRequest feeCalculationRequest,
+          VatRatesService vatRatesService,
+          List<ValidationMessagesInner> validationMessages) {
+    return toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
   }
 }
