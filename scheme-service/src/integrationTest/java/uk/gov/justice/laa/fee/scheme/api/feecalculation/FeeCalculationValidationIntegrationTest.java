@@ -378,7 +378,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type":"ERROR",
               "code":"ERRCIV2",
-              "message":"Case Start Date is too far in the past."
+              "message":"Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit."
             }
           ]
         }
