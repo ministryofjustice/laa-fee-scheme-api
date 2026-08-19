@@ -173,20 +173,20 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
   @ParameterizedTest
   @CsvSource(value = {
       // feeCode, startDate, feeScheme, total, vat, fixedFee, boltOn, boltOnFee
-      "IACA, 2022-09-30, IMM_ASYLM_FS2020, 785.13, 110.8, 227.0, CmrhOral, 166.0",
-      "IACB, 2022-09-30, IMM_ASYLM_FS2020, 1555.53, 239.2, 869.0, CmrhOral, 166.0",
-      "IACC, 2022-09-30, IMM_ASYLM_FS2020, 1627.53, 251.2, 929.0, CmrhOral, 166.0",
-      "IACE, 2025-12-22, IMM_ASYLM_FS2025, 1502.73, 230.4, 808.0, CmrhOral, 183.0", // uplift 2025
-      "IACF, 2025-12-22, IMM_ASYLM_FS2025, 2394.33, 379.0, 1551.0, CmrhOral, 183.0", // uplift 2025
-      "IALB, 2025-12-22, IMM_ASYLM_FS2025, 1416.33, 216.0, 559.0, HomeOfficeInterview, 360", // uplift 2025
-      "IMCA, 2022-09-30, IMM_ASYLM_FS2020, 785.13, 110.8, 227.0, CmrhOral, 166.0",
-      "IMCB, 2022-09-30, IMM_ASYLM_FS2020, 1341.93, 203.6, 691.0, CmrhOral, 166.0",
-      "IMCC, 2022-09-30, IMM_ASYLM_FS2020, 1429.53, 218.2, 764.0, CmrhOral, 166.0",
-      "IMCE, 2025-12-22, IMM_ASYLM_FS2025,  1443.93, 220.6, 759.0, CmrhOral, 183.0", // uplift 2025
-      "IMCF, 2025-12-22, IMM_ASYLM_FS2025, 2085.93, 327.6, 1294.0, CmrhOral, 183.0", // uplift 2025
-      "IMLB, 2025-12-22, IMM_ASYLM_FS2025, 1125.93, 167.6, 317.0, HomeOfficeInterview, 360", // uplift 2025
-      "IDAS1, 2025-12-22, IMM_ASYLM_FS2025, 612.33, 82.0, 249.0, null, 0", // uplift 2025
-      "IDAS2, 2025-12-22, IMM_ASYLM_FS2025, 909.93, 131.6, 497.0, null, 0" // uplift 2025
+      "IACA, 2022-09-30, IMM_ASYLM_FS2020, 785.05, 110.8, 227.0, CmrhOral, 166.0",
+      "IACB, 2022-09-30, IMM_ASYLM_FS2020, 1555.45, 239.2, 869.0, CmrhOral, 166.0",
+      "IACC, 2022-09-30, IMM_ASYLM_FS2020, 1627.45, 251.2, 929.0, CmrhOral, 166.0",
+      "IACE, 2025-12-22, IMM_ASYLM_FS2025, 1502.65, 230.4, 808.0, CmrhOral, 183.0", // uplift 2025
+      "IACF, 2025-12-22, IMM_ASYLM_FS2025, 2394.25, 379.0, 1551.0, CmrhOral, 183.0", // uplift 2025
+      "IALB, 2025-12-22, IMM_ASYLM_FS2025, 1416.25, 216.0, 559.0, HomeOfficeInterview, 360", // uplift 2025
+      "IMCA, 2022-09-30, IMM_ASYLM_FS2020, 785.05, 110.8, 227.0, CmrhOral, 166.0",
+      "IMCB, 2022-09-30, IMM_ASYLM_FS2020, 1341.85, 203.6, 691.0, CmrhOral, 166.0",
+      "IMCC, 2022-09-30, IMM_ASYLM_FS2020, 1429.45, 218.2, 764.0, CmrhOral, 166.0",
+      "IMCE, 2025-12-22, IMM_ASYLM_FS2025,  1443.85, 220.6, 759.0, CmrhOral, 183.0", // uplift 2025
+      "IMCF, 2025-12-22, IMM_ASYLM_FS2025, 2085.85, 327.6, 1294.0, CmrhOral, 183.0", // uplift 2025
+      "IMLB, 2025-12-22, IMM_ASYLM_FS2025, 1125.85, 167.6, 317.0, HomeOfficeInterview, 360", // uplift 2025
+      "IDAS1, 2025-12-22, IMM_ASYLM_FS2025, 612.25, 82.0, 249.0, null, 0", // uplift 2025
+      "IDAS2, 2025-12-22, IMM_ASYLM_FS2025, 909.85, 131.6, 497.0, null, 0" // uplift 2025
   }, nullValues = {"null"})
   void shouldGetImmigrationAndAsylumFixedFeeCalculation(String feeCode, LocalDate startDate, String feeScheme,
                                                             double total, double vat, double fixedFee,
@@ -204,8 +204,8 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
             "calculatedVatAmount": %s,
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
-            "disbursementVatAmount": 20.12,
-            "requestedDisbursementVatAmount": 20.12,
+            "disbursementVatAmount": 20.04,
+            "requestedDisbursementVatAmount": 20.04,
             "fixedFeeAmount": %s,
             "detentionTravelAndWaitingCostsAmount": 111.00,
             "jrFormFillingAmount": 50
@@ -226,8 +226,8 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
             "calculatedVatAmount": %s,
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
-            "disbursementVatAmount": 20.12,
-            "requestedDisbursementVatAmount": 20.12,
+            "disbursementVatAmount": 20.04,
+            "requestedDisbursementVatAmount": 20.04,
             "fixedFeeAmount": %s,
             "detentionTravelAndWaitingCostsAmount": 111.00,
             "jrFormFillingAmount": 50,
@@ -246,7 +246,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "claimId": "claim_123",
           "startDate": "%s",
           "netDisbursementAmount": 100.21,
-          "disbursementVatAmount": 20.12,
+          "disbursementVatAmount": 20.04,
           "vatIndicator": true,
           "detentionTravelAndWaitingCosts": 111.00,
           "jrFormFilling": 50.00,
@@ -258,6 +258,58 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
   }
 
   @Test
+  void shouldCapImmigrationAndAsylumFixedFeeDisbursementVatWhenExceedsMaximum() throws Exception {
+    String request = """
+        {
+          "feeCode": "IACA",
+          "claimId": "claim_123",
+          "startDate": "2022-09-30",
+          "netDisbursementAmount": 100.21,
+          "disbursementVatAmount": 50.00,
+          "vatIndicator": true,
+          "detentionTravelAndWaitingCosts": 111.00,
+          "jrFormFilling": 50.00,
+          "boltOns": { "boltOnCmrhOral": 1 },
+          "caseConcludedDate": "2026-02-01"
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "IACA",
+          "schemeId": "IMM_ASYLM_FS2020",
+          "claimId": "claim_123",
+          "validationMessages": [
+            {
+              "type": "WARNING",
+              "code": "WARALL1",
+              "message": "Value entered exceeds the VAT threshold for the net disbursement amount claimed. Costs have been capped at the maximum VAT amount claimable."
+            }
+          ],
+          "escapeCaseFlag": false,
+          "feeCalculation": {
+            "totalAmount": 785.05,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": 110.8,
+            "disbursementAmount": 100.21,
+            "requestedNetDisbursementAmount": 100.21,
+            "disbursementVatAmount": 20.04,
+            "requestedDisbursementVatAmount": 50.00,
+            "fixedFeeAmount": 227.0,
+            "detentionTravelAndWaitingCostsAmount": 111.00,
+            "jrFormFillingAmount": 50,
+            "boltOnFeeDetails": {
+              "boltOnTotalFeeAmount": 166.0,
+              "boltOnCmrhOralCount": 1,
+              "boltOnCmrhOralFee": 166.0
+            }
+          }
+        }
+        """);
+  }
+
+  @Test
   void shouldGetMediationFixedFeeCalculation() throws Exception {
     String request = """ 
         {
@@ -265,7 +317,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "claimId": "claim_123",
           "startDate": "2019-09-30",
           "netDisbursementAmount": 100.21,
-          "disbursementVatAmount": 20.12,
+          "disbursementVatAmount": 20.04,
           "vatIndicator": true,
           "numberOfMediationSessions": 1,
           "caseConcludedDate": "2026-02-01"
@@ -278,14 +330,14 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "MED_FS2013",
           "claimId": "claim_123",
           "feeCalculation": {
-            "totalAmount": 321.93,
+            "totalAmount": 321.85,
             "vatIndicator": true,
             "vatRateApplied": 20.00,
             "calculatedVatAmount": 33.60,
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
-            "disbursementVatAmount": 20.12,
-            "requestedDisbursementVatAmount": 20.12,
+            "disbursementVatAmount": 20.04,
+            "requestedDisbursementVatAmount": 20.04,
             "fixedFeeAmount": 168.00
           }
         }
@@ -300,7 +352,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "claimId": "claim_123",
           "startDate": "2021-11-05",
           "netDisbursementAmount": 100.21,
-          "disbursementVatAmount": 20.12,
+          "disbursementVatAmount": 20.04,
           "vatIndicator": true,
           "boltOns": {
             "boltOnAdjournedHearing": 3.00
@@ -316,14 +368,14 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "claimId": "claim_123",
           "escapeCaseFlag": false,
           "feeCalculation": {
-            "totalAmount": 1081.53,
+            "totalAmount": 1081.45,
             "vatIndicator": true,
             "vatRateApplied": 20.00,
             "calculatedVatAmount": 160.20,
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
-            "disbursementVatAmount": 20.12,
-            "requestedDisbursementVatAmount": 20.12,
+            "disbursementVatAmount": 20.04,
+            "requestedDisbursementVatAmount": 20.04,
             "fixedFeeAmount": 450.00,
             "boltOnFeeDetails": {
               "boltOnTotalFeeAmount": 351.00,

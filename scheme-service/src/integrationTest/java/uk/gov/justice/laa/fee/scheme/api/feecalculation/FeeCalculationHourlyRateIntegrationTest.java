@@ -173,7 +173,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "netProfitCosts": 239.06,
           "netCostOfCounsel": 79.19,
           "netDisbursementAmount": 100.21,
-          "disbursementVatAmount": 20.12,
+          "disbursementVatAmount": 20.04,
           "vatIndicator": true,
           "caseConcludedDate": "2026-02-01"
         }
@@ -186,14 +186,14 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "claimId": "claim_123",
           "escapeCaseFlag": false,
           "feeCalculation": {
-            "totalAmount": 502.23,
+            "totalAmount": 502.15,
             "vatIndicator": true,
             "vatRateApplied": 20.00,
             "calculatedVatAmount": 63.65,
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
-            "disbursementVatAmount": 20.12,
-            "requestedDisbursementVatAmount": 20.12,
+            "disbursementVatAmount": 20.04,
+            "requestedDisbursementVatAmount": 20.04,
             "hourlyTotalAmount": 318.25,
             "netCostOfCounselAmount": 79.19,
             "netProfitCostsAmount": 239.06,
@@ -379,20 +379,27 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "schemeId": "POL_FS2022",
           "claimId": "claim_123",
           "feeCalculation": {
-            "totalAmount": 148.12,
+            "totalAmount": 138.07,
             "vatIndicator": true,
             "vatRateApplied": 20.0,
             "calculatedVatAmount": 12.91,
             "disbursementAmount": 50.5,
             "requestedNetDisbursementAmount": 50.5,
-            "disbursementVatAmount": 20.15,
+            "disbursementVatAmount": 10.1,
             "requestedDisbursementVatAmount": 20.15,
             "hourlyTotalAmount": 115.06,
             "netProfitCostsAmount": 34.56,
             "requestedNetProfitCostsAmount": 34.56,
             "netTravelCostsAmount": 20.0,
             "netWaitingCostsAmount": 10.0
-          }
+          },
+          "validationMessages": [
+            {
+              "code": "WARALL1",
+              "message": "Value entered exceeds the VAT threshold for the net disbursement amount claimed. Costs have been capped at the maximum VAT amount claimable.",
+              "type": "WARNING"
+            }
+          ]
         }
         """);
   }
