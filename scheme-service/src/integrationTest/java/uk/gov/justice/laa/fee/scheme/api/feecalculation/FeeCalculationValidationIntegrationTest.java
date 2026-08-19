@@ -760,8 +760,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @ParameterizedTest
   @CsvSource({
-    "IMCF, WARIA1, Costs have been capped at £600 without an Immigration Priority Authority Number. "
-        + "Disbursement costs exceed the Disbursement Limit., false, 2113.60, 250.6, 650.0, 600.0, 1092.0, 0",
+    "IMCF, WARIA1, Disbursement costs have been capped at £600. To claim any costs above the limit submit a claim amendment request and "
+        + "ensure the Immigration Prior Authority number is provided., false, 2113.6, 250.6, 650.0, 600.0, 1092.0, 0",
     "IALB, WARIA2, Costs have been capped at £400 without an Immigration Priority Authority Number. "
         + "Disbursement costs exceed the Disbursement Limit., false, 1098.80, 114.8, 450.0, 400.0, 413.0, 0",
     "IACE, WARIA3, The claim exceeds the Escape Case Threshold. "
@@ -913,12 +913,12 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARIA6",
-              "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
+              "message": "Costs have been capped at the Total Costs Limit. To claim any costs above the limit submit a claim amendment request and ensure the Immigration Prior Authority number is provided."
             },
             {
               "type": "WARNING",
               "code": "WARIA7",
-              "message": "Costs have been capped without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit."
+              "message": "Disbursement costs have been capped at the applicable limit. To claim any costs above the limit submit a claim amendment request and ensure the Immigration Prior Authority number is provided."
             }
           ],
           "feeCalculation": {
@@ -965,7 +965,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARIA4",
-              "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
+              "message": "Costs have been capped at the Total Costs Limit. To claim any costs above the limit submit a claim amendment request and ensure the Immigration Prior Authority number is provided."
             }
           ],
           "feeCalculation": {
@@ -1021,7 +1021,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARIA5",
-              "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
+              "message": "Costs have been capped at the Total Costs Limit. To claim any costs above the limit submit a claim amendment request and ensure the Immigration Prior Authority number is provided."
             },
             {
               "type": "WARNING",
@@ -1087,7 +1087,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARIA11",
-              "message": "Costs have been capped without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit."
+              "message": "Disbursement costs have been capped at the applicable limit. To claim any costs above the limit submit a claim amendment request and ensure the Immigration Prior Authority number is provided."
             },
             {
               "type": "WARNING",
