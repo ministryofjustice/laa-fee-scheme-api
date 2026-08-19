@@ -18,19 +18,22 @@ public enum ErrorType {
   ERR_CIVIL_START_DATE_TOO_OLD("ERRCIV2", "Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit."),
   ERR_CRIME_POLICE_SCHEME_ID("ERRCRM4", "Enter a valid Scheme ID."),
   ERR_CRIME_POLICE_STATION_ID("ERRCRM3", "Enter a valid Police station ID, Court ID, or Prison ID."),
-  ERR_CRIME_PREORDER_COVER_UPPER_LIMIT("ERRCRM10", "Net Cost is more than the Upper Cost Limitation."),
-  ERR_CRIME_REP_ORDER_DATE("ERRCRM12", "Fee Code is not valid for the Representation Order Date provided."),
+  ERR_CRIME_PREORDER_COVER_UPPER_LIMIT("ERRCRM10", "The costs reported exceed the Upper Costs Limit for this claim."
+          + " The limit is not extendable."
+          + " Resubmit your claim with reported costs under the specified limit."),
+  ERR_CRIME_REP_ORDER_DATE("ERRCRM12", "Fee Code and representation order date are incompatible. "
+          + "Check both fields and resubmit."),
   ERR_CRIME_REP_ORDER_DATE_MISSING("ERRCRM8", "Enter a representation order date."),
   ERR_CRIME_UFN_DATE("ERRCRM1", "Fee Code is not valid for the Case Start Date."),
   ERR_CRIME_UFN_MISSING("ERRCRM7", "Enter a UFN."),
   ERR_CRIME_UFN_INVALID("ERRCRM13", "UFN must be in the correct format."),
   ERR_FAMILY_LONDON_RATE("ERRFAM1", "London/non-London rate must be entered for the Fee Code used."),
   ERR_IMM_ASYLUM_AFTER_DATE("ERRIA3", "For the Fee Code used, Case Start Date must be on or after "
-                                      + "1st April 2023.", Set.of("IACE", "IACF", "IMCE", "IMCF")),
+          + "1st April 2023.", Set.of("IACE", "IACF", "IMCE", "IMCF")),
   ERR_IMM_ASYLUM_BEFORE_DATE("ERRIA2", "For the Fee Code used, Case Start Date must be before "
       + "1st April 2023.", Set.of("IACA", "IACB", "IMCA", "IMCB")),
   ERR_IMM_ASYLUM_BETWEEN_DATE("ERRIA1", "For the Fee Code used, Case Start Date must be between 8 "
-                                        + "June 2020 and 31 Mar 2023.", Set.of("IACC", "IACD", "IMCC", "IMCD")),
+          + "June 2020 and 31 Mar 2023.", Set.of("IACC", "IACD", "IMCC", "IMCD")),
   ERR_MEDIATION_SESSIONS("ERRMED1", "Number of Mediation Sessions must be entered for the Fee Code used.");
 
   ErrorType(String code, String message) {

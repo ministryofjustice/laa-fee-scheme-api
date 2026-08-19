@@ -576,7 +576,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "ERROR",
               "code": "ERRCRM10",
-              "message": "Net Cost is more than the Upper Cost Limitation."
+              "message": "The costs reported exceed the Upper Costs Limit for this claim. The limit is not extendable. Resubmit your claim with reported costs under the specified limit."
             }
           ]
         }
@@ -609,7 +609,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type":"ERROR",
               "code":"ERRCRM12",
-              "message":"Fee Code is not valid for the Representation Order Date provided."
+              "message":"Fee Code and representation order date are incompatible. Check both fields and resubmit."
             }
           ]
         }
