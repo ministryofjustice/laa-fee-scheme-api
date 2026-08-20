@@ -1,0 +1,18 @@
+{
+  "name": "fee-scheme-api-regression-tests",
+  "description": "Fee Scheme Platform API regression scenarios",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "cucumber-js -p api",
+    "test:dry-run": "cucumber-js -p api --dry-run"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^12.1.0",
+    "@types/node": "^24.3.0",
+    "axios": "^1.11.0",
+    "dotenv": "^17.2.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}

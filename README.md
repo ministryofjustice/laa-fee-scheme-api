@@ -29,6 +29,31 @@ Includes the following subprojects:
 ### Build application
 `./gradlew clean build`
 
+### Run cucumber regression tests
+
+The script has two modes. See `scheme-service/src/regressionTest/.env.example` for the required variables.
+
+#### Against local code
+
+1. Create `scheme-service/src/regressionTest/.env.local` with your local values:
+   - `FSP_API_BASE_URL=http://localhost:8085`
+   - `APP_HEALTHCHECK_URL=http://localhost:8185/actuator/health`
+   - `FSP_API_TOKEN=token1234` (default local token from `application-local.yml`)
+2. Ensure the API is running locally, then from the repository root run:
+
+`./run-regression-tests.sh --local`
+
+#### Against a deployed environment
+
+1. Populate `scheme-service/src/regressionTest/.env` with the target environment values.
+2. From the repository root run:
+
+`./run-regression-tests.sh --environment`
+
+#### Dry run (no API calls)
+
+`./run-regression-tests.sh --local --dry-run`
+
 ### Run application via intellij
 
 Update placeholders in docker-compose.yml
@@ -118,5 +143,3 @@ To access the API endpoints, you need to include a valid token in the `Authoriza
 - [Flyway](https://www.red-gate.com/products/flyway/) - used to manage database migrations.
 - [Sentry SDK](https://docs.sentry.io/platforms/java/) - used to capture application exception events at runtime, which can be monitored via the Sentry UI.
 - [Testcontainers](https://testcontainers.com/) - used to provide a PostgreSQL container for the integration tests.
-
-

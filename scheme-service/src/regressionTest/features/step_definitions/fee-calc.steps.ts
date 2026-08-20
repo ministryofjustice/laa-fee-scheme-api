@@ -1,0 +1,123 @@
+import { Given, When } from '@cucumber/cucumber';
+import type { DataTable } from '@cucumber/cucumber';
+import World from '../support/world';
+
+const isPlaceholder = (v: unknown) =>
+    typeof v === 'string' && /^<[^>]+>$/.test(v.trim());
+
+function maybeStr(rows: Record<string, string>, key: string): string | undefined {
+  if (!Object.prototype.hasOwnProperty.call(rows, key)) return undefined;
+  const raw = rows[key];
+  if (raw === undefined || raw === null) return undefined;
+  const s = String(raw).trim();
+  if (s === '' || isPlaceholder(s)) return undefined;
+  return s;
+}
+
+function maybeNum(rows: Record<string, string>, key: string): number | undefined {
+  if (!Object.prototype.hasOwnProperty.call(rows, key)) return undefined;
+  const raw = rows[key];
+  if (raw === undefined || raw === null) return undefined;
+  const s = String(raw).trim();
+  if (s === '' || isPlaceholder(s)) return undefined;
+  const n = Number(s);
+  return Number.isFinite(n) ? n : undefined;
+}
+
+function maybeBool(rows: Record<string, string>, key: string): boolean | undefined {
+  if (!Object.prototype.hasOwnProperty.call(rows, key)) return undefined;
+  const raw = rows[key];
+  if (raw === undefined || raw === null) return undefined;
+  const s = String(raw).trim().toLowerCase();
+  if (s === '' || isPlaceholder(s)) return undefined;
+  if (s === 'true' || s === 'yes') return true;
+  if (s === 'false' || s === 'no') return false;
+  return undefined;
+}
+
+function yesterdayDate(): string {
+  const date = new Date();
+  date.setDate(date.getDate() - 1);
+  return date.toISOString().split('T')[0];
+}
+
+Given('a fee calculation payload with:', function (this: World, table: DataTable) {
+  const rows = table.rowsHash() as Record<string, string>;
+  const payload: Record<string, unknown> = {};
+  const hasMediationTag = this.tags.some(tag =>
+      tag.toLowerCase().includes('mediation')
+  );
+
+  const feeCode = maybeStr(rows, 'feeCode');
+  const startDate = maybeStr(rows, 'startDate');
+  const uniqueFileNumber = maybeStr(rows, 'uniqueFileNumber');
+  const policeStationId = maybeStr(rows, 'policeStationId');
+  const policeStationSchemeId = maybeStr(rows, 'policeStationSchemeId');
+  const representationOrderDate = maybeStr(rows, 'representationOrderDate');
+  const immigrationPriorAuthorityNumber = maybeStr(rows, 'immigrationPriorAuthorityNumber');
+  const caseConcludedDate = maybeStr(rows, 'caseConcludedDate');
+
+  if (feeCode !== undefined) payload.feeCode = feeCode;
+  if (startDate !== undefined) payload.startDate = startDate;
+  if (uniqueFileNumber !== undefined) payload.uniqueFileNumber = uniqueFileNumber;
+  if (policeStationId !== undefined) payload.policeStationId = policeStationId;
+  if (policeStationSchemeId !== undefined) payload.policeStationSchemeId = policeStationSchemeId;
+  if (representationOrderDate !== undefined) payload.representationOrderDate = representationOrderDate;
+  if (immigrationPriorAuthorityNumber !== undefined) payload.immigrationPriorAuthorityNumber = immigrationPriorAuthorityNumber;
+  if (caseConcludedDate !== undefined) {
+    payload.caseConcludedDate = caseConcludedDate;
+  } else if (!hasMediationTag) {
+    payload.caseConcludedDate = yesterdayDate();
+  }
+
+  const netProfitCosts = maybeNum(rows, 'netProfitCosts');
+  const netCostOfCounsel = maybeNum(rows, 'netCostOfCounsel');
+  const travelAndWaitingCosts = maybeNum(rows, 'travelAndWaitingCosts');
+  const netDisbursementAmount = maybeNum(rows, 'netDisbursementAmount');
+  const disbursementVatAmount = maybeNum(rows, 'disbursementVatAmount');
+  const numberOfMediationSessions = maybeNum(rows, 'numberOfMediationSessions');
+  const netTravelCosts = maybeNum(rows, 'netTravelCosts');
+  const netWaitingCosts = maybeNum(rows, 'netWaitingCosts');
+  const detentionTravelAndWaitingCosts = maybeNum(rows, 'detentionTravelAndWaitingCosts');
+  const jrFormFilling = maybeNum(rows, 'jrFormFilling');
+
+  if (netProfitCosts !== undefined) payload.netProfitCosts = netProfitCosts;
+  if (netCostOfCounsel !== undefined) payload.netCostOfCounsel = netCostOfCounsel;
+  if (travelAndWaitingCosts !== undefined) payload.travelAndWaitingCosts = travelAndWaitingCosts;
+  if (netDisbursementAmount !== undefined) payload.netDisbursementAmount = netDisbursementAmount;
+  if (disbursementVatAmount !== undefined) payload.disbursementVatAmount = disbursementVatAmount;
+  if (numberOfMediationSessions !== undefined) payload.numberOfMediationSessions = numberOfMediationSessions;
+  if (netTravelCosts !== undefined) payload.netTravelCosts = netTravelCosts;
+  if (netWaitingCosts !== undefined) payload.netWaitingCosts = netWaitingCosts;
+  if (detentionTravelAndWaitingCosts !== undefined) payload.detentionTravelAndWaitingCosts = detentionTravelAndWaitingCosts;
+  if (jrFormFilling !== undefined) payload.jrFormFilling = jrFormFilling;
+
+  const vatIndicator = maybeBool(rows, 'vatIndicator');
+  const londonRate = maybeBool(rows, 'londonRate');
+  if (vatIndicator !== undefined) payload.vatIndicator = vatIndicator;
+  if (londonRate !== undefined) payload.londonRate = londonRate;
+
+  const boltOns: Record<string, number> = {};
+  const boltOnAdjournedHearing = maybeNum(rows, 'boltOnAdjournedHearing');
+  const boltOnHomeOfficeInterview = maybeNum(rows, 'boltOnHomeOfficeInterview');
+  const boltOnCmrhOral = maybeNum(rows, 'boltOnCmrhOral');
+  const boltOnCmrhTelephone = maybeNum(rows, 'boltOnCmrhTelephone');
+  const boltOnSubstantiveHearing = maybeNum(rows, 'boltOnSubstantiveHearing');
+
+  if (boltOnAdjournedHearing !== undefined) boltOns.boltOnAdjournedHearing = boltOnAdjournedHearing;
+  if (boltOnHomeOfficeInterview !== undefined) boltOns.boltOnHomeOfficeInterview = boltOnHomeOfficeInterview;
+  if (boltOnCmrhOral !== undefined) boltOns.boltOnCmrhOral = boltOnCmrhOral;
+  if (boltOnCmrhTelephone !== undefined) boltOns.boltOnCmrhTelephone = boltOnCmrhTelephone;
+  if (boltOnSubstantiveHearing !== undefined) boltOns.boltOnSubstantiveHearing = boltOnSubstantiveHearing;
+
+  if (Object.keys(boltOns).length > 0) {
+    payload.boltOns = boltOns;
+  }
+
+  this.setPayload(payload);
+});
+
+When('I POST {string} with the payload', async function (this: World, endpoint: string) {
+  console.log(JSON.stringify(this.requestBody, null, 2));
+  await this.post(endpoint, this.requestBody);
+});
