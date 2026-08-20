@@ -762,8 +762,10 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   @CsvSource({
     "IMCF, WARIA1, Disbursement costs have been capped at £600. To claim any costs above the limit submit a claim amendment request and "
         + "ensure the Immigration Prior Authority number is provided., false, 2113.6, 250.6, 650.0, 600.0, 1092.0, 0",
-    "IALB, WARIA2, Costs have been capped at £400 without an Immigration Priority Authority Number. "
-        + "Disbursement costs exceed the Disbursement Limit., false, 1098.80, 114.8, 450.0, 400.0, 413.0, 0",
+    "IALB, WARIA2, Disbursement costs have been capped at £400. "
+        + "To claim any costs above the limit submit a claim amendment request "
+        + "and ensure the Immigration Prior Authority number is provided.,"
+        + "false, 1098.8, 114.8, 450.0, 400.0, 413.0, 0",
     "IACE, WARIA3, The claim exceeds the Escape Case Threshold. "
         + "An Escape Case Claim must be submitted for further costs to be paid., true, 1056.00, 166.0, 50.0, 50.0, 669.0, 1500"
   })
@@ -1026,12 +1028,12 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARIA9",
-              "message": "Costs not included. Detention Travel and Waiting costs on hourly rates cases should be reported as Profit Costs."
+              "message": "Detention Travel and Waiting costs on hourly rates cases should be reported within Profit Costs. The amount entered in Detention Travel and Waiting has not been paid."
             },
             {
               "type": "WARNING",
               "code": "WARIA10",
-              "message": "Costs have been included. JR/ form filling costs should only be completed for standard fee cases. Hourly rates costs should be reported in the Profit Costs."
+              "message": "JR/Form filling costs should only be completed for standard fee cases. JR/Form filling on hourly rates claims should be reported within Profit Costs. The amount entered in JR/Form filling has not been paid."
             }
           ],
           "feeCalculation": {

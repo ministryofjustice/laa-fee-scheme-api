@@ -47,8 +47,9 @@ public enum WarningType {
           + "the Immigration Prior Authority number is provided."),
   WARN_IMM_ASYLM_DISB_400_LEGAL_HELP(
       "WARIA2",
-      "Costs have been capped at £400 without an Immigration "
-          + "Priority Authority Number. Disbursement costs exceed the Disbursement Limit."),
+      "Disbursement costs have been capped at £400. "
+          + "To claim any costs above the limit submit a claim amendment request "
+            +  "and ensure the Immigration Prior Authority number is provided."),
   WARN_IMM_ASYLM_ESCAPE_THRESHOLD("WARIA3", getEscapeMessage(), CategoryType.IMMIGRATION_ASYLUM),
   WARN_IMM_ASYLM_PRIOR_AUTH_CLR(
       "WARIA4",
@@ -76,12 +77,13 @@ public enum WarningType {
           + "exceed the specified limit."),
   WARN_IMM_ASYLM_DETENTION_TRAVEL(
       "WARIA9",
-      "Costs not included. Detention Travel and Waiting costs on hourly"
-          + " rates cases should be reported as Profit Costs."),
+      "Detention Travel and Waiting costs on hourly rates cases should be reported within Profit Costs. "
+          + "The amount entered in Detention Travel and Waiting has not been paid."),
   WARN_IMM_ASYLM_JR_FORM_FILLING(
       "WARIA10",
-      "Costs have been included. JR/ form filling costs should only be completed "
-          + "for standard fee cases. Hourly rates costs should be reported in the Profit Costs."),
+      "JR/Form filling costs should only be completed for standard fee cases. "
+          + "JR/Form filling on hourly rates claims should be reported within Profit Costs. "
+           + "The amount entered in JR/Form filling has not been paid."),
 
   WARN_IMM_ASYLM_DISB_ONLY(
       "WARIA11",
