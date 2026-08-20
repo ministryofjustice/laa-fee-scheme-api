@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.IMMIGRATION_ASYLUM;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_VAT_CAPPED;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_400_LEGAL_HELP;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_DISB_600_CLR;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_IMM_ASYLM_ESCAPE_THRESHOLD;
@@ -245,6 +246,32 @@ class ImmigrationAsylumFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
       assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
     }
 
+    @ParameterizedTest
+    @CsvSource({
+        "IACA, 100.0, 50.0, 600.0, 20.0, 50.0",
+        "IALB, 1000.0, 200.0, 400.0, 80.0, 200.0"
+    })
+    void calculate_capsDisbursementVatAtRateOfCappedNetDisbursement(String feeCode, double netDisbursementAmount,
+        double disbursementVatAmount, double disbursementLimit, double expectedDisbursementVat,
+        double expectedRequestedDisbursementVat) {
+
+      mockVatRatesService(true);
+
+      FeeCalculationRequest feeData = buildRequest(feeCode, netDisbursementAmount, disbursementVatAmount, true,
+          null, 0.0, 0.0);
+
+      FeeEntity feeEntity = buildFeeEntity(feeCode, BigDecimal.valueOf(75.5), BigDecimal.valueOf(disbursementLimit),
+          BigDecimal.valueOf(166), BigDecimal.valueOf(90), BigDecimal.valueOf(302));
+
+      FeeCalculationResponse response = immigrationAsylumFixedFeeCalculator.calculate(feeData, feeEntity);
+
+      assertThat(response.getFeeCalculation().getDisbursementVatAmount()).isEqualTo(expectedDisbursementVat);
+      assertThat(response.getFeeCalculation().getRequestedDisbursementVatAmount()).isEqualTo(expectedRequestedDisbursementVat);
+      assertThat(response.getValidationMessages())
+          .extracting(ValidationMessagesInner::getCode)
+          .contains(WARN_DISBURSEMENT_VAT_CAPPED.getCode());
+    }
+
   }
 
   @Nested
@@ -257,7 +284,6 @@ class ImmigrationAsylumFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
           .claimId("claim_123")
           .startDate(LocalDate.of(2025, 7, 29))
           .netDisbursementAmount(netDisbursementAmount)
-          .disbursementVatAmount(20.0)
           .vatIndicator(true)
           .immigrationPriorAuthorityNumber(null)
           .netProfitCosts(requestedNetProfitCosts)

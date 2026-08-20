@@ -2,6 +2,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
+import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_DISBURSEMENT_VAT_CAPPED;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_POLICE_OTHER_UPPER_LIMIT;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
@@ -286,10 +287,13 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .type(WARNING)
         .build();
 
+    List<ValidationMessagesInner> expectedMessages = new ArrayList<>();
+    expectedMessages.add(validationMessage);
+
     FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
         .feeCode(feeCode)
         .schemeId(feeSchemeCode)
-        .validationMessages(List.of(validationMessage))
+        .validationMessages(expectedMessages)
         .feeCalculation(expectedCalculation)
         .build();
 
@@ -298,6 +302,186 @@ class PoliceStationHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         .isEqualTo(expectedResponse);
   }
 
+
+  @ParameterizedTest
+  @MethodSource("testPoliceOtherData")
+  void test_whenPoliceStation_shouldReturnFeeWithWarningForPoliceUpperLimit(
+      String description,
+      String feeCode,
+      boolean inputVatIndicator,
+      LocalDate startDate,
+      String feeSchemeCode,
+      double inputNetProfitCosts,
+      double inputDisbursementAmount,
+      double inputDisbursementVatAmount,
+      double inputNetTravelCosts,
+      double inputNetWaitingCosts,
+      double expectedTotal,
+      double expectedCalculatedVat,
+      double expectedHourlyTotalAmount
+  ) {
+
+    mockVatRatesService(inputVatIndicator);
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode(feeCode)
+        .startDate(startDate)
+        .vatIndicator(inputVatIndicator)
+        .netProfitCosts(inputNetProfitCosts)
+        .netDisbursementAmount(inputDisbursementAmount)
+        .disbursementVatAmount(inputDisbursementVatAmount)
+        .netTravelCosts(inputNetTravelCosts)
+        .netWaitingCosts(inputNetWaitingCosts)
+        .uniqueFileNumber(UFN)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode(feeSchemeCode).build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode(feeCode)
+        .feeScheme(feeSchemesEntity)
+        .upperCostLimit(new BigDecimal("25.0"))
+        .categoryType(POLICE_STATION)
+        .feeType(FeeType.HOURLY)
+        .build();
+
+    FeeCalculationResponse response = policeStationHourlyRateCalculator.calculate(feeData, feeEntity);
+
+    FeeCalculation expectedCalculation = FeeCalculation.builder()
+        .totalAmount(expectedTotal)
+        .vatIndicator(inputVatIndicator)
+        .vatRateApplied(inputVatIndicator ? 20.0 : null)
+        .disbursementAmount(inputDisbursementAmount)
+        .requestedNetDisbursementAmount(inputDisbursementAmount)
+        .disbursementVatAmount(inputDisbursementVatAmount)
+        .requestedDisbursementVatAmount(inputDisbursementVatAmount)
+        .calculatedVatAmount(expectedCalculatedVat)
+        .netProfitCostsAmount(inputNetProfitCosts)
+        .requestedNetProfitCostsAmount(inputNetProfitCosts)
+        .hourlyTotalAmount(expectedHourlyTotalAmount)
+        .netTravelCostsAmount(inputNetTravelCosts)
+        .netWaitingCostsAmount(inputNetWaitingCosts)
+        .build();
+    ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
+        .code(WARN_POLICE_OTHER_UPPER_LIMIT.getCode())
+        .message(WARN_POLICE_OTHER_UPPER_LIMIT.getMessage())
+        .type(WARNING)
+        .build();
+
+    List<ValidationMessagesInner> expectedMessages = new ArrayList<>();
+    expectedMessages.add(validationMessage);
+
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
+        .feeCode(feeCode)
+        .schemeId(feeSchemeCode)
+        .validationMessages(expectedMessages)
+        .feeCalculation(expectedCalculation)
+        .build();
+
+    assertThat(response)
+        .usingRecursiveComparison()
+        .isEqualTo(expectedResponse);
+  }
+
+
+  @Test
+  void test_whenPoliceStation_shouldReturnFeeWithWarningForCappedDisbursementVatAmount() {
+
+    mockVatRatesService(true);
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode("INVM")
+        .startDate(LocalDate.of(2025, 5, 20))
+        .vatIndicator(true)
+        .netProfitCosts(1432.38)
+        .netDisbursementAmount(123.38)
+        .disbursementVatAmount(24.67)
+        .netTravelCosts(45.64)
+        .uniqueFileNumber(UFN)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("INVM")
+        .feeScheme(feeSchemesEntity)
+        .upperCostLimit(new BigDecimal("1900.0"))
+        .categoryType(POLICE_STATION)
+        .feeType(FeeType.HOURLY)
+        .build();
+
+    FeeCalculationResponse response = policeStationHourlyRateCalculator.calculate(feeData, feeEntity);
+
+    assertThat(response.getFeeCode()).isEqualTo("INVM");
+    assertThat(response.getSchemeId()).isEqualTo("POL_FS2022");
+  }
+
+  @Test
+  void test_whenDisbursementVatExceedsCap_shouldReturnWarnDisbursementVatCapped() {
+
+    mockVatRatesService(true);
+
+    FeeCalculationRequest feeData = FeeCalculationRequest.builder()
+        .feeCode("INVA")
+        .startDate(LocalDate.of(2022, 5, 20))
+        .vatIndicator(true)
+        .netProfitCosts(500.0)
+        .netDisbursementAmount(100.0)
+        .disbursementVatAmount(30.0)  // exceeds 20% cap of 100.0 (max = 20.0)
+        .netTravelCosts(50.0)
+        .netWaitingCosts(0.0)
+        .uniqueFileNumber(UFN)
+        .caseConcludedDate(LocalDate.of(2026, 1, 30))
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("POL_FS2022").build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("INVA")
+        .feeScheme(feeSchemesEntity)
+        .upperCostLimit(new BigDecimal("10000.0"))
+        .categoryType(POLICE_STATION)
+        .feeType(FeeType.HOURLY)
+        .build();
+
+    FeeCalculationResponse response = policeStationHourlyRateCalculator.calculate(feeData, feeEntity);
+
+    // vatEligibleFeeTotal = 500 + 50 + 0 = 550; feeTotal = 550 + 100 = 650
+    // calculatedVat = 550 * 20% = 110.0; cappedDisbVat = min(30.0, 100*20%) = 20.0
+    // totalAmount = 650 + 110 + 20 = 780.0
+    FeeCalculation expectedCalculation = FeeCalculation.builder()
+        .totalAmount(780.0)
+        .vatIndicator(true)
+        .vatRateApplied(20.0)
+        .disbursementAmount(100.0)
+        .requestedNetDisbursementAmount(100.0)
+        .disbursementVatAmount(20.0)
+        .requestedDisbursementVatAmount(30.0)
+        .calculatedVatAmount(110.0)
+        .netProfitCostsAmount(500.0)
+        .requestedNetProfitCostsAmount(500.0)
+        .hourlyTotalAmount(650.0)
+        .netTravelCostsAmount(50.0)
+        .netWaitingCostsAmount(0.0)
+        .build();
+
+    FeeCalculationResponse expectedResponse = FeeCalculationResponse.builder()
+        .feeCode("INVA")
+        .schemeId("POL_FS2022")
+        .validationMessages(List.of(ValidationMessagesInner.builder()
+            .code(WARN_DISBURSEMENT_VAT_CAPPED.getCode())
+            .message(WARN_DISBURSEMENT_VAT_CAPPED.getMessage())
+            .type(WARNING)
+            .build()))
+        .feeCalculation(expectedCalculation)
+        .build();
+
+    assertThat(response)
+        .usingRecursiveComparison()
+        .isEqualTo(expectedResponse);
+  }
 
   @Test
   void getSupportedCategories_shouldReturnEmptySet() {
