@@ -5,6 +5,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUti
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.buildValidationWarning;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.capDisbursementVat;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.limit.LimitUtil.isEscapedCase;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
@@ -64,11 +65,18 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
 
     // Get disbursements
     BigDecimal netDisbursementAmount = toBigDecimal(feeCalculationRequest.getNetDisbursementAmount());
-    BigDecimal disbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+    BigDecimal requestedDisbursementVatAmount = toBigDecimal(feeCalculationRequest.getDisbursementVatAmount());
+
+    // Validate and cap disbursement VAT
+    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
+    BigDecimal disbursementVatRate = vatRatesService.getVatRateForRequest(feeCalculationRequest, Boolean.TRUE);
+    BigDecimal cappedDisbursementVatAmount =
+        capDisbursementVat(
+            netDisbursementAmount, requestedDisbursementVatAmount, disbursementVatRate, validationMessages);
 
     // Calculate total amount
     BigDecimal totalAmount = calculateTotalAmount(fixedFeeAmount, calculatedVatAmount,
-        netDisbursementAmount, disbursementVatAmount);
+        netDisbursementAmount, cappedDisbursementVatAmount);
 
     // Escape case logic
     BigDecimal netProfitCosts = toBigDecimal(feeCalculationRequest.getNetProfitCosts());
@@ -79,7 +87,6 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
         .add(netTravelCosts)
         .add(netWaitingCosts);
 
-    List<ValidationMessagesInner> validationMessages = new ArrayList<>();
     boolean isEscaped = isEscapedCase(feeTotal, feeEntity);
 
     if (isEscaped) {
@@ -94,7 +101,7 @@ public class AssociatedCivilFixedFeeCalculator implements FeeCalculator {
         .calculatedVatAmount(toDouble(calculatedVatAmount))
         .disbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
         .requestedNetDisbursementAmount(feeCalculationRequest.getNetDisbursementAmount())
-        .disbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
+        .disbursementVatAmount(toDouble(cappedDisbursementVatAmount))
         .requestedDisbursementVatAmount(feeCalculationRequest.getDisbursementVatAmount())
         .fixedFeeAmount(toDouble(fixedFeeAmount))
         .build();

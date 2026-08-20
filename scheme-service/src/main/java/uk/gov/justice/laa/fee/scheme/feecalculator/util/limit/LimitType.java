@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 public enum LimitType {
   PROFIT_COST("Profit Costs"),
   DISBURSEMENT("Disbursements"),
+  DISBURSEMENT_VAT("Disbursement VAT"),
   TOTAL("Total");
 
   private final String displayName;

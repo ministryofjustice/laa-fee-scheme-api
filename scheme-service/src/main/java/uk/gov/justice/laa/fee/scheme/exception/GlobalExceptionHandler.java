@@ -118,6 +118,18 @@ public class GlobalExceptionHandler {
   }
 
   /**
+   * Global exception handler for VatRateNotFoundException exception.
+   * No VAT rate exists for the date derived from the request.
+   *
+   * @param ex the exception thrown when no VAT rate is found for the given date.
+   * @return the error response and a 404 Not Found status code.
+   */
+  @ExceptionHandler(VatRateNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleVatRateNotFound(VatRateNotFoundException ex) {
+    return handleException("VAT rate not found error", ex, HttpStatus.NOT_FOUND);
+  }
+
+  /**
    * Global exception handler for StartDateRequiredException exception.
    * Start date is required for fee calculation but was not provided in the request.
    *

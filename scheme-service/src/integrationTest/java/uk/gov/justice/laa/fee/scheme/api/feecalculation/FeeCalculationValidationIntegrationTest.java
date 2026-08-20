@@ -378,7 +378,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type":"ERROR",
               "code":"ERRCIV2",
-              "message":"Case Start Date is too far in the past."
+              "message":"Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit."
             }
           ]
         }
@@ -409,7 +409,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type":"ERROR",
               "code":"ERRCRM1",
-              "message":"Fee Code is not valid for the Case Start Date."
+              "message":"Fee code and UFN date are incompatible. Check both fields and resubmit."
             }
           ]
         }
@@ -440,7 +440,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type":"ERROR",
               "code":"ERRCRM3",
-              "message":"Enter a valid Police station ID, Court ID, or Prison ID."
+              "message":"Enter a valid Police station ID."
             }
           ]
         }
@@ -576,7 +576,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "ERROR",
               "code": "ERRCRM10",
-              "message": "Net Cost is more than the Upper Cost Limitation."
+              "message": "The costs reported exceed the Upper Costs Limit for this claim. The limit is not extendable. Resubmit your claim with reported costs under the specified limit."
             }
           ]
         }
@@ -609,7 +609,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type":"ERROR",
               "code":"ERRCRM12",
-              "message":"Fee Code is not valid for the Representation Order Date provided."
+              "message":"Fee Code and representation order date are incompatible. Check both fields and resubmit."
             }
           ]
         }
@@ -641,7 +641,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type":"ERROR",
               "code":"ERRCRM13",
-              "message":"UFN must be in the correct format."
+              "message":"UFN must be in the correct format. The first 6 characters must be DD/MM/YY followed by three numerical characters. Check the UFN and resubmit."
             }
           ]
         }
@@ -760,14 +760,14 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @ParameterizedTest
   @CsvSource({
-    "IMCF, WARIA1, Costs have been capped at £600 without an Immigration Priority Authority Number. "
-        + "Disbursement costs exceed the Disbursement Limit., false, 2173.72, 250.6, 650.0, 600.0, 1092.0, 0",
+    "IMCF, WARIA1, Disbursement costs have been capped at £600. To claim any costs above the limit submit a claim amendment request and "
+        + "ensure the Immigration Prior Authority number is provided., false, 2113.6, 250.6, 650.0, 600.0, 1092.0, 0",
     "IALB, WARIA2, Disbursement costs have been capped at £400. "
         + "To claim any costs above the limit submit a claim amendment request "
         + "and ensure the Immigration Prior Authority number is provided.,"
         + "false, 1158.92, 114.8, 450.0, 400.0, 413.0, 0",
     "IACE, WARIA3, The claim exceeds the Escape Case Threshold. "
-        + "An Escape Case Claim must be submitted for further costs to be paid., true, 1116.12, 166.0, 50.0, 50.0, 669.0, 1500"
+        + "An Escape Case Claim must be submitted for further costs to be paid., true, 1056.00, 166.0, 50.0, 50.0, 669.0, 1500"
   })
   void shouldReturnValidationWarningForImmigrationAndAsylumFixedFee(
       String feeCode,
@@ -788,7 +788,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "claimId": "claim_123",
           "startDate": "2024-09-30",
           "netDisbursementAmount": %s,
-          "disbursementVatAmount": 70.12,
+          "disbursementVatAmount": 10.00,
           "vatIndicator": true,
           "detentionTravelAndWaitingCosts": 111.00,
           "jrFormFilling": 50.00,
@@ -820,8 +820,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             "calculatedVatAmount": %s,
             "requestedNetDisbursementAmount": %s,
             "disbursementAmount": %s,
-            "disbursementVatAmount": 70.12,
-            "requestedDisbursementVatAmount": 70.12,
+            "disbursementVatAmount": 10.00,
+            "requestedDisbursementVatAmount": 10.00,
             "fixedFeeAmount": %s,
             "detentionTravelAndWaitingCostsAmount": 111.0,
             "jrFormFillingAmount": 50.0
@@ -915,12 +915,12 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARIA6",
-              "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
+              "message": "Costs have been capped at the Total Costs Limit. To claim any costs above the limit submit a claim amendment request and ensure the Immigration Prior Authority number is provided."
             },
             {
               "type": "WARNING",
               "code": "WARIA7",
-              "message": "Costs have been capped without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit."
+              "message": "Disbursement costs have been capped at the applicable limit. To claim any costs above the limit submit a claim amendment request and ensure the Immigration Prior Authority number is provided."
             }
           ],
           "feeCalculation": {
@@ -967,7 +967,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARIA4",
-              "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
+              "message": "Costs have been capped at the Total Costs Limit. To claim any costs above the limit submit a claim amendment request and ensure the Immigration Prior Authority number is provided."
             }
           ],
           "feeCalculation": {
@@ -1023,7 +1023,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARIA5",
-              "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
+              "message": "Costs have been capped at the Total Costs Limit. To claim any costs above the limit submit a claim amendment request and ensure the Immigration Prior Authority number is provided."
             },
             {
               "type": "WARNING",
@@ -1089,14 +1089,19 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARIA11",
-              "message": "Costs have been capped without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit."
+              "message": "Disbursement costs have been capped at the applicable limit. To claim any costs above the limit submit a claim amendment request and ensure the Immigration Prior Authority number is provided."
+            },
+            {
+              "type": "WARNING",
+              "code": "WARALL1",
+              "message": "Value entered exceeds the VAT threshold for the net disbursement amount claimed. Costs have been capped at the maximum VAT amount claimable."
             }
           ],
           "feeCalculation": {
-            "totalAmount": 2000.0,
+            "totalAmount": 1920.0,
             "disbursementAmount": 1600.0,
             "requestedNetDisbursementAmount": 2000.0,
-            "disbursementVatAmount": 400.0,
+            "disbursementVatAmount": 320.0,
             "requestedDisbursementVatAmount": 400.0
           }
         }
@@ -1182,7 +1187,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               {
                   "type": "WARNING",
                   "code": "WARCRM7",
-                  "message": "Costs have been included. Net Costs exceed the Upper Cost Limitation."
+                  "message": "Net Costs entered exceed the Upper Cost Limitation."
               }
           ],
           "feeCalculation": {
@@ -1281,7 +1286,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARCRM3",
-              "message": "Costs are included. The Net Costs exceeds the Upper Costs Limitation."
+              "message": "Net Costs entered exceeds the Upper Costs Limitation."
             }
           ],
           "feeCalculation": {
@@ -1513,7 +1518,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "netProfitCosts": 900,
           "netCostOfCounsel": 79.19,
           "netDisbursementAmount": 100.21,
-          "disbursementVatAmount": 20.12,
+          "disbursementVatAmount": 20.04,
           "vatIndicator": true,
           "caseConcludedDate": "2026-02-01"
         }
@@ -1535,18 +1540,77 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           ],
           "escapeCaseFlag": true,
           "feeCalculation": {
-            "totalAmount": 960.33,
+            "totalAmount": 960.25,
             "vatIndicator": true,
             "vatRateApplied": 20.0,
             "calculatedVatAmount": 140.0,
             "disbursementAmount": 100.21,
             "requestedNetDisbursementAmount": 100.21,
-            "disbursementVatAmount": 20.12,
-            "requestedDisbursementVatAmount": 20.12,
+            "disbursementVatAmount": 20.04,
+            "requestedDisbursementVatAmount": 20.04,
             "hourlyTotalAmount": 700.0,
             "netProfitCostsAmount": 900.0,
             "requestedNetProfitCostsAmount": 900.0,
             "netCostOfCounselAmount": 79.19
+          }
+        }
+        """);
+  }
+
+  @Test
+  void shouldReturnValidationWarningForDisbursementVatLimit() throws Exception {
+    String request = """ 
+        {
+          "feeCode": "MHL03",
+          "claimId": "claim_123",
+          "startDate": "2025-02-01",
+          "caseConcludedDate": "2025-02-01",
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 80.00,
+          "netProfitCosts": 1000,
+          "netCostOfCounsel": 500,
+          "vatIndicator": true,
+          "boltOns": {
+              "boltOnAdjournedHearing": 1
+          }
+        }
+        """;
+
+    postAndExpect(
+        request,
+        """
+        {
+          "feeCode": "MHL03",
+          "claimId": "claim_123",
+          "schemeId": "MHL_FS2013",
+          "validationMessages": [
+              {
+                  "type": "WARNING",
+                  "code": "WARALL1",
+                  "message": "Value entered exceeds the VAT threshold for the net disbursement amount claimed. Costs have been capped at the maximum VAT amount claimable."
+              },
+              {
+                  "type": "WARNING",
+                  "code": "WARMH1",
+                  "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
+              }
+          ],
+          "escapeCaseFlag": true,
+          "feeCalculation": {
+              "totalAmount": 828.46,
+              "vatIndicator": true,
+              "vatRateApplied": 20.0,
+              "calculatedVatAmount": 113.4,
+              "disbursementAmount": 123.38,
+              "requestedNetDisbursementAmount": 123.38,
+              "disbursementVatAmount": 24.68,
+              "requestedDisbursementVatAmount": 80.0,
+              "fixedFeeAmount": 450.0,
+              "boltOnFeeDetails": {
+                  "boltOnTotalFeeAmount": 117.0,
+                  "boltOnAdjournedHearingCount": 1,
+                  "boltOnAdjournedHearingFee": 117.0
+              }
           }
         }
         """);
