@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum WarningType {
   WARN_ADVOCACY_APPEALS_REVIEWS_UPPER_LIMIT(
-      "WARCRM3", "Costs are included. The Net Costs exceeds the Upper Costs Limitation."),
+      "WARCRM3", "Net Costs entered exceeds the Upper Costs Limitation."),
 
   WARN_ASSOCIATED_CIVIL_ESCAPE_THRESHOLD("WARCRM4", getEscapeMessage()),
 
@@ -42,53 +42,61 @@ public enum WarningType {
 
   WARN_IMM_ASYLM_DISB_600_CLR(
       "WARIA1",
-      "Costs have been capped at £600 without an Immigration Priority "
-          + "Authority Number. Disbursement costs exceed the Disbursement Limit."),
+      "Disbursement costs have been capped at £600. "
+          + "To claim any costs above the limit submit a claim amendment request and ensure "
+          + "the Immigration Prior Authority number is provided."),
   WARN_IMM_ASYLM_DISB_400_LEGAL_HELP(
       "WARIA2",
-      "Costs have been capped at £400 without an Immigration "
-          + "Priority Authority Number. Disbursement costs exceed the Disbursement Limit."),
+      "Disbursement costs have been capped at £400. "
+          + "To claim any costs above the limit submit a claim amendment request "
+            +  "and ensure the Immigration Prior Authority number is provided."),
   WARN_IMM_ASYLM_ESCAPE_THRESHOLD("WARIA3", getEscapeMessage(), CategoryType.IMMIGRATION_ASYLUM),
   WARN_IMM_ASYLM_PRIOR_AUTH_CLR(
       "WARIA4",
-      "Costs have been capped. The amount entered exceeds the Total "
-          + "Cost Limit. An Immigration Prior Authority number must be entered."),
+      "Costs have been capped at the Total Costs Limit. "
+          + "To claim any costs above the limit submit a claim amendment request "
+          + "and ensure the Immigration Prior Authority number is provided."),
   WARN_IMM_ASYLM_PRIOR_AUTH_INTERIM(
       "WARIA5",
-      "Costs have been capped. The amount entered exceeds the "
-          + "Total Cost Limit. An Immigration Prior Authority number must be entered."),
+      "Costs have been capped at the Total Costs Limit. "
+          + "To claim any costs above the limit submit a claim amendment request "
+          + "and ensure the Immigration Prior Authority number is provided."),
   WARN_IMM_ASYLM_PRIOR_AUTH_LEGAL_HELP(
       "WARIA6",
-      "Costs have been capped. The amount entered exceeds the"
-          + " Total Cost Limit. An Immigration Prior Authority number must be entered."),
+      "Costs have been capped at the Total Costs Limit. "
+          + "To claim any costs above the limit submit a claim amendment request "
+          + "and ensure the Immigration Prior Authority number is provided."),
   WARN_IMM_ASYLM_DISB_LEGAL_HELP(
       "WARIA7",
-      "Costs have been capped without an Immigration Priority Authority"
-          + " Number. Disbursement costs exceed the Disbursement Limit."),
+      "Disbursement costs have been capped at the applicable limit. "
+          + "To claim any costs above the limit submit a claim amendment request "
+          + "and ensure the Immigration Prior Authority number is provided."),
   WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP(
       "WARIA8",
       "Costs have been capped. Costs for the Fee Code used cannot "
           + "exceed the specified limit."),
   WARN_IMM_ASYLM_DETENTION_TRAVEL(
       "WARIA9",
-      "Costs not included. Detention Travel and Waiting costs on hourly"
-          + " rates cases should be reported as Profit Costs."),
+      "Detention Travel and Waiting costs on hourly rates cases should be reported within Profit Costs. "
+          + "The amount entered in Detention Travel and Waiting has not been paid."),
   WARN_IMM_ASYLM_JR_FORM_FILLING(
       "WARIA10",
-      "Costs have been included. JR/ form filling costs should only be completed "
-          + "for standard fee cases. Hourly rates costs should be reported in the Profit Costs."),
+      "JR/Form filling costs should only be completed for standard fee cases. "
+          + "JR/Form filling on hourly rates claims should be reported within Profit Costs. "
+           + "The amount entered in JR/Form filling has not been paid."),
 
   WARN_IMM_ASYLM_DISB_ONLY(
       "WARIA11",
-      "Costs have been capped without an Immigration Priority Authority Number. "
-          + "Disbursement costs exceed the Disbursement Limit."),
+      "Disbursement costs have been capped at the applicable limit. "
+          + "To claim any costs above the limit submit a claim amendment request "
+          + "and ensure the Immigration Prior Authority number is provided."),
 
   WARN_MENTAL_HEALTH_ESCAPE_THRESHOLD("WARMH1", getEscapeMessage(), CategoryType.MENTAL_HEALTH),
 
   WARN_MISCELLANEOUS_ESCAPE_THRESHOLD("WAROTH9", getEscapeMessage(), CategoryType.MISCELLANEOUS),
 
   WARN_POLICE_OTHER_UPPER_LIMIT(
-      "WARCRM7", "Costs have been included. Net Costs exceed the Upper Cost Limitation."),
+      "WARCRM7", "Net Costs entered exceed the Upper Cost Limitation."),
 
   WARN_POLICE_STATIONS_ESCAPE_THRESHOLD("WARCRM8", getEscapeMessage()),
 

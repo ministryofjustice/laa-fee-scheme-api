@@ -88,7 +88,7 @@ class CivilFeeValidationServiceTest {
     assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE)
-        .hasMessage("ERRCIV1 - Fee Code is not valid for the Case Start Date.");
+        .hasMessage("ERRCIV1 - Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.");
   }
 
   @Test
@@ -111,7 +111,7 @@ class CivilFeeValidationServiceTest {
     assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE_TOO_OLD)
-        .hasMessage("ERRCIV2 - Case Start Date is too far in the past.");
+        .hasMessage("ERRCIV2 - Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.");
   }
 
   @ParameterizedTest

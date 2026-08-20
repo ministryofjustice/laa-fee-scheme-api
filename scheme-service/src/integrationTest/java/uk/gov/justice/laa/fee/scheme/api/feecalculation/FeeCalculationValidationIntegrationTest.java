@@ -378,7 +378,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type":"ERROR",
               "code":"ERRCIV2",
-              "message":"Case Start Date is too far in the past."
+              "message":"Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit."
             }
           ]
         }
@@ -409,7 +409,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type":"ERROR",
               "code":"ERRCRM1",
-              "message":"Fee Code is not valid for the Case Start Date."
+              "message":"Fee code and UFN date are incompatible. Check both fields and resubmit."
             }
           ]
         }
@@ -440,7 +440,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type":"ERROR",
               "code":"ERRCRM3",
-              "message":"Enter a valid Police station ID, Court ID, or Prison ID."
+              "message":"Enter a valid Police station ID."
             }
           ]
         }
@@ -576,7 +576,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "ERROR",
               "code": "ERRCRM10",
-              "message": "Net Cost is more than the Upper Cost Limitation."
+              "message": "The costs reported exceed the Upper Costs Limit for this claim. The limit is not extendable. Resubmit your claim with reported costs under the specified limit."
             }
           ]
         }
@@ -609,7 +609,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type":"ERROR",
               "code":"ERRCRM12",
-              "message":"Fee Code is not valid for the Representation Order Date provided."
+              "message":"Fee Code and representation order date are incompatible. Check both fields and resubmit."
             }
           ]
         }
@@ -641,7 +641,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type":"ERROR",
               "code":"ERRCRM13",
-              "message":"UFN must be in the correct format."
+              "message":"UFN must be in the correct format. The first 6 characters must be DD/MM/YY followed by three numerical characters. Check the UFN and resubmit."
             }
           ]
         }
@@ -760,10 +760,12 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @ParameterizedTest
   @CsvSource({
-    "IMCF, WARIA1, Costs have been capped at £600 without an Immigration Priority Authority Number. "
-        + "Disbursement costs exceed the Disbursement Limit., false, 2113.60, 250.6, 650.0, 600.0, 1092.0, 0",
-    "IALB, WARIA2, Costs have been capped at £400 without an Immigration Priority Authority Number. "
-        + "Disbursement costs exceed the Disbursement Limit., false, 1098.80, 114.8, 450.0, 400.0, 413.0, 0",
+    "IMCF, WARIA1, Disbursement costs have been capped at £600. To claim any costs above the limit submit a claim amendment request and "
+        + "ensure the Immigration Prior Authority number is provided., false, 2113.6, 250.6, 650.0, 600.0, 1092.0, 0",
+    "IALB, WARIA2, Disbursement costs have been capped at £400. "
+        + "To claim any costs above the limit submit a claim amendment request "
+        + "and ensure the Immigration Prior Authority number is provided.,"
+        + "false, 1098.8, 114.8, 450.0, 400.0, 413.0, 0",
     "IACE, WARIA3, The claim exceeds the Escape Case Threshold. "
         + "An Escape Case Claim must be submitted for further costs to be paid., true, 1056.00, 166.0, 50.0, 50.0, 669.0, 1500"
   })
@@ -913,12 +915,12 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARIA6",
-              "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
+              "message": "Costs have been capped at the Total Costs Limit. To claim any costs above the limit submit a claim amendment request and ensure the Immigration Prior Authority number is provided."
             },
             {
               "type": "WARNING",
               "code": "WARIA7",
-              "message": "Costs have been capped without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit."
+              "message": "Disbursement costs have been capped at the applicable limit. To claim any costs above the limit submit a claim amendment request and ensure the Immigration Prior Authority number is provided."
             }
           ],
           "feeCalculation": {
@@ -965,7 +967,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARIA4",
-              "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
+              "message": "Costs have been capped at the Total Costs Limit. To claim any costs above the limit submit a claim amendment request and ensure the Immigration Prior Authority number is provided."
             }
           ],
           "feeCalculation": {
@@ -1021,17 +1023,17 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARIA5",
-              "message": "Costs have been capped. The amount entered exceeds the Total Cost Limit. An Immigration Prior Authority number must be entered."
+              "message": "Costs have been capped at the Total Costs Limit. To claim any costs above the limit submit a claim amendment request and ensure the Immigration Prior Authority number is provided."
             },
             {
               "type": "WARNING",
               "code": "WARIA9",
-              "message": "Costs not included. Detention Travel and Waiting costs on hourly rates cases should be reported as Profit Costs."
+              "message": "Detention Travel and Waiting costs on hourly rates cases should be reported within Profit Costs. The amount entered in Detention Travel and Waiting has not been paid."
             },
             {
               "type": "WARNING",
               "code": "WARIA10",
-              "message": "Costs have been included. JR/ form filling costs should only be completed for standard fee cases. Hourly rates costs should be reported in the Profit Costs."
+              "message": "JR/Form filling costs should only be completed for standard fee cases. JR/Form filling on hourly rates claims should be reported within Profit Costs. The amount entered in JR/Form filling has not been paid."
             }
           ],
           "feeCalculation": {
@@ -1087,7 +1089,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARIA11",
-              "message": "Costs have been capped without an Immigration Priority Authority Number. Disbursement costs exceed the Disbursement Limit."
+              "message": "Disbursement costs have been capped at the applicable limit. To claim any costs above the limit submit a claim amendment request and ensure the Immigration Prior Authority number is provided."
             },
             {
               "type": "WARNING",
@@ -1185,7 +1187,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               {
                   "type": "WARNING",
                   "code": "WARCRM7",
-                  "message": "Costs have been included. Net Costs exceed the Upper Cost Limitation."
+                  "message": "Net Costs entered exceed the Upper Cost Limitation."
               }
           ],
           "feeCalculation": {
@@ -1284,7 +1286,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             {
               "type": "WARNING",
               "code": "WARCRM3",
-              "message": "Costs are included. The Net Costs exceeds the Upper Costs Limitation."
+              "message": "Net Costs entered exceeds the Upper Costs Limitation."
             }
           ],
           "feeCalculation": {
