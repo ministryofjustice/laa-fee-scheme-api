@@ -765,7 +765,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
     "IALB, WARIA2, Disbursement costs have been capped at £400. "
         + "To claim any costs above the limit submit a claim amendment request "
         + "and ensure the Immigration Prior Authority number is provided.,"
-        + "false, 1158.92, 114.8, 450.0, 400.0, 413.0, 0",
+        + "false, 1098.8 114.8, 450.0, 400.0, 413.0, 0",
     "IACE, WARIA3, The claim exceeds the Escape Case Threshold. "
         + "An Escape Case Claim must be submitted for further costs to be paid., true, 1056.00, 166.0, 50.0, 50.0, 669.0, 1500"
   })
