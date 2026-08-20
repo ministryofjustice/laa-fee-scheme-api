@@ -17,7 +17,7 @@ public enum ErrorType {
   ERR_CIVIL_START_DATE("ERRCIV1", "Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim."),
   ERR_CIVIL_START_DATE_TOO_OLD("ERRCIV2", "Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit."),
   ERR_CRIME_POLICE_SCHEME_ID("ERRCRM4", "Enter a valid Scheme ID."),
-  ERR_CRIME_POLICE_STATION_ID("ERRCRM3", "Enter a valid Police station ID, Court ID, or Prison ID."),
+  ERR_CRIME_POLICE_STATION_ID("ERRCRM3", "Enter a valid Police station ID."),
   ERR_CRIME_PREORDER_COVER_UPPER_LIMIT("ERRCRM10", "The costs reported exceed the Upper Costs Limit for this claim."
           + " The limit is not extendable."
           + " Resubmit your claim with reported costs under the specified limit."),
