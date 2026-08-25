@@ -103,6 +103,12 @@ The following actuator endpoints have been configured:
 
 ## Additional Information
 
+### Feature flags
+
+See the [feature flag investigation](docs/feature-flags.md) for the recommended
+application, deployment, and testing approach, including handling backdated fee
+codes.
+
 ### Authentication
 The [LAA SpringBoot Authentication Starter](https://github.com/ministryofjustice/laa-spring-boot-common/blob/main/laa-spring-boot-starters/laa-spring-boot-starter-auth/README.md)
 has been used to secure the application using token-based authentication.
@@ -118,5 +124,4 @@ To access the API endpoints, you need to include a valid token in the `Authoriza
 - [Flyway](https://www.red-gate.com/products/flyway/) - used to manage database migrations.
 - [Sentry SDK](https://docs.sentry.io/platforms/java/) - used to capture application exception events at runtime, which can be monitored via the Sentry UI.
 - [Testcontainers](https://testcontainers.com/) - used to provide a PostgreSQL container for the integration tests.
-
 
