@@ -135,16 +135,69 @@ To access the API endpoints, you need to include a valid token in the `Authoriza
 
 ### Feature flags
 
-Application code evaluates flags through `FeatureFlagService` so the backing provider can be
-changed without changing each flag check. The initial provider reads environment-backed
-Spring configuration and defaults missing flags to `false`.
+The sample implementation has three stages:
+
+```text
+Helm value
+  -> environment variable
+  -> application.yml
+  -> FeatureFlagProperties
+  -> FeatureFlagService
+       -> inline if statement
+       -> @RequiresFeatureFlag endpoint check
+```
+
+1. **Configure the value.** Helm sets a non-secret environment variable. `application.yml`
+   maps it into `FeatureFlagProperties`, with missing flags defaulted to `false`.
+2. **Evaluate the value.** Application code asks `FeatureFlagService`; it does not read
+   environment variables directly.
+3. **Choose the behaviour.** Code either uses a normal `if` statement or adds
+   `@RequiresFeatureFlag` to a controller or method. The interceptor returns `404 Not Found`
+   before a disabled endpoint runs.
+
+The annotation/interceptor path is optional. A feature that only needs inline branching uses
+`FeatureFlagService` and does not interact with the endpoint-gating classes.
+
+Most classes are one-time infrastructure:
+
+| Part | Purpose | Changed for each new flag? |
+| --- | --- | --- |
+| `FeatureFlag` | Registry of recognised, stable flag keys | Yes |
+| `application.yml` and Helm values | Environment-specific state | Yes |
+| Calling service or controller | Chooses what the flag controls | Yes |
+| `FeatureFlagProperties` | Binds and validates configured values | No |
+| `FeatureFlagService` | Application-facing lookup contract | No |
+| `ConfigurationFeatureFlagService` | Initial configuration-backed provider | No |
+| `RequiresFeatureFlag` and `FeatureFlagInterceptor` | Reusable endpoint gating | No |
+| `FeatureFlagConfiguration` and MVC configurer | Spring bean and interceptor wiring | No |
+| `FeatureDisabledException` and exception handler | Consistent disabled-endpoint response | No |
+
+The interface is the provider boundary. For example, a future
+`LaunchDarklyFeatureFlagService` could implement `FeatureFlagService`; inline checks and
+controller annotations would remain unchanged.
+
+With LaunchDarkly, the input side of the flow would become:
+
+```text
+LaunchDarkly UI
+  -> streaming SDK updates
+  -> singleton LDClient local cache
+  -> LaunchDarklyFeatureFlagService
+  -> existing inline and endpoint checks
+```
+
+The Helm flag value, environment mapping, properties class and configuration-backed provider
+would no longer be used. The application-facing interface and consumers stay the same.
+
+This draft covers service-wide boolean flags. Per-client, per-user or percentage targeting
+would require an evaluation context to be added to the interface and is intentionally outside
+this sample.
 
 `EXAMPLE_FEATURE` is included only to demonstrate the pattern in this draft. To add a real flag:
 
 1. Add it to `FeatureFlag` with a stable kebab-case key.
-2. Add the key to `feature-flags.flags` in `application.yml`, backed by an environment variable
-   with a `false` default.
-3. Wire the environment variable to a non-secret Helm value in `_envs.tpl` and `values.yaml`.
+2. Add its environment-backed value to `application.yml`, `_envs.tpl` and `values.yaml`.
+3. Use `FeatureFlagService` or `@RequiresFeatureFlag` where the behaviour changes.
 
 Use `FeatureFlagService` for inline branching:
 
@@ -155,8 +208,7 @@ if (featureFlagService.isEnabled(FeatureFlag.EXAMPLE_FEATURE)) {
 return existingBehaviour();
 ```
 
-Use `@RequiresFeatureFlag` on a controller or controller method to make an endpoint return
-`404 Not Found` while its flag is disabled:
+Use `@RequiresFeatureFlag` for a whole controller or controller method:
 
 ```java
 @RequiresFeatureFlag(FeatureFlag.EXAMPLE_FEATURE)
@@ -170,7 +222,8 @@ public ResponseEntity<Void> exampleEndpoint() {
 so both flag states are tested.
 
 Changing a Helm value rolls the pods because environment variables are read at application
-startup. Flags should have an owner and removal plan, and should be removed after rollout.
+startup. No existing endpoint uses `EXAMPLE_FEATURE`; this draft changes no current behaviour.
+Real flags should have an owner and removal plan, and should be removed after rollout.
 
 ### Libraries Used
 - [Spring Boot Actuator](https://docs.spring.io/spring-boot/reference/actuator/index.html) - used to provide various endpoints to help monitor the application, such as view application health and information.
