@@ -133,6 +133,45 @@ The [LAA SpringBoot Authentication Starter](https://github.com/ministryofjustice
 has been used to secure the application using token-based authentication.
 To access the API endpoints, you need to include a valid token in the `Authorization` header of your HTTP requests.
 
+### Feature flags
+
+Application code evaluates flags through `FeatureFlagService` so the backing provider can be
+changed without changing each flag check. The initial provider reads environment-backed
+Spring configuration and defaults missing flags to `false`.
+
+`EXAMPLE_FEATURE` is included only to demonstrate the pattern in this draft. To add a real flag:
+
+1. Add it to `FeatureFlag` with a stable kebab-case key.
+2. Add the key to `feature-flags.flags` in `application.yml`, backed by an environment variable
+   with a `false` default.
+3. Wire the environment variable to a non-secret Helm value in `_envs.tpl` and `values.yaml`.
+
+Use `FeatureFlagService` for inline branching:
+
+```java
+if (featureFlagService.isEnabled(FeatureFlag.EXAMPLE_FEATURE)) {
+  return newBehaviour();
+}
+return existingBehaviour();
+```
+
+Use `@RequiresFeatureFlag` on a controller or controller method to make an endpoint return
+`404 Not Found` while its flag is disabled:
+
+```java
+@RequiresFeatureFlag(FeatureFlag.EXAMPLE_FEATURE)
+public ResponseEntity<Void> exampleEndpoint() {
+  return ResponseEntity.ok().build();
+}
+```
+
+`@WebMvcTest` does not load the regular feature flag configuration automatically. Import
+`FeatureFlagConfiguration` in controller slice tests and mock or configure `FeatureFlagService`
+so both flag states are tested.
+
+Changing a Helm value rolls the pods because environment variables are read at application
+startup. Flags should have an owner and removal plan, and should be removed after rollout.
+
 ### Libraries Used
 - [Spring Boot Actuator](https://docs.spring.io/spring-boot/reference/actuator/index.html) - used to provide various endpoints to help monitor the application, such as view application health and information.
 - [Spring Boot Web](https://docs.spring.io/spring-boot/reference/web/index.html) - used to provide features for building the REST API implementation.

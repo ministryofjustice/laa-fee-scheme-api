@@ -29,6 +29,8 @@ import tools.jackson.core.exc.StreamReadException;
 import tools.jackson.databind.exc.InvalidFormatException;
 import tools.jackson.databind.exc.MismatchedInputException;
 import uk.gov.justice.laa.fee.scheme.controller.FeeCalculationController;
+import uk.gov.justice.laa.fee.scheme.featureflag.FeatureDisabledException;
+import uk.gov.justice.laa.fee.scheme.featureflag.FeatureFlag;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -180,6 +182,19 @@ class GlobalExceptionHandlerTest {
     assertThat(capturedOutput.getOut())
             .contains("Area of law not found error "
                     + "[status=404, error=Not Found, message=Area of law not found for: FEE123]");
+  }
+
+  @Test
+  void handleFeatureDisabled(CapturedOutput capturedOutput) {
+    FeatureDisabledException exception = new FeatureDisabledException(FeatureFlag.EXAMPLE_FEATURE);
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeatureDisabled(exception);
+
+    assertErrorResponse(response, HttpStatus.NOT_FOUND, "Feature is not available: example-feature");
+    assertThat(capturedOutput.getOut())
+        .contains("Feature disabled "
+            + "[status=404, error=Not Found, message=Feature is not available: example-feature]")
+        .doesNotContain("FeatureDisabledException");
   }
 
   @Test

@@ -20,6 +20,7 @@ import tools.jackson.core.exc.StreamReadException;
 import tools.jackson.databind.exc.InvalidFormatException;
 import tools.jackson.databind.exc.MismatchedInputException;
 import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
+import uk.gov.justice.laa.fee.scheme.featureflag.FeatureDisabledException;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
@@ -127,6 +128,20 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(VatRateNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleVatRateNotFound(VatRateNotFoundException ex) {
     return handleException("VAT rate not found error", ex, HttpStatus.NOT_FOUND);
+  }
+
+  /**
+   * Global exception handler for FeatureDisabledException exception.
+   *
+   * @param ex the exception thrown when an endpoint's required feature is disabled.
+   * @return the error response and a 404 Not Found status code.
+   */
+  @ExceptionHandler(FeatureDisabledException.class)
+  public ResponseEntity<ErrorResponse> handleFeatureDisabled(FeatureDisabledException ex) {
+    HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+    log.info("Feature disabled [status={}, error={}, message={}]", httpStatus.value(),
+        httpStatus.getReasonPhrase(), ex.getMessage());
+    return getErrorResponse(httpStatus, ex.getMessage());
   }
 
   /**

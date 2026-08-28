@@ -78,3 +78,7 @@ laa.springboot.starter:
 sentry:
   dsn: ${SENTRY_DSN}
   environment: ${SENTRY_ENVIRONMENT}
+
+feature-flags:
+  flags:
+    example-feature: ${FEATURE_FLAG_EXAMPLE_FEATURE_ENABLED:false}
