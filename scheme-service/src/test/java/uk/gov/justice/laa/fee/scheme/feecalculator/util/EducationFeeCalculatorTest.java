@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.laa.fee.scheme.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
@@ -38,6 +39,9 @@ class EducationFeeCalculatorTest {
 
   @Mock
   EducationDisbursementOnlyCalculator educationDisbursementOnlyCalculator;
+
+  @Mock
+  FeatureFlagsConfig featureFlagsConfig;
 
   @Test
   void getFee_whenEducationFeeFixed_shouldReturnFeeCalculationResponse() {

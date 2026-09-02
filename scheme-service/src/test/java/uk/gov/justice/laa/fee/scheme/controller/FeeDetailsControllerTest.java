@@ -14,6 +14,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.justice.laa.fee.scheme.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.fee.scheme.exception.CategoryCodeNotFoundException;
 import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponseV1;
 import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponseV2;
@@ -28,6 +29,9 @@ class FeeDetailsControllerTest {
 
   @MockitoBean
   private FeeDetailsService feeDetailsService;
+
+  @MockitoBean
+  private FeatureFlagsConfig featureFlagsConfig;
 
   @Test
   void getFeeDetailsV1FeeByCode() throws Exception {
