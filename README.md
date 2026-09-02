@@ -118,8 +118,8 @@ The sample implementation has three stages:
 Helm value
   -> environment variable
   -> application.yml
-  -> FeatureFlagProperties
-  -> FeatureFlagService
+  -> FeatureFlagsConfig
+  -> application code
        -> inline if statement
        -> @RequiresFeatureFlag endpoint check
 ```
@@ -128,32 +128,29 @@ Helm value
    into a container environment variable in the Helm template. For example, update the values file in
    `helm_deploy/laa-fee-scheme-api/values-<environment>.yaml` and the env wiring in
    `helm_deploy/laa-fee-scheme-api/templates/_envs.tpl`.
-2. **Bind it into Spring.** In `scheme-service/src/main/resources/application-local.yml` (or the
-   environment-specific application file), map the environment variable into the Spring property object
-   with a default value, such as `${FLAG_NAME:false}`. This keeps local development safe and allows
-   environment-specific overrides.
-3. **Evaluate the value.** Application code should read the bound properties through the configuration
-   class, not directly from environment variables. Use the service layer as the single lookup point.
+2. **Bind it into Spring.** In `scheme-service/src/main/resources/application.yml` (and
+   `scheme-service/src/main/resources/application-local.yml` for local overrides), map the environment
+   variable into the `feature-flags` block with a default value, such as `${FLAG_NAME:false}`.
+3. **Evaluate the value.** Application code should read the bound properties through
+   `FeatureFlagsConfig`, not directly from environment variables.
 4. **Choose the behaviour.** Code either uses a normal `if` statement for inline branching or adds
    `@RequiresFeatureFlag` to a controller or method. The interceptor runs before the endpoint and
    returns `404 Not Found` when the feature is disabled.
 
 The annotation/interceptor path is optional. If a feature only needs inline branching, it can rely on
-`FeatureFlagService` without interacting with the endpoint-gating classes.
+`FeatureFlagsConfig` without interacting with the endpoint-gating classes.
 
 Most classes are one-time infrastructure:
 
 | Part | Purpose | Changed for each new flag? |
 | --- | --- | --- |
-| `FeatureFlag` | Registry of recognised, stable flag keys | Yes |
-| `application.yml` and Helm values | Environment-specific state | Yes |
+| `Feature` | Registry of recognised, stable flag keys | Yes |
+| `application.yml` plus Helm files (`helm_deploy/laa-fee-scheme-api/values-<environment>.yaml` and `helm_deploy/laa-fee-scheme-api/templates/_envs.tpl`) | Environment-specific state | Yes |
 | Calling service or controller | Chooses what the flag controls | Yes |
-| `FeatureFlagProperties` | Binds and validates configured values | No |
-| `FeatureFlagService` | Application-facing lookup contract | No |
-| `ConfigurationFeatureFlagService` | Initial configuration-backed provider | No |
+| `FeatureFlagsConfig` | Binds and validates configured values | No |
 | `RequiresFeatureFlag` and `FeatureFlagInterceptor` | Reusable endpoint gating | No |
-| `FeatureFlagConfiguration` and MVC configurer | Spring bean and interceptor wiring | No |
-| `FeatureDisabledException` and exception handler | Consistent disabled-endpoint response | No |
+| `FeatureNotEnabledException` and `FeatureNotImplementedRuntimeException` | Consistent feature error types | No |
+| `GlobalExceptionHandler` | Maps feature exceptions to HTTP responses | No |
 
 ## Application Endpoints
 
