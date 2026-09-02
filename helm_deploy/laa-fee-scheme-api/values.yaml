@@ -66,6 +66,9 @@ ingress:
 
   tls: []
 
+featureFlags:
+  isFeatureEnabled: true
+
 resources: {}
 
 autoscaling:
