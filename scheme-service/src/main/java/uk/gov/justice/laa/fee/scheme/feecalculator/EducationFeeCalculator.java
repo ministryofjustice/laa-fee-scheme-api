@@ -1,13 +1,11 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
 import static java.lang.Boolean.TRUE;
-import static uk.gov.justice.laa.fee.scheme.config.features.Feature.FEATURE;
 
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.justice.laa.fee.scheme.annotations.RequiresFeatureFlag;
 import uk.gov.justice.laa.fee.scheme.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
@@ -41,9 +39,6 @@ public class EducationFeeCalculator implements FeeCalculator {
    */
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
-
-    checkFeatureEnabled();
-
     if (TRUE.equals(featureFlagsConfig.getIsFeatureEnabled())) {
       log.info("Feature enabled. Using conditional statement");
     } else {
@@ -60,12 +55,4 @@ public class EducationFeeCalculator implements FeeCalculator {
           educationDisbursementOnlyCalculator.calculate(feeCalculationRequest, feeEntity);
     };
   }
-
-  @RequiresFeatureFlag(value = {FEATURE})
-  private void checkFeatureEnabled() {
-    // This method is intentionally left empty. The presence of the @RequiresFeatureFlag annotation
-    // will trigger the feature flag check in the FeatureFlagInterceptor.
-    log.info("Feature flag is enabled using a method.");
-  }
-
 }

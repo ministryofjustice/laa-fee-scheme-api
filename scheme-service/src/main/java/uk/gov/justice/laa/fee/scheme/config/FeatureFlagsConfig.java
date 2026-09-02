@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.annotation.Validated;
 import uk.gov.justice.laa.fee.scheme.config.features.Feature;
 import uk.gov.justice.laa.fee.scheme.exception.FeatureNotEnabledException;
 import uk.gov.justice.laa.fee.scheme.exception.FeatureNotImplementedRuntimeException;
@@ -14,6 +15,7 @@ import uk.gov.justice.laa.fee.scheme.exception.FeatureNotImplementedRuntimeExcep
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "feature-flags")
+@Validated
 public class FeatureFlagsConfig {
 
   @NotNull private Boolean isFeatureEnabled;
