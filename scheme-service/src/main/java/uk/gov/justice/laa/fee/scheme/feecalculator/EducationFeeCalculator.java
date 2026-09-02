@@ -1,12 +1,14 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
+import static java.lang.Boolean.TRUE;
+import static uk.gov.justice.laa.fee.scheme.config.features.Feature.FEATURE;
+
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.fee.scheme.annotations.RequiresFeatureFlag;
 import uk.gov.justice.laa.fee.scheme.config.FeatureFlagsConfig;
-import uk.gov.justice.laa.fee.scheme.config.features.Feature;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
@@ -14,9 +16,6 @@ import uk.gov.justice.laa.fee.scheme.feecalculator.disbursement.EducationDisburs
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard.EducationFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
-
-import static java.lang.Boolean.TRUE;
-import static uk.gov.justice.laa.fee.scheme.config.features.Feature.FEATURE;
 
 /**
  * Implementation class for Education fee category (Fixed and Disbursement both).

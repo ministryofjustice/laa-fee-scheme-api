@@ -16,68 +16,80 @@ import uk.gov.justice.laa.fee.scheme.exception.FeatureNotEnabledException;
 
 class FeatureFlagsConfigTest {
 
-    @Test
-    void checkEnabled_whenFeatureEnabled_doesNotThrow() {
-        FeatureFlagsConfig featureFlagsConfig = new FeatureFlagsConfig();
-        featureFlagsConfig.setIsFeatureEnabled(true);
+  @Test
+  void checkEnabled_whenFeatureEnabled_doesNotThrow() {
+    FeatureFlagsConfig featureFlagsConfig = new FeatureFlagsConfig();
+    featureFlagsConfig.setIsFeatureEnabled(true);
 
-        assertThatCode(() -> featureFlagsConfig.checkEnabled(Feature.FEATURE))
-            .doesNotThrowAnyException();
-    }
+    assertThatCode(() -> featureFlagsConfig.checkEnabled(Feature.FEATURE))
+        .doesNotThrowAnyException();
+  }
 
-    @Test
-    void checkEnabled_whenFeatureDisabled_throwsFeatureNotEnabledException() {
-        FeatureFlagsConfig featureFlagsConfig = new FeatureFlagsConfig();
-        featureFlagsConfig.setIsFeatureEnabled(false);
+  @Test
+  void checkEnabled_whenFeatureDisabled_throwsFeatureNotEnabledException() {
+    FeatureFlagsConfig featureFlagsConfig = new FeatureFlagsConfig();
+    featureFlagsConfig.setIsFeatureEnabled(false);
 
-        assertThatThrownBy(() -> featureFlagsConfig.checkEnabled(Feature.FEATURE))
-            .isInstanceOf(FeatureNotEnabledException.class)
-            .hasMessage("Feature is not available: FEATURE");
-    }
+    assertThatThrownBy(() -> featureFlagsConfig.checkEnabled(Feature.FEATURE))
+        .isInstanceOf(FeatureNotEnabledException.class)
+        .hasMessage("Feature is not available: FEATURE");
+  }
 
-    @Test
-    void preHandle_whenMethodHasFeatureAnnotationAndFeatureEnabled_returnsTrue() throws NoSuchMethodException {
-        FeatureFlagsConfig featureFlagsConfig = new FeatureFlagsConfig();
-        featureFlagsConfig.setIsFeatureEnabled(true);
-        FeatureFlagInterceptor interceptor = new FeatureFlagInterceptor(featureFlagsConfig);
+  @Test
+  void preHandle_whenMethodHasFeatureAnnotationAndFeatureEnabled_returnsTrue()
+      throws NoSuchMethodException {
+    FeatureFlagsConfig featureFlagsConfig = new FeatureFlagsConfig();
+    featureFlagsConfig.setIsFeatureEnabled(true);
+    FeatureFlagInterceptor interceptor = new FeatureFlagInterceptor(featureFlagsConfig);
 
-        HandlerMethod handlerMethod = new HandlerMethod(new FeatureFlagController(),
+    HandlerMethod handlerMethod =
+        new HandlerMethod(
+            new FeatureFlagController(),
             FeatureFlagController.class.getDeclaredMethod("enabledMethod"));
 
-        assertThat(interceptor.preHandle(mock(HttpServletRequest.class), mock(HttpServletResponse.class), handlerMethod))
-            .isTrue();
-    }
+    assertThat(
+            interceptor.preHandle(
+                mock(HttpServletRequest.class), mock(HttpServletResponse.class), handlerMethod))
+        .isTrue();
+  }
 
-    @Test
-    void preHandle_whenMethodHasFeatureAnnotationAndFeatureDisabled_throwsFeatureNotEnabledException()
-        throws NoSuchMethodException {
-        FeatureFlagsConfig featureFlagsConfig = new FeatureFlagsConfig();
-        featureFlagsConfig.setIsFeatureEnabled(false);
-        FeatureFlagInterceptor interceptor = new FeatureFlagInterceptor(featureFlagsConfig);
+  @Test
+  void preHandle_whenMethodHasFeatureAnnotationAndFeatureDisabled_throwsFeatureNotEnabledException()
+      throws NoSuchMethodException {
+    FeatureFlagsConfig featureFlagsConfig = new FeatureFlagsConfig();
+    featureFlagsConfig.setIsFeatureEnabled(false);
+    FeatureFlagInterceptor interceptor = new FeatureFlagInterceptor(featureFlagsConfig);
 
-        HandlerMethod handlerMethod = new HandlerMethod(new FeatureFlagController(),
+    HandlerMethod handlerMethod =
+        new HandlerMethod(
+            new FeatureFlagController(),
             FeatureFlagController.class.getDeclaredMethod("enabledMethod"));
 
-        assertThatThrownBy(() -> interceptor.preHandle(mock(HttpServletRequest.class), mock(HttpServletResponse.class), handlerMethod))
-            .isInstanceOf(FeatureNotEnabledException.class)
-            .hasMessage("Feature is not available: FEATURE");
+    assertThatThrownBy(
+            () ->
+                interceptor.preHandle(
+                    mock(HttpServletRequest.class), mock(HttpServletResponse.class), handlerMethod))
+        .isInstanceOf(FeatureNotEnabledException.class)
+        .hasMessage("Feature is not available: FEATURE");
+  }
+
+  @Test
+  void preHandle_whenHandlerIsNotHandlerMethod_returnsTrue() {
+    FeatureFlagsConfig featureFlagsConfig = new FeatureFlagsConfig();
+    featureFlagsConfig.setIsFeatureEnabled(false);
+    FeatureFlagInterceptor interceptor = new FeatureFlagInterceptor(featureFlagsConfig);
+
+    assertThat(
+            interceptor.preHandle(
+                mock(HttpServletRequest.class), mock(HttpServletResponse.class), new Object()))
+        .isTrue();
+  }
+
+  private static final class FeatureFlagController {
+
+    @RequiresFeatureFlag(Feature.FEATURE)
+    public void enabledMethod() {
+      // no-op
     }
-
-    @Test
-    void preHandle_whenHandlerIsNotHandlerMethod_returnsTrue() {
-        FeatureFlagsConfig featureFlagsConfig = new FeatureFlagsConfig();
-        featureFlagsConfig.setIsFeatureEnabled(false);
-        FeatureFlagInterceptor interceptor = new FeatureFlagInterceptor(featureFlagsConfig);
-
-        assertThat(interceptor.preHandle(mock(HttpServletRequest.class), mock(HttpServletResponse.class), new Object()))
-            .isTrue();
-    }
-
-    private static class FeatureFlagController {
-
-        @RequiresFeatureFlag(Feature.FEATURE)
-        public void enabledMethod() {
-            // no-op
-        }
-    }
+  }
 }

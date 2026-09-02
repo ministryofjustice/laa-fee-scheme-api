@@ -18,25 +18,25 @@ import uk.gov.justice.laa.fee.scheme.config.FeatureFlagsConfig;
 @RequiredArgsConstructor
 public class FeatureFlagInterceptor implements HandlerInterceptor {
 
-    private final FeatureFlagsConfig featureFlagsConfig;
+  private final FeatureFlagsConfig featureFlagsConfig;
 
-    @Override
-    public boolean preHandle(
-            HttpServletRequest request, HttpServletResponse response, Object handler) {
+  @Override
+  public boolean preHandle(
+      HttpServletRequest request, HttpServletResponse response, Object handler) {
 
-        if (!(handler instanceof HandlerMethod handlerMethod)) {
-            return true;
-        }
-
-        RequiresFeatureFlag annotation = handlerMethod.getMethodAnnotation(RequiresFeatureFlag.class);
-        if (annotation == null) {
-            annotation = handlerMethod.getBeanType().getAnnotation(RequiresFeatureFlag.class);
-        }
-
-        if (annotation != null) {
-            featureFlagsConfig.checkEnabled(annotation.value());
-        }
-
-        return true;
+    if (!(handler instanceof HandlerMethod handlerMethod)) {
+      return true;
     }
+
+    RequiresFeatureFlag annotation = handlerMethod.getMethodAnnotation(RequiresFeatureFlag.class);
+    if (annotation == null) {
+      annotation = handlerMethod.getBeanType().getAnnotation(RequiresFeatureFlag.class);
+    }
+
+    if (annotation != null) {
+      featureFlagsConfig.checkEnabled(annotation.value());
+    }
+
+    return true;
+  }
 }
