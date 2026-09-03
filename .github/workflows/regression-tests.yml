@@ -51,58 +51,52 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6
 
       - name: Install kubectl
-        uses: azure/setup-kubectl@v3
+        uses: azure/setup-kubectl@901a10e89ea615cf61f57ac05cecdf23e7de06d8  # v3
         with:
           version: v1.29.4
 
       - name: Authenticate to Kubernetes Cluster
-        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@7c81d37978aef9418f7185d9ecf70e3cd1c63c02 # main
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@768f673017edbb793cf052fa159c272d6c1f9177 # unversioned
         with:
           kube-cert: ${{ secrets.KUBE_CERT }}
           kube-token: ${{ secrets.KUBE_TOKEN }}
           kube-cluster: ${{ secrets.KUBE_CLUSTER }}
           kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
+          kube-sa: deploy-user
 
       - name: Resolve target service
         id: target
+        env:
+          TARGET_ENVIRONMENT: ${{ inputs.target_environment }}
+          PREVIEW_ID: ${{ inputs.preview_id }}
         run: |
-          if [[ "${{ inputs.target_environment }}" == "preview" ]]; then
-            if [[ -z "${{ inputs.preview_id }}" ]]; then
+          if [[ "$TARGET_ENVIRONMENT" == "preview" ]]; then
+            if [[ -z "$PREVIEW_ID" ]]; then
               echo "preview_id is required when target_environment=preview" >&2
               exit 1
             fi
-            SERVICE_NAME="laa-fee-scheme-api-${{ inputs.preview_id }}-service"
+            SERVICE_NAME="laa-fee-scheme-api-${PREVIEW_ID}-service"
           else
             SERVICE_NAME="laa-fee-scheme-api-service"
           fi
 
           echo "service_name=$SERVICE_NAME" >> "$GITHUB_OUTPUT"
 
-      - name: Port forward app service
+      - name: Port forward to FPS-API service in FSP namespace
         uses: ./.github/actions/port-forward-service
         with:
           kube_namespace: ${{ secrets.KUBE_NAMESPACE }}
           service_name: ${{ steps.target.outputs.service_name }}
-          local_port: "8085"
+          local_port: "8095"
           remote_port: "8085"
-          pid_env_var: PORT_FORWARD_APP_PID
+          pid_env_var: PORT_FORWARD_FSP_PID
           wait_label: fsp-api
-
-      - name: Port forward actuator service
-        uses: ./.github/actions/port-forward-service
-        with:
-          kube_namespace: ${{ secrets.KUBE_NAMESPACE }}
-          service_name: ${{ steps.target.outputs.service_name }}
-          local_port: "8185"
-          remote_port: "8185"
-          pid_env_var: PORT_FORWARD_ACTUATOR_PID
-          wait_label: fsp-api-actuator
 
       - name: Create regression test environment file
         run: |
           cat > scheme-service/src/regressionTest/.env <<'EOF'
-          FSP_API_BASE_URL=http://localhost:8085
-          APP_HEALTHCHECK_URL=http://localhost:8185/actuator/health
+          FSP_API_BASE_URL=http://127.0.0.1:8095
+          APP_HEALTHCHECK_URL=http://127.0.0.1:8095/v3/api-docs
           FSP_API_TOKEN=${{ secrets.FSP_API_TOKEN }}
           EOF
 
@@ -121,9 +115,6 @@ jobs:
       - name: Cleanup port-forward
         if: always()
         run: |
-          if [ -n "${PORT_FORWARD_APP_PID:-}" ]; then
-            kill "$PORT_FORWARD_APP_PID" || true
-          fi
-          if [ -n "${PORT_FORWARD_ACTUATOR_PID:-}" ]; then
-            kill "$PORT_FORWARD_ACTUATOR_PID" || true
+          if [ -n "${PORT_FORWARD_FSP_PID:-}" ]; then
+            kill "$PORT_FORWARD_FSP_PID" || true
           fi

@@ -75,7 +75,7 @@ The main deployment pipeline (`.github/workflows/deploy.yml`) now runs regressio
 - after uat deploy
 - after staging deploy
 
-Regression tests reach FSP by port-forwarding the service in the target Kubernetes namespace, so the workflow needs the cluster secrets and `FSP_API_TOKEN` for the target GitHub Environment.
+Regression tests reach FSP by port-forwarding the service in the target Kubernetes namespace (localhost `8095` -> service `8085`), so the workflow needs the cluster secrets and `FSP_API_TOKEN` for the target GitHub Environment.
 
 For preview, choose `preview` and provide `preview_id` (for example `pr-391`) when triggering the workflow. For dev/uat/staging, the workflow port-forwards `laa-fee-scheme-api-service` in the relevant namespace.
 
