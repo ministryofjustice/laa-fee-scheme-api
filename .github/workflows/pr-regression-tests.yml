@@ -1,8 +1,7 @@
 name: PR regression tests
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
+  workflow_call:
   workflow_dispatch:
 
 permissions:
