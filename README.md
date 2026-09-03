@@ -54,6 +54,32 @@ The script has two modes. See `scheme-service/src/regressionTest/.env.example` f
 
 `./run-regression-tests.sh --local --dry-run`
 
+#### In GitHub Actions
+
+The `Regression tests` workflow (`.github/workflows/regression-tests.yml`) runs automatically on active PR commits (`pull_request` synchronize/open/reopen) using a local Dockerised stack.
+
+When preview deployment runs (`.github/workflows/deploy-preview.yml`), regression tests also run against the deployed preview URL.
+
+It can also run manually from **Actions** against:
+- preview environments
+- development
+- uat
+- staging
+
+The main deployment pipeline (`.github/workflows/deploy.yml`) now runs regression tests after each deployment stage:
+- after development deploy
+- after uat deploy
+- after staging deploy
+
+For development/uat/staging, set environment-scoped configuration:
+- `vars.FSP_API_BASE_URL` (required)
+- `vars.APP_HEALTHCHECK_URL` (optional, defaults to `<FSP_API_BASE_URL>/actuator/health`)
+- `secrets.FSP_API_TOKEN` (required)
+
+For preview, choose `preview` and provide `preview_base_url` when triggering the workflow.
+
+Each regression workflow run uploads Cucumber reports from `scheme-service/src/regressionTest/reports` as a GitHub Actions artifact.
+
 ### Run application via intellij
 
 Update placeholders in docker-compose.yml

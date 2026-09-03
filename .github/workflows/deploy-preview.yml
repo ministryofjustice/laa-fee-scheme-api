@@ -58,3 +58,12 @@ jobs:
       preview_id: pr-${{ inputs.pr_number }}
       preview_schema_id: pr_${{ inputs.pr_number }}
     secrets: inherit
+
+  regression-preview:
+    needs: deploy-preview
+    uses: ./.github/workflows/regression-tests.yml
+    with:
+      run_mode: environment
+      target_environment: preview
+      preview_base_url: https://laa-fee-scheme-api-pr-${{ inputs.pr_number }}.apps.live.cloud-platform.service.justice.gov.uk
+    secrets: inherit
