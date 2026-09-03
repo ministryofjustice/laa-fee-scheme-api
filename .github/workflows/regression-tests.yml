@@ -22,6 +22,7 @@ on:
           - development
           - uat
           - staging
+        default: development
       preview_base_url:
         description: "Preview API base URL (required when target_environment=preview)"
         required: false
@@ -156,7 +157,7 @@ jobs:
             HEALTHCHECK_URL="${BASE_URL%/}/actuator/health"
           else
             if [[ -z "${{ vars.FSP_API_BASE_URL }}" ]]; then
-              echo "Environment variable FSP_API_BASE_URL must be set for ${{ inputs.target_environment }}" >&2
+              echo "GitHub Actions variable vars.FSP_API_BASE_URL must be set for ${{ inputs.target_environment }}" >&2
               exit 1
             fi
             BASE_URL="${{ vars.FSP_API_BASE_URL }}"
@@ -171,7 +172,7 @@ jobs:
 
       - name: Create regression test environment file
         run: |
-          cat > scheme-service/src/regressionTest/.env <<EOF
+          cat > scheme-service/src/regressionTest/.env <<'EOF'
           FSP_API_BASE_URL=${{ steps.target.outputs.base_url }}
           APP_HEALTHCHECK_URL=${{ steps.target.outputs.healthcheck_url }}
           FSP_API_TOKEN=${{ secrets.FSP_API_TOKEN }}

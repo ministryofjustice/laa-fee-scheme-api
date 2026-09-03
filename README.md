@@ -56,7 +56,7 @@ The script has two modes. See `scheme-service/src/regressionTest/.env.example` f
 
 #### In GitHub Actions
 
-The `Regression tests` workflow (`.github/workflows/regression-tests.yml`) runs automatically on active PR commits (`pull_request` synchronize/open/reopen) using a local Dockerised stack.
+The `Regression tests` workflow (`.github/workflows/regression-tests.yml`) runs automatically on active PR commits (`pull_request`: `synchronize`/`opened`/`reopened`) using a local Dockerised stack.
 
 When preview deployment runs (`.github/workflows/deploy-preview.yml`), regression tests also run against the deployed preview URL.
 
