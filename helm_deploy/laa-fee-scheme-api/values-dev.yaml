@@ -32,6 +32,9 @@ application:
   logging:
     level: DEBUG
 
+featureFlags:
+  isFeatureEnabled: false
+
 prometheus:
   enabled: true
   dashboardUrl: https://grafana.live.cloud-platform.service.justice.gov.uk/d/laa-fee-scheme-api-dev-dashboard

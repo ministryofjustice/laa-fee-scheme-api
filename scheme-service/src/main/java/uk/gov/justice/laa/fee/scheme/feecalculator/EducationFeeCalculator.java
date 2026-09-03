@@ -1,8 +1,12 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator;
 
+import static java.lang.Boolean.TRUE;
+
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.justice.laa.fee.scheme.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
@@ -14,9 +18,12 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 /**
  * Implementation class for Education fee category (Fixed and Disbursement both).
  */
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class EducationFeeCalculator implements FeeCalculator {
+
+  private final FeatureFlagsConfig featureFlagsConfig;
 
   private final EducationFixedFeeCalculator educationFixedFeeCalculator;
 
@@ -32,12 +39,20 @@ public class EducationFeeCalculator implements FeeCalculator {
    */
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+    if (TRUE.equals(featureFlagsConfig.getIsFeatureEnabled())) {
+      log.info("Feature enabled. Using conditional statement");
+    } else {
+      log.info("Feature disabled. Using conditional statement");
+    }
 
     return switch (feeEntity.getFeeType()) {
-      case FeeType.FIXED -> educationFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
-      case FeeType.HOURLY -> throw new UnsupportedOperationException("Hourly rate fee is not supported for Education category.");
-      case FeeType.DISB_ONLY -> educationDisbursementOnlyCalculator.calculate(feeCalculationRequest, feeEntity);
+      case FeeType.FIXED ->
+          educationFixedFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+      case FeeType.HOURLY ->
+          throw new UnsupportedOperationException(
+              "Hourly rate fee is not supported for Education category.");
+      case FeeType.DISB_ONLY ->
+          educationDisbursementOnlyCalculator.calculate(feeCalculationRequest, feeEntity);
     };
   }
-
 }

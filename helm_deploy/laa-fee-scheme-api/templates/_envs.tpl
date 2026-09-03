@@ -30,6 +30,8 @@ env:
       secretKeyRef:
         name: fee-scheme-api-secrets
         key: DATA_CLAIMS_EVENT_SERVICE_TOKEN
+  - name: IS_FEATURE_ENABLED
+    value: {{ .Values.featureFlags.isFeatureEnabled | quote }}
   {{- if .Values.sentry.enabled }}
   - name: SENTRY_DSN
     value: {{ .Values.sentry.dsn }}

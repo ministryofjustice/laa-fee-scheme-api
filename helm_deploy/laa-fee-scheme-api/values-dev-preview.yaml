@@ -32,5 +32,8 @@ application:
   logging:
     level: INFO
 
+featureFlags:
+  isFeatureEnabled: true
+
 prometheus:
   enabled: false

@@ -215,6 +215,34 @@ public class GlobalExceptionHandler {
     return handleException("Unexpected error", ex, INTERNAL_SERVER_ERROR);
   }
 
+  /**
+   * Global exception handler for FeatureNotImplementedException exception.
+   *
+   * @param ex the exception thrown when an endpoint's required feature is not implemented.
+   * @return the error response and a 500 Internal Server Error status code.
+   */
+  @ExceptionHandler(FeatureNotImplementedRuntimeException.class)
+  public ResponseEntity<ErrorResponse> handleFeatureNotImplemented(FeatureNotImplementedRuntimeException ex) {
+    HttpStatus httpStatus = INTERNAL_SERVER_ERROR;
+    log.info("Feature not implemented [status={}, error={}, message={}]", httpStatus.value(),
+            httpStatus.getReasonPhrase(), ex.getMessage());
+    return getErrorResponse(httpStatus, ex.getMessage());
+  }
+
+  /**
+   * Global exception handler for FeatureNotEnabledException exception.
+   *
+   * @param ex the exception thrown when an endpoint's required feature is not enabled.
+   * @return the error response and a 404 Not Found status code.
+   */
+  @ExceptionHandler(FeatureNotEnabledException.class)
+  public ResponseEntity<ErrorResponse> handleFeatureNotEnabled(FeatureNotEnabledException ex) {
+    HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+    log.info("Feature not enabled [status={}, error={}, message={}]", httpStatus.value(),
+            httpStatus.getReasonPhrase(), ex.getMessage());
+    return getErrorResponse(httpStatus, ex.getMessage());
+  }
+
   private ResponseEntity<ErrorResponse> handleException(String errorMessagePrefix, Throwable ex, HttpStatus httpStatus) {
     log.error("{} [status={}, error={}, message={}]", errorMessagePrefix, httpStatus.value(),
         httpStatus.getReasonPhrase(), ex.getMessage(), ex);
