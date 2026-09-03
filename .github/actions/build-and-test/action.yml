@@ -1,5 +1,5 @@
 name: Build and run tests
-description: Builds the project, runs tests, and uploads reports
+description: Builds, tests, publishes, and uploads build reports
 
 inputs:
   github-token:

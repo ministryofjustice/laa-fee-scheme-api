@@ -95,8 +95,21 @@ runs:
             if [ -z "$WAIT_NAME" ]; then
               WAIT_NAME="port-${WAIT_PORT}"
             fi
+            set +e
             bash "$WAIT_SCRIPT" "$WAIT_PORT" "$WAIT_NAME"
+            WAIT_EXIT_CODE=$?
+            set -e
+            if [ "$WAIT_EXIT_CODE" -ne 0 ]; then
+              echo "Wait check failed for ${WAIT_NAME} on port ${WAIT_PORT}." >&2
+              if [ -f "$LOG_FILE" ]; then
+                echo "--- Port-forward log tail (${LOG_FILE}) ---" >&2
+                tail -n 80 "$LOG_FILE" >&2 || true
+                echo "--- End of port-forward log tail ---" >&2
+              fi
+              exit "$WAIT_EXIT_CODE"
+            fi
           else
-            echo "Wait script '$WAIT_SCRIPT' not found, skipping wait step." >&2
+            echo "Wait script '$WAIT_SCRIPT' not found." >&2
+            exit 1
           fi
         fi
