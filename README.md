@@ -64,7 +64,7 @@ The `Regression tests` workflow (`.github/workflows/regression-tests.yml`) is fo
 
 `PR regression tests` can also be run manually from **Actions** for local Docker reruns.
 
-It can be run manually from **Actions** against:
+`Regression tests` can be run manually from **Actions** against:
 - preview environments
 - development
 - uat
@@ -80,7 +80,7 @@ For development/uat/staging, set environment-scoped configuration:
 - `vars.APP_HEALTHCHECK_URL` (optional, defaults to `<FSP_API_BASE_URL>/actuator/health`)
 - `secrets.FSP_API_TOKEN` (required)
 
-For preview, choose `preview` and provide `preview_base_url` when triggering the workflow.
+For preview, choose `preview` and provide `preview_base_url` when triggering the workflow (requires `secrets.FSP_API_TOKEN` in the `dev` GitHub Environment).
 
 Each regression workflow run uploads Cucumber reports from `scheme-service/src/regressionTest/reports` as a GitHub Actions artifact.
 

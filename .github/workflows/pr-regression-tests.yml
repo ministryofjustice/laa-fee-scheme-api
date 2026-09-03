@@ -43,7 +43,7 @@ jobs:
             -e POSTGRES_USER=test \
             -e POSTGRES_PASSWORD=test \
             -e POSTGRES_DB=fee_scheme \
-            postgres:15
+            postgres:17
 
           docker run -d --name laa-fee-scheme-api --network docker-network \
             -e SPRING_DATASOURCE_URL=jdbc:postgresql://fee-scheme-db:5432/fee_scheme \
