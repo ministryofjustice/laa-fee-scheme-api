@@ -86,7 +86,7 @@ jobs:
           cat > scheme-service/src/regressionTest/.env <<'EOF'
           FSP_API_BASE_URL=http://127.0.0.1:8095
           APP_HEALTHCHECK_URL=http://127.0.0.1:8095/v3/api-docs
-          FSP_API_TOKEN=${{ secrets.KUBE_TOKEN }}
+          FSP_API_TOKEN=${{ secrets.FSP_API_TOKEN }}
           EOF
 
       - name: Run regression tests
