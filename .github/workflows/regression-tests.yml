@@ -1,41 +1,26 @@
 name: Regression tests
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
   workflow_dispatch:
     inputs:
-      run_mode:
-        description: "How to run regression tests"
-        required: true
-        type: choice
-        options:
-          - local
-          - environment
-        default: environment
       target_environment:
         description: "Environment to run regression tests against"
-        required: false
+        required: true
         type: choice
         options:
           - preview
           - development
           - uat
           - staging
-        default: development
       preview_base_url:
         description: "Preview API base URL (required when target_environment=preview)"
         required: false
         type: string
   workflow_call:
     inputs:
-      run_mode:
-        description: "How to run regression tests"
-        required: true
-        type: string
       target_environment:
         description: "Environment to run regression tests against"
-        required: false
+        required: true
         type: string
       preview_base_url:
         description: "Preview API base URL (required when target_environment=preview)"
@@ -46,93 +31,7 @@ permissions:
   contents: read
 
 jobs:
-  docker-regression-tests:
-    if: github.event_name == 'pull_request' || inputs.run_mode == 'local'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6
-
-      - name: Set up JDK 25
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654  # v5
-        with:
-          java-version: '25'
-          distribution: 'corretto'
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c  # v5
-
-      - name: Build API artifact
-        run: ./gradlew clean build
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build API Docker image
-        run: docker build --build-arg app_version=1.0.0 -t laa-fee-scheme-api:regression .
-
-      - name: Start API dependencies
-        run: |
-          docker network create docker-network || true
-          docker rm -f laa-fee-scheme-api || true
-          docker rm -f fee-scheme-db || true
-
-          docker run -d --name fee-scheme-db --network docker-network \
-            -e POSTGRES_USER=test \
-            -e POSTGRES_PASSWORD=test \
-            -e POSTGRES_DB=fee_scheme \
-            postgres:15
-
-          docker run -d --name laa-fee-scheme-api --network docker-network \
-            -e SPRING_DATASOURCE_URL=jdbc:postgresql://fee-scheme-db:5432/fee_scheme \
-            -e SPRING_DATASOURCE_USERNAME=test \
-            -e SPRING_DATASOURCE_PASSWORD=test \
-            -e DATA_CLAIMS_EVENT_SERVICE_TOKEN=token1234 \
-            -e SENTRY_DSN="" \
-            -p 8085:8085 -p 8185:8185 \
-            laa-fee-scheme-api:regression
-
-      - name: Wait for API healthcheck
-        run: |
-          retries=60
-          until curl -fsS http://localhost:8185/actuator/health > /dev/null; do
-            retries=$((retries - 1))
-            if [ "$retries" -le 0 ]; then
-              docker logs laa-fee-scheme-api
-              exit 1
-            fi
-            sleep 5
-          done
-
-      - name: Create regression test environment file
-        run: |
-          cat > scheme-service/src/regressionTest/.env.local <<'EOF'
-          FSP_API_BASE_URL=http://localhost:8085
-          APP_HEALTHCHECK_URL=http://localhost:8185/actuator/health
-          FSP_API_TOKEN=token1234
-          EOF
-
-      - name: Run regression tests
-        run: ./run-regression-tests.sh --local
-
-      - name: Upload regression reports
-        if: always()
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4  # v5
-        with:
-          name: regression-reports-local-pr-${{ github.event.pull_request.number || github.run_id }}
-          path: scheme-service/src/regressionTest/reports
-          if-no-files-found: warn
-          retention-days: 14
-
-      - name: Cleanup containers
-        if: always()
-        run: |
-          docker rm -f laa-fee-scheme-api || true
-          docker rm -f fee-scheme-db || true
-          docker network rm docker-network || true
-
   environment-regression-tests:
-    if: github.event_name != 'pull_request' && inputs.run_mode == 'environment'
     environment: ${{ (inputs.target_environment == 'development' || inputs.target_environment == 'preview') && 'dev' || inputs.target_environment }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -144,7 +43,7 @@ jobs:
         id: target
         run: |
           if [[ -z "${{ inputs.target_environment }}" ]]; then
-            echo "target_environment is required when run_mode=environment" >&2
+            echo "target_environment is required" >&2
             exit 1
           fi
 

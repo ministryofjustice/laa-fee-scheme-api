@@ -71,7 +71,6 @@ jobs:
     needs: deploy-dev
     uses: ./.github/workflows/regression-tests.yml
     with:
-      run_mode: environment
       target_environment: development
     secrets: inherit
 
@@ -86,7 +85,6 @@ jobs:
     needs: deploy-uat
     uses: ./.github/workflows/regression-tests.yml
     with:
-      run_mode: environment
       target_environment: uat
     secrets: inherit
 
@@ -101,7 +99,6 @@ jobs:
     needs: deploy-staging
     uses: ./.github/workflows/regression-tests.yml
     with:
-      run_mode: environment
       target_environment: staging
     secrets: inherit
 
