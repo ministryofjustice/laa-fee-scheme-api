@@ -54,6 +54,33 @@ The script has two modes. See `scheme-service/src/regressionTest/.env.example` f
 
 `./run-regression-tests.sh --local --dry-run`
 
+#### In GitHub Actions
+
+The `PR regression tests` workflow (`.github/workflows/pr-regression-tests.yml`) runs as part of `PR build and test` on active PR commits (`pull_request`: `opened`/`reopened`/`synchronize`/`labeled`) using a local Dockerised stack.
+
+When preview deployment runs (`.github/workflows/deploy-preview.yml`), regression tests also run against the deployed preview via port-forward.
+
+The `Regression tests` workflow (`.github/workflows/regression-tests.yml`) is for deployed environments and manual preview/dev/uat/staging reruns.
+
+`PR regression tests` can also be run manually from **Actions** for local Docker reruns.
+
+`Regression tests` can be run manually from **Actions** against:
+- preview environments
+- development
+- uat
+- staging
+
+The main deployment pipeline (`.github/workflows/deploy.yml`) now runs regression tests after each deployment stage:
+- after development deploy
+- after uat deploy
+- after staging deploy
+
+Regression tests reach FSP by port-forwarding the service in the target Kubernetes namespace (localhost `8095` -> service `8085`), so the workflow needs the cluster secrets and `FSP_API_TOKEN` for the target GitHub Environment.
+
+For preview, choose `preview` and provide `preview_id` (for example `pr-391`) when triggering the workflow. For dev/uat/staging, the workflow port-forwards `laa-fee-scheme-api-service` in the relevant namespace.
+
+Each regression workflow run uploads Cucumber reports from `scheme-service/src/regressionTest/reports` as a GitHub Actions artifact.
+
 ### Run application via intellij
 
 Update placeholders in docker-compose.yml
