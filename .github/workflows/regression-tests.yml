@@ -53,7 +53,7 @@ jobs:
               exit 1
             fi
             BASE_URL="${{ inputs.preview_base_url }}"
-            HEALTHCHECK_URL="${BASE_URL%/}/actuator/health"
+            HEALTHCHECK_URL="${BASE_URL%/}/v3/api-docs"
           else
             if [[ -z "${{ vars.FSP_API_BASE_URL }}" ]]; then
               echo "GitHub Actions variable vars.FSP_API_BASE_URL must be set for ${{ inputs.target_environment }}" >&2
