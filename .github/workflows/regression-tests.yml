@@ -26,17 +26,6 @@ on:
         description: "Preview release id (required when target_environment=preview)"
         required: false
         type: string
-    secrets:
-      KUBE_CERT:
-        required: true
-      KUBE_CLUSTER:
-        required: true
-      KUBE_TOKEN:
-        required: true
-      KUBE_NAMESPACE:
-        required: true
-      FSP_API_TOKEN:
-        required: true
 
 permissions:
   contents: read
@@ -97,7 +86,7 @@ jobs:
           cat > scheme-service/src/regressionTest/.env <<'EOF'
           FSP_API_BASE_URL=http://127.0.0.1:8095
           APP_HEALTHCHECK_URL=http://127.0.0.1:8095/v3/api-docs
-          FSP_API_TOKEN=${{ secrets.FSP_API_TOKEN }}
+          FSP_API_TOKEN=${{ secrets.KUBE_TOKEN }}
           EOF
 
       - name: Run regression tests
