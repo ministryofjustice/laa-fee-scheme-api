@@ -61,7 +61,6 @@ jobs:
 
   regression-preview:
     needs: deploy-preview
-    environment: dev
     uses: ./.github/workflows/regression-tests.yml
     with:
       target_environment: preview

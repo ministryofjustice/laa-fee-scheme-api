@@ -69,7 +69,6 @@ jobs:
 
   regression-dev:
     needs: deploy-dev
-    environment: dev
     uses: ./.github/workflows/regression-tests.yml
     with:
       target_environment: development
@@ -84,7 +83,6 @@ jobs:
 
   regression-uat:
     needs: deploy-uat
-    environment: uat
     uses: ./.github/workflows/regression-tests.yml
     with:
       target_environment: uat
@@ -99,7 +97,6 @@ jobs:
 
   regression-staging:
     needs: deploy-staging
-    environment: staging
     uses: ./.github/workflows/regression-tests.yml
     with:
       target_environment: staging
