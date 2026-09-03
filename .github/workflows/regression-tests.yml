@@ -12,8 +12,8 @@ on:
           - development
           - uat
           - staging
-      preview_base_url:
-        description: "Preview API base URL (required when target_environment=preview)"
+      preview_id:
+        description: "Preview release id (required when target_environment=preview)"
         required: false
         type: string
   workflow_call:
@@ -22,10 +22,21 @@ on:
         description: "Environment to run regression tests against"
         required: true
         type: string
-      preview_base_url:
-        description: "Preview API base URL (required when target_environment=preview)"
+      preview_id:
+        description: "Preview release id (required when target_environment=preview)"
         required: false
         type: string
+    secrets:
+      KUBE_CERT:
+        required: true
+      KUBE_CLUSTER:
+        required: true
+      KUBE_TOKEN:
+        required: true
+      KUBE_NAMESPACE:
+        required: true
+      FSP_API_TOKEN:
+        required: true
 
 permissions:
   contents: read
@@ -39,41 +50,59 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6
 
-      - name: Resolve target URLs
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: v1.29.4
+
+      - name: Authenticate to Kubernetes Cluster
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@7c81d37978aef9418f7185d9ecf70e3cd1c63c02 # main
+        with:
+          kube-cert: ${{ secrets.KUBE_CERT }}
+          kube-token: ${{ secrets.KUBE_TOKEN }}
+          kube-cluster: ${{ secrets.KUBE_CLUSTER }}
+          kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
+
+      - name: Resolve target service
         id: target
         run: |
-          if [[ -z "${{ inputs.target_environment }}" ]]; then
-            echo "target_environment is required" >&2
-            exit 1
-          fi
-
           if [[ "${{ inputs.target_environment }}" == "preview" ]]; then
-            if [[ -z "${{ inputs.preview_base_url }}" ]]; then
-              echo "preview_base_url is required when target_environment=preview" >&2
+            if [[ -z "${{ inputs.preview_id }}" ]]; then
+              echo "preview_id is required when target_environment=preview" >&2
               exit 1
             fi
-            BASE_URL="${{ inputs.preview_base_url }}"
-            HEALTHCHECK_URL="${BASE_URL%/}/v3/api-docs"
+            SERVICE_NAME="laa-fee-scheme-api-${{ inputs.preview_id }}-service"
           else
-            if [[ -z "${{ vars.FSP_API_BASE_URL }}" ]]; then
-              echo "GitHub Actions variable vars.FSP_API_BASE_URL must be set for ${{ inputs.target_environment }}" >&2
-              exit 1
-            fi
-            BASE_URL="${{ vars.FSP_API_BASE_URL }}"
-            HEALTHCHECK_URL="${{ vars.APP_HEALTHCHECK_URL }}"
-            if [[ -z "${HEALTHCHECK_URL}" ]]; then
-              HEALTHCHECK_URL="${BASE_URL%/}/actuator/health"
-            fi
+            SERVICE_NAME="laa-fee-scheme-api-service"
           fi
 
-          echo "base_url=$BASE_URL" >> "$GITHUB_OUTPUT"
-          echo "healthcheck_url=$HEALTHCHECK_URL" >> "$GITHUB_OUTPUT"
+          echo "service_name=$SERVICE_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Port forward app service
+        uses: ./.github/actions/port-forward-service
+        with:
+          kube_namespace: ${{ secrets.KUBE_NAMESPACE }}
+          service_name: ${{ steps.target.outputs.service_name }}
+          local_port: "8085"
+          remote_port: "8085"
+          pid_env_var: PORT_FORWARD_APP_PID
+          wait_label: fsp-api
+
+      - name: Port forward actuator service
+        uses: ./.github/actions/port-forward-service
+        with:
+          kube_namespace: ${{ secrets.KUBE_NAMESPACE }}
+          service_name: ${{ steps.target.outputs.service_name }}
+          local_port: "8185"
+          remote_port: "8185"
+          pid_env_var: PORT_FORWARD_ACTUATOR_PID
+          wait_label: fsp-api-actuator
 
       - name: Create regression test environment file
         run: |
           cat > scheme-service/src/regressionTest/.env <<'EOF'
-          FSP_API_BASE_URL=${{ steps.target.outputs.base_url }}
-          APP_HEALTHCHECK_URL=${{ steps.target.outputs.healthcheck_url }}
+          FSP_API_BASE_URL=http://localhost:8085
+          APP_HEALTHCHECK_URL=http://localhost:8185/actuator/health
           FSP_API_TOKEN=${{ secrets.FSP_API_TOKEN }}
           EOF
 
@@ -88,3 +117,13 @@ jobs:
           path: scheme-service/src/regressionTest/reports
           if-no-files-found: warn
           retention-days: 14
+
+      - name: Cleanup port-forward
+        if: always()
+        run: |
+          if [ -n "${PORT_FORWARD_APP_PID:-}" ]; then
+            kill "$PORT_FORWARD_APP_PID" || true
+          fi
+          if [ -n "${PORT_FORWARD_ACTUATOR_PID:-}" ]; then
+            kill "$PORT_FORWARD_ACTUATOR_PID" || true
+          fi

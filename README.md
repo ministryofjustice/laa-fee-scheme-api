@@ -58,7 +58,7 @@ The script has two modes. See `scheme-service/src/regressionTest/.env.example` f
 
 The `PR regression tests` workflow (`.github/workflows/pr-regression-tests.yml`) runs automatically on active PR commits (`pull_request`: `synchronize`/`opened`/`reopened`) using a local Dockerised stack.
 
-When preview deployment runs (`.github/workflows/deploy-preview.yml`), regression tests also run against the deployed preview URL.
+When preview deployment runs (`.github/workflows/deploy-preview.yml`), regression tests also run against the deployed preview via port-forward.
 
 The `Regression tests` workflow (`.github/workflows/regression-tests.yml`) is for deployed environments and manual preview/dev/uat/staging reruns.
 
@@ -75,12 +75,9 @@ The main deployment pipeline (`.github/workflows/deploy.yml`) now runs regressio
 - after uat deploy
 - after staging deploy
 
-For development/uat/staging, set environment-scoped configuration:
-- `vars.FSP_API_BASE_URL` (required)
-- `vars.APP_HEALTHCHECK_URL` (optional, defaults to `<FSP_API_BASE_URL>/actuator/health`)
-- `secrets.FSP_API_TOKEN` (required)
+Regression tests reach FSP by port-forwarding the service in the target Kubernetes namespace, so the workflow needs the cluster secrets and `FSP_API_TOKEN` for the target GitHub Environment.
 
-For preview, choose `preview` and provide `preview_base_url` when triggering the workflow (requires `secrets.FSP_API_TOKEN` in the `dev` GitHub Environment).
+For preview, choose `preview` and provide `preview_id` (for example `pr-391`) when triggering the workflow. For dev/uat/staging, the workflow port-forwards `laa-fee-scheme-api-service` in the relevant namespace.
 
 Each regression workflow run uploads Cucumber reports from `scheme-service/src/regressionTest/reports` as a GitHub Actions artifact.
 
