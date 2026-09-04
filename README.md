@@ -135,7 +135,8 @@ To access the API endpoints, you need to include a valid token in the `Authoriza
 
 ### Feature flags
 
-The sample implementation has three stages:
+The sample implements the configuration approach investigated in
+[LFSP-562](https://dsdmoj.atlassian.net/browse/LFSP-562). It has three stages:
 
 ```text
 Helm value
@@ -166,32 +167,13 @@ Most classes are one-time infrastructure:
 | `application.yml` and Helm values | Environment-specific state | Yes |
 | Calling service or controller | Chooses what the flag controls | Yes |
 | `FeatureFlagProperties` | Binds and validates configured values | No |
-| `FeatureFlagService` | Application-facing lookup contract | No |
-| `ConfigurationFeatureFlagService` | Initial configuration-backed provider | No |
+| `FeatureFlagService` | Reads configured values for inline and endpoint checks | No |
 | `RequiresFeatureFlag` and `FeatureFlagInterceptor` | Reusable endpoint gating | No |
 | `FeatureFlagConfiguration` and MVC configurer | Spring bean and interceptor wiring | No |
 | `FeatureDisabledException` and exception handler | Consistent disabled-endpoint response | No |
 
-The interface is the provider boundary. For example, a future
-`LaunchDarklyFeatureFlagService` could implement `FeatureFlagService`; inline checks and
-controller annotations would remain unchanged.
-
-With LaunchDarkly, the input side of the flow would become:
-
-```text
-LaunchDarkly UI
-  -> streaming SDK updates
-  -> singleton LDClient local cache
-  -> LaunchDarklyFeatureFlagService
-  -> existing inline and endpoint checks
-```
-
-The Helm flag value, environment mapping, properties class and configuration-backed provider
-would no longer be used. The application-facing interface and consumers stay the same.
-
-This draft covers service-wide boolean flags. Per-client, per-user or percentage targeting
-would require an evaluation context to be added to the interface and is intentionally outside
-this sample.
+`FeatureFlagService` centralises the lookup so inline checks and endpoint gating use the same
+configuration and tests can replace it with a mock.
 
 `EXAMPLE_FEATURE` is included only to demonstrate the pattern in this draft. To add a real flag:
 
@@ -222,8 +204,10 @@ public ResponseEntity<Void> exampleEndpoint() {
 so both flag states are tested.
 
 Changing a Helm value rolls the pods because environment variables are read at application
-startup. No existing endpoint uses `EXAMPLE_FEATURE`; this draft changes no current behaviour.
-Real flags should have an owner and removal plan, and should be removed after rollout.
+Changing a Kubernetes secret would have the same limitation: it would not update the value in
+an already-running Java process. The sample uses a non-secret Helm value because a boolean flag
+state is not sensitive. Real flags should have an owner and removal plan, and should be removed
+after rollout.
 
 ### Libraries Used
 - [Spring Boot Actuator](https://docs.spring.io/spring-boot/reference/actuator/index.html) - used to provide various endpoints to help monitor the application, such as view application health and information.

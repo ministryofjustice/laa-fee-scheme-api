@@ -20,7 +20,7 @@ public class FeatureFlagConfiguration {
    */
   @Bean
   public FeatureFlagService featureFlagService(FeatureFlagProperties properties) {
-    return new ConfigurationFeatureFlagService(properties);
+    return new FeatureFlagService(properties);
   }
 
   /**

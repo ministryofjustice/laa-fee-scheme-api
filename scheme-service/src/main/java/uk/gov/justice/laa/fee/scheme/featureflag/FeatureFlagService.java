@@ -1,9 +1,14 @@
 package uk.gov.justice.laa.fee.scheme.featureflag;
 
+import lombok.RequiredArgsConstructor;
+
 /**
- * Application-facing feature flag evaluation service.
+ * Evaluates feature flags from application configuration.
  */
-public interface FeatureFlagService {
+@RequiredArgsConstructor
+public class FeatureFlagService {
+
+  private final FeatureFlagProperties properties;
 
   /**
    * Checks whether a feature is enabled.
@@ -11,5 +16,7 @@ public interface FeatureFlagService {
    * @param featureFlag the feature to evaluate
    * @return true when the feature is enabled
    */
-  boolean isEnabled(FeatureFlag featureFlag);
+  public boolean isEnabled(FeatureFlag featureFlag) {
+    return properties.isEnabled(featureFlag);
+  }
 }
