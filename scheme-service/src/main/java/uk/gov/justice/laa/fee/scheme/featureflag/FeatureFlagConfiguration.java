@@ -24,6 +24,18 @@ public class FeatureFlagConfiguration {
   }
 
   /**
+   * Creates the request feature flag override interceptor.
+   *
+   * @param properties feature flag configuration
+   * @return the request override interceptor
+   */
+  @Bean
+  public FeatureFlagRequestOverrideInterceptor featureFlagRequestOverrideInterceptor(
+      FeatureFlagProperties properties) {
+    return new FeatureFlagRequestOverrideInterceptor(properties);
+  }
+
+  /**
    * Creates the endpoint feature flag interceptor.
    *
    * @param featureFlagService feature flag evaluation service
@@ -38,12 +50,16 @@ public class FeatureFlagConfiguration {
   /**
    * Registers endpoint feature flag interception with Spring MVC.
    *
+   * @param featureFlagRequestOverrideInterceptor request override interceptor
    * @param featureFlagInterceptor endpoint feature flag interceptor
    * @return the Spring MVC configurer
    */
   @Bean
   public WebMvcConfigurer featureFlagWebMvcConfigurer(
+      FeatureFlagRequestOverrideInterceptor featureFlagRequestOverrideInterceptor,
       FeatureFlagInterceptor featureFlagInterceptor) {
-    return new FeatureFlagWebMvcConfigurer(featureFlagInterceptor);
+    return new FeatureFlagWebMvcConfigurer(
+        featureFlagRequestOverrideInterceptor,
+        featureFlagInterceptor);
   }
 }

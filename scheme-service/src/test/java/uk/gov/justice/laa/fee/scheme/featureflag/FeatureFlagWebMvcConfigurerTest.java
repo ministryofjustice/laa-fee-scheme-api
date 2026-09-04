@@ -13,16 +13,23 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 @ExtendWith(MockitoExtension.class)
 class FeatureFlagWebMvcConfigurerTest {
 
+  @Mock private FeatureFlagRequestOverrideInterceptor featureFlagRequestOverrideInterceptor;
   @Mock private FeatureFlagInterceptor featureFlagInterceptor;
   @Mock private InterceptorRegistry registry;
-  @Mock private InterceptorRegistration registration;
+  @Mock private InterceptorRegistration requestOverrideRegistration;
+  @Mock private InterceptorRegistration featureFlagRegistration;
 
   @Test
   void shouldRegisterFeatureFlagInterceptorAfterLoggingInterceptor() {
-    when(registry.addInterceptor(featureFlagInterceptor)).thenReturn(registration);
+    when(registry.addInterceptor(featureFlagRequestOverrideInterceptor))
+        .thenReturn(requestOverrideRegistration);
+    when(registry.addInterceptor(featureFlagInterceptor)).thenReturn(featureFlagRegistration);
 
-    new FeatureFlagWebMvcConfigurer(featureFlagInterceptor).addInterceptors(registry);
+    new FeatureFlagWebMvcConfigurer(
+        featureFlagRequestOverrideInterceptor,
+        featureFlagInterceptor).addInterceptors(registry);
 
-    verify(registration).order(1);
+    verify(requestOverrideRegistration).order(1);
+    verify(featureFlagRegistration).order(2);
   }
 }

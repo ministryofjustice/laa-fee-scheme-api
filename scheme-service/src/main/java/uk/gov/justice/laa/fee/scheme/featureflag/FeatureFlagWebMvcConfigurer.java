@@ -10,10 +10,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class FeatureFlagWebMvcConfigurer implements WebMvcConfigurer {
 
+  private final FeatureFlagRequestOverrideInterceptor featureFlagRequestOverrideInterceptor;
   private final FeatureFlagInterceptor featureFlagInterceptor;
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(featureFlagInterceptor).order(1);
+    registry.addInterceptor(featureFlagRequestOverrideInterceptor).order(1);
+    registry.addInterceptor(featureFlagInterceptor).order(2);
   }
 }

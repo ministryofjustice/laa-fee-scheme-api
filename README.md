@@ -146,6 +146,11 @@ Helm value
   -> FeatureFlagService
        -> inline if statement
        -> @RequiresFeatureFlag endpoint check
+
+Non-production test request
+  -> ?featureFlag=<flag-key>:<true|false>
+  -> request-scoped override
+  -> FeatureFlagService
 ```
 
 1. **Configure the value.** Helm sets a non-secret environment variable. `application.yml`
@@ -155,6 +160,24 @@ Helm value
 3. **Choose the behaviour.** Code either uses a normal `if` statement or adds
    `@RequiresFeatureFlag` to a controller or method. The interceptor returns `404 Not Found`
    before a disabled endpoint runs.
+
+When request overrides are enabled, `FeatureFlagService` uses the value supplied for the
+current request before falling back to the configured environment value. This lets automated
+tests exercise both states without changing shared configuration or restarting pods:
+
+```text
+GET /some-endpoint?featureFlag=example-feature:true
+GET /some-endpoint?featureFlag=example-feature:false
+```
+
+The `featureFlag` parameter may be repeated when a request needs to override more than one
+flag. Unknown flags, invalid booleans and duplicate overrides return `400 Bad Request`.
+Supplying any override where the capability is disabled returns `403 Forbidden`.
+
+Request overrides are enabled for development, UAT and staging deployments and explicitly
+disabled in production. For a locally run service, set
+`FEATURE_FLAG_REQUEST_OVERRIDES_ENABLED=true`. Overrides are stored on the current servlet
+request and never change the configured value or another request.
 
 The annotation/interceptor path is optional. A feature that only needs inline branching uses
 `FeatureFlagService` and does not interact with the endpoint-gating classes.
@@ -167,7 +190,8 @@ Most classes are one-time infrastructure:
 | `application.yml` and Helm values | Environment-specific state | Yes |
 | Calling service or controller | Chooses what the flag controls | Yes |
 | `FeatureFlagProperties` | Binds and validates configured values | No |
-| `FeatureFlagService` | Reads configured values for inline and endpoint checks | No |
+| `FeatureFlagService` | Resolves request overrides before configured values | No |
+| Request override interceptor | Validates and stores non-production test overrides | No |
 | `RequiresFeatureFlag` and `FeatureFlagInterceptor` | Reusable endpoint gating | No |
 | `FeatureFlagConfiguration` and MVC configurer | Spring bean and interceptor wiring | No |
 | `FeatureDisabledException` and exception handler | Consistent disabled-endpoint response | No |
@@ -204,10 +228,11 @@ public ResponseEntity<Void> exampleEndpoint() {
 so both flag states are tested.
 
 Changing a Helm value rolls the pods because environment variables are read at application
-Changing a Kubernetes secret would have the same limitation: it would not update the value in
-an already-running Java process. The sample uses a non-secret Helm value because a boolean flag
-state is not sensitive. Real flags should have an owner and removal plan, and should be removed
-after rollout.
+startup. Changing a Kubernetes secret would have the same limitation: it would not update the
+value in an already-running Java process. The request override avoids that restart for tests
+without changing shared state. The sample uses non-secret Helm values because flag states are
+not sensitive. Real flags should have an owner and removal plan, and should be removed after
+rollout.
 
 ### Libraries Used
 - [Spring Boot Actuator](https://docs.spring.io/spring-boot/reference/actuator/index.html) - used to provide various endpoints to help monitor the application, such as view application health and information.

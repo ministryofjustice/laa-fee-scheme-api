@@ -88,3 +88,4 @@ application:
 
 featureFlags:
   exampleFeatureEnabled: false
+  requestOverridesEnabled: false

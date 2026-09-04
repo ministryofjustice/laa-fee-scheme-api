@@ -13,19 +13,27 @@ class FeatureFlagConfigurationTest {
   @Test
   void shouldBindEnabledFlagFromConfiguration() {
     contextRunner
-        .withPropertyValues("feature-flags.flags.example-feature=true")
+        .withPropertyValues(
+            "feature-flags.flags.example-feature=true",
+            "feature-flags.request-overrides-enabled=true")
         .run(context -> {
           assertThat(context).hasSingleBean(FeatureFlagService.class);
+          assertThat(context).hasSingleBean(FeatureFlagRequestOverrideInterceptor.class);
           assertThat(context.getBean(FeatureFlagService.class)
               .isEnabled(FeatureFlag.EXAMPLE_FEATURE)).isTrue();
+          assertThat(context.getBean(FeatureFlagProperties.class).requestOverridesEnabled())
+              .isTrue();
         });
   }
 
   @Test
   void shouldDefaultMissingFlagToDisabled() {
-    contextRunner.run(context ->
-        assertThat(context.getBean(FeatureFlagService.class)
-            .isEnabled(FeatureFlag.EXAMPLE_FEATURE)).isFalse());
+    contextRunner.run(context -> {
+      assertThat(context.getBean(FeatureFlagService.class)
+          .isEnabled(FeatureFlag.EXAMPLE_FEATURE)).isFalse();
+      assertThat(context.getBean(FeatureFlagProperties.class).requestOverridesEnabled())
+          .isFalse();
+    });
   }
 
   @Test

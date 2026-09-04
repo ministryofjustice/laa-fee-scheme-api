@@ -31,6 +31,8 @@ import tools.jackson.databind.exc.MismatchedInputException;
 import uk.gov.justice.laa.fee.scheme.controller.FeeCalculationController;
 import uk.gov.justice.laa.fee.scheme.featureflag.FeatureDisabledException;
 import uk.gov.justice.laa.fee.scheme.featureflag.FeatureFlag;
+import uk.gov.justice.laa.fee.scheme.featureflag.FeatureFlagRequestOverrideNotAllowedException;
+import uk.gov.justice.laa.fee.scheme.featureflag.InvalidFeatureFlagRequestOverrideException;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -195,6 +197,38 @@ class GlobalExceptionHandlerTest {
         .contains("Feature disabled "
             + "[status=404, error=Not Found, message=Feature is not available: example-feature]")
         .doesNotContain("FeatureDisabledException");
+  }
+
+  @Test
+  void handleInvalidFeatureFlagRequestOverride(CapturedOutput capturedOutput) {
+    InvalidFeatureFlagRequestOverrideException exception =
+        new InvalidFeatureFlagRequestOverrideException("Invalid override");
+
+    ResponseEntity<ErrorResponse> response =
+        globalExceptionHandler.handleInvalidFeatureFlagRequestOverride(exception);
+
+    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Invalid override");
+    assertThat(capturedOutput.getOut())
+        .contains("Invalid feature flag request override "
+            + "[status=400, error=Bad Request, message=Invalid override]");
+  }
+
+  @Test
+  void handleFeatureFlagRequestOverrideNotAllowed(CapturedOutput capturedOutput) {
+    FeatureFlagRequestOverrideNotAllowedException exception =
+        new FeatureFlagRequestOverrideNotAllowedException();
+
+    ResponseEntity<ErrorResponse> response =
+        globalExceptionHandler.handleFeatureFlagRequestOverrideNotAllowed(exception);
+
+    assertErrorResponse(
+        response,
+        HttpStatus.FORBIDDEN,
+        "Feature flag request overrides are not enabled");
+    assertThat(capturedOutput.getOut())
+        .contains("Feature flag request override not allowed "
+            + "[status=403, error=Forbidden, "
+            + "message=Feature flag request overrides are not enabled]");
   }
 
   @Test

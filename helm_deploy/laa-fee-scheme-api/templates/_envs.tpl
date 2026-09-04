@@ -44,4 +44,6 @@ env:
     value: {{.Values.application.logging.level}}
   - name: FEATURE_FLAG_EXAMPLE_FEATURE_ENABLED
     value: {{ .Values.featureFlags.exampleFeatureEnabled | quote }}
+  - name: FEATURE_FLAG_REQUEST_OVERRIDES_ENABLED
+    value: {{ .Values.featureFlags.requestOverridesEnabled | quote }}
 {{- end -}}

@@ -21,6 +21,8 @@ import tools.jackson.databind.exc.InvalidFormatException;
 import tools.jackson.databind.exc.MismatchedInputException;
 import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
 import uk.gov.justice.laa.fee.scheme.featureflag.FeatureDisabledException;
+import uk.gov.justice.laa.fee.scheme.featureflag.FeatureFlagRequestOverrideNotAllowedException;
+import uk.gov.justice.laa.fee.scheme.featureflag.InvalidFeatureFlagRequestOverrideException;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
@@ -142,6 +144,30 @@ public class GlobalExceptionHandler {
     log.info("Feature disabled [status={}, error={}, message={}]", httpStatus.value(),
         httpStatus.getReasonPhrase(), ex.getMessage());
     return getErrorResponse(httpStatus, ex.getMessage());
+  }
+
+  /**
+   * Global exception handler for invalid request-scoped feature flag overrides.
+   *
+   * @param ex the invalid feature flag override
+   * @return the error response and a 400 Bad Request status code
+   */
+  @ExceptionHandler(InvalidFeatureFlagRequestOverrideException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidFeatureFlagRequestOverride(
+      InvalidFeatureFlagRequestOverrideException ex) {
+    return handleException("Invalid feature flag request override", ex, HttpStatus.BAD_REQUEST);
+  }
+
+  /**
+   * Global exception handler for feature flag overrides where they are disabled.
+   *
+   * @param ex the disallowed feature flag override
+   * @return the error response and a 403 Forbidden status code
+   */
+  @ExceptionHandler(FeatureFlagRequestOverrideNotAllowedException.class)
+  public ResponseEntity<ErrorResponse> handleFeatureFlagRequestOverrideNotAllowed(
+      FeatureFlagRequestOverrideNotAllowedException ex) {
+    return handleException("Feature flag request override not allowed", ex, HttpStatus.FORBIDDEN);
   }
 
   /**
