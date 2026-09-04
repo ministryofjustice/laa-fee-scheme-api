@@ -133,6 +133,107 @@ The [LAA SpringBoot Authentication Starter](https://github.com/ministryofjustice
 has been used to secure the application using token-based authentication.
 To access the API endpoints, you need to include a valid token in the `Authorization` header of your HTTP requests.
 
+### Feature flags
+
+The sample implements the configuration approach investigated in
+[LFSP-562](https://dsdmoj.atlassian.net/browse/LFSP-562). It has three stages:
+
+```text
+Helm value
+  -> environment variable
+  -> application.yml
+  -> FeatureFlagProperties
+  -> FeatureFlagService
+       -> inline if statement
+       -> @RequiresFeatureFlag endpoint check
+
+Non-production test request
+  -> ?featureFlag=<flag-key>:<true|false>
+  -> request-scoped override
+  -> FeatureFlagService
+```
+
+1. **Configure the value.** Helm sets a non-secret environment variable. `application.yml`
+   maps it into `FeatureFlagProperties`, with missing flags defaulted to `false`.
+2. **Evaluate the value.** Application code asks `FeatureFlagService`; it does not read
+   environment variables directly.
+3. **Choose the behaviour.** Code either uses a normal `if` statement or adds
+   `@RequiresFeatureFlag` to a controller or method. The interceptor returns `404 Not Found`
+   before a disabled endpoint runs.
+
+When request overrides are enabled, `FeatureFlagService` uses the value supplied for the
+current request before falling back to the configured environment value. This lets automated
+tests exercise both states without changing shared configuration or restarting pods:
+
+```text
+GET /some-endpoint?featureFlag=example-feature:true
+GET /some-endpoint?featureFlag=example-feature:false
+```
+
+The `featureFlag` parameter may be repeated when a request needs to override more than one
+flag. Unknown flags, invalid booleans and duplicate overrides return `400 Bad Request`.
+Supplying any override where the capability is disabled returns `403 Forbidden`.
+
+Request overrides are enabled for development, UAT and staging deployments and explicitly
+disabled in production. For a locally run service, set
+`FEATURE_FLAG_REQUEST_OVERRIDES_ENABLED=true`. Overrides are stored on the current servlet
+request and never change the configured value or another request.
+
+The annotation/interceptor path is optional. A feature that only needs inline branching uses
+`FeatureFlagService` and does not interact with the endpoint-gating classes.
+
+Most classes are one-time infrastructure:
+
+| Part | Purpose | Changed for each new flag? |
+| --- | --- | --- |
+| `FeatureFlag` | Registry of recognised, stable flag keys | Yes |
+| `application.yml` and Helm values | Environment-specific state | Yes |
+| Calling service or controller | Chooses what the flag controls | Yes |
+| `FeatureFlagProperties` | Binds and validates configured values | No |
+| `FeatureFlagService` | Resolves request overrides before configured values | No |
+| Request override interceptor | Validates and stores non-production test overrides | No |
+| `RequiresFeatureFlag` and `FeatureFlagInterceptor` | Reusable endpoint gating | No |
+| `FeatureFlagConfiguration` and MVC configurer | Spring bean and interceptor wiring | No |
+| `FeatureDisabledException` and exception handler | Consistent disabled-endpoint response | No |
+
+`FeatureFlagService` centralises the lookup so inline checks and endpoint gating use the same
+configuration and tests can replace it with a mock.
+
+`EXAMPLE_FEATURE` is included only to demonstrate the pattern in this draft. To add a real flag:
+
+1. Add it to `FeatureFlag` with a stable kebab-case key.
+2. Add its environment-backed value to `application.yml`, `_envs.tpl` and `values.yaml`.
+3. Use `FeatureFlagService` or `@RequiresFeatureFlag` where the behaviour changes.
+
+Use `FeatureFlagService` for inline branching:
+
+```java
+if (featureFlagService.isEnabled(FeatureFlag.EXAMPLE_FEATURE)) {
+  return newBehaviour();
+}
+return existingBehaviour();
+```
+
+Use `@RequiresFeatureFlag` for a whole controller or controller method:
+
+```java
+@RequiresFeatureFlag(FeatureFlag.EXAMPLE_FEATURE)
+public ResponseEntity<Void> exampleEndpoint() {
+  return ResponseEntity.ok().build();
+}
+```
+
+`@WebMvcTest` does not load the regular feature flag configuration automatically. Import
+`FeatureFlagConfiguration` in controller slice tests and mock or configure `FeatureFlagService`
+so both flag states are tested.
+
+Changing a Helm value rolls the pods because environment variables are read at application
+startup. Changing a Kubernetes secret would have the same limitation: it would not update the
+value in an already-running Java process. The request override avoids that restart for tests
+without changing shared state. The sample uses non-secret Helm values because flag states are
+not sensitive. Real flags should have an owner and removal plan, and should be removed after
+rollout.
+
 ### Libraries Used
 - [Spring Boot Actuator](https://docs.spring.io/spring-boot/reference/actuator/index.html) - used to provide various endpoints to help monitor the application, such as view application health and information.
 - [Spring Boot Web](https://docs.spring.io/spring-boot/reference/web/index.html) - used to provide features for building the REST API implementation.
