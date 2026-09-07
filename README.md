@@ -234,6 +234,13 @@ without changing shared state. The sample uses non-secret Helm values because fl
 not sensitive. Real flags should have an owner and removal plan, and should be removed after
 rollout.
 
+To exercise the example against PR #389's preview deployment, import
+[`postman/LFSP-562-feature-flag-overrides.postman_collection.json`](postman/LFSP-562-feature-flag-overrides.postman_collection.json).
+Port-forward `laa-fee-scheme-api-pr-389-service` from the
+`laa-fee-scheme-api-dev` namespace to local port `8085`, then set the collection's `apiToken`
+variable to an authorised Fee Scheme API token. The demonstration endpoints are registered
+only where request overrides are enabled, so they are absent in production.
+
 ### Libraries Used
 - [Spring Boot Actuator](https://docs.spring.io/spring-boot/reference/actuator/index.html) - used to provide various endpoints to help monitor the application, such as view application health and information.
 - [Spring Boot Web](https://docs.spring.io/spring-boot/reference/web/index.html) - used to provide features for building the REST API implementation.
