@@ -30,7 +30,7 @@ Includes the following subprojects:
 `./gradlew clean build`
 
 ### Mutation testing threshold
-The pitest mutation score is enforced in CI via the `mutationThreshold` property in `scheme-service/build.gradle`. The current threshold is 85%. When the service's test suite improves over time, raise this value in that file and keep the change explicit in the PR. Revisit the target quarterly rather than setting a larger long-term target in one step.
+The pitest mutation score is enforced in CI via the `mutationThreshold` property in `scheme-service/build.gradle`. The current threshold is 95%. When the service's test suite improves over time, raise this value in that file and keep the change explicit in the PR. Revisit the target quarterly rather than setting a larger long-term target in one step.
 
 ### Run cucumber regression tests
 

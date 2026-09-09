@@ -50,7 +50,7 @@ jacocoTestCoverageVerification {
 pitest {
     pitestVersion = '1.23.1'
     junit5PluginVersion = '1.2.3'
-    mutationThreshold = 85
+    mutationThreshold = 95
     // Increase this gradually as the test suite improves. Revisit quarterly rather than setting a long-term target in one jump.
 
     targetClasses = ['uk.gov.justice.laa.fee.scheme.*']
