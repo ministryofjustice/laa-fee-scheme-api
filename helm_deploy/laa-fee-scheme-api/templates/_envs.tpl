@@ -42,4 +42,6 @@ env:
     value: {{.Values.spring.logging.level}}
   - name: APP_LOGGING_LEVEL
     value: {{.Values.application.logging.level}}
+  - name: FEATURE_FLAG_INQUEST_ENABLED
+    value: {{ .Values.featureFlags.inquestEnabled | quote }}
 {{- end -}}
