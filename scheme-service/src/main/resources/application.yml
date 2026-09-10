@@ -34,7 +34,7 @@ management:
         include: health,metrics,prometheus
 
 feature-flags:
-  is-feature-enabled: ${IS_FEATURE_ENABLED}
+  is-feature-enabled: ${IS_FEATURE_ENABLED:true}
   request-overrides-enabled: ${FEATURE_FLAG_REQUEST_OVERRIDES_ENABLED:false}
 
 logging:

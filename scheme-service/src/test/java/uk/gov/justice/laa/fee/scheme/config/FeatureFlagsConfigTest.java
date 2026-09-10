@@ -81,11 +81,16 @@ class FeatureFlagsConfigTest {
   }
 
   @Test
-  void missingEnvironmentVariableFailsStartup() throws IOException {
+  void missingEnvironmentVariableUsesApplicationYamlDefault() throws IOException {
     var source = new YamlPropertySourceLoader()
         .load("application", new ClassPathResource("application.yml")).getFirst();
     runner.withInitializer(context -> context.getEnvironment().getPropertySources().addLast(source))
-        .run(context -> assertThat(context).hasFailed());
+        .run(context -> {
+          assertThat(context).hasNotFailed();
+          FeatureFlagsConfig flags = context.getBean(FeatureFlagsConfig.class);
+          assertThat(flags.getIsFeatureEnabled()).isTrue();
+          assertThat(flags.isRequestOverridesEnabled()).isFalse();
+        });
   }
 
   @Test
