@@ -95,6 +95,10 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: fee_scheme
 
+feature-flags:
+  is-feature-enabled: true
+  request-overrides-enabled: false
+
 logging:
   level:
     root: ERROR
@@ -109,6 +113,117 @@ sentry:
 Update placeholders in docker-compose.yml
 
 `docker compose up`
+
+### Feature flags
+
+Flags follow a direct Boolean configuration pattern, with request-scoped
+testing overrides added:
+
+```text
+Helm values -> environment variables -> application.yml -> FeatureFlagsConfig
+                                                          -> inline checks
+                                                          -> @RequiresFeatureFlag
+```
+
+`Feature` is a plain enum: there are no separate string keys or configuration maps.
+For the sample `Feature.FEATURE`, Helm configures:
+
+```yaml
+featureFlags:
+  isFeatureEnabled: false
+  requestOverridesEnabled: true
+```
+
+The template maps these to `IS_FEATURE_ENABLED` and
+`FEATURE_FLAG_REQUEST_OVERRIDES_ENABLED`. `IS_FEATURE_ENABLED` defaults to
+`true` when it is not supplied, while invalid or unknown Spring feature
+configuration still fails startup. Local configuration and the integration test
+configuration provide explicit values.
+
+Inject `FeatureFlagsConfig` for inline branching:
+
+```java
+if (featureFlagsConfig.isEnabled(Feature.FEATURE)) {
+  // New behaviour
+} else {
+  // Existing behaviour
+}
+```
+
+The `getIsFeatureEnabled()` getter also evaluates request overrides.
+`checkEnabled(Feature.FEATURE)` throws if disabled. To gate an endpoint:
+
+```java
+@RequiresFeatureFlag(Feature.FEATURE)
+@GetMapping("/new-endpoint")
+public ResponseEntity<?> newEndpoint() {
+  // ...
+}
+```
+
+The annotation accepts multiple enum values, all of which must be enabled. A
+method annotation takes precedence over a controller annotation.
+Disabled endpoints return `404`; unimplemented features referenced by Java code
+return `500`, using the API's existing error response format.
+
+#### Request overrides
+
+Authenticated automated tests can override a flag for a single request using
+the **exact enum name**, not a separate key:
+
+```text
+GET /some-endpoint?featureFlag=FEATURE:true
+GET /some-endpoint?featureFlag=FEATURE:false
+```
+
+Repeat the parameter for different flags. Unknown enum names, malformed values,
+invalid booleans and duplicate flags return `400`. Boolean values are
+case-insensitive; enum names are case-sensitive. Overrides are validated before
+endpoint gating and affect inline checks too. They never mutate shared
+configuration and do not leak into subsequent or concurrent requests. Background
+work without a servlet request uses the configured value.
+
+Overrides are enabled in dev, preview, UAT and staging Helm values, and disabled
+by default and in production. Attempts when disabled return `403`. Production
+also rejects overrides even if the toggle is accidentally enabled: the guard uses
+the existing `sentry.environment` deployment value (`production`/`prod`) or a
+`production`/`prod` Spring profile. Overrides do not bypass authentication.
+
+Note: `isFeatureEnabled` in the sample config is a placeholder/dummy value used to
+show the pattern. It is not a real feature flag in production; it demonstrates the
+shape of the configuration wiring and should be replaced with the real flag name
+and boolean property for each feature you add.
+
+Files to change when adding a new feature flag:
+
+- `scheme-service/src/main/java/uk/gov/justice/laa/fee/scheme/config/features/Feature.java`
+  - add the new enum constant, e.g. `NEW_FEATURE`
+- `scheme-service/src/main/java/uk/gov/justice/laa/fee/scheme/config/FeatureFlagsConfig.java`
+  - add the Boolean property and the switch case used by `isEnabled(...)`
+- `scheme-service/src/main/resources/application.yml`
+  - add the Spring property mapping, for example `new-feature: ${NEW_FEATURE:false}`
+- `helm_deploy/laa-fee-scheme-api/templates/_envs.tpl`
+  - map the Helm value to the environment variable
+- `helm_deploy/laa-fee-scheme-api/values.yaml`
+  - default config for the new flag
+- `helm_deploy/laa-fee-scheme-api/values-dev*.yaml`, `values-uat.yaml`,
+  `values-staging.yaml`, `values-prod.yaml`
+  - set the per-environment value for the flag
+- `scheme-service/src/main/java/uk/gov/justice/laa/fee/scheme/config/features/FeatureFlagInterceptor.java`
+  - endpoint gating is already generic; the new enum value is used automatically
+- `scheme-service/src/main/java/uk/gov/justice/laa/fee/scheme/config/features/FeatureFlagRequestOverrideInterceptor.java`
+  - request overrides already work against enum names; the new enum constant is automatically valid
+- Application code that uses the feature
+  - check `FeatureFlagsConfig.isEnabled(Feature.NEW_FEATURE)` or mark the endpoint with `@RequiresFeatureFlag(Feature.NEW_FEATURE)`
+- Tests for the flag
+  - add feature on/off assertions in the relevant test classes or dedicated config tests
+
+To add a flag, add an enum constant, a required `@NotNull Boolean` property and
+its switch case in `FeatureFlagsConfig`, then wire its Helm values, environment
+variable and Spring property. Add explicit test values and exercise both states.
+Use `isEnabled` (or an override-aware getter), never read environment variables
+directly. Test controllers demonstrate both approaches without adding demo
+endpoints or changing existing fee calculations.
 
 ## Application Endpoints
 
