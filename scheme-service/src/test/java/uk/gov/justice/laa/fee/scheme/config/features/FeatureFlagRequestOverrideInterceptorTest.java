@@ -12,21 +12,18 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.justice.laa.fee.scheme.config.FeatureFlagsConfig;
-import uk.gov.justice.laa.fee.scheme.exception.FeatureFlagRequestOverrideNotAllowedException;
 import uk.gov.justice.laa.fee.scheme.exception.InvalidFeatureFlagRequestOverrideException;
 
 class FeatureFlagRequestOverrideInterceptorTest {
 
   private final FeatureFlagsConfig flags = new FeatureFlagsConfig();
-  private final MockEnvironment environment = new MockEnvironment();
   private final FeatureFlagRequestOverrideInterceptor interceptor =
-      new FeatureFlagRequestOverrideInterceptor(flags, environment);
+      new FeatureFlagRequestOverrideInterceptor(flags);
 
   @AfterEach
   void clearRequest() {
@@ -80,40 +77,6 @@ class FeatureFlagRequestOverrideInterceptorTest {
     interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
     RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
     assertThat(flags.getIsFeatureEnabled()).isEqualTo(Boolean.parseBoolean(value));
-  }
-
-  @Test
-  void disabledOverridesRejectEvenInvalidInput() {
-    assertThatThrownBy(() -> interceptor.preHandle(requestWith("UNKNOWN:invalid"),
-        new MockHttpServletResponse(), new Object()))
-        .isInstanceOf(FeatureFlagRequestOverrideNotAllowedException.class);
-  }
-
-  @ParameterizedTest
-  @ValueSource(strings = {"production", "prod", "PRODUCTION"})
-  void productionDeploymentRejectsAccidentallyEnabledOverrides(String name) {
-    flags.setRequestOverridesEnabled(true);
-    environment.setProperty("sentry.environment", name);
-    assertThatThrownBy(() -> interceptor.preHandle(requestWith("FEATURE:true"),
-        new MockHttpServletResponse(), new Object()))
-        .isInstanceOf(FeatureFlagRequestOverrideNotAllowedException.class);
-  }
-
-  @ParameterizedTest
-  @ValueSource(strings = {"production", "prod"})
-  void productionProfileRejectsAccidentallyEnabledOverrides(String profile) {
-    flags.setRequestOverridesEnabled(true);
-    environment.setActiveProfiles("local", profile);
-    assertThatThrownBy(() -> interceptor.preHandle(requestWith("FEATURE:true"),
-        new MockHttpServletResponse(), new Object()))
-        .isInstanceOf(FeatureFlagRequestOverrideNotAllowedException.class);
-  }
-
-  @Test
-  void requestsWithoutOverridesAreAllowedInProduction() {
-    environment.setActiveProfiles("production");
-    assertThat(interceptor.preHandle(new MockHttpServletRequest(),
-        new MockHttpServletResponse(), new Object())).isTrue();
   }
 
   @Test

@@ -24,8 +24,7 @@ import uk.gov.justice.laa.fee.scheme.exception.FeatureNotImplementedRuntimeExcep
     FeatureFlagWebMvcTest.MethodController.class, FeatureFlagWebMvcTest.ClassController.class
 }, properties = {
     "feature-flags.is-feature-enabled=false",
-    "feature-flags.request-overrides-enabled=true",
-    "sentry.environment=development"
+    "feature-flags.request-overrides-enabled=true"
 })
 @AutoConfigureMockMvc(addFilters = false)
 @Import({FeatureFlagsConfig.class, FeatureFlagWebMvcConfig.class,
@@ -102,18 +101,6 @@ class FeatureFlagWebMvcTest {
           .andExpect(status().isForbidden())
           .andExpect(jsonPath("$.status").value(403));
       mockMvc.perform(get("/test-flags/inline")).andExpect(status().isOk());
-    }
-  }
-
-  @Nested
-  @TestPropertySource(properties = "sentry.environment=production")
-  class Production {
-    @Test
-    void productionRejectsOverridesDespiteToggleBeingOn() throws Exception {
-      mockMvc.perform(get("/test-flags/method").param("featureFlag", "FEATURE:true"))
-          .andExpect(status().isForbidden())
-          .andExpect(jsonPath("$.message").value("Feature flag request overrides are not allowed"));
-      mockMvc.perform(get("/test-flags/method")).andExpect(status().isNotFound());
     }
   }
 

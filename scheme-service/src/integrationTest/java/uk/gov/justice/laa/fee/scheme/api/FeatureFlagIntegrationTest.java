@@ -21,8 +21,7 @@ import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTest
 
 @SpringBootTest(properties = {
     "feature-flags.is-feature-enabled=false",
-    "feature-flags.request-overrides-enabled=true",
-    "sentry.environment=development"
+    "feature-flags.request-overrides-enabled=true"
 })
 @AutoConfigureMockMvc
 @Import(FeatureFlagIntegrationTest.TestController.class)

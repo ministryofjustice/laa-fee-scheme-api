@@ -218,7 +218,10 @@ public class GlobalExceptionHandler {
   /** Returns 404 when an endpoint's required feature is disabled. */
   @ExceptionHandler(FeatureNotEnabledException.class)
   public ResponseEntity<ErrorResponse> handleFeatureNotEnabled(FeatureNotEnabledException ex) {
-    return handleException("Feature not enabled", ex, HttpStatus.NOT_FOUND);
+    HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+    log.info("Feature not enabled [status={}, error={}, message={}]", httpStatus.value(),
+        httpStatus.getReasonPhrase(), ex.getMessage());
+    return getErrorResponse(httpStatus, ex.getMessage());
   }
 
   /** Returns 500 for an unimplemented feature referenced by application code. */

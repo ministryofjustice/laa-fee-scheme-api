@@ -169,7 +169,8 @@ return `500`, using the API's existing error response format.
 #### Request overrides
 
 Authenticated automated tests can override a flag for a single request using
-the **exact enum name**, not a separate key:
+the `featureFlag` **query parameter** and the exact enum name, not a separate
+key:
 
 ```text
 GET /some-endpoint?featureFlag=FEATURE:true
@@ -184,10 +185,8 @@ configuration and do not leak into subsequent or concurrent requests. Background
 work without a servlet request uses the configured value.
 
 Overrides are enabled in dev, preview, UAT and staging Helm values, and disabled
-by default and in production. Attempts when disabled return `403`. Production
-also rejects overrides even if the toggle is accidentally enabled: the guard uses
-the existing `sentry.environment` deployment value (`production`/`prod`) or a
-`production`/`prod` Spring profile. Overrides do not bypass authentication.
+by default and in production. Attempts when disabled return `403`. Overrides do
+not bypass authentication.
 
 Note: `isFeatureEnabled` in the sample config is a placeholder/dummy value used to
 show the pattern. It is not a real feature flag in production; it demonstrates the

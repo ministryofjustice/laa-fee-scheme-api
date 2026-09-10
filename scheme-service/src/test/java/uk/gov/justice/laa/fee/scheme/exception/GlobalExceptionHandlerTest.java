@@ -218,6 +218,7 @@ class GlobalExceptionHandlerTest {
     assertErrorResponse(response, HttpStatus.NOT_FOUND, "Feature is not available: FEATURE");
     assertThat(capturedOutput.getOut())
         .contains("Feature not enabled [status=404, error=Not Found, message=Feature is not available: FEATURE]");
+    assertThat(capturedOutput.getOut()).doesNotContain("FeatureNotEnabledException");
   }
 
   @Test

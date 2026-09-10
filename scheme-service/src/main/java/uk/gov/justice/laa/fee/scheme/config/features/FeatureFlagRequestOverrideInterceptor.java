@@ -6,20 +6,18 @@ import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.justice.laa.fee.scheme.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.fee.scheme.exception.FeatureFlagRequestOverrideNotAllowedException;
 import uk.gov.justice.laa.fee.scheme.exception.InvalidFeatureFlagRequestOverrideException;
 
-/** Validates non-production test overrides before endpoint feature flag checks. */
+/** Validates non-production test overrides from the featureFlag query parameter. */
 @Component
 @RequiredArgsConstructor
 public class FeatureFlagRequestOverrideInterceptor implements HandlerInterceptor {
 
   private final FeatureFlagsConfig featureFlagsConfig;
-  private final Environment environment;
 
   @Override
   public boolean preHandle(
@@ -28,7 +26,7 @@ public class FeatureFlagRequestOverrideInterceptor implements HandlerInterceptor
     if (parameters == null) {
       return true;
     }
-    if (!featureFlagsConfig.isRequestOverridesEnabled() || isProduction()) {
+    if (!featureFlagsConfig.isRequestOverridesEnabled()) {
       throw new FeatureFlagRequestOverrideNotAllowedException();
     }
 
@@ -58,13 +56,6 @@ public class FeatureFlagRequestOverrideInterceptor implements HandlerInterceptor
     request.setAttribute(FeatureFlagRequestOverrides.REQUEST_ATTRIBUTE,
         new FeatureFlagRequestOverrides(overrides));
     return true;
-  }
-
-  private boolean isProduction() {
-    String deployedEnvironment = environment.getProperty("sentry.environment", "");
-    return environment.matchesProfiles("prod", "production")
-        || "production".equalsIgnoreCase(deployedEnvironment)
-        || "prod".equalsIgnoreCase(deployedEnvironment);
   }
 
   private InvalidFeatureFlagRequestOverrideException invalidFormat(String parameter) {
