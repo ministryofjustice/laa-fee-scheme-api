@@ -28,6 +28,7 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.core.exc.StreamReadException;
 import tools.jackson.databind.exc.InvalidFormatException;
 import tools.jackson.databind.exc.MismatchedInputException;
+import uk.gov.justice.laa.fee.scheme.config.features.Feature;
 import uk.gov.justice.laa.fee.scheme.controller.FeeCalculationController;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
@@ -206,6 +207,51 @@ class GlobalExceptionHandlerTest {
     assertThat(feeCalculationResponse.getFeeCalculation()).isNull();
 
     assertThat(capturedOutput.getOut()).contains("Validation error [message=ERRALL1 - Enter a valid Fee Code.]");
+  }
+
+  @Test
+  void handleFeatureNotEnabled(CapturedOutput capturedOutput) {
+    FeatureNotEnabledException exception = new FeatureNotEnabledException(Feature.FEATURE);
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeatureNotEnabled(exception);
+
+    assertErrorResponse(response, HttpStatus.NOT_FOUND, "Feature is not available: FEATURE");
+    assertThat(capturedOutput.getOut())
+        .contains("Feature not enabled [status=404, error=Not Found, message=Feature is not available: FEATURE]");
+  }
+
+  @Test
+  void handleFeatureNotImplemented(CapturedOutput capturedOutput) {
+    FeatureNotImplementedRuntimeException exception = new FeatureNotImplementedRuntimeException(Feature.FEATURE);
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeatureNotImplemented(exception);
+
+    assertErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, "Feature has not been implemented: FEATURE");
+    assertThat(capturedOutput.getOut())
+        .contains("Feature not implemented [status=500, error=Internal Server Error, message=Feature has not been implemented: FEATURE]");
+  }
+
+  @Test
+  void handleInvalidFeatureFlagRequestOverride(CapturedOutput capturedOutput) {
+    InvalidFeatureFlagRequestOverrideException exception =
+        new InvalidFeatureFlagRequestOverrideException("Unknown feature flag request override: FEATURE");
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleInvalidFeatureFlagRequestOverride(exception);
+
+    assertErrorResponse(response, HttpStatus.BAD_REQUEST, "Unknown feature flag request override: FEATURE");
+    assertThat(capturedOutput.getOut())
+        .contains("Invalid feature flag request override [status=400, error=Bad Request, message=Unknown feature flag request override: FEATURE]");
+  }
+
+  @Test
+  void handleFeatureFlagRequestOverrideNotAllowed(CapturedOutput capturedOutput) {
+    FeatureFlagRequestOverrideNotAllowedException exception = new FeatureFlagRequestOverrideNotAllowedException();
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeatureFlagRequestOverrideNotAllowed(exception);
+
+    assertErrorResponse(response, HttpStatus.FORBIDDEN, "Feature flag request overrides are not allowed");
+    assertThat(capturedOutput.getOut())
+        .contains("Feature flag request override not allowed [status=403, error=Forbidden, message=Feature flag request overrides are not allowed]");
   }
 
   @Test
