@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -9,6 +10,7 @@ import uk.gov.justice.laa.fee.scheme.config.features.FeatureFlagRequestOverrideI
 
 /** Registers request overrides before endpoint feature checks. */
 @Configuration
+@ConditionalOnBean(FeatureFlagsConfig.class)
 @RequiredArgsConstructor
 public class FeatureFlagWebMvcConfig implements WebMvcConfigurer {
 
