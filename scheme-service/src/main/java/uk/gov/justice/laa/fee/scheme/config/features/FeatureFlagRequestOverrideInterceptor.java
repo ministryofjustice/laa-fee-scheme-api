@@ -6,7 +6,6 @@ import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -16,7 +15,6 @@ import uk.gov.justice.laa.fee.scheme.exception.InvalidFeatureFlagRequestOverride
 
 /** Validates non-production test overrides before endpoint feature flag checks. */
 @Component
-@ConditionalOnBean(FeatureFlagsConfig.class)
 @RequiredArgsConstructor
 public class FeatureFlagRequestOverrideInterceptor implements HandlerInterceptor {
 
