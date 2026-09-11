@@ -1,5 +1,9 @@
 #override main application.yml during tests.
 
+feature-flags:
+  is-feature-enabled: true
+  request-overrides-enabled: false
+
 # use test token for tests
 laa.springboot.starter:
   auth:
@@ -23,4 +27,3 @@ laa.springboot.starter:
     ]'
     unprotected-uris: [ "/actuator/**", "/swagger-ui.html",
                         "/swagger-ui/**", "/v3/api-docs/**", "/favicon.ico"]
-
