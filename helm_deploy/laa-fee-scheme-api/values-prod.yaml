@@ -39,6 +39,9 @@ application:
   logging:
     level: INFO
 
+featureFlags:
+  requestOverridesEnabled: false
+
 prometheus:
   enabled: true
   dashboardUrl: https://grafana.live.cloud-platform.service.justice.gov.uk/d/laa-fee-scheme-api-prod-dashboard

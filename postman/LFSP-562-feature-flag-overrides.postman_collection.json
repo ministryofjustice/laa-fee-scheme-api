@@ -1,0 +1,329 @@
+{
+  "info": {
+    "_postman_id": "c220bb87-0a66-4d80-a5f8-983830113389",
+    "name": "LFSP-562 Feature Flag Request Overrides",
+    "description": "Demonstrates configured feature flag behaviour and request-scoped test overrides on PR #389.\\n\\nSetup:\\n1. Deploy the PR preview.\\n2. Run `kubectl -n laa-fee-scheme-api-dev port-forward service/laa-fee-scheme-api-pr-389-service 8085:8085`.\\n3. Set the collection variable `apiToken` to an authorised Fee Scheme API token.\\n4. Run the requests in order.\\n\\nThe configured example flag defaults to false. Each `featureFlag` query parameter applies only to that request.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "Authorization",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{apiToken}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Inline evaluation",
+      "item": [
+        {
+          "name": "Configured default is off",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Example feature is disabled\", function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.featureFlag).to.eql(\"example-feature\");",
+                  "  pm.expect(body.enabled).to.eql(false);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/feature-flags/example-feature",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "feature-flags",
+                "example-feature"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Request override turns feature on",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Example feature is enabled for this request\", function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.featureFlag).to.eql(\"example-feature\");",
+                  "  pm.expect(body.enabled).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/feature-flags/example-feature?featureFlag={{featureFlag}}:true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "feature-flags",
+                "example-feature"
+              ],
+              "query": [
+                {
+                  "key": "featureFlag",
+                  "value": "{{featureFlag}}:true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Request override turns feature off",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Example feature is disabled for this request\", function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.featureFlag).to.eql(\"example-feature\");",
+                  "  pm.expect(body.enabled).to.eql(false);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/feature-flags/example-feature?featureFlag={{featureFlag}}:false",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "feature-flags",
+                "example-feature"
+              ],
+              "query": [
+                {
+                  "key": "featureFlag",
+                  "value": "{{featureFlag}}:false"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Controller gating",
+      "item": [
+        {
+          "name": "Configured off hides gated endpoint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 404\", function () {",
+                  "  pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test(\"Response explains that the feature is unavailable\", function () {",
+                  "  pm.expect(pm.response.json().message).to.eql(\"Feature is not available: example-feature\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/feature-flags/example-feature/gated",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "feature-flags",
+                "example-feature",
+                "gated"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Request override exposes gated endpoint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Example feature is enabled\", function () {",
+                  "  pm.expect(pm.response.json().enabled).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/feature-flags/example-feature/gated?featureFlag={{featureFlag}}:true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "feature-flags",
+                "example-feature",
+                "gated"
+              ],
+              "query": [
+                {
+                  "key": "featureFlag",
+                  "value": "{{featureFlag}}:true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Explicit off hides gated endpoint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 404\", function () {",
+                  "  pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/feature-flags/example-feature/gated?featureFlag={{featureFlag}}:false",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "feature-flags",
+                "example-feature",
+                "gated"
+              ],
+              "query": [
+                {
+                  "key": "featureFlag",
+                  "value": "{{featureFlag}}:false"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Validation",
+      "item": [
+        {
+          "name": "Unknown feature flag is rejected",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 400\", function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Response identifies the unknown flag\", function () {",
+                  "  pm.expect(pm.response.json().message).to.eql(\"Unknown feature flag request override: unknown-feature\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/feature-flags/example-feature?featureFlag=unknown-feature:true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "feature-flags",
+                "example-feature"
+              ],
+              "query": [
+                {
+                  "key": "featureFlag",
+                  "value": "unknown-feature:true"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8085",
+      "type": "string"
+    },
+    {
+      "key": "apiToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "featureFlag",
+      "value": "example-feature",
+      "type": "string"
+    }
+  ]
+}

@@ -32,5 +32,8 @@ application:
   logging:
     level: INFO
 
+featureFlags:
+  requestOverridesEnabled: true
+
 prometheus:
   enabled: false

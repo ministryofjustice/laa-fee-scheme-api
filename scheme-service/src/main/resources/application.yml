@@ -78,3 +78,8 @@ laa.springboot.starter:
 sentry:
   dsn: ${SENTRY_DSN}
   environment: ${SENTRY_ENVIRONMENT}
+
+feature-flags:
+  request-overrides-enabled: ${FEATURE_FLAG_REQUEST_OVERRIDES_ENABLED:false}
+  flags:
+    example-feature: ${FEATURE_FLAG_EXAMPLE_FEATURE_ENABLED:false}
