@@ -28,6 +28,7 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.core.exc.StreamReadException;
 import tools.jackson.databind.exc.InvalidFormatException;
 import tools.jackson.databind.exc.MismatchedInputException;
+import uk.gov.justice.laa.fee.scheme.config.features.Feature;
 import uk.gov.justice.laa.fee.scheme.controller.FeeCalculationController;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
@@ -218,6 +219,28 @@ class GlobalExceptionHandlerTest {
     assertThat(capturedOutput.getOut())
         .contains("HTTP request method not supported error "
                   + "[status=405, error=Method Not Allowed, message=Request method 'GET' is not supported]");
+  }
+
+  @Test
+  void handleFeatureNotImplemented(CapturedOutput capturedOutput) {
+    FeatureNotImplementedRuntimeException exception = new FeatureNotImplementedRuntimeException(Feature.FEATURE);
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeatureNotImplemented(exception);
+
+    assertErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, "Feature has not been implemented: FEATURE");
+    assertThat(capturedOutput.getOut())
+        .contains("Feature not implemented [status=500, error=Internal Server Error, message=Feature has not been implemented: FEATURE]");
+  }
+
+  @Test
+  void handleFeatureNotEnabled(CapturedOutput capturedOutput) {
+    FeatureNotEnabledException exception = new FeatureNotEnabledException(Feature.FEATURE);
+
+    ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeatureNotEnabled(exception);
+
+    assertErrorResponse(response, HttpStatus.NOT_FOUND, "Feature is not available: FEATURE");
+    assertThat(capturedOutput.getOut())
+        .contains("Feature not enabled [status=404, error=Not Found, message=Feature is not available: FEATURE]");
   }
 
   @Test

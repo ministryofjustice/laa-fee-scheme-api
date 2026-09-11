@@ -33,6 +33,9 @@ management:
       exposure:
         include: health,metrics,prometheus
 
+feature-flags:
+  is-feature-enabled: ${IS_FEATURE_ENABLED:true}
+
 logging:
   structured:
     format:
