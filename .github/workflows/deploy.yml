@@ -67,22 +67,43 @@ jobs:
       environment: dev
     secrets: inherit
 
-  deploy-uat:
+  regression-dev:
     needs: deploy-dev
+    uses: ./.github/workflows/regression-tests.yml
+    with:
+      target_environment: development
+    secrets: inherit
+
+  deploy-uat:
+    needs: regression-dev
     uses: ./.github/workflows/_deploy-to-env.yml
     with:
       environment: uat
     secrets: inherit
 
-  deploy-staging:
+  regression-uat:
     needs: deploy-uat
+    uses: ./.github/workflows/regression-tests.yml
+    with:
+      target_environment: uat
+    secrets: inherit
+
+  deploy-staging:
+    needs: regression-uat
     uses: ./.github/workflows/_deploy-to-env.yml
     with:
       environment: staging
     secrets: inherit
 
-  deploy-prod:
+  regression-staging:
     needs: deploy-staging
+    uses: ./.github/workflows/regression-tests.yml
+    with:
+      target_environment: staging
+    secrets: inherit
+
+  deploy-prod:
+    needs: regression-staging
     uses: ./.github/workflows/_deploy-to-env.yml
     with:
       environment: prod
