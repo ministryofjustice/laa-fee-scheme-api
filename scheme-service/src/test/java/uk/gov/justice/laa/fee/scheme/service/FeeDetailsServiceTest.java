@@ -143,6 +143,68 @@ class FeeDetailsServiceTest {
   }
 
   @Test
+  void getFeeDetailsV2_whenGivenINQUESTFeeCode_shouldReturnExpectedFeeDetails() {
+    String feeCode = "INQ";
+
+    AreaOfLawTypeEntity areaOfLawType = AreaOfLawTypeEntity.builder()
+        .code(AreaOfLawType.LEGAL_HELP)
+        .caseType(CaseType.CIVIL)
+        .build();
+    CategoryOfLawTypeEntity categoryOfLawType = CategoryOfLawTypeEntity.builder()
+        .code("INQUEST")
+        .areaOfLawType(areaOfLawType)
+        .build();
+
+    FeeInformationEntity feeInformation = mock(FeeInformationEntity.class);
+    when(feeInformation.getFeeDescription()).thenReturn("Inquests Legal Help Fixed Fee");
+    when(feeInformation.getFeeType()).thenReturn(FeeType.FIXED);
+
+    FeeCategoryMappingEntity feeCategoryMappingEntity = mock(FeeCategoryMappingEntity.class);
+    when(feeCategoryMappingEntity.getCategoryOfLawType()).thenReturn(categoryOfLawType);
+    when(feeCategoryMappingEntity.getFeeCode()).thenReturn(feeInformation);
+
+    when(feeCategoryMappingRepository.findByFeeCodeFeeCode(any())).thenReturn(Optional.of(feeCategoryMappingEntity));
+
+    FeeDetailsResponseV2 response = feeDetailsService.getFeeDetailsV2(feeCode);
+
+    assertThat(response.getCategoryOfLawCodes()).isEqualTo(List.of("INQUEST"));
+    assertThat(response.getFeeCodeDescription()).isEqualTo("Inquests Legal Help Fixed Fee");
+    assertThat(response.getFeeType()).isEqualTo("FIXED");
+    assertThat(response.getAreaOfLaw()).isEqualTo("LEGAL_HELP");
+  }
+
+  @Test
+  void getFeeDetailsV2_whenGivenCOMINQFeeCode_shouldReturnExpectedFeeDetails() {
+    String feeCode = "COMINQ";
+
+    AreaOfLawTypeEntity areaOfLawType = AreaOfLawTypeEntity.builder()
+        .code(AreaOfLawType.LEGAL_HELP)
+        .caseType(CaseType.CIVIL)
+        .build();
+    CategoryOfLawTypeEntity categoryOfLawType = CategoryOfLawTypeEntity.builder()
+        .code("COM")
+        .areaOfLawType(areaOfLawType)
+        .build();
+
+    FeeInformationEntity feeInformation = mock(FeeInformationEntity.class);
+    when(feeInformation.getFeeDescription()).thenReturn("Community Care Inquests Legal Help Fixed Fee");
+    when(feeInformation.getFeeType()).thenReturn(FeeType.FIXED);
+
+    FeeCategoryMappingEntity feeCategoryMappingEntity = mock(FeeCategoryMappingEntity.class);
+    when(feeCategoryMappingEntity.getCategoryOfLawType()).thenReturn(categoryOfLawType);
+    when(feeCategoryMappingEntity.getFeeCode()).thenReturn(feeInformation);
+
+    when(feeCategoryMappingRepository.findByFeeCodeFeeCode(any())).thenReturn(Optional.of(feeCategoryMappingEntity));
+
+    FeeDetailsResponseV2 response = feeDetailsService.getFeeDetailsV2(feeCode);
+
+    assertThat(response.getCategoryOfLawCodes()).isEqualTo(List.of("COM"));
+    assertThat(response.getFeeCodeDescription()).isEqualTo("Community Care Inquests Legal Help Fixed Fee");
+    assertThat(response.getFeeType()).isEqualTo("FIXED");
+    assertThat(response.getAreaOfLaw()).isEqualTo("LEGAL_HELP");
+  }
+
+  @Test
   void getFeeDetailsV2_shouldReturnExceptionCategoryOfLawNotFound() {
     String feeCode = "FEE123";
 

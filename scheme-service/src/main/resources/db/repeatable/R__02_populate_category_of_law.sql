@@ -30,7 +30,8 @@ VALUES (1,'CRIME', 'Crime', 2),
        (22,'EMP', 'Employment', 1),
        (23,'MSC', 'Residual (Miscellaneous)', 1),
        (24,'PI', 'Personal Injury', 1),
-       (25,'RESIDUAL', 'Residual List', 1)
+       (25,'RESIDUAL', 'Residual List', 1),
+       (26,'INQUEST', 'Inquest', 1)
 ON CONFLICT (code) DO NOTHING;
 
 INSERT INTO fee_scheme_category_type (fee_scheme_category_type_id, fee_scheme_category_name)
@@ -54,5 +55,6 @@ VALUES (1,'Immigration & Asylum'),
        (18,'Magistrates & Youth Court'),
        (19,'Prison Law'),
        (20,'Advocacy Assistance'),
-       (21,'Associated Civil')
+       (21,'Associated Civil'),
+       (22,'Inquest')
 ON CONFLICT (fee_scheme_category_name) DO NOTHING;
