@@ -41,7 +41,7 @@ public enum CategoryOfLawType {
   MSC("Residual (Miscellaneous)", LEGAL_HELP),
   PI("Personal Injury", LEGAL_HELP),
   RESIDUAL("Residual List", LEGAL_HELP),
-  INQUEST("Inquest", LEGAL_HELP);
+  INQ("Inquest", LEGAL_HELP);
 
   private final String displayName;
   private final AreaOfLawType areaOfLawType;

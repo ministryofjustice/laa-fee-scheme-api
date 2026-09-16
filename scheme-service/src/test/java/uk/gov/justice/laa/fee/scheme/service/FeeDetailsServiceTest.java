@@ -151,7 +151,7 @@ class FeeDetailsServiceTest {
         .caseType(CaseType.CIVIL)
         .build();
     CategoryOfLawTypeEntity categoryOfLawType = CategoryOfLawTypeEntity.builder()
-        .code("INQUEST")
+        .code("INQ")
         .areaOfLawType(areaOfLawType)
         .build();
 
@@ -167,7 +167,7 @@ class FeeDetailsServiceTest {
 
     FeeDetailsResponseV2 response = feeDetailsService.getFeeDetailsV2(feeCode);
 
-    assertThat(response.getCategoryOfLawCodes()).isEqualTo(List.of("INQUEST"));
+    assertThat(response.getCategoryOfLawCodes()).isEqualTo(List.of("INQ"));
     assertThat(response.getFeeCodeDescription()).isEqualTo("Inquests Legal Help Fixed Fee");
     assertThat(response.getFeeType()).isEqualTo("FIXED");
     assertThat(response.getAreaOfLaw()).isEqualTo("LEGAL_HELP");
