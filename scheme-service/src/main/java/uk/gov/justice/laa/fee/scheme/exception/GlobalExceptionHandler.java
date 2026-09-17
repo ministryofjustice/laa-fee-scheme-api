@@ -215,6 +215,33 @@ public class GlobalExceptionHandler {
     return handleException("Unexpected error", ex, INTERNAL_SERVER_ERROR);
   }
 
+  /** Returns 404 when an endpoint's required feature is disabled. */
+  @ExceptionHandler(FeatureNotEnabledException.class)
+  public ResponseEntity<ErrorResponse> handleFeatureNotEnabled(FeatureNotEnabledException ex) {
+    HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+    log.info("Feature not enabled [status={}, error={}, message={}]", httpStatus.value(),
+        httpStatus.getReasonPhrase(), ex.getMessage());
+    return getErrorResponse(httpStatus, ex.getMessage());
+  }
+
+  /** Returns 500 for an unimplemented feature referenced by application code. */
+  @ExceptionHandler(FeatureNotImplementedRuntimeException.class)
+  public ResponseEntity<ErrorResponse> handleFeatureNotImplemented(FeatureNotImplementedRuntimeException ex) {
+    return handleException("Feature not implemented", ex, INTERNAL_SERVER_ERROR);
+  }
+
+  /** Returns 400 for malformed, unknown or duplicate overrides. */
+  @ExceptionHandler(InvalidFeatureFlagRequestOverrideException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidFeatureFlagRequestOverride(InvalidFeatureFlagRequestOverrideException ex) {
+    return handleException("Invalid feature flag request override", ex, HttpStatus.BAD_REQUEST);
+  }
+
+  /** Returns 403 when overrides are disabled or attempted in production. */
+  @ExceptionHandler(FeatureFlagRequestOverrideNotAllowedException.class)
+  public ResponseEntity<ErrorResponse> handleFeatureFlagRequestOverrideNotAllowed(FeatureFlagRequestOverrideNotAllowedException ex) {
+    return handleException("Feature flag request override not allowed", ex, HttpStatus.FORBIDDEN);
+  }
+
   private ResponseEntity<ErrorResponse> handleException(String errorMessagePrefix, Throwable ex, HttpStatus httpStatus) {
     log.error("{} [status={}, error={}, message={}]", errorMessagePrefix, httpStatus.value(),
         httpStatus.getReasonPhrase(), ex.getMessage(), ex);

@@ -13,6 +13,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.justice.laa.fee.scheme.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.fee.scheme.exception.AreaOfLawNotFoundException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCodeDetailsV1;
 import uk.gov.justice.laa.fee.scheme.model.FeeCodesResponseV1;
@@ -25,6 +26,7 @@ class FeeCodesControllerTest {
   @Autowired private MockMvc mockMvc;
 
   @MockitoBean private FeeCodesService feeCodesService;
+  @MockitoBean private FeatureFlagsConfig featureFlagsConfig;
 
   private final FeeCodeDetailsV1 feeCodeDetails =
       FeeCodeDetailsV1.builder()

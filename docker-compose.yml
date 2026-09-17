@@ -12,6 +12,8 @@ services:
         - DB_PASSWORD= # enter chosen DB user here
         - DATA_CLAIMS_EVENT_SERVICE_TOKEN= # enter chosen API token here
         - SENTRY_DSN=
+        - IS_FEATURE_ENABLED=true
+        - FEATURE_FLAG_REQUEST_OVERRIDES_ENABLED=false
     depends_on:
       postgres:
         condition: service_started

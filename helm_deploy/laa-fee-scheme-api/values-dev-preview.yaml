@@ -32,5 +32,9 @@ application:
   logging:
     level: INFO
 
+featureFlags:
+  isFeatureEnabled: true
+  requestOverridesEnabled: true
+
 prometheus:
   enabled: false
