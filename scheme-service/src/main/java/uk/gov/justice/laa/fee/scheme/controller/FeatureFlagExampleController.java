@@ -9,49 +9,45 @@ import uk.gov.justice.laa.fee.scheme.annotations.RequiresFeatureFlag;
 import uk.gov.justice.laa.fee.scheme.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.fee.scheme.config.features.Feature;
 
-/**
- * Non-production endpoints for demonstrating the feature flag test pattern.
- */
+/** Non-production endpoints for demonstrating the feature flag test pattern. */
 @RestController
 @RequestMapping("/feature-flags/example-feature")
 @RequiredArgsConstructor
 public class FeatureFlagExampleController {
 
-    private final FeatureFlagsConfig featureFlagsConfig;
+  private final FeatureFlagsConfig featureFlagsConfig;
 
-    /**
-     * Returns the effective state after applying any request override.
-     *
-     * @return the example feature state
-     */
-    @GetMapping
-    public ResponseEntity<FeatureFlagState> getState() {
-        return ResponseEntity.ok(currentState());
-    }
+  /**
+   * Returns the effective state after applying any request override.
+   *
+   * @return the example feature state
+   */
+  @GetMapping
+  public ResponseEntity<FeatureFlagState> getState() {
+    return ResponseEntity.ok(currentState());
+  }
 
-    /**
-     * Demonstrates controller gating using the effective feature state.
-     *
-     * @return the enabled example feature state
-     */
-    @GetMapping("/gated")
-    @RequiresFeatureFlag(Feature.FEATURE)
-    public ResponseEntity<FeatureFlagState> getGatedState() {
-        return ResponseEntity.ok(currentState());
-    }
+  /**
+   * Demonstrates controller gating using the effective feature state.
+   *
+   * @return the enabled example feature state
+   */
+  @GetMapping("/gated")
+  @RequiresFeatureFlag(Feature.FEATURE)
+  public ResponseEntity<FeatureFlagState> getGatedState() {
+    return ResponseEntity.ok(currentState());
+  }
 
-    private FeatureFlagState currentState() {
-        return new FeatureFlagState(
-                Feature.FEATURE.name(),
-                featureFlagsConfig.isEnabled(Feature.FEATURE));
-    }
+  private FeatureFlagState currentState() {
+    return new FeatureFlagState(
+        Feature.FEATURE.name(), featureFlagsConfig.isEnabled(Feature.FEATURE));
+  }
 
-    /**
-     * Effective state returned by the demonstration endpoints.
-     *
-     * @param featureFlag stable feature flag key
-     * @param enabled effective value for this request
-     */
-    public record FeatureFlagState(String featureFlag, boolean enabled) {
-    }
+  /**
+   * Effective state returned by the demonstration endpoints.
+   *
+   * @param featureFlag stable feature flag key
+   * @param enabled effective value for this request
+   */
+  public record FeatureFlagState(String featureFlag, boolean enabled) {}
 }
