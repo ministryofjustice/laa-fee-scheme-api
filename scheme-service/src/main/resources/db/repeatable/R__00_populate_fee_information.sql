@@ -39,6 +39,12 @@ VALUES ('MHL01', 'Non-Mental Health Tribunal Fee', 'FIXED', 'MENTAL_HEALTH'),
        ('MHL07', 'Mental Health Tribunal Fee - Level 3 only', 'FIXED', 'MENTAL_HEALTH'),
        ('MHL08', 'Mental Health Tribunal Fee - Levels 1 and 3', 'FIXED', 'MENTAL_HEALTH'),
        ('MHL10', 'Mental Health Tribunal Fee - Level 1 (Rule 11(7)(a) cases where a patient has not engaged with the provider)','FIXED', 'MENTAL_HEALTH'),
+       ('MHL11', 'Mental Health Tribunal Fee - Levels 1 and 2 (Rule 11(7)(a) cases where a patient has not engaged with the provider)', 'FIXED', 'MENTAL_HEALTH'),
+       ('MHL12', 'Mental Health Tribunal Fee - Levels 1, 2 and 3 (Rule 11(7)(a) cases where a patient has not engaged with the provider)', 'FIXED', 'MENTAL_HEALTH'),
+       ('MHL13', 'Mental Health Tribunal Fee - Level 2 only (Rule 11(7)(a) cases where a patient has not engaged with the provider)', 'FIXED', 'MENTAL_HEALTH'),
+       ('MHL14', 'Mental Health Tribunal Fee - Levels 2 and 3 (Rule 11(7)(a) cases where a patient has not engaged with the provider)', 'FIXED', 'MENTAL_HEALTH'),
+       ('MHL15', 'Mental Health Tribunal Fee - Level 3 only (Rule 11(7)(a) cases where a patient has not engaged with the provider)', 'FIXED', 'MENTAL_HEALTH'),
+       ('MHL16', 'Mental Health Tribunal Fee - Levels 1 and 3 (Rule 11(7)(a) cases where a patient has not engaged with the provider)', 'FIXED', 'MENTAL_HEALTH'),
        ('MHLDIS', 'Mental Health - Interim Claim for Disbursements', 'DISB_ONLY', 'MENTAL_HEALTH')
     ON CONFLICT (fee_code) DO NOTHING;
 

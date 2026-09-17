@@ -37,6 +37,12 @@ VALUES ('MHL01',2, 21),
        ('MHL07',2, 21),
        ('MHL08',2, 21),
        ('MHL10', 2, 21),
+       ('MHL11', 2, 21),
+       ('MHL12', 2, 21),
+       ('MHL13', 2, 21),
+       ('MHL14', 2, 21),
+       ('MHL15', 2, 21),
+       ('MHL16', 2, 21),
        ('MHLDIS',2, 21)
 ON CONFLICT (fee_code) DO NOTHING;
 
