@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,10 @@ import uk.gov.justice.laa.fee.scheme.config.features.Feature;
 @RestController
 @RequestMapping("/feature-flags/example-feature")
 @RequiredArgsConstructor
+@ConditionalOnProperty(
+        prefix = "feature-flags",
+        name = "request-overrides-enabled",
+        havingValue = "true")
 public class FeatureFlagExampleController {
 
   private final FeatureFlagsConfig featureFlagsConfig;

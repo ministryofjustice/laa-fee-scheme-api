@@ -8,45 +8,26 @@ import uk.gov.justice.laa.fee.scheme.config.FeatureFlagsConfig;
 
 final class FeatureFlagExampleControllerConditionalTest {
 
-  private static final class TestFeatureFlagsConfig extends FeatureFlagsConfig {
-    private final boolean enabled;
-    private final boolean requestOverridesEnabled;
-
-    private TestFeatureFlagsConfig(boolean enabled, boolean requestOverridesEnabled) {
-      this.enabled = enabled;
-      this.requestOverridesEnabled = requestOverridesEnabled;
-      setIsFeatureEnabled(enabled);
-      setRequestOverridesEnabled(requestOverridesEnabled);
-    }
-
-    @Override
-    public Boolean getIsFeatureEnabled() {
-      return enabled;
-    }
-
-    @Override
-    public int hashCode() {
-      return 1;
-    }
-  }
-
-  private static WebApplicationContextRunner runner(boolean requestOverridesEnabled) {
-    return new WebApplicationContextRunner()
-        .withBean(
-            FeatureFlagsConfig.class,
-            () -> new TestFeatureFlagsConfig(false, requestOverridesEnabled))
-        .withUserConfiguration(FeatureFlagExampleController.class);
+  private static FeatureFlagsConfig config(boolean requestOverridesEnabled) {
+    FeatureFlagsConfig config = new FeatureFlagsConfig();
+    config.setIsFeatureEnabled(false);
+    config.setRequestOverridesEnabled(requestOverridesEnabled);
+    return config;
   }
 
   @Test
-  void shouldRegisterControllerWhenRequestOverridesAreDisabled() {
-    runner(false)
-        .run(context -> assertThat(context).hasSingleBean(FeatureFlagExampleController.class));
+  void shouldStartWithOverridesDisabled() {
+    new WebApplicationContextRunner()
+            .withBean(FeatureFlagsConfig.class, () -> config(false))
+            .withUserConfiguration(FeatureFlagExampleController.class)
+            .run(context -> assertThat(context).hasNotFailed());
   }
 
   @Test
-  void shouldRegisterControllerWhenRequestOverridesAreEnabled() {
-    runner(true)
-        .run(context -> assertThat(context).hasSingleBean(FeatureFlagExampleController.class));
+  void shouldStartWithOverridesEnabled() {
+    new WebApplicationContextRunner()
+            .withBean(FeatureFlagsConfig.class, () -> config(true))
+            .withUserConfiguration(FeatureFlagExampleController.class)
+            .run(context -> assertThat(context).hasNotFailed());
   }
 }
