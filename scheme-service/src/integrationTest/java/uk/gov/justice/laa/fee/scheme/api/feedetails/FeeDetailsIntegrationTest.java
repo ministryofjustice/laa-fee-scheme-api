@@ -80,7 +80,13 @@ class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
         Arguments.of("ASMS", "Legal Help and Associated Civil Work – Miscellaneous", List.of("APPEALS", "INVEST", "PRISON"), "CRIME_LOWER"),
         Arguments.of("ASPL", "Legal Help and Associated Civil Work – Public Law", List.of("APPEALS", "INVEST", "PRISON"), "CRIME_LOWER"),
         Arguments.of("ASAS", "Part 1 injunction Anti-Social Behaviour Crime and Policing Act 2014", List.of("APPEALS", "INVEST", "PRISON"), "CRIME_LOWER"),
-        Arguments.of("ASSA", "Mediation Assesment (alone)", List.of("MEDI"), "MEDIATION")
+        Arguments.of("ASSA", "Mediation Assesment (alone)", List.of("MEDI"), "MEDIATION"),
+        Arguments.of("MHL11", "Mental Health Tribunal Fee - Levels 1 and 2 (Rule 11(7)(a) cases where a patient has not engaged with the provider)", List.of("MHE"), "LEGAL_HELP"),
+        Arguments.of("MHL12", "Mental Health Tribunal Fee - Levels 1, 2 and 3 (Rule 11(7)(a) cases where a patient has not engaged with the provider)", List.of("MHE"), "LEGAL_HELP"),
+        Arguments.of("MHL13", "Mental Health Tribunal Fee - Level 2 only (Rule 11(7)(a) cases where a patient has not engaged with the provider)", List.of("MHE"), "LEGAL_HELP"),
+        Arguments.of("MHL14", "Mental Health Tribunal Fee - Levels 2 and 3 (Rule 11(7)(a) cases where a patient has not engaged with the provider)", List.of("MHE"), "LEGAL_HELP"),
+        Arguments.of("MHL15", "Mental Health Tribunal Fee - Level 3 only (Rule 11(7)(a) cases where a patient has not engaged with the provider)", List.of("MHE"), "LEGAL_HELP"),
+        Arguments.of("MHL16", "Mental Health Tribunal Fee - Levels 1 and 3 (Rule 11(7)(a) cases where a patient has not engaged with the provider)", List.of("MHE"), "LEGAL_HELP")
     );
   }
 

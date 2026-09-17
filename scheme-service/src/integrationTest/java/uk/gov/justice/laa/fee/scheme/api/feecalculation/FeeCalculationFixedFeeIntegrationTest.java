@@ -387,6 +387,60 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         """);
   }
 
+  @ParameterizedTest
+  @CsvSource({
+      "MHL11, 450.00, 136.80, 941.05",
+      "MHL12, 744.00, 195.60, 1293.85",
+      "MHL13, 321.00, 111.00, 786.25",
+      "MHL14, 615.00, 169.80, 1139.05",
+      "MHL15, 294.00, 105.60, 753.85",
+      "MHL16, 423.00, 131.40, 908.65"
+  })
+  void shouldCalculateNewMentalHealthFeesWithoutEscape(
+      String feeCode, double fixedFee, double calculatedVat, double totalAmount) throws Exception {
+    String request = """
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "startDate": "2024-08-13",
+          "netProfitCosts": 10000,
+          "netCostOfCounsel": 10000,
+          "netDisbursementAmount": 100.21,
+          "disbursementVatAmount": 20.04,
+          "vatIndicator": true,
+          "boltOns": {
+            "boltOnAdjournedHearing": 2
+          },
+          "caseConcludedDate": "2026-02-01"
+        }
+        """.formatted(feeCode);
+
+    postAndExpect(request, """
+        {
+          "feeCode": "%s",
+          "schemeId": "MHL_FS2024",
+          "claimId": "claim_123",
+          "escapeCaseFlag": false,
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": %s,
+            "disbursementAmount": 100.21,
+            "requestedNetDisbursementAmount": 100.21,
+            "disbursementVatAmount": 20.04,
+            "requestedDisbursementVatAmount": 20.04,
+            "fixedFeeAmount": %s,
+            "boltOnFeeDetails": {
+              "boltOnTotalFeeAmount": 234.00,
+              "boltOnAdjournedHearingCount": 2,
+              "boltOnAdjournedHearingFee": 234.00
+            }
+          }
+        }
+        """.formatted(feeCode, totalAmount, calculatedVat, fixedFee));
+  }
+
   @Test
   void shouldGetEducationFixedFeeCalculation() throws Exception {
     String request = """ 
