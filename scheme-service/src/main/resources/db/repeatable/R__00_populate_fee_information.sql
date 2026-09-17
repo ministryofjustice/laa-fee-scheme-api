@@ -239,3 +239,21 @@ VALUES ('PRIA', 'Free Standing Advice and Assistance', 'FIXED', 'PRISON_LAW', 'S
        ('PRIE1', 'Advocacy Assistance at Parole Board Reconsideration Hearings - lower standard fee', 'FIXED', 'PRISON_LAW', 'LOWER'),
        ('PRIE2', 'Advocacy Assistance at Parole Board Reconsideration Hearings - higher standard fee', 'FIXED', 'PRISON_LAW', 'HIGHER')
     ON CONFLICT (fee_code) DO NOTHING;
+
+-- inquests
+INSERT INTO fee_code_information (fee_code, fee_description, fee_type, category_type, is_inquest)
+VALUES ('COMINQ', 'Community Care Inquests Legal Help Fixed Fee', 'FIXED', 'COMMUNITY_CARE', TRUE),
+       ('CAPAINQ', 'Claims Against Public Authorities Inquests Legal Help Fixed Fee', 'FIXED', 'CLAIMS_PUBLIC_AUTHORITIES', TRUE),
+       ('CLININQ', 'Clinical Negligence Inquests Legal Help Fixed Fee', 'FIXED', 'CLINICAL_NEGLIGENCE', TRUE),
+       ('DEBTINQ', 'Debt Inquests Legal Help Fixed Fee', 'FIXED', 'DEBT', TRUE),
+       ('DISCINQ', 'Discrimination Inquests Legal Help Fixed Fee', 'FIXED', 'DISCRIMINATION', TRUE),
+       ('EDUINQ', 'Education Inquests Legal Help Fixed Fee', 'FIXED', 'EDUCATION', TRUE),
+       ('FAMINQ', 'Family Inquests Legal Help Fixed Fee', 'FIXED', 'FAMILY', TRUE),
+       ('HOUSINQ', 'Housing Inquests Fixed Fee', 'FIXED', 'HOUSING', TRUE),
+       ('IAINQ', 'Immigration and Asylum Inquests Fixed Fee', 'FIXED', 'IMMIGRATION_ASYLUM', TRUE),
+       ('INQ', 'Inquests Legal Help Fixed Fee', 'FIXED', 'INQUEST', TRUE),
+       ('MHINQ', 'Mental Health Inquests Fixed Fee', 'FIXED', 'MENTAL_HEALTH', TRUE),
+       ('MSCINQ', 'Miscellaneous Inquests Legal Help Fixed Fee', 'FIXED', 'MISCELLANEOUS', TRUE),
+       ('PUBINQ', 'Public Law Inquests Legal Help Fixed Fee', 'FIXED', 'PUBLIC_LAW', TRUE),
+       ('WFBINQ', 'Welfare Benefits Inquests Controlled Work fee', 'FIXED', 'WELFARE_BENEFITS', TRUE)
+ON CONFLICT (fee_code) DO NOTHING;

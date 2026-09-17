@@ -1,0 +1,16 @@
+INSERT INTO fee (fee_code, fixed_fee, escape_threshold_limit, fee_scheme_code)
+VALUES ('COMINQ', 239.00, 717.00, 'INQUEST_FS2026'),
+       ('CAPAINQ', 239.00, 717.00, 'INQUEST_FS2026'),
+       ('CLININQ', 239.00, 717.00, 'INQUEST_FS2026'),
+       ('DEBTINQ', 239.00, 717.00, 'INQUEST_FS2026'),
+       ('DISCINQ', 239.00, 717.00, 'INQUEST_FS2026'),
+       ('EDUINQ', 239.00, 717.00, 'INQUEST_FS2026'),
+       ('FAMINQ', 239.00, 717.00, 'INQUEST_FS2026'),
+       ('HOUSINQ', 239.00, 717.00, 'INQUEST_FS2026'),
+       ('IAINQ', 239.00, 717.00, 'INQUEST_FS2026'),
+       ('INQ', 239.00, 717.00, 'INQUEST_FS2026'),
+       ('MHINQ', 239.00, 717.00, 'INQUEST_FS2026'),
+       ('MSCINQ', 239.00, 717.00, 'INQUEST_FS2026'),
+       ('PUBINQ', 239.00, 717.00, 'INQUEST_FS2026'),
+       ('WFBINQ', 239.00, 717.00, 'INQUEST_FS2026')
+ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;

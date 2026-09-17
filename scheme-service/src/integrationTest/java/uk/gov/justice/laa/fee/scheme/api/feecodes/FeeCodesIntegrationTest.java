@@ -58,7 +58,7 @@ class FeeCodesIntegrationTest extends PostgresContainerTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.feeCodes").isArray())
-        .andExpect(jsonPath("$.feeCodes.length()").value(is(87)))
+        .andExpect(jsonPath("$.feeCodes.length()").value(is(101)))
         .andExpect(jsonPath("$.feeCodes[0].feeCode").exists())
         .andExpect(jsonPath("$.feeCodes[0].areaOfLaw").value("Legal Help"))
         .andExpect(jsonPath("$.feeCodes[0].categoryOfLawCodes").isArray())

@@ -173,3 +173,9 @@ VALUES
     ('YOUTH_COURT_FS2024', 'Criminal proceedings - Youth court 2024', '2024-12-06', '2025-12-21'),
     ('YOUTH_COURT_FS2025', 'Criminal proceedings - Youth court 2025', '2025-12-22', NULL)
 ON CONFLICT (scheme_code) DO NOTHING;
+
+-- Fee Scheme for 'Inquest' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('INQUEST_FS2026', 'Inquest Fee Scheme 2026', '2026-12-09', NULL)
+ON CONFLICT (scheme_code) DO NOTHING;

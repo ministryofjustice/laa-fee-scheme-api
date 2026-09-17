@@ -233,3 +233,20 @@ VALUES ('PRIA',19, 4),
        ('ASPL',21, 2),
        ('ASAS',21, 2)
 ON CONFLICT (fee_code) DO NOTHING;
+
+INSERT INTO fee_category_mapping (fee_code, fee_scheme_category_type_id, category_of_law_type_id)
+VALUES ('COMINQ',22, 18),
+       ('CAPAINQ',22, 15),
+       ('CLININQ',22, 10),
+       ('DEBTINQ',22, 19),
+       ('DISCINQ',22, 8),
+       ('EDUINQ',22, 17),
+       ('FAMINQ',22, 7),
+       ('HOUSINQ',22, 13),
+       ('IAINQ',22, 11),
+       ('INQ',22, 26),
+       ('MHINQ',22, 21),
+       ('MSCINQ',22, 23),
+       ('PUBINQ',22, 9),
+       ('WFBINQ',22, 16)
+ON CONFLICT (fee_code) DO NOTHING;

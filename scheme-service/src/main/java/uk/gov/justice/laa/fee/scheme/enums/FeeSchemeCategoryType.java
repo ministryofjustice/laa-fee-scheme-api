@@ -32,7 +32,8 @@ public enum FeeSchemeCategoryType {
   PRISON_LAW("Prison Law"),
   PRE_ORDER_COVER("Pre Order Cover"),
   PUBLIC_LAW("Public Law"),
-  WELFARE_BENEFITS("Welfare Benefits");
+  WELFARE_BENEFITS("Welfare Benefits"),
+  INQUEST("Inquest");
 
   private final String displayName;
 
