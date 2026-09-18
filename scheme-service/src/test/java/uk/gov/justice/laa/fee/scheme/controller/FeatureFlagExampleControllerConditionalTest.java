@@ -11,6 +11,7 @@ final class FeatureFlagExampleControllerConditionalTest {
   private static FeatureFlagsConfig config(boolean requestOverridesEnabled) {
     FeatureFlagsConfig config = new FeatureFlagsConfig();
     config.setIsFeatureEnabled(false);
+    config.setIsInquestFeatureEnabled(false);
     config.setRequestOverridesEnabled(requestOverridesEnabled);
     return config;
   }

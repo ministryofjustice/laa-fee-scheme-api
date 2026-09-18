@@ -10,6 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.laa.fee.scheme.api.FeeCalculationApi;
+import uk.gov.justice.laa.fee.scheme.config.FeatureFlagsConfig;
+import uk.gov.justice.laa.fee.scheme.config.features.Feature;
+import uk.gov.justice.laa.fee.scheme.exception.FeatureNotEnabledException;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.logback.MdcLoggingInterceptor;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -24,6 +28,7 @@ import uk.gov.justice.laa.fee.scheme.service.FeeCalculationService;
 public class FeeCalculationController implements FeeCalculationApi {
 
   private final FeeCalculationService feeCalculationService;
+  private final FeatureFlagsConfig featureFlagsConfig;
   private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule())
       .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).setDefaultPropertyInclusion(JsonInclude.Include.ALWAYS);
 
@@ -31,12 +36,19 @@ public class FeeCalculationController implements FeeCalculationApi {
   public ResponseEntity<FeeCalculationResponse> getFeeCalculation(FeeCalculationRequest feeCalculationRequest) {
     MdcLoggingInterceptor.populateMdc(feeCalculationRequest);
     logFeeRequest(feeCalculationRequest);
+    rejectDisabledInquestFeeCode(feeCalculationRequest.getFeeCode());
 
     log.info("Getting fee calculation");
     FeeCalculationResponse feeCalculationResponse = feeCalculationService.calculateFee(feeCalculationRequest);
     log.info("Successfully retrieved fee calculation");
 
     return ResponseEntity.ok(feeCalculationResponse);
+  }
+
+  private void rejectDisabledInquestFeeCode(String feeCode) {
+    if (FeeCalculationUtil.isInquestFeeCode(feeCode) && !featureFlagsConfig.isEnabled(Feature.INQUEST)) {
+      throw new FeatureNotEnabledException(Feature.INQUEST);
+    }
   }
 
   private void logFeeRequest(FeeCalculationRequest request) {

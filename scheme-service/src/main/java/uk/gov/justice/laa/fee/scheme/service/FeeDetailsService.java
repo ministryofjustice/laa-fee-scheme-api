@@ -72,6 +72,7 @@ public class FeeDetailsService {
         .feeCodeDescription(feeCategoryMapping.getFeeCode().getFeeDescription())
         .feeType(feeCategoryMapping.getFeeCode().getFeeType().toString())
         .areaOfLaw(feeCategoryMapping.getCategoryOfLawType().getAreaOfLawType().getCode().toString())
+        .isInquest(feeCategoryMapping.getFeeCode().isInquest())
         .build();
   }
 

@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.justice.laa.fee.scheme.config.FeatureFlagsConfig;
+import uk.gov.justice.laa.fee.scheme.config.features.Feature;
 import uk.gov.justice.laa.fee.scheme.exception.AreaOfLawNotFoundException;
 import uk.gov.justice.laa.fee.scheme.model.FeeCodeDetailsV1;
 import uk.gov.justice.laa.fee.scheme.model.FeeCodesResponseV1;
@@ -46,8 +47,40 @@ class FeeCodesControllerTest {
           .areaOfLaw("LEGAL_HELP")
           .build();
 
+  private final FeeCodeDetailsV1 inquestFeeCodeDetails =
+      FeeCodeDetailsV1.builder()
+          .feeCode("COMINQ")
+          .feeCodeDescription("Community Care Inquests Legal Help Fixed Fee")
+          .feeType("FIXED")
+          .categoryOfLawCodes(List.of("COM"))
+          .areaOfLaw("LEGAL_HELP")
+          .build();
+
+  // "INQ" is both the standalone Inquest fee code and the Inquest category of law code,
+  // so this fixture verifies filtering by fee code works correctly for that overlap.
+  private final FeeCodeDetailsV1 standaloneInquestFeeCodeDetails =
+      FeeCodeDetailsV1.builder()
+          .feeCode("INQ")
+          .feeCodeDescription("Inquests Legal Help Fixed Fee")
+          .feeType("FIXED")
+          .categoryOfLawCodes(List.of("INQ"))
+          .areaOfLaw("LEGAL_HELP")
+          .build();
+
+  // Fee code that is unrelated to Inquest but whose categoryOfLawCodes coincidentally
+  // contains "INQ", proving filtering is driven by fee code, not category of law code.
+  private final FeeCodeDetailsV1 nonInquestFeeCodeWithInquestCategoryCode =
+      FeeCodeDetailsV1.builder()
+          .feeCode("FEE124")
+          .feeCodeDescription("unrelated_fee_code_description")
+          .feeType("FIXED")
+          .categoryOfLawCodes(List.of("INQ"))
+          .areaOfLaw("LEGAL_HELP")
+          .build();
+
   @Test
   void getFeeCodesByAreaOfLaw() throws Exception {
+    when(featureFlagsConfig.isEnabled(Feature.INQUEST)).thenReturn(true);
 
     FeeCodesResponseV1 response =
         FeeCodesResponseV1.builder().feeCodes(List.of(feeCodeDetails)).build();
@@ -66,6 +99,7 @@ class FeeCodesControllerTest {
 
   @Test
   void getFeeCodesByAreaOfLawMultipleCodes() throws Exception {
+    when(featureFlagsConfig.isEnabled(Feature.INQUEST)).thenReturn(true);
 
     FeeCodesResponseV1 response =
         FeeCodesResponseV1.builder().feeCodes(List.of(feeCodeDetails, feeCodeDetails2)).build();
@@ -89,6 +123,7 @@ class FeeCodesControllerTest {
 
   @Test
   void getFeeCodesV1ByAreaOfLawThrowsExceptionWhenAreaOfLawNotFound() throws Exception {
+    when(featureFlagsConfig.isEnabled(Feature.INQUEST)).thenReturn(true);
     when(feeCodesService.getFeeCodesV1("FEE123"))
         .thenThrow(new AreaOfLawNotFoundException("FEE123"));
 
@@ -99,5 +134,62 @@ class FeeCodesControllerTest {
         .andExpect(jsonPath("$.status").value(404))
         .andExpect(jsonPath("$.error").value("Not Found"))
         .andExpect(jsonPath("$.message").value("Area of law not found for: FEE123"));
+  }
+
+  @Test
+  void getFeeCodesV1ExcludesInquestFeeCodesWhenFeatureDisabled() throws Exception {
+    when(featureFlagsConfig.isEnabled(Feature.INQUEST)).thenReturn(false);
+
+    FeeCodesResponseV1 response =
+        FeeCodesResponseV1.builder()
+            .feeCodes(List.of(feeCodeDetails, inquestFeeCodeDetails))
+            .build();
+
+    when(feeCodesService.getFeeCodesV1("LEGAL_HELP")).thenReturn(response);
+
+    mockMvc
+        .perform(get("/api/v1/fee-codes/LEGAL_HELP").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.feeCodes.length()").value(1))
+        .andExpect(jsonPath("$.feeCodes[0].feeCode").value("FEE123"));
+  }
+
+  @Test
+  void getFeeCodesV1IncludesInquestFeeCodesWhenFeatureEnabled() throws Exception {
+    when(featureFlagsConfig.isEnabled(Feature.INQUEST)).thenReturn(true);
+
+    FeeCodesResponseV1 response =
+        FeeCodesResponseV1.builder()
+            .feeCodes(List.of(feeCodeDetails, inquestFeeCodeDetails))
+            .build();
+
+    when(feeCodesService.getFeeCodesV1("LEGAL_HELP")).thenReturn(response);
+
+    mockMvc
+        .perform(get("/api/v1/fee-codes/LEGAL_HELP").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.feeCodes.length()").value(2))
+        .andExpect(jsonPath("$.feeCodes[1].feeCode").value("COMINQ"));
+  }
+
+  @Test
+  void getFeeCodesV1ExcludesStandaloneInqFeeCodeButKeepsUnrelatedCategoryOfLawCodeWhenFeatureDisabled()
+      throws Exception {
+    when(featureFlagsConfig.isEnabled(Feature.INQUEST)).thenReturn(false);
+
+    FeeCodesResponseV1 response =
+        FeeCodesResponseV1.builder()
+            .feeCodes(
+                List.of(standaloneInquestFeeCodeDetails, nonInquestFeeCodeWithInquestCategoryCode))
+            .build();
+
+    when(feeCodesService.getFeeCodesV1("LEGAL_HELP")).thenReturn(response);
+
+    mockMvc
+        .perform(get("/api/v1/fee-codes/LEGAL_HELP").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.feeCodes.length()").value(1))
+        .andExpect(jsonPath("$.feeCodes[0].feeCode").value("FEE124"))
+        .andExpect(jsonPath("$.feeCodes[0].categoryOfLawCodes[0]").value("INQ"));
   }
 }
