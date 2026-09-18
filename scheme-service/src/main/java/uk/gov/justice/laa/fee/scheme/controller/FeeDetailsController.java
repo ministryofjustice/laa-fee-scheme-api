@@ -28,6 +28,10 @@ public class FeeDetailsController implements FeeDetailsApi {
   public ResponseEntity<FeeDetailsResponseV1> getFeeDetailsV1(String feeCode) {
 
     log.info("Getting fee details (v1)");
+
+    // Reject requests for Inquest fee scheme category fee codes when the Inquest feature is disabled
+    rejectDisabledInquestFeeCode(feeCode);
+
     FeeDetailsResponseV1 feeDetailsV1 = feeDetailsService.getFeeDetailsV1(feeCode);
     log.info("Successfully retrieved fee details (v1)");
 
@@ -40,6 +44,7 @@ public class FeeDetailsController implements FeeDetailsApi {
 
     // Reject requests for Inquest fee scheme category fee codes when the Inquest feature is disabled
     rejectDisabledInquestFeeCode(feeCode);
+
     FeeDetailsResponseV2 feeDetailsV2 = feeDetailsService.getFeeDetailsV2(feeCode);
     log.info("Successfully retrieved fee details (v2)");
 
