@@ -36,6 +36,35 @@ class FeeDetailsControllerTest {
   private FeatureFlagsConfig featureFlagsConfig;
 
   @Test
+  void getFeeDetailsV1FeeByCode() throws Exception {
+    when(feeDetailsService.getFeeDetailsV1("FEE123")).thenReturn(FeeDetailsResponseV1.builder()
+        .categoryOfLawCode("ASY")
+        .feeCodeDescription("fee_code_description")
+        .feeType("FIXED")
+        .build());
+
+    mockMvc.perform(get("/api/v1/fee-details/FEE123")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.categoryOfLawCode").value("ASY"))
+        .andExpect(jsonPath("$.feeCodeDescription").value("fee_code_description"))
+        .andExpect(jsonPath("$.feeType").value("FIXED"));
+  }
+
+  @Test
+  void getFeeDetailsV1FeeByCodeThrowsExceptionWhenCategoryOfLawNotFound() throws Exception {
+    when(feeDetailsService.getFeeDetailsV1("FEE123")).thenThrow(new CategoryCodeNotFoundException("FEE123"));
+
+    mockMvc.perform(get("/api/v1/fee-details/FEE123")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.timestamp").exists())
+        .andExpect(jsonPath("$.status").value(404))
+        .andExpect(jsonPath("$.error").value("Not Found"))
+        .andExpect(jsonPath("$.message").value("Category of law code not found for feeCode: FEE123"));
+  }
+
+  @Test
   void getFeeDetailsV2FeeByCode() throws Exception {
     when(feeDetailsService.getFeeDetailsV2("FEE123")).thenReturn(FeeDetailsResponseV2.builder()
         .categoryOfLawCodes(List.of("CAT1", "CAT2", "CAT3"))

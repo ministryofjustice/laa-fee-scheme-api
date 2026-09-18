@@ -31,7 +31,7 @@
     </module>
     <!-- https://checkstyle.org/filters/suppressionfilter.html -->
     <module name="SuppressionFilter">
-        <property name="file" value="${checkstyle.suppressions.file}" default="suppressions-test.xml" />
+        <property name="file" value="${checkstyle.suppressions.file}" default="${config_loc}/suppressions-test.xml" />
         <property name="optional" value="true"/>
     </module>
 
