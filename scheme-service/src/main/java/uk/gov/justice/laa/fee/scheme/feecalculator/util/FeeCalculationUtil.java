@@ -16,6 +16,7 @@ import java.math.RoundingMode;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
@@ -261,7 +262,7 @@ public final class FeeCalculationUtil {
    * @return true if the fee code is an Inquest fee category fee code
    */
   public static boolean isInquestFeeCode(String feeCode) {
-    return feeCode != null && feeCode.toUpperCase().endsWith(INQUEST_FEE_CODE_SUFFIX);
+    return feeCode != null && feeCode.toUpperCase(Locale.UK).endsWith(INQUEST_FEE_CODE_SUFFIX);
   }
 
   private static LocalDate getDateFromUfn(FeeCalculationRequest feeCalculationRequest) {

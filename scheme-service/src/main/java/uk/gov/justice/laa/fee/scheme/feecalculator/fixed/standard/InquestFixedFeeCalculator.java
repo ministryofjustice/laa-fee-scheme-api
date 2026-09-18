@@ -19,7 +19,7 @@ import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 /**
- * Calculate the Other Civil fee for a given fee entity and fee data.
+ * Calculate Inquest fee for a given fee entity and fee data.
  */
 @Component
 public class InquestFixedFeeCalculator extends StandardFixedFeeCalculator {
