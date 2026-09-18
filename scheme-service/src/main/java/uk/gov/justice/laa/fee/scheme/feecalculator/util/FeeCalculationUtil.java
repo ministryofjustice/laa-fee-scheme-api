@@ -41,6 +41,8 @@ import uk.gov.justice.laa.fee.scheme.util.DateUtil;
 @Slf4j
 public final class FeeCalculationUtil {
 
+  private static final String INQUEST_FEE_CODE_SUFFIX = "INQ";
+
   private FeeCalculationUtil() {
   }
 
@@ -250,6 +252,16 @@ public final class FeeCalculationUtil {
         .validationMessages(validationMessages)
         .feeCalculation(feeCalculation)
         .build();
+  }
+
+  /**
+   * Returns whether the given fee code belongs to the Inquest fee category.
+   *
+   * @param feeCode the fee code to check
+   * @return true if the fee code is an Inquest fee category fee code
+   */
+  public static boolean isInquestFeeCode(String feeCode) {
+    return feeCode != null && feeCode.toUpperCase().endsWith(INQUEST_FEE_CODE_SUFFIX);
   }
 
   private static LocalDate getDateFromUfn(FeeCalculationRequest feeCalculationRequest) {

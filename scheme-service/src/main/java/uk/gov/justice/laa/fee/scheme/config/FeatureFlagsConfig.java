@@ -19,11 +19,18 @@ public class FeatureFlagsConfig {
 
   @NotNull private Boolean isFeatureEnabled;
 
+  @NotNull private Boolean isInquestFeatureEnabled;
+
   private boolean requestOverridesEnabled;
 
   /** Returns the effective flag value for inline checks, including a request override. */
   public Boolean getIsFeatureEnabled() {
     return isEnabled(Feature.FEATURE);
+  }
+
+  /** Returns the effective flag value for inline checks, including a request override. */
+  public Boolean getIsInquestFeatureEnabled() {
+    return isEnabled(Feature.INQUEST);
   }
 
   /** Returns whether a feature is enabled for the current request or background operation. */
@@ -33,6 +40,7 @@ public class FeatureFlagsConfig {
     }
     Boolean configuredValue = switch (feature) {
       case FEATURE -> isFeatureEnabled;
+      case INQUEST -> isInquestFeatureEnabled;
       default -> throw new FeatureNotImplementedRuntimeException(feature);
     };
     if (configuredValue == null) {

@@ -2,6 +2,7 @@
 
 feature-flags:
   is-feature-enabled: true
+  is-inquest-feature-enabled: true
   request-overrides-enabled: false
 
 # use test token for tests

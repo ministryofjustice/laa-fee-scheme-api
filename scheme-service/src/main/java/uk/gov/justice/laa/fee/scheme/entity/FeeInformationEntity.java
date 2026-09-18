@@ -48,4 +48,7 @@ public class FeeInformationEntity {
   @Column(name = "court_designation_type")
   @Enumerated(EnumType.STRING)
   private CourtDesignationType courtDesignationType;
+
+  @Column(name = "is_inquest", nullable = false)
+  private boolean isInquest;
 }
