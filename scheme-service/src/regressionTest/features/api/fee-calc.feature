@@ -1247,18 +1247,13 @@ Feature: Fee Calculation API
 
     @inquest
     Examples: Inquest
-      | feeCode   | startDate  | netProfitCosts | netCostOfCounsel | vatIndicator | netDisbursementAmount | disbursementVatAmount | expectedTotal |
-      | COMINQ    | 2026-12-09 |                |                  | Yes          | 20                    | 2.00                  | 308.80        |
-      | CAPAINQ   | 2026-12-09 |                |                  | No           | 20                    | 2.00                  | 261.00        |
-      | CLININQ   | 2026-12-09 |                |                  | Yes          | 20                    | 2.00                  | 308.80        |
-      | DEBTINQ   | 2026-12-09 |                |                  | No           | 20                    | 2.00                  | 261.00        |
-      | DISCINQ   | 2026-12-09 |                |                  | Yes          | 20                    | 2.00                  | 308.80        |
-      | EDUINQ    | 2026-12-09 |                |                  | No           | 20                    | 2.00                  | 261.00        |
-      | FAMINQ    | 2026-12-09 |                |                  | Yes          | 20                    | 2.00                  | 308.80        |
-      | HOUSINQ   | 2026-12-09 |                |                  | No           | 20                    | 2.00                  | 261.00        |
-      | IAINQ     | 2026-12-09 |                |                  | Yes          | 20                    | 2.00                  | 308.80        |
-      | INQ       | 2026-12-09 |                |                  | No           | 20                    | 2.00                  | 261.00        |
-      | MHINQ     | 2026-12-09 |                |                  | Yes          | 20                    | 2.00                  | 308.80        |
-      | MSCINQ    | 2026-12-09 |                |                  | No           | 20                    | 2.00                  | 261.00        |
-      | PUBINQ    | 2026-12-09 |                |                  | Yes          | 20                    | 2.00                  | 308.80        |
-      | WFBINQ    | 2026-12-09 |                |                  | No           | 20                    | 2.00                  | 261.00        |
+      | feeCode   | startDate  | caseConcludedDate | netProfitCosts | netCostOfCounsel | vatIndicator | netDisbursementAmount | disbursementVatAmount | expectedTotal |
+      | COMINQ    | 2026-12-09 | 2026-12-09        |                |                  | Yes          | 20                    | 2.00                  | 308.80        |
+      | CAPAINQ   | 2026-12-09 | 2026-12-09        |                |                  | No           | 20                    | 2.00                  | 261.00        |
+      | CLININQ   | 2026-12-09 | 2026-12-09        |                |                  | Yes          | 20                    | 2.00                  | 308.80        |
+      | DEBTINQ   | 2026-12-09 | 2026-12-09        |                |                  | No           | 20                    | 2.00                  | 261.00        |
+      | HOUSINQ   | 2026-12-09 | 2026-12-09        |                |                  | No           | 20                    | 2.00                  | 261.00        |
+      | INQ       | 2026-12-09 | 2026-12-09        |                |                  | No           | 20                    | 2.00                  | 261.00        |
+      | MSCINQ    | 2026-12-09 | 2026-12-09        |                |                  | No           | 20                    | 2.00                  | 261.00        |
+      | PUBINQ    | 2026-12-09 | 2026-12-09        |                |                  | Yes          | 20                    | 2.00                  | 308.80        |
+      | WFBINQ    | 2026-12-09 | 2026-12-09        |                |                  | No           | 20                    | 2.00                  | 261.00        |
