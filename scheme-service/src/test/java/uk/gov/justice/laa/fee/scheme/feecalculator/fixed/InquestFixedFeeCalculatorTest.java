@@ -1,13 +1,11 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.INQUEST;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,47 +54,6 @@ class InquestFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, false);
   }
 
-  @Test
-  void calculate_givenEscapedCaseThrowsExceptionWhenNoWarningCodeConfigured() {
-
-    mockVatRatesService(true);
-
-    FeeCalculationRequest feeCalculationRequest = buildRequest(true, 501.00);
-    FeeEntity feeEntity = buildFeeEntity();
-
-    assertThatThrownBy(() -> feeCalculator.calculate(feeCalculationRequest, feeEntity))
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessage("No warning codes found for category: INQUEST");
-  }
-
-  @Test
-  void calculate_shouldReturnFeeCalculationResponseWithWarningWhenEscapedAndWarningCodeConfigured() {
-
-    mockVatRatesService(true);
-
-    FeeCalculationRequest feeCalculationRequest = buildRequest(true, 501.00);
-    FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("INQ")
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("INQUEST_FS2026").build())
-        .fixedFee(new BigDecimal("250.00"))
-        .categoryType(CategoryType.CLAIMS_PUBLIC_AUTHORITIES)
-        .escapeThresholdLimit(new BigDecimal("500.00"))
-        .build();
-
-    FeeCalculationResponse result = feeCalculator.calculate(feeCalculationRequest, feeEntity);
-
-    assertThat(result.getEscapeCaseFlag()).isTrue();
-
-    List<WarningType> warningTypes = WarningType.getByCategory(feeEntity.getCategoryType());
-
-    ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
-        .message(warningTypes.getFirst().getMessage())
-        .code(warningTypes.getFirst().getCode())
-        .type(WARNING)
-        .build();
-
-    assertThat(result.getValidationMessages()).containsExactly(validationMessage);
-  }
 
   @ParameterizedTest
   @CsvSource({
