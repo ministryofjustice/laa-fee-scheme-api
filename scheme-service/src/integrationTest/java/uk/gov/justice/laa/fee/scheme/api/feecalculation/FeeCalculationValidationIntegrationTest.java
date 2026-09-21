@@ -353,6 +353,43 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   }
 
   @Test
+  void shouldReturnValidationErrorWhenInquestFeeCodeIsInvalid() throws Exception {
+    // Fee codes ending in "INQ" are treated as Inquest fee codes by the feature-flag gate before any
+    // other validation runs. This proves that an unknown/invalid Inquest-shaped fee code (feature flag
+    // enabled, as is the default for this integration test class) still falls through to the normal
+    // "fee code not found" validation (ERRALL1), rather than being misreported as a disabled feature.
+    String request =
+        """
+        {
+          "feeCode": "ZZZINQ",
+          "claimId": "claim_123",
+          "startDate": "2019-09-30",
+          "netProfitCosts": 239.06,
+          "netCostOfCounsel": 79.19,
+          "netDisbursementAmount": 100.21,
+          "disbursementVatAmount": 20.12,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(
+        request,
+        """
+        {
+          "feeCode": "ZZZINQ",
+          "claimId": "claim_123",
+          "validationMessages": [
+            {
+              "type":"ERROR",
+              "code":"ERRALL1",
+              "message":"Enter a valid Fee Code."
+            }
+          ]
+        }
+        """);
+  }
+
+  @Test
   void shouldReturnValidationErrorWhenCivilFeeCodeAndStartDateIsTooFarInThePast() throws Exception {
     String request =
         """
@@ -1611,6 +1648,54 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
                   "boltOnAdjournedHearingCount": 1,
                   "boltOnAdjournedHearingFee": 117.0
               }
+          }
+        }
+        """);
+  }
+
+  @Test
+  void shouldReturnValidationWarningForInquestDisbursementVatLimit() throws Exception {
+    // Mirrors shouldReturnValidationWarningForDisbursementVatLimit above (MHL03) but for an Inquest
+    // fee code. netProfitCosts is kept below the Inquest escape threshold (717.00) so that only the
+    // disbursement VAT cap warning (WARALL1) is triggered, not the Inquest escape-case warning.
+    String request = """ 
+        {
+          "feeCode": "INQ",
+          "claimId": "claim_123",
+          "startDate": "2026-12-10",
+          "caseConcludedDate": "2027-01-01",
+          "netProfitCosts": 239.06,
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 80.00,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(
+        request,
+        """
+        {
+          "feeCode": "INQ",
+          "claimId": "claim_123",
+          "schemeId": "INQUEST_FS2026",
+          "escapeCaseFlag": false,
+          "validationMessages": [
+              {
+                  "type": "WARNING",
+                  "code": "WARALL1",
+                  "message": "Value entered exceeds the VAT threshold for the net disbursement amount claimed. Costs have been capped at the maximum VAT amount claimable."
+              }
+          ],
+          "feeCalculation": {
+              "totalAmount": 434.86,
+              "vatIndicator": true,
+              "vatRateApplied": 20.0,
+              "calculatedVatAmount": 47.8,
+              "disbursementAmount": 123.38,
+              "requestedNetDisbursementAmount": 123.38,
+              "disbursementVatAmount": 24.68,
+              "requestedDisbursementVatAmount": 80.0,
+              "fixedFeeAmount": 239.0
           }
         }
         """);

@@ -91,6 +91,7 @@ class FeeDetailsServiceTest {
     FeeInformationEntity feeInformation = mock(FeeInformationEntity.class);
     when(feeInformation.getFeeDescription()).thenReturn("Claims Against Public Authorities Legal Help Fixed Fee");
     when(feeInformation.getFeeType()).thenReturn(FeeType.FIXED);
+    when(feeInformation.isInquest()).thenReturn(false);
 
     FeeCategoryMappingEntity feeCategoryMappingEntity = mock(FeeCategoryMappingEntity.class);
     when(feeCategoryMappingEntity.getCategoryOfLawType()).thenReturn(categoryOfLawType);
@@ -104,6 +105,7 @@ class FeeDetailsServiceTest {
     assertThat(response.getFeeCodeDescription()).isEqualTo("Claims Against Public Authorities Legal Help Fixed Fee");
     assertThat(response.getFeeType()).isEqualTo("FIXED");
     assertThat(response.getAreaOfLaw()).isEqualTo("LEGAL_HELP");
+    assertThat(response.getIsInquest()).isFalse();
   }
 
   @CsvSource({
@@ -127,6 +129,7 @@ class FeeDetailsServiceTest {
     FeeInformationEntity feeInformation = mock(FeeInformationEntity.class);
     when(feeInformation.getFeeDescription()).thenReturn(description);
     when(feeInformation.getFeeType()).thenReturn(FeeType.FIXED);
+    when(feeInformation.isInquest()).thenReturn(false);
 
     FeeCategoryMappingEntity feeCategoryMappingEntity = mock(FeeCategoryMappingEntity.class);
     when(feeCategoryMappingEntity.getCategoryOfLawType()).thenReturn(categoryOfLawType);
@@ -140,6 +143,7 @@ class FeeDetailsServiceTest {
     assertThat(response.getFeeCodeDescription()).isEqualTo(description);
     assertThat(response.getFeeType()).isEqualTo("FIXED");
     assertThat(response.getAreaOfLaw()).isEqualTo("LEGAL_HELP");
+    assertThat(response.getIsInquest()).isFalse();
   }
 
   @Test
@@ -158,6 +162,7 @@ class FeeDetailsServiceTest {
     FeeInformationEntity feeInformation = mock(FeeInformationEntity.class);
     when(feeInformation.getFeeDescription()).thenReturn("Inquests Legal Help Fixed Fee");
     when(feeInformation.getFeeType()).thenReturn(FeeType.FIXED);
+    when(feeInformation.isInquest()).thenReturn(true);
 
     FeeCategoryMappingEntity feeCategoryMappingEntity = mock(FeeCategoryMappingEntity.class);
     when(feeCategoryMappingEntity.getCategoryOfLawType()).thenReturn(categoryOfLawType);
@@ -171,6 +176,7 @@ class FeeDetailsServiceTest {
     assertThat(response.getFeeCodeDescription()).isEqualTo("Inquests Legal Help Fixed Fee");
     assertThat(response.getFeeType()).isEqualTo("FIXED");
     assertThat(response.getAreaOfLaw()).isEqualTo("LEGAL_HELP");
+    assertThat(response.getIsInquest()).isTrue();
   }
 
   @Test
@@ -189,6 +195,7 @@ class FeeDetailsServiceTest {
     FeeInformationEntity feeInformation = mock(FeeInformationEntity.class);
     when(feeInformation.getFeeDescription()).thenReturn("Community Care Inquests Legal Help Fixed Fee");
     when(feeInformation.getFeeType()).thenReturn(FeeType.FIXED);
+    when(feeInformation.isInquest()).thenReturn(true);
 
     FeeCategoryMappingEntity feeCategoryMappingEntity = mock(FeeCategoryMappingEntity.class);
     when(feeCategoryMappingEntity.getCategoryOfLawType()).thenReturn(categoryOfLawType);
@@ -202,6 +209,7 @@ class FeeDetailsServiceTest {
     assertThat(response.getFeeCodeDescription()).isEqualTo("Community Care Inquests Legal Help Fixed Fee");
     assertThat(response.getFeeType()).isEqualTo("FIXED");
     assertThat(response.getAreaOfLaw()).isEqualTo("LEGAL_HELP");
+    assertThat(response.getIsInquest()).isTrue();
   }
 
   @Test

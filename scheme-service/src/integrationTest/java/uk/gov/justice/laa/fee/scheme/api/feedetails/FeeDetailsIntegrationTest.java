@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -45,6 +46,7 @@ class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
   }
 
   private static final String HEADER_CORRELATION_ID = "X-Correlation-Id";
+  private static final String INQUEST_FEE_CODE = "INQ";
 
   @Test
   void shouldGetFeeDetailsV1WhenCorrelationIdProvided() throws Exception {
@@ -98,6 +100,7 @@ class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
         .andExpect(jsonPath("$.categoryOfLawCodes").value(is(categoryOfLawCodes)))
         .andExpect(jsonPath("$.feeCodeDescription").value(description))
         .andExpect(jsonPath("$.feeType").value("FIXED"))
+        .andExpect(jsonPath("$.isInquest").value(false))
         .andExpect(header().string(HEADER_CORRELATION_ID, correlationId));
   }
 
@@ -113,7 +116,86 @@ class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
         .andExpect(jsonPath("$.categoryOfLawCodes").value(is(categoryOfLawCodes)))
         .andExpect(jsonPath("$.feeCodeDescription").value(description))
         .andExpect(jsonPath("$.feeType").value("FIXED"))
+        .andExpect(jsonPath("$.isInquest").value(false))
         .andExpect(header().exists(HEADER_CORRELATION_ID));
+  }
+
+  @Nested
+  @SpringBootTest(properties = "feature-flags.is-inquest-feature-enabled=false")
+  @AutoConfigureMockMvc
+  @Testcontainers
+  class FeeDetailsV2WithInquestFeatureDisabled extends PostgresContainerTestBase {
+
+    @Autowired
+    private MockMvc nestedMockMvc;
+
+    @Test
+    void shouldRejectInquestFeeCodeWhenInquestFeatureDisabled() throws Exception {
+      nestedMockMvc
+          .perform(get(API_V_2_FEE_DETAILS + INQUEST_FEE_CODE)
+              .header(HttpHeaders.AUTHORIZATION, INT_TEST_TOKEN))
+          .andExpect(status().isNotFound())
+          .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+          .andExpect(jsonPath("$.status").value(404))
+          .andExpect(jsonPath("$.error").value("Not Found"))
+          .andExpect(jsonPath("$.message").value("Feature is not available: INQUEST"))
+          .andExpect(jsonPath("$.timestamp").exists());
+    }
+
+    @Test
+    void shouldReturnNonInquestFeeCodeDetailsWhenInquestFeatureDisabled() throws Exception {
+      nestedMockMvc
+          .perform(get(API_V_2_FEE_DETAILS_CAPA)
+              .header(HttpHeaders.AUTHORIZATION, INT_TEST_TOKEN))
+          .andExpect(status().isOk())
+          .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+          .andExpect(jsonPath("$.areaOfLaw").value("LEGAL_HELP"))
+          .andExpect(jsonPath("$.categoryOfLawCodes").value(is(List.of("AAP"))))
+          .andExpect(jsonPath("$.feeCodeDescription").value("Claims Against Public Authorities Legal Help Fixed Fee"))
+          .andExpect(jsonPath("$.feeType").value("FIXED"))
+          .andExpect(jsonPath("$.isInquest").value(false))
+          .andExpect(header().exists(HEADER_CORRELATION_ID));
+    }
+  }
+
+  @Nested
+  @SpringBootTest(properties = "feature-flags.is-inquest-feature-enabled=true")
+  @AutoConfigureMockMvc
+  @Testcontainers
+  class FeeDetailsV2WithInquestFeatureEnabled extends PostgresContainerTestBase {
+
+    @Autowired
+    private MockMvc nestedMockMvc;
+
+    @Test
+    void shouldReturnInquestFeeCodeDetailsWhenInquestFeatureEnabled() throws Exception {
+      nestedMockMvc
+          .perform(get(API_V_2_FEE_DETAILS + INQUEST_FEE_CODE)
+              .header(HttpHeaders.AUTHORIZATION, INT_TEST_TOKEN))
+          .andExpect(status().isOk())
+          .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+          .andExpect(jsonPath("$.areaOfLaw").value("LEGAL_HELP"))
+          .andExpect(jsonPath("$.categoryOfLawCodes").value(is(List.of("INQ"))))
+          .andExpect(jsonPath("$.feeCodeDescription").value("Inquests Legal Help Fixed Fee"))
+          .andExpect(jsonPath("$.feeType").value("FIXED"))
+          .andExpect(jsonPath("$.isInquest").value(true))
+          .andExpect(header().exists(HEADER_CORRELATION_ID));
+    }
+
+    @Test
+    void shouldReturnNonInquestFeeCodeDetailsWhenInquestFeatureEnabled() throws Exception {
+      nestedMockMvc
+          .perform(get(API_V_2_FEE_DETAILS_CAPA)
+              .header(HttpHeaders.AUTHORIZATION, INT_TEST_TOKEN))
+          .andExpect(status().isOk())
+          .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+          .andExpect(jsonPath("$.areaOfLaw").value("LEGAL_HELP"))
+          .andExpect(jsonPath("$.categoryOfLawCodes").value(is(List.of("AAP"))))
+          .andExpect(jsonPath("$.feeCodeDescription").value("Claims Against Public Authorities Legal Help Fixed Fee"))
+          .andExpect(jsonPath("$.feeType").value("FIXED"))
+          .andExpect(jsonPath("$.isInquest").value(false))
+          .andExpect(header().exists(HEADER_CORRELATION_ID));
+    }
   }
 
   @ValueSource(strings = {API_V_1_FEE_DETAILS, API_V_2_FEE_DETAILS})

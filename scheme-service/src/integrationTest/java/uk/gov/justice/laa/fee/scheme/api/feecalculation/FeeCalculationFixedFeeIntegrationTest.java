@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
+@SpringBootTest(properties = "feature-flags.is-inquest-feature-enabled=true")
 class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegrationTest {
 
   @Test
@@ -450,6 +452,60 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "disbursementVatAmount": 24.67,
           "vatIndicator": true,
           "caseConcludedDate": "2026-02-01"
+        }
+        """.formatted(feeCode);
+
+    postAndExpect(request, """
+        {
+          "feeCode": "%s",
+          "schemeId": "%s",
+          "claimId": "claim_123",
+          "escapeCaseFlag": false,
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": %s,
+            "disbursementAmount": 123.38,
+            "requestedNetDisbursementAmount": 123.38,
+            "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67,
+            "fixedFeeAmount": %s
+          }
+        }
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "COMINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "CAPAINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "CLININQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "DEBTINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "EDUINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "HOUSINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "IAINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "INQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "MHINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "MSCINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "PUBINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "WFBINQ, INQUEST_FS2026, 434.85, 47.8, 239.0"
+  })
+  void shouldGetInquestFixedFeeCalculation(String feeCode,
+                                           String schemeId,
+                                           String expectedTotal,
+                                           String expectedVatAmount,
+                                           String fixedFeeAmount) throws Exception {
+    String request = """ 
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "startDate": "2026-12-10",
+          "netProfitCosts": 239.06,
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true,
+          "caseConcludedDate": "2027-01-01"
         }
         """.formatted(feeCode);
 
