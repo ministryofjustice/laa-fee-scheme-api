@@ -167,3 +167,180 @@ VALUES ('PROV1', 182.01, 'MAGS_COURT_FS2025'),
        ('PROV3', 321.37, 'MAGS_COURT_FS2025'),
        ('PROV4', 737.08, 'MAGS_COURT_FS2025')
     ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
+
+UPDATE fee
+SET lower_standard_fee_limit = CASE fee_code
+        WHEN 'PROE1' THEN 272.34
+        WHEN 'PROF1' THEN 272.34
+        WHEN 'PROE2' THEN 272.34
+        WHEN 'PROF2' THEN 272.34
+        WHEN 'PROE3' THEN 467.84
+        WHEN 'PROF3' THEN 467.84
+        WHEN 'PROJ1' THEN 272.34
+        WHEN 'PROJ3' THEN 272.34
+        WHEN 'PROJ2' THEN 272.34
+        WHEN 'PROJ4' THEN 272.34
+        WHEN 'PROV1' THEN 272.34
+        WHEN 'PROV2' THEN 272.34
+        WHEN 'PROV3' THEN 467.84
+        WHEN 'PROV4' THEN 467.84
+        WHEN 'PROK1' THEN 272.34
+        WHEN 'PROL1' THEN 272.34
+        WHEN 'PROK2' THEN 272.34
+        WHEN 'PROL2' THEN 272.34
+        WHEN 'PROK3' THEN 467.84
+        WHEN 'PROL3' THEN 467.84
+        WHEN 'PROJ5' THEN 272.34
+        WHEN 'PROJ7' THEN 272.34
+        WHEN 'PROJ6' THEN 272.34
+        WHEN 'PROJ8' THEN 272.34
+        END,
+    higher_standard_fee_limit = CASE fee_code
+        WHEN 'PROE1' THEN 471.85
+        WHEN 'PROF1' THEN 471.85
+        WHEN 'PROE2' THEN 471.85
+        WHEN 'PROF2' THEN 471.85
+        WHEN 'PROE3' THEN 779.64
+        WHEN 'PROF3' THEN 779.64
+        WHEN 'PROJ1' THEN 471.85
+        WHEN 'PROJ3' THEN 471.85
+        WHEN 'PROJ2' THEN 471.85
+        WHEN 'PROJ4' THEN 471.85
+        WHEN 'PROV1' THEN 471.85
+        WHEN 'PROV2' THEN 471.85
+        WHEN 'PROV3' THEN 779.64
+        WHEN 'PROV4' THEN 779.64
+        WHEN 'PROK1' THEN 471.85
+        WHEN 'PROL1' THEN 471.85
+        WHEN 'PROK2' THEN 471.85
+        WHEN 'PROL2' THEN 471.85
+        WHEN 'PROK3' THEN 779.64
+        WHEN 'PROL3' THEN 779.64
+        WHEN 'PROJ5' THEN 471.85
+        WHEN 'PROJ7' THEN 471.85
+        WHEN 'PROJ6' THEN 471.85
+        WHEN 'PROJ8' THEN 471.85
+        END
+WHERE fee_scheme_code = 'MAGS_COURT_FS2016'
+  AND fee_code IN ('PROE1', 'PROF1', 'PROE2', 'PROF2', 'PROE3', 'PROF3',
+                   'PROJ1', 'PROJ3', 'PROJ2', 'PROJ4', 'PROV1', 'PROV2',
+                   'PROV3', 'PROV4', 'PROK1', 'PROL1', 'PROK2', 'PROL2',
+                   'PROK3', 'PROL3', 'PROJ5', 'PROJ7', 'PROJ6', 'PROJ8');
+
+UPDATE fee
+SET lower_standard_fee_limit = CASE fee_code
+        WHEN 'PROE1' THEN 313.19
+        WHEN 'PROF1' THEN 313.19
+        WHEN 'PROE2' THEN 313.19
+        WHEN 'PROF2' THEN 313.19
+        WHEN 'PROE3' THEN 538.02
+        WHEN 'PROF3' THEN 538.02
+        WHEN 'PROJ1' THEN 313.19
+        WHEN 'PROJ3' THEN 313.19
+        WHEN 'PROJ2' THEN 313.19
+        WHEN 'PROJ4' THEN 313.19
+        WHEN 'PROV1' THEN 313.19
+        WHEN 'PROV2' THEN 313.19
+        WHEN 'PROV3' THEN 538.02
+        WHEN 'PROV4' THEN 538.02
+        WHEN 'PROK1' THEN 313.19
+        WHEN 'PROL1' THEN 313.19
+        WHEN 'PROK2' THEN 313.19
+        WHEN 'PROL2' THEN 313.19
+        WHEN 'PROK3' THEN 538.02
+        WHEN 'PROL3' THEN 538.02
+        WHEN 'PROJ5' THEN 313.19
+        WHEN 'PROJ7' THEN 313.19
+        WHEN 'PROJ6' THEN 313.19
+        WHEN 'PROJ8' THEN 313.19
+        END,
+    higher_standard_fee_limit = CASE fee_code
+        WHEN 'PROE1' THEN 542.63
+        WHEN 'PROF1' THEN 542.63
+        WHEN 'PROE2' THEN 542.63
+        WHEN 'PROF2' THEN 542.63
+        WHEN 'PROE3' THEN 896.59
+        WHEN 'PROF3' THEN 896.59
+        WHEN 'PROJ1' THEN 542.63
+        WHEN 'PROJ3' THEN 542.63
+        WHEN 'PROJ2' THEN 542.63
+        WHEN 'PROJ4' THEN 542.63
+        WHEN 'PROV1' THEN 542.63
+        WHEN 'PROV2' THEN 542.63
+        WHEN 'PROV3' THEN 896.59
+        WHEN 'PROV4' THEN 896.59
+        WHEN 'PROK1' THEN 542.63
+        WHEN 'PROL1' THEN 542.63
+        WHEN 'PROK2' THEN 542.63
+        WHEN 'PROL2' THEN 542.63
+        WHEN 'PROK3' THEN 896.59
+        WHEN 'PROL3' THEN 896.59
+        WHEN 'PROJ5' THEN 542.63
+        WHEN 'PROJ7' THEN 542.63
+        WHEN 'PROJ6' THEN 542.63
+        WHEN 'PROJ8' THEN 542.63
+        END
+WHERE fee_scheme_code = 'MAGS_COURT_FS2022'
+  AND fee_code IN ('PROE1', 'PROF1', 'PROE2', 'PROF2', 'PROE3', 'PROF3',
+                   'PROJ1', 'PROJ3', 'PROJ2', 'PROJ4', 'PROV1', 'PROV2',
+                   'PROV3', 'PROV4', 'PROK1', 'PROL1', 'PROK2', 'PROL2',
+                   'PROK3', 'PROL3', 'PROJ5', 'PROJ7', 'PROJ6', 'PROJ8');
+
+UPDATE fee
+SET lower_standard_fee_limit = CASE fee_code
+        WHEN 'PROE1' THEN 344.51
+        WHEN 'PROF1' THEN 344.51
+        WHEN 'PROE2' THEN 344.51
+        WHEN 'PROF2' THEN 344.51
+        WHEN 'PROE3' THEN 591.82
+        WHEN 'PROF3' THEN 591.82
+        WHEN 'PROJ1' THEN 344.51
+        WHEN 'PROJ3' THEN 344.51
+        WHEN 'PROJ2' THEN 344.51
+        WHEN 'PROJ4' THEN 344.51
+        WHEN 'PROV1' THEN 344.51
+        WHEN 'PROV2' THEN 344.51
+        WHEN 'PROV3' THEN 591.82
+        WHEN 'PROV4' THEN 591.82
+        WHEN 'PROK1' THEN 344.51
+        WHEN 'PROL1' THEN 344.51
+        WHEN 'PROK2' THEN 344.51
+        WHEN 'PROL2' THEN 344.51
+        WHEN 'PROK3' THEN 591.82
+        WHEN 'PROL3' THEN 591.82
+        WHEN 'PROJ5' THEN 344.51
+        WHEN 'PROJ7' THEN 344.51
+        WHEN 'PROJ6' THEN 344.51
+        WHEN 'PROJ8' THEN 344.51
+        END,
+    higher_standard_fee_limit = CASE fee_code
+        WHEN 'PROE1' THEN 596.89
+        WHEN 'PROF1' THEN 596.89
+        WHEN 'PROE2' THEN 596.89
+        WHEN 'PROF2' THEN 596.89
+        WHEN 'PROE3' THEN 986.25
+        WHEN 'PROF3' THEN 986.25
+        WHEN 'PROJ1' THEN 596.89
+        WHEN 'PROJ3' THEN 596.89
+        WHEN 'PROJ2' THEN 596.89
+        WHEN 'PROJ4' THEN 596.89
+        WHEN 'PROV1' THEN 596.89
+        WHEN 'PROV2' THEN 596.89
+        WHEN 'PROV3' THEN 986.25
+        WHEN 'PROV4' THEN 986.25
+        WHEN 'PROK1' THEN 596.89
+        WHEN 'PROL1' THEN 596.89
+        WHEN 'PROK2' THEN 596.89
+        WHEN 'PROL2' THEN 596.89
+        WHEN 'PROK3' THEN 986.25
+        WHEN 'PROL3' THEN 986.25
+        WHEN 'PROJ5' THEN 596.89
+        WHEN 'PROJ7' THEN 596.89
+        WHEN 'PROJ6' THEN 596.89
+        WHEN 'PROJ8' THEN 596.89
+        END
+WHERE fee_scheme_code = 'MAGS_COURT_FS2025'
+  AND fee_code IN ('PROE1', 'PROF1', 'PROE2', 'PROF2', 'PROE3', 'PROF3',
+                   'PROJ1', 'PROJ3', 'PROJ2', 'PROJ4', 'PROV1', 'PROV2',
+                   'PROV3', 'PROV4', 'PROK1', 'PROL1', 'PROK2', 'PROL2',
+                   'PROK3', 'PROL3', 'PROJ5', 'PROJ7', 'PROJ6', 'PROJ8');
