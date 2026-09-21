@@ -192,7 +192,7 @@ components:
           description: "Area of Law stored in the system."
         isInquest:
           type: boolean
-          description: "Indicates if the fee code belongs to the Inquest fee scheme category."
+          description: "Indicates whether the fee code is an Inquest fee code."
     FeeDetailsResponseV1:
       required:
         - categoryOfLawCode

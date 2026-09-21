@@ -68,7 +68,7 @@ ingress:
 
 featureFlags:
   isFeatureEnabled: true
-  isInquestFeatureEnabled: true
+  isInquestFeatureEnabled: false
   requestOverridesEnabled: false
 
 resources: {}
