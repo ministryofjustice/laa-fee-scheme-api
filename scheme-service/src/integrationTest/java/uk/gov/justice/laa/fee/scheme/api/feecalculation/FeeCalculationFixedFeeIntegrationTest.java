@@ -482,6 +482,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
       "CAPAINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
       "CLININQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
       "DEBTINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "DISCINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
       "EDUINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
       "HOUSINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
       "IAINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
@@ -509,12 +510,13 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """.formatted(feeCode);
 
+    // escapeCaseFlag is omitted: Inquest escape-case handling is not yet implemented
+    // (tracked in a separate ticket), so escape support is disabled for these fee codes.
     postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "%s",
           "claimId": "claim_123",
-          "escapeCaseFlag": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,

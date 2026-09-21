@@ -35,7 +35,9 @@ class InquestFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
       "false, 200.00, 370.13, 0",  // Under escape threshold (No VAT)
       "true, 200.00, 420.13, 50",  // Under escape threshold limit (VAT applied)
       "false, 500.00, 370.13, 0", // Equal to escape threshold limit (No VAT)
-      "true, 500.00, 420.13, 50" // Equal to escape threshold limit (VAT applied)
+      "true, 500.00, 420.13, 50", // Equal to escape threshold limit (VAT applied)
+      "false, 900.00, 370.13, 0", // Above escape threshold limit, escape handling not yet supported (No VAT)
+      "true, 900.00, 420.13, 50" // Above escape threshold limit, escape handling not yet supported (VAT applied)
   })
   void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double netProfitCosts,
                                                     double expectedTotal, double expectedVat) {
@@ -51,7 +53,7 @@ class InquestFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     FeeCalculationResponse result = feeCalculator.calculate(feeCalculationRequest, feeEntity);
 
-    assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, false);
+    assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat);
   }
 
 
@@ -75,7 +77,7 @@ class InquestFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     FeeCalculationResponse result = feeCalculator.calculate(feeCalculationRequest, feeEntity);
 
-    assertFeeCalculationDisbursementVatOverLimit(result, expectedTotal, vatIndicator, expectedVat, false);
+    assertFeeCalculationDisbursementVatOverLimit(result, expectedTotal, vatIndicator, expectedVat);
 
     ValidationMessagesInner validationMessage =
             ValidationMessagesInner.builder()
@@ -117,13 +119,14 @@ class InquestFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .build();
   }
 
-  private void assertFeeCalculation(FeeCalculationResponse response, double total, boolean vatIndicator, double vat,
-                                    boolean escapeFlag) {
+  private void assertFeeCalculation(FeeCalculationResponse response, double total, boolean vatIndicator, double vat) {
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("INQ");
     assertThat(response.getClaimId()).isEqualTo("claim_123");
     assertThat(response.getSchemeId()).isEqualTo("INQUEST_FS2026");
-    assertThat(response.getEscapeCaseFlag()).isEqualTo(escapeFlag);
+    // Escape-case handling is not yet implemented for Inquest fee codes (separate ticket),
+    // so escapeCaseFlag is always null here.
+    assertThat(response.getEscapeCaseFlag()).isNull();
 
     FeeCalculation feeCalculation = response.getFeeCalculation();
     assertThat(feeCalculation).isNotNull();
@@ -150,13 +153,13 @@ class InquestFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
             .build();
   }
 
-  private void assertFeeCalculationDisbursementVatOverLimit(FeeCalculationResponse response, double total, boolean vatIndicator, double vat,
-                                                            boolean escapeFlag) {
+  private void assertFeeCalculationDisbursementVatOverLimit(FeeCalculationResponse response, double total,
+                                                            boolean vatIndicator, double vat) {
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("INQ");
     assertThat(response.getClaimId()).isEqualTo("claim_123");
     assertThat(response.getSchemeId()).isEqualTo("INQUEST_FS2026");
-    assertThat(response.getEscapeCaseFlag()).isEqualTo(escapeFlag);
+    assertThat(response.getEscapeCaseFlag()).isNull();
 
     FeeCalculation feeCalculation = response.getFeeCalculation();
     assertThat(feeCalculation).isNotNull();

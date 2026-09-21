@@ -1656,8 +1656,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   @Test
   void shouldReturnValidationWarningForInquestDisbursementVatLimit() throws Exception {
     // Mirrors shouldReturnValidationWarningForDisbursementVatLimit above (MHL03) but for an Inquest
-    // fee code. netProfitCosts is kept below the Inquest escape threshold (717.00) so that only the
-    // disbursement VAT cap warning (WARALL1) is triggered, not the Inquest escape-case warning.
+    // fee code. Escape-case handling is not yet implemented for Inquest fee codes (separate ticket),
+    // so escapeCaseFlag is omitted and only the disbursement VAT cap warning (WARALL1) is triggered.
     String request = """ 
         {
           "feeCode": "INQ",
@@ -1678,7 +1678,6 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "INQ",
           "claimId": "claim_123",
           "schemeId": "INQUEST_FS2026",
-          "escapeCaseFlag": false,
           "validationMessages": [
               {
                   "type": "WARNING",

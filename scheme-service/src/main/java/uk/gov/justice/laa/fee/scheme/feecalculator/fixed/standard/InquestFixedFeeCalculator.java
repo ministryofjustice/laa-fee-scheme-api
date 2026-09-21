@@ -16,19 +16,22 @@ import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
 /**
  * Calculate Inquest fee for a given fee entity and fee data.
+ *
+ * <p>Escape-case handling is not yet implemented for Inquest fee codes (tracked in a separate
+ * ticket), so escape support is disabled here to avoid reporting an incorrect/incomplete
+ * escape-case outcome.
  */
 @Component
 public class InquestFixedFeeCalculator extends StandardFixedFeeCalculator {
 
   public InquestFixedFeeCalculator(VatRatesService vatRatesService) {
-    super(vatRatesService, true);
+    super(vatRatesService, false);
   }
 
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of(INQUEST);
   }
-
 
   @Override
   protected BigDecimal capDisbursementVat(FeeCalculationRequest feeCalculationRequest,
