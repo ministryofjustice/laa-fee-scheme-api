@@ -110,6 +110,20 @@ class FeatureFlagsConfigTest {
   }
 
   @Test
+  void localProfileDefaultsEnableFeatures() throws IOException {
+    var source = new YamlPropertySourceLoader()
+        .load("application-local", new ClassPathResource("application-local.yml")).getFirst();
+    runner.withInitializer(context -> context.getEnvironment().getPropertySources().addLast(source))
+        .run(context -> {
+          assertThat(context).hasNotFailed();
+          FeatureFlagsConfig flags = context.getBean(FeatureFlagsConfig.class);
+          assertThat(flags.getIsFeatureEnabled()).isTrue();
+          assertThat(flags.getIsInquestFeatureEnabled()).isTrue();
+          assertThat(flags.isRequestOverridesEnabled()).isFalse();
+        });
+  }
+
+  @Test
   void unconfiguredManualInstanceDoesNotSilentlyDisableFeature() {
     assertThatThrownBy(() -> new FeatureFlagsConfig().isEnabled(Feature.FEATURE))
         .isInstanceOf(IllegalStateException.class)

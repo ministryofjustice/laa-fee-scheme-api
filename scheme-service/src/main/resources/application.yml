@@ -34,8 +34,8 @@ management:
         include: health,metrics,prometheus
 
 feature-flags:
-  is-feature-enabled: ${IS_FEATURE_ENABLED:true}
-  is-inquest-feature-enabled: ${IS_INQUEST_FEATURE_ENABLED:true}
+  is-feature-enabled: ${IS_FEATURE_ENABLED:false}
+  is-inquest-feature-enabled: ${IS_INQUEST_FEATURE_ENABLED:false}
   request-overrides-enabled: ${FEATURE_FLAG_REQUEST_OVERRIDES_ENABLED:false}
 
 logging:
