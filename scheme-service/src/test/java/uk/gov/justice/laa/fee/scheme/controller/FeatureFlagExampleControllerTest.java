@@ -27,6 +27,7 @@ import uk.gov.justice.laa.fee.scheme.config.features.FeatureFlagRequestOverrideI
 @TestPropertySource(
     properties = {
       "feature-flags.is-feature-enabled=false",
+      "feature-flags.is-inquest-feature-enabled=false",
       "feature-flags.request-overrides-enabled=true"
     })
 class FeatureFlagExampleControllerTest {

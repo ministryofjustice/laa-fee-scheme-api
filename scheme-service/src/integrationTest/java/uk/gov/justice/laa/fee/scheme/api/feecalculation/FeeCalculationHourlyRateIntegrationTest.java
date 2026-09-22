@@ -30,6 +30,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "PROD",
           "schemeId": "AAA_FS2016",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
               "totalAmount": 840.0,
               "vatIndicator": true,
@@ -86,6 +87,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "%s",
           "schemeId": "%s",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -143,6 +145,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "%s",
           "schemeId": "%s",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -185,6 +188,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "schemeId": "DISC_FS2013",
           "claimId": "claim_123",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": 502.15,
             "vatIndicator": true,
@@ -229,6 +233,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "%s",
           "schemeId": "%s",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": 719.39,
             "vatIndicator": true,
@@ -281,6 +286,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "%s",
           "schemeId": "IMM_ASYLM_FS2020",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -337,6 +343,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "%s",
           "schemeId": "IMM_ASYLM_FS2025",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -378,6 +385,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "INVH",
           "schemeId": "POL_FS2022",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": 138.07,
             "vatIndicator": true,
@@ -432,6 +440,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "%s",
           "schemeId": "%s",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
               "totalAmount": 53.56,
               "vatIndicator": true,

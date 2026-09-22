@@ -20,6 +20,7 @@ import tools.jackson.core.exc.StreamReadException;
 import tools.jackson.databind.exc.InvalidFormatException;
 import tools.jackson.databind.exc.MismatchedInputException;
 import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.ErrorResponse;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
@@ -198,6 +199,7 @@ public class GlobalExceptionHandler {
     FeeCalculationResponse feeCalculationResponse = FeeCalculationResponse.builder()
         .feeCode(context.feeCode())
         .claimId(context.claimId())
+        .isInquest(FeeCalculationUtil.isInquestFeeCode(context.feeCode()))
         .validationMessages(List.of(validationMessages)).build();
 
     return ResponseEntity.ok(feeCalculationResponse);

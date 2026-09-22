@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
+@SpringBootTest(properties = "feature-flags.is-inquest-feature-enabled=true")
 class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegrationTest {
 
   @Test
@@ -32,6 +34,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "ASSOC_FS2016",
           "claimId": "claim_123",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
            "totalAmount": 161.22,
            "vatIndicator": true,
@@ -78,6 +81,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "feeCode": "%s",
           "schemeId": "%s",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -122,6 +126,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "feeCode": "%s",
           "schemeId": "%s",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -155,6 +160,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "claimId": "claim_123",
           "schemeId": "FAM_LON_FS2013",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": 306.45,
             "vatIndicator": true,
@@ -197,6 +203,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "%s",
           "claimId": "claim_123",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -219,6 +226,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "%s",
           "claimId": "claim_123",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -279,6 +287,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "feeCode": "IACA",
           "schemeId": "IMM_ASYLM_FS2020",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type": "WARNING",
@@ -329,6 +338,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
          "feeCode": "MDAS2B",
           "schemeId": "MED_FS2013",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": 321.85,
             "vatIndicator": true,
@@ -367,6 +377,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "MHL_FS2013",
           "claimId": "claim_123",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": 1081.45,
             "vatIndicator": true,
@@ -408,6 +419,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "EDU_FS2013",
           "claimId": "claim_123",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": 474.45,
             "vatIndicator": true,
@@ -459,6 +471,64 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "%s",
           "claimId": "claim_123",
           "escapeCaseFlag": false,
+          "isInquest": false,
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": %s,
+            "disbursementAmount": 123.38,
+            "requestedNetDisbursementAmount": 123.38,
+            "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67,
+            "fixedFeeAmount": %s
+          }
+        }
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "COMINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "CAPAINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "CLININQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "DEBTINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "DISCINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "EDUINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "HOUSINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "IAINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "INQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "MHINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "MSCINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "PUBINQ, INQUEST_FS2026, 434.85, 47.8, 239.0",
+      "WFBINQ, INQUEST_FS2026, 434.85, 47.8, 239.0"
+  })
+  void shouldGetInquestFixedFeeCalculation(String feeCode,
+                                           String schemeId,
+                                           String expectedTotal,
+                                           String expectedVatAmount,
+                                           String fixedFeeAmount) throws Exception {
+    String request = """ 
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "startDate": "2026-12-10",
+          "netProfitCosts": 239.06,
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true,
+          "caseConcludedDate": "2027-01-01"
+        }
+        """.formatted(feeCode);
+
+    // escapeCaseFlag is omitted: Inquest escape-case handling is not yet implemented
+    // (tracked in a separate ticket), so escape support is disabled for these fee codes.
+    postAndExpect(request, """
+        {
+          "feeCode": "%s",
+          "schemeId": "%s",
+          "claimId": "claim_123",
+          "isInquest": true,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -493,6 +563,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "feeCode": "INVB1",
           "claimId": "claim_123",
           "schemeId": "POL_FS2016",
+          "isInquest": false,
           "feeCalculation": {
           "totalAmount": 34.44,
           "vatIndicator": true,
@@ -530,6 +601,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "claimId": "claim_123",
           "schemeId": "%s",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": false,
@@ -582,6 +654,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "%s",
           "claimId": "claim_123",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -626,6 +699,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "feeCode": "%s",
           "schemeId": "%s",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -673,6 +747,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "feeCode": "%s",
           "schemeId": "%s",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,

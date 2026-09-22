@@ -23,6 +23,8 @@ import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedStatic;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.justice.laa.fee.scheme.config.FeatureFlagsConfig;
+import uk.gov.justice.laa.fee.scheme.config.features.Feature;
 import uk.gov.justice.laa.fee.scheme.logback.MdcLoggingInterceptor;
 import uk.gov.justice.laa.fee.scheme.model.BoltOnType;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -117,6 +120,43 @@ class FeeCalculationControllerTest {
     }
   }
 
+  @ParameterizedTest
+  @ValueSource(strings = {"INQ", "COMINQ", "CAPAINQ"})
+  void getFeeCalculation_whenInquestFeeCodeAndFeatureEnabled_shouldReturnOk(String feeCode) throws Exception {
+    feeCalculationRequest.setFeeCode(feeCode);
+    when(featureFlagsConfig.isEnabled(Feature.INQUEST)).thenReturn(true);
+
+    FeeCalculationResponse responseDto = FeeCalculationResponse.builder()
+        .feeCode(feeCode)
+        .feeCalculation(FeeCalculation.builder().totalAmount(1500.12).build())
+        .build();
+
+    when(feeCalculationService.calculateFee(feeCalculationRequest)).thenReturn(responseDto);
+
+    mockMvc.perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(feeCalculationRequest)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.feeCode").value(feeCode))
+        .andExpect(jsonPath("$.feeCalculation.totalAmount").value(1500));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"INQ", "COMINQ", "CAPAINQ"})
+  void getFeeCalculation_whenInquestFeeCodeAndFeatureDisabled_shouldReturnValidationMessage(String feeCode) throws Exception {
+    feeCalculationRequest.setFeeCode(feeCode);
+    when(featureFlagsConfig.isEnabled(Feature.INQUEST)).thenReturn(false);
+
+    mockMvc.perform(post("/api/v1/fee-calculation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(feeCalculationRequest)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.feeCode").value(feeCode))
+        .andExpect(jsonPath("$.validationMessages[0].code").value("ERRALL1"))
+        .andExpect(jsonPath("$.validationMessages[0].type").value("ERROR"))
+        .andExpect(jsonPath("$.validationMessages[0].message").value("Enter a valid Fee Code."));
+  }
+
   @Test
   void getFeeCalculation_whenGivenPoliceStationIds() throws Exception {
 
@@ -176,7 +216,7 @@ class FeeCalculationControllerTest {
   @Test
   void logFeeRequest_shouldLogWarning_whenSerializationFails() throws Exception {
 
-    FeeCalculationController controller = new FeeCalculationController(feeCalculationService);
+    FeeCalculationController controller = new FeeCalculationController(feeCalculationService, featureFlagsConfig);
     ObjectMapper failingMapper = mock(ObjectMapper.class);
     when(failingMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("Serialization failed") {});
 

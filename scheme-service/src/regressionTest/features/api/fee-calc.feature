@@ -1244,3 +1244,16 @@ Feature: Fee Calculation API
       | PROP2   | 2016-04-01 | 020416/004       | 5              | 10             | 2               | No           | 20                    | 15.5                  | 41.00|                         |
       | PROP2   | 2022-09-30 | 290922/005       | 10             | 0              | 3               | Yes          | 20                    | 10.5                  | 39.60|                         |
       | PROP2   | 2022-09-30 | 161224/006       | 3              | 2              | 0               | No           | 20                    | 10.5                  | 29.00|                         |
+
+    @inquest
+    Examples: Inquest
+      | feeCode   | startDate  | caseConcludedDate | netProfitCosts | netCostOfCounsel | vatIndicator | netDisbursementAmount | disbursementVatAmount | expectedTotal |
+      | COMINQ    | 2026-12-09 | 2026-12-09        |                |                  | Yes          | 20                    | 2.00                  | 308.80        |
+      | CAPAINQ   | 2026-12-09 | 2026-12-09        |                |                  | No           | 20                    | 2.00                  | 261.00        |
+      | CLININQ   | 2026-12-09 | 2026-12-09        |                |                  | Yes          | 20                    | 2.00                  | 308.80        |
+      | DEBTINQ   | 2026-12-09 | 2026-12-09        |                |                  | No           | 20                    | 2.00                  | 261.00        |
+      | HOUSINQ   | 2026-12-09 | 2026-12-09        |                |                  | No           | 20                    | 2.00                  | 261.00        |
+      | INQ       | 2026-12-09 | 2026-12-09        |                |                  | No           | 20                    | 2.00                  | 261.00        |
+      | MSCINQ    | 2026-12-09 | 2026-12-09        |                |                  | No           | 20                    | 2.00                  | 261.00        |
+      | PUBINQ    | 2026-12-09 | 2026-12-09        |                |                  | Yes          | 20                    | 2.00                  | 308.80        |
+      | WFBINQ    | 2026-12-09 | 2026-12-09        |                |                  | No           | 20                    | 2.00                  | 261.00        |

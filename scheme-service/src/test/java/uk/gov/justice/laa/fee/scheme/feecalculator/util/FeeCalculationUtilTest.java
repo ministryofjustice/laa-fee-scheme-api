@@ -27,6 +27,22 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 
 class FeeCalculationUtilTest {
 
+  @ParameterizedTest
+  @CsvSource({
+      "INQ, true",
+      "COMINQ, true",
+      "CAPAINQ, true",
+      "inq, true",
+      "FEE123, false",
+      "FEE124, false",
+      " , false"
+  })
+  void isInquestFeeCode_givenFeeCode_returnsExpectedResult(String feeCode, boolean expectedResult) {
+    boolean result = FeeCalculationUtil.isInquestFeeCode(feeCode == null || feeCode.isBlank() ? null : feeCode);
+
+    assertThat(result).isEqualTo(expectedResult);
+  }
+
   @Test
   void getFeeClaimStartDate_returnsStartDate() {
     FeeCalculationRequest feeDataRequest = FeeCalculationRequest.builder()

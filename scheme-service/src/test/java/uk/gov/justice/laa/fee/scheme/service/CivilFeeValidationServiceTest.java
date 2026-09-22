@@ -114,6 +114,36 @@ class CivilFeeValidationServiceTest {
         .hasMessage("ERRCIV2 - Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.");
   }
 
+  @Test
+  void getValidFeeEntity_whenInquestFeeCodeAndStartDateIsInvalid_shouldThrowException() {
+    // Mirrors getValidFeeEntity_whenCivilFeeCodeAndStartDateIsInvalid_shouldThrowException (DISC) above,
+    // but for the INQUEST category. Real seed data for Inquest fee codes currently only has a single,
+    // non-expiring fee scheme (INQUEST_FS2026, validTo = null), so ERRCIV1 cannot be reproduced end-to-end
+    // via the database today. This unit test proves the shared civil validation logic still correctly
+    // raises ERRCIV1 for INQUEST category fee codes when a claim start date falls outside of a fee
+    // scheme's valid date range.
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("INQ")
+        .startDate(LocalDate.of(2026, 12, 31))
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("INQUEST_FS2026")
+        .validFrom(LocalDate.of(2026, 12, 9))
+        .validTo(LocalDate.of(2026, 12, 20))
+        .build();
+
+    FeeEntity feeEntity = fixedFeeEntity("INQ", CategoryType.INQUEST, feeSchemesEntity);
+
+    List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+    assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE)
+        .hasMessage("ERRCIV1 - Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.");
+  }
+
   @ParameterizedTest
   @CsvSource({
       "IACC, IMMIGRATION_ASYLUM, IMM_ASYLM_FS2020, 2020-04-01, 2013-04-29, ERR_IMM_ASYLUM_BETWEEN_DATE",

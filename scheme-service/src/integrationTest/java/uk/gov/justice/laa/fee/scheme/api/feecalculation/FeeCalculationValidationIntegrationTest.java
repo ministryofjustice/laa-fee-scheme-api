@@ -341,6 +341,45 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "BLAH",
           "claimId": "claim_123",
+          "isInquest": false,
+          "validationMessages": [
+            {
+              "type":"ERROR",
+              "code":"ERRALL1",
+              "message":"Enter a valid Fee Code."
+            }
+          ]
+        }
+        """);
+  }
+
+  @Test
+  void shouldReturnValidationErrorWhenInquestFeeCodeIsInvalid() throws Exception {
+    // Fee codes ending in "INQ" are treated as Inquest fee codes by the feature-flag gate before any
+    // other validation runs. This proves that an unknown/invalid Inquest-shaped fee code (feature flag
+    // enabled, as is the default for this integration test class) still falls through to the normal
+    // "fee code not found" validation (ERRALL1), rather than being misreported as a disabled feature.
+    String request =
+        """
+        {
+          "feeCode": "ZZZINQ",
+          "claimId": "claim_123",
+          "startDate": "2019-09-30",
+          "netProfitCosts": 239.06,
+          "netCostOfCounsel": 79.19,
+          "netDisbursementAmount": 100.21,
+          "disbursementVatAmount": 20.12,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(
+        request,
+        """
+        {
+          "feeCode": "ZZZINQ",
+          "claimId": "claim_123",
+          "isInquest": true,
           "validationMessages": [
             {
               "type":"ERROR",
@@ -374,6 +413,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "DISC",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type":"ERROR",
@@ -405,6 +445,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "INVC",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type":"ERROR",
@@ -436,6 +477,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "INVC",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type":"ERROR",
@@ -466,6 +508,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "INVC",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type":"ERROR",
@@ -496,6 +539,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "INVK",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type":"ERROR",
@@ -534,6 +578,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "%s",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
               {
                   "type": "ERROR",
@@ -572,6 +617,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "%s",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type": "ERROR",
@@ -605,6 +651,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "PROJ5",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type":"ERROR",
@@ -637,6 +684,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "INVB1",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type":"ERROR",
@@ -668,6 +716,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "FPB010",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type": "ERROR",
@@ -700,6 +749,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "MDAS2B",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type": "ERROR",
@@ -735,6 +785,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "FPB010",
           "claimId": "claim_123",
           "schemeId": "FAM_NON_LON_FS2013",
+          "isInquest": false,
           "validationMessages": [
             {
               "type": "WARNING",
@@ -813,6 +864,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             }
           ],
           "escapeCaseFlag": %s,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -864,6 +916,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "IA100",
           "schemeId": "IMM_ASYLM_FS2013",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type": "WARNING",
@@ -911,6 +964,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "IMXL",
           "schemeId": "IMM_ASYLM_FS2013",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type": "WARNING",
@@ -963,6 +1017,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "IAXC",
           "schemeId": "IMM_ASYLM_FS2013",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type": "WARNING",
@@ -1019,6 +1074,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "IACD",
           "schemeId": "IMM_ASYLM_FS2020",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type": "WARNING",
@@ -1085,6 +1141,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "ICASD",
           "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2013",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type": "WARNING",
@@ -1135,6 +1192,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "INVC",
           "schemeId": "POL_FS2016",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
               {
                   "type": "WARNING",
@@ -1183,6 +1241,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "INVA",
           "schemeId": "POL_FS2016",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
               {
                   "type": "WARNING",
@@ -1234,6 +1293,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "ASMS",
           "schemeId": "ASSOC_FS2016",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type": "WARNING",
@@ -1282,6 +1342,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "PROH",
           "schemeId": "AAR_FS2016",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type": "WARNING",
@@ -1356,6 +1417,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             }
           ],
           "escapeCaseFlag": %s,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -1406,6 +1468,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "MHL03",
           "claimId": "claim_123",
           "schemeId": "MHL_FS2013",
+          "isInquest": false,
           "validationMessages": [
               {
                   "type": "WARNING",
@@ -1485,6 +1548,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
             }
           ],
           "escapeCaseFlag": true,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -1531,6 +1595,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "DISC",
           "schemeId": "DISC_FS2013",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type": "WARNING",
@@ -1583,6 +1648,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "MHL03",
           "claimId": "claim_123",
           "schemeId": "MHL_FS2013",
+          "isInquest": false,
           "validationMessages": [
               {
                   "type": "WARNING",
@@ -1611,6 +1677,54 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
                   "boltOnAdjournedHearingCount": 1,
                   "boltOnAdjournedHearingFee": 117.0
               }
+          }
+        }
+        """);
+  }
+
+  @Test
+  void shouldReturnValidationWarningForInquestDisbursementVatLimit() throws Exception {
+    // Mirrors shouldReturnValidationWarningForDisbursementVatLimit above (MHL03) but for an Inquest
+    // fee code. Escape-case handling is not yet implemented for Inquest fee codes (separate ticket),
+    // so escapeCaseFlag is omitted and only the disbursement VAT cap warning (WARALL1) is triggered.
+    String request = """ 
+        {
+          "feeCode": "INQ",
+          "claimId": "claim_123",
+          "startDate": "2026-12-10",
+          "caseConcludedDate": "2027-01-01",
+          "netProfitCosts": 239.06,
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 80.00,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(
+        request,
+        """
+        {
+          "feeCode": "INQ",
+          "claimId": "claim_123",
+          "schemeId": "INQUEST_FS2026",
+          "isInquest": true,
+          "validationMessages": [
+              {
+                  "type": "WARNING",
+                  "code": "WARALL1",
+                  "message": "Value entered exceeds the VAT threshold for the net disbursement amount claimed. Costs have been capped at the maximum VAT amount claimable."
+              }
+          ],
+          "feeCalculation": {
+              "totalAmount": 434.86,
+              "vatIndicator": true,
+              "vatRateApplied": 20.0,
+              "calculatedVatAmount": 47.8,
+              "disbursementAmount": 123.38,
+              "requestedNetDisbursementAmount": 123.38,
+              "disbursementVatAmount": 24.68,
+              "requestedDisbursementVatAmount": 80.0,
+              "fixedFeeAmount": 239.0
           }
         }
         """);

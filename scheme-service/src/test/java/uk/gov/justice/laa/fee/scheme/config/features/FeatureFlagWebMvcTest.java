@@ -24,6 +24,7 @@ import uk.gov.justice.laa.fee.scheme.exception.FeatureNotImplementedRuntimeExcep
     FeatureFlagWebMvcTest.MethodController.class, FeatureFlagWebMvcTest.ClassController.class
 }, properties = {
     "feature-flags.is-feature-enabled=false",
+    "feature-flags.is-inquest-feature-enabled=false",
     "feature-flags.request-overrides-enabled=true"
 })
 @AutoConfigureMockMvc(addFilters = false)
