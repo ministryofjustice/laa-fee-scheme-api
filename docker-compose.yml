@@ -14,7 +14,7 @@ services:
         - SENTRY_DSN=
         - IS_FEATURE_ENABLED=true
         - IS_INQUEST_FEATURE_ENABLED=true
-        - FEATURE_FLAG_REQUEST_OVERRIDES_ENABLED=false
+        - FEATURE_FLAG_REQUEST_OVERRIDES_ENABLED=true
     depends_on:
       postgres:
         condition: service_started
