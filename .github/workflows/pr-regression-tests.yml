@@ -49,6 +49,7 @@ jobs:
             -e SPRING_DATASOURCE_USERNAME=test \
             -e SPRING_DATASOURCE_PASSWORD=test \
             -e DATA_CLAIMS_EVENT_SERVICE_TOKEN=token1234 \
+            -e FEATURE_FLAG_REQUEST_OVERRIDES_ENABLED=true \
             -e SENTRY_DSN="" \
             -p 8085:8085 -p 8185:8185 \
             laa-fee-scheme-api:regression
