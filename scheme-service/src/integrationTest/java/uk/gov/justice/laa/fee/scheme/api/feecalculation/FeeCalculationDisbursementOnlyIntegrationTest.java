@@ -26,6 +26,7 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
           "feeCode": "EDUDIS",
           "schemeId": "EDU_DISB_FS2013",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": 148.05,
             "disbursementAmount": 123.38,
@@ -56,6 +57,7 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
           "feeCode": "ICASD",
           "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2013",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": 66.42,
             "disbursementAmount": 55.35,
@@ -86,6 +88,7 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
           "feeCode": "MHLDIS",
           "schemeId": "MHL_DISB_FS2013",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": 1350.0,
             "disbursementAmount": 1200.0,
@@ -116,6 +119,7 @@ class FeeCalculationDisbursementOnlyIntegrationTest extends BaseFeeCalculationIn
           "feeCode": "ICASD",
           "schemeId": "IMM_ASYLM_DISBURSEMENT_FS2013",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type": "WARNING",

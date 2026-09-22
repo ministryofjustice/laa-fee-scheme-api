@@ -94,14 +94,29 @@ class FeeDetailsControllerTest {
   }
 
   @Test
+  void getFeeDetailsV1RejectsInquestFeeCodeWhenInquestFeatureDisabled() throws Exception {
+    when(featureFlagsConfig.isEnabled(Feature.INQUEST)).thenReturn(false);
+
+    mockMvc.perform(get("/api/v1/fee-details/COMINQ")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.validationMessages[0].code").value("ERRALL1"))
+        .andExpect(jsonPath("$.validationMessages[0].type").value("ERROR"))
+        .andExpect(jsonPath("$.validationMessages[0].message").value("Enter a valid Fee Code."));
+
+    verifyNoInteractions(feeDetailsService);
+  }
+
+  @Test
   void getFeeDetailsV2RejectsInquestFeeCodeWhenInquestFeatureDisabled() throws Exception {
     when(featureFlagsConfig.isEnabled(Feature.INQUEST)).thenReturn(false);
 
     mockMvc.perform(get("/api/v2/fee-details/COMINQ")
             .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.status").value(404))
-        .andExpect(jsonPath("$.message").value("Feature is not available: INQUEST"));
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.validationMessages[0].code").value("ERRALL1"))
+        .andExpect(jsonPath("$.validationMessages[0].type").value("ERROR"))
+        .andExpect(jsonPath("$.validationMessages[0].message").value("Enter a valid Fee Code."));
 
     verifyNoInteractions(feeDetailsService);
   }

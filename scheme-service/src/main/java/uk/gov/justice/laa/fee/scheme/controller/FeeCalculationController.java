@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.controller;
 
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.laa.fee.scheme.api.FeeCalculationApi;
 import uk.gov.justice.laa.fee.scheme.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.fee.scheme.config.features.Feature;
-import uk.gov.justice.laa.fee.scheme.exception.FeatureNotEnabledException;
+import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
+import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.logback.MdcLoggingInterceptor;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
@@ -36,7 +39,7 @@ public class FeeCalculationController implements FeeCalculationApi {
   public ResponseEntity<FeeCalculationResponse> getFeeCalculation(FeeCalculationRequest feeCalculationRequest) {
     MdcLoggingInterceptor.populateMdc(feeCalculationRequest);
     logFeeRequest(feeCalculationRequest);
-    rejectDisabledInquestFeeCode(feeCalculationRequest.getFeeCode());
+    rejectDisabledInquestFeeCode(feeCalculationRequest);
 
     log.info("Getting fee calculation");
     FeeCalculationResponse feeCalculationResponse = feeCalculationService.calculateFee(feeCalculationRequest);
@@ -45,9 +48,9 @@ public class FeeCalculationController implements FeeCalculationApi {
     return ResponseEntity.ok(feeCalculationResponse);
   }
 
-  private void rejectDisabledInquestFeeCode(String feeCode) {
-    if (FeeCalculationUtil.isInquestFeeCode(feeCode) && !featureFlagsConfig.isEnabled(Feature.INQUEST)) {
-      throw new FeatureNotEnabledException(Feature.INQUEST);
+  private void rejectDisabledInquestFeeCode(FeeCalculationRequest feeCalculationRequest) {
+    if (FeeCalculationUtil.isInquestFeeCode(feeCalculationRequest.getFeeCode()) && !featureFlagsConfig.isEnabled(Feature.INQUEST)) {
+      throw new ValidationException(ERR_ALL_FEE_CODE, new FeeContext(feeCalculationRequest));
     }
   }
 

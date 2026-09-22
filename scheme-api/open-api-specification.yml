@@ -306,6 +306,10 @@ components:
         escapeCaseFlag:
           type: boolean
           description: "For hourly fee code, If escape threshold has been passed, will be true, false otherwise."
+        isInquest:
+          type: boolean
+          default: false
+          description: "Indicates whether the fee code is an Inquest fee code."
         feeCalculation:
           $ref: "#/components/schemas/FeeCalculation"
 

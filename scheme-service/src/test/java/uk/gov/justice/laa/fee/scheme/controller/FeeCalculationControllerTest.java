@@ -143,15 +143,18 @@ class FeeCalculationControllerTest {
 
   @ParameterizedTest
   @ValueSource(strings = {"INQ", "COMINQ", "CAPAINQ"})
-  void getFeeCalculation_whenInquestFeeCodeAndFeatureDisabled_shouldReturnNotFound(String feeCode) throws Exception {
+  void getFeeCalculation_whenInquestFeeCodeAndFeatureDisabled_shouldReturnValidationMessage(String feeCode) throws Exception {
     feeCalculationRequest.setFeeCode(feeCode);
     when(featureFlagsConfig.isEnabled(Feature.INQUEST)).thenReturn(false);
 
     mockMvc.perform(post("/api/v1/fee-calculation")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(feeCalculationRequest)))
-        .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.message").value("Feature is not available: INQUEST"));
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.feeCode").value(feeCode))
+        .andExpect(jsonPath("$.validationMessages[0].code").value("ERRALL1"))
+        .andExpect(jsonPath("$.validationMessages[0].type").value("ERROR"))
+        .andExpect(jsonPath("$.validationMessages[0].message").value("Enter a valid Fee Code."));
   }
 
   @Test

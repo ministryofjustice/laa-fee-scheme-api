@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.feecalculator.FeeCalculator;
+import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
@@ -82,6 +83,7 @@ public abstract class StandardFixedFeeCalculator implements FeeCalculator {
         .schemeId(feeEntity.getFeeScheme().getSchemeCode())
         .claimId(feeCalculationRequest.getClaimId())
         .escapeCaseFlag(canEscape ? isEscaped : null)
+        .isInquest(FeeCalculationUtil.isInquestFeeCode(feeCalculationRequest.getFeeCode()))
         .validationMessages(validationMessages)
         .feeCalculation(feeCalculation)
         .build();

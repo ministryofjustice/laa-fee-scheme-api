@@ -134,12 +134,11 @@ class FeeDetailsIntegrationTest extends PostgresContainerTestBase {
       nestedMockMvc
           .perform(get(API_V_2_FEE_DETAILS + INQUEST_FEE_CODE)
               .header(HttpHeaders.AUTHORIZATION, INT_TEST_TOKEN))
-          .andExpect(status().isNotFound())
+          .andExpect(status().isOk())
           .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-          .andExpect(jsonPath("$.status").value(404))
-          .andExpect(jsonPath("$.error").value("Not Found"))
-          .andExpect(jsonPath("$.message").value("Feature is not available: INQUEST"))
-          .andExpect(jsonPath("$.timestamp").exists());
+          .andExpect(jsonPath("$.validationMessages[0].code").value("ERRALL1"))
+          .andExpect(jsonPath("$.validationMessages[0].type").value("ERROR"))
+          .andExpect(jsonPath("$.validationMessages[0].message").value("Enter a valid Fee Code."));
     }
 
     @Test

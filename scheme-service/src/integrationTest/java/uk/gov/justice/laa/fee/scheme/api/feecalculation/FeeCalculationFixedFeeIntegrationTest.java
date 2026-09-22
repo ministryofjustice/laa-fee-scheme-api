@@ -34,6 +34,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "ASSOC_FS2016",
           "claimId": "claim_123",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
            "totalAmount": 161.22,
            "vatIndicator": true,
@@ -80,6 +81,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "feeCode": "%s",
           "schemeId": "%s",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -124,6 +126,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "feeCode": "%s",
           "schemeId": "%s",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -157,6 +160,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "claimId": "claim_123",
           "schemeId": "FAM_LON_FS2013",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": 306.45,
             "vatIndicator": true,
@@ -199,6 +203,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "%s",
           "claimId": "claim_123",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -221,6 +226,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "%s",
           "claimId": "claim_123",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -281,6 +287,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "feeCode": "IACA",
           "schemeId": "IMM_ASYLM_FS2020",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type": "WARNING",
@@ -331,6 +338,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
          "feeCode": "MDAS2B",
           "schemeId": "MED_FS2013",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": 321.85,
             "vatIndicator": true,
@@ -369,6 +377,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "MHL_FS2013",
           "claimId": "claim_123",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": 1081.45,
             "vatIndicator": true,
@@ -410,6 +419,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "EDU_FS2013",
           "claimId": "claim_123",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": 474.45,
             "vatIndicator": true,
@@ -461,6 +471,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "%s",
           "claimId": "claim_123",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -517,6 +528,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "feeCode": "%s",
           "schemeId": "%s",
           "claimId": "claim_123",
+          "isInquest": true,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -551,6 +563,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "feeCode": "INVB1",
           "claimId": "claim_123",
           "schemeId": "POL_FS2016",
+          "isInquest": false,
           "feeCalculation": {
           "totalAmount": 34.44,
           "vatIndicator": true,
@@ -588,6 +601,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "claimId": "claim_123",
           "schemeId": "%s",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": false,
@@ -640,6 +654,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "%s",
           "claimId": "claim_123",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -684,6 +699,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "feeCode": "%s",
           "schemeId": "%s",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,
@@ -731,6 +747,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "feeCode": "%s",
           "schemeId": "%s",
           "claimId": "claim_123",
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,

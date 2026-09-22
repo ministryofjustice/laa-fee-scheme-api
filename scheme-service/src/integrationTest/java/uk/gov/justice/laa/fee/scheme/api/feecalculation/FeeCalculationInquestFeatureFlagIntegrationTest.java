@@ -54,12 +54,13 @@ class FeeCalculationInquestFeatureFlagIntegrationTest extends PostgresContainerT
             .contentType(MediaType.APPLICATION_JSON)
             .content(request)
             .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isNotFound())
+        .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.status").value(404))
-        .andExpect(jsonPath("$.error").value("Not Found"))
-        .andExpect(jsonPath("$.message").value("Feature is not available: INQUEST"))
-        .andExpect(jsonPath("$.timestamp").exists());
+        .andExpect(jsonPath("$.feeCode").value(feeCode))
+        .andExpect(jsonPath("$.isInquest").value(true))
+        .andExpect(jsonPath("$.validationMessages[0].type").value("ERROR"))
+        .andExpect(jsonPath("$.validationMessages[0].code").value("ERRALL1"))
+        .andExpect(jsonPath("$.validationMessages[0].message").value("Enter a valid Fee Code."));
   }
 
   @Test
@@ -87,6 +88,7 @@ class FeeCalculationInquestFeatureFlagIntegrationTest extends PostgresContainerT
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.feeCode").value("CAPA"))
         .andExpect(jsonPath("$.schemeId").value("CAPA_FS2013"))
+        .andExpect(jsonPath("$.isInquest").value(false))
         .andExpect(jsonPath("$.feeCalculation.totalAmount").value(434.85));
   }
 }

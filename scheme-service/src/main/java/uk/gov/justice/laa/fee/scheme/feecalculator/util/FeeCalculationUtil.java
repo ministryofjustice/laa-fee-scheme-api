@@ -250,6 +250,7 @@ public final class FeeCalculationUtil {
         .schemeId(schemeId)
         .claimId(feeCalculationRequest.getClaimId())
         .escapeCaseFlag(escapeCaseFlag)
+        .isInquest(isInquestFeeCode(feeCalculationRequest.getFeeCode()))
         .validationMessages(validationMessages)
         .feeCalculation(feeCalculation)
         .build();

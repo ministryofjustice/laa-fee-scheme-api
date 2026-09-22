@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.controller;
 
+import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_ALL_FEE_CODE;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -7,7 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.laa.fee.scheme.api.FeeDetailsApi;
 import uk.gov.justice.laa.fee.scheme.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.fee.scheme.config.features.Feature;
-import uk.gov.justice.laa.fee.scheme.exception.FeatureNotEnabledException;
+import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
+import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponseV1;
 import uk.gov.justice.laa.fee.scheme.model.FeeDetailsResponseV2;
@@ -57,7 +60,7 @@ public class FeeDetailsController implements FeeDetailsApi {
    */
   private void rejectDisabledInquestFeeCode(String feeCode) {
     if (FeeCalculationUtil.isInquestFeeCode(feeCode) && !featureFlagsConfig.isEnabled(Feature.INQUEST)) {
-      throw new FeatureNotEnabledException(Feature.INQUEST);
+      throw new ValidationException(ERR_ALL_FEE_CODE, new FeeContext(feeCode, null, null));
     }
   }
 }
