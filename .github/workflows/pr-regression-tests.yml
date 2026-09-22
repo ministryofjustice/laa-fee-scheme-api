@@ -71,6 +71,7 @@ jobs:
           FSP_API_BASE_URL=http://localhost:8085
           APP_HEALTHCHECK_URL=http://localhost:8185/actuator/health
           FSP_API_TOKEN=token1234
+          IS_INQUEST_FEATURE_ENABLED=true
           EOF
 
       - name: Run regression tests

@@ -629,7 +629,7 @@ Feature: Error and warning API
       | IA100   | 2013-04-01 | 140.01         |                                  | Yes          |                       | 10.0                  | WARNING  | WARIA8  | Costs have been capped. Costs for the Fee Code used cannot exceed the specified limit. |
       | IA100   | 2013-04-02 | 150.01         |                                  | No           |                       | 10.5                  | WARNING  | WARIA8  | Costs have been capped. Costs for the Fee Code used cannot exceed the specified limit. |
 
-    @warall1
+    @warall1 @inquest
     Examples: WARALL1 - Value entered exceeds the VAT threshold for the net disbursement amount claimed. Costs have been capped at the maximum VAT amount claimable.
       | feeCode   | startDate  | caseConcludedDate | netProfitCosts | netCostOfCounsel | vatIndicator | netDisbursementAmount | disbursementVatAmount  | immigrationPriorAuthorityNumber | expectedTotal | type    | code    | message                                                                                                                                      |
       | COMINQ    | 2026-12-09 | 2026-12-09        |                |                  | Yes          | 20                    | 20.00                  |                                 | 310.80        | WARNING | WARALL1 | Value entered exceeds the VAT threshold for the net disbursement amount claimed. Costs have been capped at the maximum VAT amount claimable. |
