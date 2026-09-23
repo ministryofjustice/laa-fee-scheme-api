@@ -629,6 +629,43 @@ Feature: Error and warning API
       | IA100   | 2013-04-01 | 140.01         |                                  | Yes          |                       | 10.0                  | WARNING  | WARIA8  | Costs have been capped. Costs for the Fee Code used cannot exceed the specified limit. |
       | IA100   | 2013-04-02 | 150.01         |                                  | No           |                       | 10.5                  | WARNING  | WARIA8  | Costs have been capped. Costs for the Fee Code used cannot exceed the specified limit. |
 
+
+  @api @inquest_override
+  Scenario Outline: Inquest warning codes with feature flag override enabled
+    Given I have an initialized API client
+    And a fee calculation payload with:
+      | feeCode                           | <feeCode>                          |
+      | startDate                         | <startDate>                        |
+      | netDisbursementAmount             | <netDisbursementAmount>            |
+      | disbursementVatAmount             | <disbursementVatAmount>            |
+      | vatIndicator                      | <vatIndicator>                     |
+      | numberOfMediationSessions         | <numberOfMediationSessions>        |
+      | boltOnHomeOfficeInterview         | <boltOnHomeOfficeInterview>        |
+      | boltOnAdjournedHearing            | <boltOnAdjournedHearing>           |
+      | boltOnCmrhOral                    | <boltOnCmrhOral>                   |
+      | boltOnCmrhTelephone               | <boltOnCmrhTelephone>              |
+      | boltOnSubstantiveHearing          | <boltOnSubstantiveHearing>         |
+      | netProfitCosts                    | <netProfitCosts>                   |
+      | netCostOfCounsel                  | <netCostOfCounsel>                 |
+      | travelAndWaitingCosts             | <travelAndWaitingCosts>            |
+      | uniqueFileNumber                  | <uniqueFileNumber>                 |
+      | policeStationId                   | <policeStationId>                  |
+      | policeStationSchemeId             | <policeStationSchemeId>            |
+      | representationOrderDate           | <representationOrderDate>          |
+      | netTravelCosts                    | <netTravelCosts>                   |
+      | netWaitingCosts                   | <netWaitingCosts>                  |
+      | londonRate                        | <londonRate>                       |
+      | immigrationPriorAuthorityNumber   | <immigrationPriorAuthorityNumber>  |
+      | detentionTravelAndWaitingCosts    | <detentionTravelAndWaitingCosts>   |
+      | jrFormFilling                     | <jrFormFilling>                    |
+      | caseConcludedDate                 | <caseConcludedDate>                |
+
+    When I POST "/api/v1/fee-calculation?featureFlag=INQUEST:true" with the payload
+    Then the response status should be 200
+    And the JSON path "validationMessages.0.type" should equal "<type>"
+    And the JSON path "validationMessages.0.code" should equal "<code>"
+    And the JSON path "validationMessages.0.message" should equal "<message>"
+
     @warall1
     Examples: WARALL1 - Value entered exceeds the VAT threshold for the net disbursement amount claimed. Costs have been capped at the maximum VAT amount claimable.
       | feeCode   | startDate  | caseConcludedDate | netProfitCosts | netCostOfCounsel | vatIndicator | netDisbursementAmount | disbursementVatAmount  | immigrationPriorAuthorityNumber | expectedTotal | type    | code    | message                                                                                                                                      |
@@ -641,3 +678,4 @@ Feature: Error and warning API
       | MSCINQ    | 2026-12-09 | 2026-12-09        |                |                  | No           | 20                    | 20.00                  |                                 | 263.00        | WARNING | WARALL1 | Value entered exceeds the VAT threshold for the net disbursement amount claimed. Costs have been capped at the maximum VAT amount claimable. |
       | PUBINQ    | 2026-12-09 | 2026-12-09        |                |                  | Yes          | 20                    | 20.00                  |                                 | 310.80        | WARNING | WARALL1 | Value entered exceeds the VAT threshold for the net disbursement amount claimed. Costs have been capped at the maximum VAT amount claimable. |
       | WFBINQ    | 2026-12-09 | 2026-12-09        |                |                  | No           | 20                    | 20.00                  |                                 | 263.00        | WARNING | WARALL1 | Value entered exceeds the VAT threshold for the net disbursement amount claimed. Costs have been capped at the maximum VAT amount claimable. |
+

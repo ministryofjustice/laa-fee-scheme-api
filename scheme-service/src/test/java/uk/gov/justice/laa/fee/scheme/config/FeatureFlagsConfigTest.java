@@ -103,8 +103,8 @@ class FeatureFlagsConfigTest {
         .run(context -> {
           assertThat(context).hasNotFailed();
           FeatureFlagsConfig flags = context.getBean(FeatureFlagsConfig.class);
-          assertThat(flags.getIsFeatureEnabled()).isTrue();
-          assertThat(flags.getIsInquestFeatureEnabled()).isTrue();
+          assertThat(flags.getIsFeatureEnabled()).isFalse();
+          assertThat(flags.getIsInquestFeatureEnabled()).isFalse();
           assertThat(flags.isRequestOverridesEnabled()).isFalse();
         });
   }
