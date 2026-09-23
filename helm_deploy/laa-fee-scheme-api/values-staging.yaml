@@ -41,7 +41,7 @@ application:
 
 featureFlags:
   isFeatureEnabled: false
-  isInquestFeatureEnabled: false
+  isInquestFeatureEnabled: true
   requestOverridesEnabled: true
 
 prometheus:

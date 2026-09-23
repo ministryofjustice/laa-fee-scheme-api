@@ -6,7 +6,7 @@ plugins {
 }
 
 def versions = [
-        sentry 						: '8.56.0'
+        sentry 						: '8.57.0'
 ]
 
 test {
@@ -110,8 +110,8 @@ dependencies {
 
     implementation 'uk.gov.justice.service.laa:laa-spring-boot-starter-auth'
 
-    implementation 'org.flywaydb:flyway-core:13.6.0'
-    implementation 'org.flywaydb:flyway-database-postgresql:13.6.0'
+    implementation 'org.flywaydb:flyway-core:13.7.0'
+    implementation 'org.flywaydb:flyway-database-postgresql:13.7.0'
 
     implementation 'io.micrometer:micrometer-registry-prometheus:1.17.1'
 

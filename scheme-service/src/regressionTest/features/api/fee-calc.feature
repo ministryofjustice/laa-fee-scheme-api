@@ -1245,6 +1245,41 @@ Feature: Fee Calculation API
       | PROP2   | 2022-09-30 | 290922/005       | 10             | 0              | 3               | Yes          | 20                    | 10.5                  | 39.60|                         |
       | PROP2   | 2022-09-30 | 161224/006       | 3              | 2              | 0               | No           | 20                    | 10.5                  | 29.00|                         |
 
+
+  @api @inquest_override
+  Scenario Outline: Calculate inquest fee total with feature flag override enabled
+    Given I have an initialized API client
+    And a fee calculation payload with:
+      | feeCode                         | <feeCode>                          |
+      | startDate                       | <startDate>                        |
+      | netDisbursementAmount           | <netDisbursementAmount>            |
+      | disbursementVatAmount           | <disbursementVatAmount>            |
+      | vatIndicator                    | <vatIndicator>                     |
+      | numberOfMediationSessions       | <numberOfMediationSessions>        |
+      | boltOnHomeOfficeInterview       | <boltOnHomeOfficeInterview>        |
+      | boltOnAdjournedHearing          | <boltOnAdjournedHearing>           |
+      | boltOnCmrhOral                  | <boltOnCmrhOral>                   |
+      | boltOnCmrhTelephone             | <boltOnCmrhTelephone>              |
+      | boltOnSubstantiveHearing        | <boltOnSubstantiveHearing>         |
+      | netProfitCosts                  | <netProfitCosts>                   |
+      | netCostOfCounsel                | <netCostOfCounsel>                 |
+      | travelAndWaitingCosts           | <travelAndWaitingCosts>            |
+      | uniqueFileNumber                | <uniqueFileNumber>                 |
+      | policeStationId                 | <policeStationId>                  |
+      | policeStationSchemeId           | <policeStationSchemeId>            |
+      | representationOrderDate         | <representationOrderDate>          |
+      | netTravelCosts                  | <netTravelCosts>                   |
+      | netWaitingCosts                 | <netWaitingCosts>                  |
+      | londonRate                      | <londonRate>                       |
+      | immigrationPriorAuthorityNumber | <immigrationPriorAuthorityNumber>  |
+      | detentionTravelAndWaitingCosts  | <detentionTravelAndWaitingCosts>   |
+      | jrFormFilling                   | <jrFormFilling>                    |
+      | caseConcludedDate               | <caseConcludedDate>                |
+
+    When I POST "/api/v1/fee-calculation?featureFlag=INQUEST:true" with the payload
+    Then the response status should be 200
+    And the JSON path "feeCalculation.totalAmount" should equal number <expectedTotal>
+
     @inquest
     Examples: Inquest
       | feeCode   | startDate  | caseConcludedDate | netProfitCosts | netCostOfCounsel | vatIndicator | netDisbursementAmount | disbursementVatAmount | expectedTotal |
