@@ -42,4 +42,20 @@ ignore:
       - '*':
         reason: no fix available, not exploitable
         expires: 2099-01-01T00:00:00.000Z
+  SNYK-JAVA-COMFASTERXMLJACKSONCORE-20059179:
+      - '*':
+        reason: no fix available, not exploitable
+        expires: 2099-01-01T00:00:00.000Z
+  SNYK-JAVA-COMFASTERXMLJACKSONCORE-20059683:
+      - '*':
+        reason: no fix available, not exploitable
+        expires: 2099-01-01T00:00:00.000Z
+  SNYK-JAVA-TOOLSJACKSONCORE-20059180:
+      - '*':
+        reason: no fix available, not exploitable
+        expires: 2099-01-01T00:00:00.000Z
+  SNYK-JAVA-TOOLSJACKSONCORE-20059682:
+      - '*':
+        reason: no fix available; not exploitable
+        expires: 2099-01-01T00:00:00.000Z
 patch: {}
