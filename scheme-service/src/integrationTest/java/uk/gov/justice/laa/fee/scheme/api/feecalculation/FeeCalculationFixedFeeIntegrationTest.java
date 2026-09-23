@@ -432,6 +432,7 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           "schemeId": "MHL_FS2024",
           "claimId": "claim_123",
           "escapeCaseFlag": false,
+          "isInquest": false,
           "feeCalculation": {
             "totalAmount": %s,
             "vatIndicator": true,

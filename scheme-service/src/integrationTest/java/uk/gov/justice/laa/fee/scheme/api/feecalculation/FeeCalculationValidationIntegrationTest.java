@@ -451,6 +451,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         {
           "feeCode": "%s",
           "claimId": "claim_123",
+          "isInquest": false,
           "validationMessages": [
             {
               "type":"ERROR",
