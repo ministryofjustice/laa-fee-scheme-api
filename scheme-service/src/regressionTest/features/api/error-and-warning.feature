@@ -626,7 +626,7 @@ Feature: Error and warning API
     @waria8
     Examples: IA100 Dec 2025 uplift change
       | feeCode | startDate  | netProfitCosts | immigrationPriorAuthorityNumber  | vatIndicator | netDisbursementAmount | disbursementVatAmount | type     | code    | message                                                                                |
-      | IA100   | 2013-04-01 | 140.01         |                                  | Yes          |                       | 10.0                  | WARNING  | WARIA8  | Costs have been capped. Costs for the Fee Code used cannot exceed the specified limit. |
+      | IA100   | 2013-04-01 | 140.01         | priorAuth                        | Yes          |                       | 10.0                  | WARNING  | WARIA8  | Costs have been capped. Costs for the Fee Code used cannot exceed the specified limit. |
       | IA100   | 2013-04-02 | 150.01         |                                  | No           |                       | 10.5                  | WARNING  | WARIA8  | Costs have been capped. Costs for the Fee Code used cannot exceed the specified limit. |
 
     @warall1

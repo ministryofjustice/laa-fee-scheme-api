@@ -904,6 +904,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "netProfitCosts": 1160.89,
           "netDisbursementAmount": 825.70,
           "disbursementVatAmount": 25.14,
+          "immigrationPriorAuthorityNumber": "priorAuth",
           "vatIndicator": true,
           "caseConcludedDate": "2026-02-01"
         }

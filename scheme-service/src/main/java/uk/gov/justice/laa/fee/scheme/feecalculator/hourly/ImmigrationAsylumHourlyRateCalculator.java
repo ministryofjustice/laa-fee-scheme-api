@@ -121,8 +121,9 @@ public class ImmigrationAsylumHourlyRateCalculator implements FeeCalculator {
 
     if (FEE_CODE_IA100.equals(feeCode)) {
       // Check total limit
+      // IA100 must always cap at the total limit, even when prior authority is supplied.
       LimitContext totalLimitContext = new LimitContext(TOTAL, feeEntity.getTotalLimit(),
-          immigrationPriorAuthorityNumber, WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP);
+          null, WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP);
       feeTotal = checkLimitAndCapIfExceeded(feeTotal, totalLimitContext, validationMessages);
     }
 

@@ -252,6 +252,52 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
         """.formatted(feeCode, feeScheme));
   }
 
+  @Test
+  void shouldGetImmigrationAndAsylumHourlyRateLegalHelpIa100FeeCalculationWithPriorAuthority() throws Exception {
+    String request = """
+        {
+          "feeCode": "IA100",
+          "claimId": "claim_123",
+          "startDate": "2025-12-22",
+          "netProfitCosts": 65.21,
+          "netDisbursementAmount": 55.60,
+          "disbursementVatAmount": 11.12,
+          "immigrationPriorAuthorityNumber": "priorAuth",
+          "vatIndicator": true,
+          "caseConcludedDate": "2026-02-01"
+        }
+        """;
+
+    postAndExpect(request, """
+        {
+          "feeCode": "IA100",
+          "schemeId": "IMM_ASYLM_FS2025",
+          "claimId": "claim_123",
+          "isInquest": false,
+          "validationMessages": [
+            {
+              "type": "WARNING",
+              "code": "WARIA8",
+              "message": "Costs have been capped. Costs for the Fee Code used cannot exceed the specified limit."
+            }
+          ],
+          "feeCalculation": {
+            "totalAmount": 124.16,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": 13.04,
+            "disbursementAmount": 55.6,
+            "requestedNetDisbursementAmount": 55.6,
+            "disbursementVatAmount": 11.12,
+            "requestedDisbursementVatAmount": 11.12,
+            "hourlyTotalAmount": 100.0,
+            "netProfitCostsAmount": 65.21,
+            "requestedNetProfitCostsAmount": 65.21
+          }
+        }
+        """);
+  }
+
   @ParameterizedTest
   @CsvSource({
       // feeCode, total, vat, hourlyTotal, boltOnTotal, boltOnSubHearing
