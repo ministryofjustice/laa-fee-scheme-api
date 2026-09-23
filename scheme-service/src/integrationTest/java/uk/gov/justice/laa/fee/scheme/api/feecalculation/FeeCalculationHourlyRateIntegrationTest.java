@@ -259,9 +259,9 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "IA100",
           "claimId": "claim_123",
           "startDate": "2025-12-22",
-          "netProfitCosts": 65.21,
-          "netDisbursementAmount": 55.60,
-          "disbursementVatAmount": 11.12,
+          "netProfitCosts": 1160.89,
+          "netDisbursementAmount": 825.70,
+          "disbursementVatAmount": 25.14,
           "immigrationPriorAuthorityNumber": "priorAuth",
           "vatIndicator": true,
           "caseConcludedDate": "2026-02-01"
@@ -282,17 +282,17 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
             }
           ],
           "feeCalculation": {
-            "totalAmount": 124.16,
+            "totalAmount": 407.32,
             "vatIndicator": true,
-            "vatRateApplied": 20.00,
-            "calculatedVatAmount": 13.04,
-            "disbursementAmount": 55.6,
-            "requestedNetDisbursementAmount": 55.6,
-            "disbursementVatAmount": 11.12,
-            "requestedDisbursementVatAmount": 11.12,
-            "hourlyTotalAmount": 100.0,
-            "netProfitCostsAmount": 65.21,
-            "requestedNetProfitCostsAmount": 65.21
+            "vatRateApplied": 20.0,
+            "calculatedVatAmount": 232.18,
+            "disbursementAmount": 825.7,
+            "requestedNetDisbursementAmount": 825.7,
+            "disbursementVatAmount": 25.14,
+            "requestedDisbursementVatAmount": 25.14,
+            "hourlyTotalAmount": 150.0,
+            "netProfitCostsAmount": 1160.89,
+            "requestedNetProfitCostsAmount": 1160.89
           }
         }
         """);
