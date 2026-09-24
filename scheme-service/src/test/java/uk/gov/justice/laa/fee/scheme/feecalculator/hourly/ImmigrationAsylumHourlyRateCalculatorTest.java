@@ -215,12 +215,12 @@ class ImmigrationAsylumHourlyRateCalculatorTest extends BaseFeeCalculatorTest {
         Arguments.of("IA100", true, null, 23.99, 55.60, 11.12,
             95.51, 4.80, 79.59, List.of()),
 
-        // IA100 over total limit with prior auth (No VAT)
+        // IA100 over total limit with prior auth still caps (No VAT)
         Arguments.of("IA100", false, "priorAuth", 65.21, 55.60, 11.12,
-            131.93, 0, 120.81, List.of()),
-        // IA100 over total limit with prior auth (VAT applied)
+            111.12, 0, 100.00, List.of(WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP)),
+        // IA100 over total limit with prior auth still caps (VAT applied)
         Arguments.of("IA100", true, "priorAuth", 65.21, 55.60, 11.12,
-            144.97, 13.04, 120.81, List.of()),
+            124.16, 13.04, 100.00, List.of(WARN_IMM_ASYLM_SUM_OVER_LIMIT_LEGAL_HELP)),
 
         // IA100 over total limit without prior auth (No VAT)
         Arguments.of("IA100", false, null, 65.21, 55.60, 11.12,
