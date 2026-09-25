@@ -1686,8 +1686,8 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
   @Test
   void shouldReturnValidationWarningForInquestDisbursementVatLimit() throws Exception {
     // Mirrors shouldReturnValidationWarningForDisbursementVatLimit above (MHL03) but for an Inquest
-    // fee code. Escape-case handling is not yet implemented for Inquest fee codes (separate ticket),
-    // so escapeCaseFlag is omitted and only the disbursement VAT cap warning (WARALL1) is triggered.
+    // fee code. The claim is below the Inquest escape threshold, so only the disbursement VAT cap
+    // warning (WARALL1) is triggered.
     String request = """ 
         {
           "feeCode": "INQ",
@@ -1708,6 +1708,7 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
           "feeCode": "INQ",
           "claimId": "claim_123",
           "schemeId": "INQUEST_FS2026",
+          "escapeCaseFlag": false,
           "isInquest": true,
           "validationMessages": [
               {
@@ -1725,6 +1726,52 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
               "requestedNetDisbursementAmount": 123.38,
               "disbursementVatAmount": 24.68,
               "requestedDisbursementVatAmount": 80.0,
+              "fixedFeeAmount": 239.0
+          }
+        }
+        """);
+  }
+
+  @Test
+  void shouldReturnValidationWarningForInquestEscapeCase() throws Exception {
+    String request = """
+        {
+          "feeCode": "INQ",
+          "claimId": "claim_123",
+          "startDate": "2026-12-10",
+          "caseConcludedDate": "2027-01-01",
+          "netProfitCosts": 718.00,
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true
+        }
+        """;
+
+    postAndExpect(
+        request,
+        """
+        {
+          "feeCode": "INQ",
+          "claimId": "claim_123",
+          "schemeId": "INQUEST_FS2026",
+          "escapeCaseFlag": true,
+          "isInquest": true,
+          "validationMessages": [
+              {
+                  "type": "WARNING",
+                  "code": "WAROTH12",
+                  "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
+              }
+          ],
+          "feeCalculation": {
+              "totalAmount": 434.85,
+              "vatIndicator": true,
+              "vatRateApplied": 20.0,
+              "calculatedVatAmount": 47.8,
+              "disbursementAmount": 123.38,
+              "requestedNetDisbursementAmount": 123.38,
+              "disbursementVatAmount": 24.67,
+              "requestedDisbursementVatAmount": 24.67,
               "fixedFeeAmount": 239.0
           }
         }
