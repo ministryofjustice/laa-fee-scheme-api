@@ -521,13 +521,12 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """.formatted(feeCode);
 
-    // escapeCaseFlag is omitted: Inquest escape-case handling is not yet implemented
-    // (tracked in a separate ticket), so escape support is disabled for these fee codes.
     postAndExpect(request, """
         {
           "feeCode": "%s",
           "schemeId": "%s",
           "claimId": "claim_123",
+          "escapeCaseFlag": false,
           "isInquest": true,
           "feeCalculation": {
             "totalAmount": %s,
@@ -542,6 +541,66 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
           }
         }
         """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "COMINQ",
+      "CAPAINQ",
+      "CLININQ",
+      "DEBTINQ",
+      "DISCINQ",
+      "EDUINQ",
+      "FAMINQ",
+      "HOUSINQ",
+      "IAINQ",
+      "INQ",
+      "MHINQ",
+      "MSCINQ",
+      "PUBINQ",
+      "WFBINQ"
+  })
+  void shouldReturnInquestEscapeWarningWhenEscapeCaseFlagIsTrue(String feeCode) throws Exception {
+    String request = """
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "startDate": "2026-12-10",
+          "netProfitCosts": 718.00,
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true,
+          "caseConcludedDate": "2027-01-01"
+        }
+        """.formatted(feeCode);
+
+    postAndExpect(request, """
+        {
+          "feeCode": "%s",
+          "schemeId": "INQUEST_FS2026",
+          "claimId": "claim_123",
+          "escapeCaseFlag": true,
+          "isInquest": true,
+          "validationMessages": [
+            {
+              "type": "WARNING",
+              "code": "WAROTH12",
+              "message": "The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid."
+            }
+          ],
+          "feeCalculation": {
+            "totalAmount": 434.85,
+            "vatIndicator": true,
+            "vatRateApplied": 20.0,
+            "calculatedVatAmount": 47.8,
+            "disbursementAmount": 123.38,
+            "requestedNetDisbursementAmount": 123.38,
+            "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67,
+            "fixedFeeAmount": 239.0
+          }
+        }
+        """.formatted(feeCode));
   }
 
   @Test
