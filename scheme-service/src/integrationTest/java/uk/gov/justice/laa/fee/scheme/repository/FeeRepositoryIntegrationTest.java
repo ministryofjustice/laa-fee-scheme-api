@@ -96,4 +96,52 @@ class FeeRepositoryIntegrationTest extends PostgresContainerTestBase {
         );
   }
 
+  @ParameterizedTest
+  @CsvSource({
+      "YOUE1, 822.47, 313.19, 542.63, 904.72, 344.51, 596.89",
+      "YOUF1, 1072.74, 313.19, 542.63, 1180.01, 344.51, 596.89",
+      "YOUE2, 182.01, 313.19, 542.63, 200.21, 344.51, 596.89",
+      "YOUF2, 437.81, 313.19, 542.63, 481.59, 344.51, 596.89",
+      "YOUE3, 919.96, 538.02, 896.59, 1011.96, 591.82, 986.25",
+      "YOUF3, 1335.67, 538.02, 896.59, 1469.24, 591.82, 986.25",
+      "YOUE4, 321.37, 538.02, 896.59, 353.51, 591.82, 986.25",
+      "YOUF4, 737.08, 538.02, 896.59, 810.79, 591.82, 986.25",
+      "YOUX1, 822.47, 313.19, 542.63, 904.72, 344.51, 596.89",
+      "YOUX3, 1072.74, 313.19, 542.63, 1180.01, 344.51, 596.89",
+      "YOUX2, 182.01, 313.19, 542.63, 200.21, 344.51, 596.89",
+      "YOUX4, 437.81, 313.19, 542.63, 481.59, 344.51, 596.89",
+      "YOUK1, 884.61, 313.19, 542.63, 973.07, 344.51, 596.89",
+      "YOUL1, 1141.17, 313.19, 542.63, 1255.29, 344.51, 596.89",
+      "YOUK2, 232.53, 313.19, 542.63, 255.78, 344.51, 596.89",
+      "YOUL2, 500.99, 313.19, 542.63, 551.09, 344.51, 596.89",
+      "YOUK3, 995.73, 538.02, 896.59, 1095.30, 591.82, 986.25",
+      "YOUL3, 1430.44, 538.02, 896.59, 1573.48, 591.82, 986.25",
+      "YOUK4, 397.14, 538.02, 896.59, 436.85, 591.82, 986.25",
+      "YOUL4, 831.85, 538.02, 896.59, 915.04, 591.82, 986.25",
+      "YOUY1, 884.61, 313.19, 542.63, 973.07, 344.51, 596.89",
+      "YOUY3, 1141.17, 313.19, 542.63, 1255.29, 344.51, 596.89",
+      "YOUY2, 232.53, 313.19, 542.63, 255.78, 344.51, 596.89",
+      "YOUY4, 500.99, 313.19, 542.63, 551.09, 344.51, 596.89"
+  })
+  void shouldPopulateYouthCourtLimitsFor2024And2025(String feeCode,
+                                                    BigDecimal fixedFee2024,
+                                                    BigDecimal lowerLimit2024,
+                                                    BigDecimal higherLimit2024,
+                                                    BigDecimal fixedFee2025,
+                                                    BigDecimal lowerLimit2025,
+                                                    BigDecimal higherLimit2025) {
+    List<FeeEntity> result = repository.findByFeeCode(feeCode);
+
+    assertThat(result)
+        .extracting(entity -> entity.getFeeScheme().getSchemeCode(),
+            FeeEntity::getFixedFee,
+            FeeEntity::getLowerStandardFeeLimit,
+            FeeEntity::getHigherStandardFeeLimit,
+            FeeEntity::getTotalLimit)
+        .containsExactlyInAnyOrder(
+            tuple("YOUTH_COURT_FS2024", fixedFee2024, lowerLimit2024, higherLimit2024, null),
+            tuple("YOUTH_COURT_FS2025", fixedFee2025, lowerLimit2025, higherLimit2025, null)
+        );
+  }
+
 }
