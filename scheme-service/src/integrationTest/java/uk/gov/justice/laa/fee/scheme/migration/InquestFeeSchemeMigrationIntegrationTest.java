@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresSingletonContainer;
 
@@ -23,13 +24,21 @@ class InquestFeeSchemeMigrationIntegrationTest {
   private static final String LOWER_ENVIRONMENT_VALID_FROM = "2026-09-22";
 
   private final PostgresSingletonContainer postgres = PostgresSingletonContainer.getInstance();
-  private final String schema = "inquest_date_" + UUID.randomUUID().toString().replace("-", "");
+  private final String database = "inquest_date_" + UUID.randomUUID().toString().replace("-", "");
+
+  @BeforeEach
+  void createDatabase() throws SQLException {
+    try (Connection connection = getAdminConnection();
+         Statement statement = connection.createStatement()) {
+      statement.execute("CREATE DATABASE %s".formatted(database));
+    }
+  }
 
   @AfterEach
-  void dropSchema() throws SQLException {
-    try (Connection connection = getConnection();
+  void dropDatabase() throws SQLException {
+    try (Connection connection = getAdminConnection();
          Statement statement = connection.createStatement()) {
-      statement.execute("DROP SCHEMA IF EXISTS %s CASCADE".formatted(schema));
+      statement.execute("DROP DATABASE IF EXISTS %s WITH (FORCE)".formatted(database));
     }
   }
 
@@ -46,9 +55,7 @@ class InquestFeeSchemeMigrationIntegrationTest {
 
   private void migrate(String validFrom) {
     Flyway.configure()
-        .dataSource(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword())
-        .schemas(schema)
-        .defaultSchema(schema)
+        .dataSource(getDatabaseUrl(), postgres.getUsername(), postgres.getPassword())
         .locations("classpath:db/migration", "classpath:db/repeatable")
         .placeholders(Map.of("inquest_valid_from", validFrom))
         .load()
@@ -58,11 +65,11 @@ class InquestFeeSchemeMigrationIntegrationTest {
   private void assertInquestScheme(String expectedValidFrom) throws SQLException {
     String query = """
         SELECT valid_from
-        FROM %s.fee_schemes
+        FROM fee_schemes
         WHERE scheme_code = ?
-        """.formatted(schema);
+        """;
 
-    try (Connection connection = getConnection();
+    try (Connection connection = getDatabaseConnection();
          PreparedStatement statement = connection.prepareStatement(query)) {
       statement.setString(1, INQUEST_SCHEME_CODE);
 
@@ -75,7 +82,16 @@ class InquestFeeSchemeMigrationIntegrationTest {
     }
   }
 
-  private Connection getConnection() throws SQLException {
+  private String getDatabaseUrl() {
+    String adminUrl = postgres.getJdbcUrl();
+    return adminUrl.substring(0, adminUrl.lastIndexOf('/') + 1) + database;
+  }
+
+  private Connection getAdminConnection() throws SQLException {
     return DriverManager.getConnection(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+  }
+
+  private Connection getDatabaseConnection() throws SQLException {
+    return DriverManager.getConnection(getDatabaseUrl(), postgres.getUsername(), postgres.getPassword());
   }
 }
