@@ -1,5 +1,10 @@
 #override main application.yml during tests.
 
+spring:
+  flyway:
+    placeholders:
+      inquest_valid_from: "2026-12-09"
+
 feature-flags:
   is-feature-enabled: true
   is-inquest-feature-enabled: true

@@ -144,6 +144,12 @@ Update placeholders in docker-compose.yml
 
 `docker compose up`
 
+### Inquest fee scheme date
+
+Flyway seeds the Inquest fee scheme's `valid_from` date from `INQUEST_VALID_FROM`,
+which defaults to `2026-12-09`. Deployments set the value through
+`feeScheme.inquestValidFrom` in the Helm values for each environment.
+
 ### Feature flags
 
 Flags follow a direct Boolean configuration pattern, with request-scoped
