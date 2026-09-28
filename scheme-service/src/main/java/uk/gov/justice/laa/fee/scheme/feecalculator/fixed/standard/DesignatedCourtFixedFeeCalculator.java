@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.validateMagistratesHigherStandardFeeClaim;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.validateHigherStandardFeeClaim;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 
 import java.math.BigDecimal;
@@ -35,7 +35,7 @@ public class DesignatedCourtFixedFeeCalculator extends StandardFixedFeeCalculato
 
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
-    validateMagistratesHigherStandardFeeClaim(feeCalculationRequest, feeEntity, MAGISTRATES_COURT);
+    validateHigherStandardFeeClaim(feeCalculationRequest, feeEntity, MAGISTRATES_COURT);
     return super.calculate(feeCalculationRequest, feeEntity);
   }
 

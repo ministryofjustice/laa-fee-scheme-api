@@ -193,7 +193,7 @@ class FeeCalculationUtilTest {
   }
 
   @Test
-  void validateMagistratesHigherStandardFeeClaim_shouldThrowWhenProfitCostsAreAtOrBelowLowerLimit() {
+  void validateHigherStandardFeeClaim_shouldThrowWhenProfitCostsAreAtOrBelowLowerLimit() {
     FeeCalculationRequest request = FeeCalculationRequest.builder()
         .feeCode("PROF1")
         .claimId("claim_123")
@@ -207,13 +207,13 @@ class FeeCalculationUtilTest {
         .lowerStandardFeeLimit(new BigDecimal("313.19"))
         .build();
 
-    assertThatThrownBy(() -> FeeCalculationUtil.validateMagistratesHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT))
+    assertThatThrownBy(() -> FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining(ErrorType.ERR_CRIME_INCORRECT_STANDARD_FEE.getCode());
   }
 
   @Test
-  void validateMagistratesHigherStandardFeeClaim_shouldNotThrowWhenProfitCostsExceedLowerLimit() {
+  void validateHigherStandardFeeClaim_shouldNotThrowWhenProfitCostsExceedLowerLimit() {
     FeeCalculationRequest request = FeeCalculationRequest.builder()
         .feeCode("PROF1")
         .claimId("claim_123")
@@ -227,11 +227,11 @@ class FeeCalculationUtilTest {
         .lowerStandardFeeLimit(new BigDecimal("313.19"))
         .build();
 
-    FeeCalculationUtil.validateMagistratesHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT);
+    FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT);
   }
 
   @Test
-  void validateMagistratesHigherStandardFeeClaim_shouldNotThrowForLowerFeeBand() {
+  void validateHigherStandardFeeClaim_shouldNotThrowForLowerFeeBand() {
     FeeCalculationRequest request = FeeCalculationRequest.builder()
         .feeCode("PROE1")
         .claimId("claim_123")
@@ -245,11 +245,11 @@ class FeeCalculationUtilTest {
         .lowerStandardFeeLimit(new BigDecimal("313.19"))
         .build();
 
-    FeeCalculationUtil.validateMagistratesHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT);
+    FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT);
   }
 
   @Test
-  void validateMagistratesHigherStandardFeeClaim_shouldNotThrowForYouthCourt() {
+  void validateHigherStandardFeeClaim_shouldNotThrowForYouthCourt() {
     FeeCalculationRequest request = FeeCalculationRequest.builder()
         .feeCode("YOUF1")
         .claimId("claim_123")
@@ -263,7 +263,7 @@ class FeeCalculationUtilTest {
         .lowerStandardFeeLimit(new BigDecimal("313.19"))
         .build();
 
-    FeeCalculationUtil.validateMagistratesHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT);
+    FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT);
   }
 
   @Test

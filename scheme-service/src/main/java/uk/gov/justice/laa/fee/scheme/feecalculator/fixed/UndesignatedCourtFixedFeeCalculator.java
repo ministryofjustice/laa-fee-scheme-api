@@ -5,7 +5,7 @@ import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUti
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateTotalAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.calculateVatAmount;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.capDisbursementVat;
-import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.validateMagistratesHigherStandardFeeClaim;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.validateHigherStandardFeeClaim;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.defaultToZeroIfNull;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toDouble;
@@ -46,7 +46,7 @@ public class UndesignatedCourtFixedFeeCalculator implements FeeCalculator {
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     log.info("Calculate magistrates and youth court undesignated fixed fee");
 
-    validateMagistratesHigherStandardFeeClaim(feeCalculationRequest, feeEntity, MAGISTRATES_COURT);
+    validateHigherStandardFeeClaim(feeCalculationRequest, feeEntity, MAGISTRATES_COURT);
 
     // Get fixed fee amount
     BigDecimal fixedFeeAmount = defaultToZeroIfNull(feeEntity.getFixedFee());
