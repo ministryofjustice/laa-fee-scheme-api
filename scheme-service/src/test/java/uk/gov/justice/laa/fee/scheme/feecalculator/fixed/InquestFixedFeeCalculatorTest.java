@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.INQUEST;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
@@ -35,9 +36,7 @@ class InquestFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
       "false, 200.00, 370.13, 0",  // Under escape threshold (No VAT)
       "true, 200.00, 420.13, 50",  // Under escape threshold limit (VAT applied)
       "false, 500.00, 370.13, 0", // Equal to escape threshold limit (No VAT)
-      "true, 500.00, 420.13, 50", // Equal to escape threshold limit (VAT applied)
-      "false, 900.00, 370.13, 0", // Above escape threshold limit, escape handling not yet supported (No VAT)
-      "true, 900.00, 420.13, 50" // Above escape threshold limit, escape handling not yet supported (VAT applied)
+      "true, 500.00, 420.13, 50" // Equal to escape threshold limit (VAT applied)
   })
   void calculate_shouldReturnFeeCalculationResponse(boolean vatIndicator, double netProfitCosts,
                                                     double expectedTotal, double expectedVat) {
@@ -53,9 +52,55 @@ class InquestFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     FeeCalculationResponse result = feeCalculator.calculate(feeCalculationRequest, feeEntity);
 
-    assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat);
+    assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, false);
   }
 
+  @ParameterizedTest
+  @CsvSource({
+      "false, 900.00, 370.13, 0",
+      "true, 900.00, 420.13, 50"
+  })
+  void calculate_shouldReturnFeeCalculationResponseWithEscapeWarning(boolean vatIndicator, double netProfitCosts,
+                                                                      double expectedTotal, double expectedVat) {
+    mockVatRatesService(vatIndicator);
+
+    if (!vatIndicator) {
+      mockVatRatesVatIndicatorTrue();
+    }
+
+    FeeCalculationRequest feeCalculationRequest = buildRequest(vatIndicator, netProfitCosts);
+    FeeEntity feeEntity = buildFeeEntity();
+
+    FeeCalculationResponse result = feeCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    assertFeeCalculation(result, expectedTotal, vatIndicator, expectedVat, true);
+
+    ValidationMessagesInner validationMessage = ValidationMessagesInner.builder()
+        .message(WarningType.WARN_INQUEST_ESCAPE_THRESHOLD.getMessage())
+        .code(WarningType.WARN_INQUEST_ESCAPE_THRESHOLD.getCode())
+        .type(WARNING)
+        .build();
+
+    assertThat(result.getValidationMessages()).containsExactly(validationMessage);
+  }
+
+  @Test
+  void calculate_givenEscapedClaimWithCategoryWithoutWarningCodeThrowsException() {
+    mockVatRatesService(true);
+
+    FeeCalculationRequest feeCalculationRequest = buildRequest(true, 900.00);
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("INQ")
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("INQUEST_FS2026").build())
+        .fixedFee(new BigDecimal("250.00"))
+        .categoryType(CategoryType.ADVOCACY_APPEALS_REVIEWS)
+        .escapeThresholdLimit(new BigDecimal("500.00"))
+        .build();
+
+    assertThatThrownBy(() -> feeCalculator.calculate(feeCalculationRequest, feeEntity))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessage("No warning codes found for category: ADVOCACY_APPEALS_REVIEWS");
+  }
 
   @ParameterizedTest
   @CsvSource({
@@ -119,14 +164,13 @@ class InquestFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .build();
   }
 
-  private void assertFeeCalculation(FeeCalculationResponse response, double total, boolean vatIndicator, double vat) {
+  private void assertFeeCalculation(FeeCalculationResponse response, double total, boolean vatIndicator, double vat,
+                                    boolean escapeFlag) {
     assertThat(response).isNotNull();
     assertThat(response.getFeeCode()).isEqualTo("INQ");
     assertThat(response.getClaimId()).isEqualTo("claim_123");
     assertThat(response.getSchemeId()).isEqualTo("INQUEST_FS2026");
-    // Escape-case handling is not yet implemented for Inquest fee codes (separate ticket),
-    // so escapeCaseFlag is always null here.
-    assertThat(response.getEscapeCaseFlag()).isNull();
+    assertThat(response.getEscapeCaseFlag()).isEqualTo(escapeFlag);
 
     FeeCalculation feeCalculation = response.getFeeCalculation();
     assertThat(feeCalculation).isNotNull();
@@ -159,7 +203,7 @@ class InquestFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThat(response.getFeeCode()).isEqualTo("INQ");
     assertThat(response.getClaimId()).isEqualTo("claim_123");
     assertThat(response.getSchemeId()).isEqualTo("INQUEST_FS2026");
-    assertThat(response.getEscapeCaseFlag()).isNull();
+    assertThat(response.getEscapeCaseFlag()).isFalse();
 
     FeeCalculation feeCalculation = response.getFeeCalculation();
     assertThat(feeCalculation).isNotNull();

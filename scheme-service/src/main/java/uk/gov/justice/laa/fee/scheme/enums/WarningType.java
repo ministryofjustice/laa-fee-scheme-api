@@ -109,7 +109,10 @@ public enum WarningType {
   WARN_PUBLIC_LAW_ESCAPE_THRESHOLD("WAROTH10", getEscapeMessage(), CategoryType.PUBLIC_LAW),
 
   WARN_WELFARE_BENEFITS_ESCAPE_THRESHOLD(
-      "WAROTH11", getEscapeMessage(), CategoryType.WELFARE_BENEFITS);
+      "WAROTH11", getEscapeMessage(), CategoryType.WELFARE_BENEFITS),
+
+  WARN_INQUEST_ESCAPE_THRESHOLD(
+      "WAROTH12", getEscapeMessage(), CategoryType.INQUEST);
 
   private final String code;
   private final String message;
