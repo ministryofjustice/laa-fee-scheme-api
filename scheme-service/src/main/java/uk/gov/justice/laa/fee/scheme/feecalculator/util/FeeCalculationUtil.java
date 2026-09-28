@@ -183,6 +183,10 @@ public final class FeeCalculationUtil {
       return;
     }
 
+    if (feeCalculationRequest.getNetProfitCosts() == null) {
+      return;
+    }
+
     BigDecimal netProfitCosts = NumberUtil.toBigDecimal(feeCalculationRequest.getNetProfitCosts());
     if (netProfitCosts.compareTo(feeEntity.getLowerStandardFeeLimit()) <= 0) {
       throw new ValidationException(ErrorType.ERR_CRIME_INCORRECT_STANDARD_FEE,

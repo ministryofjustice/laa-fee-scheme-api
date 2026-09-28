@@ -231,6 +231,23 @@ class FeeCalculationUtilTest {
   }
 
   @Test
+  void validateHigherStandardFeeClaim_shouldNotThrowWhenProfitCostsAreMissing() {
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("PROF1")
+        .claimId("claim_123")
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("PROF1")
+        .categoryType(MAGISTRATES_COURT)
+        .feeBandType(HIGHER)
+        .lowerStandardFeeLimit(new BigDecimal("313.19"))
+        .build();
+
+    FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT);
+  }
+
+  @Test
   void validateHigherStandardFeeClaim_shouldNotThrowForLowerFeeBand() {
     FeeCalculationRequest request = FeeCalculationRequest.builder()
         .feeCode("PROE1")
