@@ -765,4 +765,107 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount,
         netWaitingCosts, netTravelCosts, fixedFeeAmount));
   }
+
+  @ParameterizedTest
+  @CsvSource({
+      "PROF1, 2025-12-21, MAGS_COURT_FS2022, 970.23, 137.03, 100, 111, 474.15",
+      "PROF1, 2025-12-22, MAGS_COURT_FS2025, 1027.13, 146.51, 100, 111, 521.57",
+      "PROE1, 2025-12-21, MAGS_COURT_FS2022, 669.91, 86.98, 100, 111, 223.88",
+      "YOUF1, 2025-12-22, YOUTH_COURT_FS2025, 1817.26, 278.20, 100, 111, 1180.01"
+  })
+  void shouldCalculateUndesignatedClaimsWithOrWithoutHigherFeeValidation(String feeCode,
+                                                                         String repOrderDate,
+                                                                         String schemeId,
+                                                                         String expectedTotal,
+                                                                         String expectedVatAmount,
+                                                                         String netWaitingCosts,
+                                                                         String netTravelCosts,
+                                                                         String fixedFeeAmount) throws Exception {
+    LocalDate representationOrderDate = LocalDate.parse(repOrderDate);
+    String request = """
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "representationOrderDate": "%s",
+          "netProfitCosts": 400.00,
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true,
+          "netWaitingCosts": %s,
+          "netTravelCosts": %s,
+          "caseConcludedDate": "2026-02-01"
+        }
+        """.formatted(feeCode, representationOrderDate, netWaitingCosts, netTravelCosts);
+
+    postAndExpect(request, """
+        {
+          "feeCode": "%s",
+          "schemeId": "%s",
+          "claimId": "claim_123",
+          "isInquest": false,
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": %s,
+            "disbursementAmount": 123.38,
+            "requestedNetDisbursementAmount": 123.38,
+            "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67,
+            "netWaitingCostsAmount": %s,
+            "netTravelCostsAmount": %s,
+            "fixedFeeAmount": %s
+          }
+        }
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount,
+        netWaitingCosts, netTravelCosts, fixedFeeAmount));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "PROL1, 2025-12-21, MAGS_COURT_FS2022, 799.15, 108.52, 542.58",
+      "PROL1, 2025-12-22, MAGS_COURT_FS2025, 864.26, 119.37, 596.84",
+      "PROJ5, 2025-12-21, MAGS_COURT_FS2022, 491.27, 57.20, 286.02",
+      "YOUL1, 2025-12-22, YOUTH_COURT_FS2025, 1654.40, 251.06, 1255.29"
+  })
+  void shouldCalculateDesignatedClaimsWithOrWithoutHigherFeeValidation(String feeCode,
+                                                                       String repOrderDate,
+                                                                       String schemeId,
+                                                                       String expectedTotal,
+                                                                       String expectedVatAmount,
+                                                                       String fixedFeeAmount) throws Exception {
+    LocalDate representationOrderDate = LocalDate.parse(repOrderDate);
+    String request = """
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "representationOrderDate": "%s",
+          "netProfitCosts": 400.00,
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true,
+          "caseConcludedDate": "2026-02-01"
+        }
+        """.formatted(feeCode, representationOrderDate);
+
+    postAndExpect(request, """
+        {
+          "feeCode": "%s",
+          "schemeId": "%s",
+          "claimId": "claim_123",
+          "isInquest": false,
+          "feeCalculation": {
+            "totalAmount": %s,
+            "vatIndicator": true,
+            "vatRateApplied": 20.00,
+            "calculatedVatAmount": %s,
+            "disbursementAmount": 123.38,
+            "requestedNetDisbursementAmount": 123.38,
+            "disbursementVatAmount": 24.67,
+            "requestedDisbursementVatAmount": 24.67,
+            "fixedFeeAmount": %s
+          }
+        }
+        """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount, fixedFeeAmount));
+  }
 }
