@@ -1,0 +1,531 @@
+{
+  "info": {
+    "name": "LFSP-529 - New Mental Health Fees",
+    "description": "Acceptance tests for MHL11-MHL16.\n\nPreview usage:\n1. Port-forward `laa-fee-scheme-api-pr-400-service` from the development namespace to local port 8095.\n2. Set `apiToken` to the development FSP API token.\n3. Run the full collection.\n\nThe default `baseUrl` is `http://127.0.0.1:8095`. Override it with `http://127.0.0.1:8085` when testing a locally running API.\n\nThe collection verifies discovery and fee details, exact fixed-fee calculations, the £117 adjourned-hearing bolt-on, VAT and disbursements, non-escape behavior with high reported costs, scheme date boundaries, the civil cutoff, VAT capping, and a positive MHL03 escape control.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "Authorization",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{apiToken}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.request.headers.upsert({",
+          "  key: 'X-Correlation-Id',",
+          "  value: pm.variables.replaceIn('{{$guid}}')",
+          "});"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const requestName = pm.info.requestName;",
+          "const body = pm.response.json();",
+          "const messages = Array.isArray(body.validationMessages) ? body.validationMessages : [];",
+          "const messageCodes = messages.map((message) => message.code);",
+          "",
+          "const feeDetailsCases = {",
+          "  'MHL11 fee details': { code: 'MHL11', description: 'Mental Health Tribunal Fee - Levels 1 and 2 (Rule 11(7)(a) cases where a patient has not engaged with the provider)' },",
+          "  'MHL12 fee details': { code: 'MHL12', description: 'Mental Health Tribunal Fee - Levels 1, 2 and 3 (Rule 11(7)(a) cases where a patient has not engaged with the provider)' },",
+          "  'MHL13 fee details': { code: 'MHL13', description: 'Mental Health Tribunal Fee - Level 2 only (Rule 11(7)(a) cases where a patient has not engaged with the provider)' },",
+          "  'MHL14 fee details': { code: 'MHL14', description: 'Mental Health Tribunal Fee - Levels 2 and 3 (Rule 11(7)(a) cases where a patient has not engaged with the provider)' },",
+          "  'MHL15 fee details': { code: 'MHL15', description: 'Mental Health Tribunal Fee - Level 3 only (Rule 11(7)(a) cases where a patient has not engaged with the provider)' },",
+          "  'MHL16 fee details': { code: 'MHL16', description: 'Mental Health Tribunal Fee - Levels 1 and 3 (Rule 11(7)(a) cases where a patient has not engaged with the provider)' }",
+          "};",
+          "",
+          "const calculationCases = {",
+          "  'MHL11 calculation': { code: 'MHL11', fixedFee: 450, vat: 136.8, total: 941.05 },",
+          "  'MHL12 calculation': { code: 'MHL12', fixedFee: 744, vat: 195.6, total: 1293.85 },",
+          "  'MHL13 calculation': { code: 'MHL13', fixedFee: 321, vat: 111, total: 786.25 },",
+          "  'MHL14 calculation': { code: 'MHL14', fixedFee: 615, vat: 169.8, total: 1139.05 },",
+          "  'MHL15 calculation': { code: 'MHL15', fixedFee: 294, vat: 105.6, total: 753.85 },",
+          "  'MHL16 calculation': { code: 'MHL16', fixedFee: 423, vat: 131.4, total: 908.65 }",
+          "};",
+          "",
+          "const validationCases = {",
+          "  'MHL11 before scheme start': { code: 'MHL11', errorCode: 'ERRCIV1' },",
+          "  'MHL16 before civil start': { code: 'MHL16', errorCode: 'ERRCIV2' },",
+          "  'ELA before scheme start': { code: 'ELA', errorCode: 'ERRCIV1' },",
+          "  'MISCASBI before scheme start': { code: 'MISCASBI', errorCode: 'ERRCIV1' },",
+          "  'WFB1 before scheme start': { code: 'WFB1', errorCode: 'ERRCIV1' }",
+          "};",
+          "",
+          "pm.test('Status code is 200', function () {",
+          "  pm.response.to.have.status(200);",
+          "});",
+          "",
+          "pm.test('Response is JSON', function () {",
+          "  pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+          "});",
+          "",
+          "pm.test('Correlation ID is returned', function () {",
+          "  pm.expect(pm.response.headers.get('X-Correlation-Id')).to.be.a('string').and.not.empty;",
+          "});",
+          "",
+          "if (requestName === 'List Legal Help fee codes') {",
+          "  const expectedDescriptions = Object.values(feeDetailsCases).reduce((result, fee) => {",
+          "    result[fee.code] = fee.description;",
+          "    return result;",
+          "  }, {});",
+          "  const newFees = body.feeCodes.filter((fee) => Object.prototype.hasOwnProperty.call(expectedDescriptions, fee.feeCode));",
+          "",
+          "  pm.test('All six new fee codes are returned exactly once', function () {",
+          "    pm.expect(newFees).to.have.lengthOf(6);",
+          "    pm.expect(new Set(newFees.map((fee) => fee.feeCode)).size).to.eql(6);",
+          "  });",
+          "",
+          "  newFees.forEach((fee) => {",
+          "    pm.test(`${fee.feeCode} has the expected listing metadata`, function () {",
+          "      pm.expect(fee.areaOfLaw).to.eql('Legal Help');",
+          "      pm.expect(fee.categoryOfLawCodes).to.include('MHE');",
+          "      pm.expect(fee.feeType).to.eql('FIXED');",
+          "      pm.expect(fee.feeCodeDescription).to.eql(expectedDescriptions[fee.feeCode]);",
+          "    });",
+          "  });",
+          "}",
+          "",
+          "if (feeDetailsCases[requestName]) {",
+          "  const expected = feeDetailsCases[requestName];",
+          "",
+          "  pm.test(`${expected.code} has the expected fee details`, function () {",
+          "    pm.expect(body.areaOfLaw).to.eql('LEGAL_HELP');",
+          "    pm.expect(body.categoryOfLawCodes).to.deep.eql(['MHE']);",
+          "    pm.expect(body.feeType).to.eql('FIXED');",
+          "    pm.expect(body.feeCodeDescription).to.eql(expected.description);",
+          "  });",
+          "}",
+          "",
+          "if (calculationCases[requestName]) {",
+          "  const expected = calculationCases[requestName];",
+          "  const calculation = body.feeCalculation;",
+          "  const boltOn = calculation.boltOnFeeDetails;",
+          "",
+          "  pm.test(`${expected.code} uses MHL_FS2024 and the expected fixed fee`, function () {",
+          "    pm.expect(body.feeCode).to.eql(expected.code);",
+          "    pm.expect(body.schemeId).to.eql('MHL_FS2024');",
+          "    pm.expect(calculation.fixedFeeAmount).to.eql(expected.fixedFee);",
+          "  });",
+          "",
+          "  pm.test(`${expected.code} applies two £117 adjourned-hearing bolt-ons`, function () {",
+          "    pm.expect(boltOn.boltOnAdjournedHearingCount).to.eql(2);",
+          "    pm.expect(boltOn.boltOnAdjournedHearingFee).to.eql(234);",
+          "    pm.expect(boltOn.boltOnTotalFeeAmount).to.eql(234);",
+          "  });",
+          "",
+          "  pm.test(`${expected.code} applies VAT and disbursements correctly`, function () {",
+          "    pm.expect(calculation.vatIndicator).to.eql(true);",
+          "    pm.expect(calculation.vatRateApplied).to.eql(20);",
+          "    pm.expect(calculation.calculatedVatAmount).to.eql(expected.vat);",
+          "    pm.expect(calculation.disbursementAmount).to.eql(100.21);",
+          "    pm.expect(calculation.disbursementVatAmount).to.eql(20.04);",
+          "    pm.expect(calculation.totalAmount).to.eql(expected.total);",
+          "  });",
+          "",
+          "  pm.test(`${expected.code} cannot escape despite high reported costs`, function () {",
+          "    pm.expect(body.escapeCaseFlag).to.eql(false);",
+          "    pm.expect(messageCodes).not.to.include('WARMH1');",
+          "  });",
+          "}",
+          "",
+          "if (validationCases[requestName]) {",
+          "  const expected = validationCases[requestName];",
+          "",
+          "  pm.test(`${expected.code} returns ${expected.errorCode}`, function () {",
+          "    pm.expect(body.feeCode).to.eql(expected.code);",
+          "    pm.expect(messages).to.have.lengthOf(1);",
+          "    pm.expect(messages[0].type).to.eql('ERROR');",
+          "    pm.expect(messages[0].code).to.eql(expected.errorCode);",
+          "  });",
+          "}",
+          "",
+          "if (requestName === 'MHL11 disbursement VAT cap') {",
+          "  pm.test('Disbursement VAT is capped with WARALL1 only', function () {",
+          "    pm.expect(body.schemeId).to.eql('MHL_FS2024');",
+          "    pm.expect(body.escapeCaseFlag).to.eql(false);",
+          "    pm.expect(messageCodes).to.deep.eql(['WARALL1']);",
+          "    pm.expect(body.feeCalculation.fixedFeeAmount).to.eql(450);",
+          "    pm.expect(body.feeCalculation.requestedDisbursementVatAmount).to.eql(20);",
+          "    pm.expect(body.feeCalculation.disbursementVatAmount).to.eql(4);",
+          "    pm.expect(body.feeCalculation.totalAmount).to.eql(564);",
+          "  });",
+          "}",
+          "",
+          "if (requestName === 'MHL03 escape positive control') {",
+          "  pm.test('Existing threshold-based Mental Health fee still escapes', function () {",
+          "    pm.expect(body.schemeId).to.eql('MHL_FS2013');",
+          "    pm.expect(body.escapeCaseFlag).to.eql(true);",
+          "    pm.expect(messageCodes).to.include('WARMH1');",
+          "    pm.expect(body.feeCalculation.fixedFeeAmount).to.eql(450);",
+          "    pm.expect(body.feeCalculation.boltOnFeeDetails.boltOnTotalFeeAmount).to.eql(117);",
+          "    pm.expect(body.feeCalculation.totalAmount).to.eql(567);",
+          "  });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8095",
+      "type": "string"
+    },
+    {
+      "key": "apiToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "caseConcludedDate",
+      "value": "2026-02-01",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Discovery",
+      "item": [
+        {
+          "name": "List Legal Help fee codes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/fee-codes/LEGAL_HELP"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Fee details",
+      "item": [
+        {
+          "name": "MHL11 fee details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v2/fee-details/MHL11"
+          },
+          "response": []
+        },
+        {
+          "name": "MHL12 fee details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v2/fee-details/MHL12"
+          },
+          "response": []
+        },
+        {
+          "name": "MHL13 fee details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v2/fee-details/MHL13"
+          },
+          "response": []
+        },
+        {
+          "name": "MHL14 fee details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v2/fee-details/MHL14"
+          },
+          "response": []
+        },
+        {
+          "name": "MHL15 fee details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v2/fee-details/MHL15"
+          },
+          "response": []
+        },
+        {
+          "name": "MHL16 fee details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v2/fee-details/MHL16"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Calculations",
+      "item": [
+        {
+          "name": "MHL11 calculation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feeCode\": \"MHL11\",\n  \"claimId\": \"postman-mhl11\",\n  \"startDate\": \"2024-08-13\",\n  \"netProfitCosts\": 10000,\n  \"netCostOfCounsel\": 10000,\n  \"netDisbursementAmount\": 100.21,\n  \"disbursementVatAmount\": 20.04,\n  \"vatIndicator\": true,\n  \"boltOns\": {\n    \"boltOnAdjournedHearing\": 2\n  },\n  \"caseConcludedDate\": \"{{caseConcludedDate}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fee-calculation"
+          },
+          "response": []
+        },
+        {
+          "name": "MHL12 calculation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feeCode\": \"MHL12\",\n  \"claimId\": \"postman-mhl12\",\n  \"startDate\": \"2024-08-13\",\n  \"netProfitCosts\": 10000,\n  \"netCostOfCounsel\": 10000,\n  \"netDisbursementAmount\": 100.21,\n  \"disbursementVatAmount\": 20.04,\n  \"vatIndicator\": true,\n  \"boltOns\": {\n    \"boltOnAdjournedHearing\": 2\n  },\n  \"caseConcludedDate\": \"{{caseConcludedDate}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fee-calculation"
+          },
+          "response": []
+        },
+        {
+          "name": "MHL13 calculation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feeCode\": \"MHL13\",\n  \"claimId\": \"postman-mhl13\",\n  \"startDate\": \"2024-08-13\",\n  \"netProfitCosts\": 10000,\n  \"netCostOfCounsel\": 10000,\n  \"netDisbursementAmount\": 100.21,\n  \"disbursementVatAmount\": 20.04,\n  \"vatIndicator\": true,\n  \"boltOns\": {\n    \"boltOnAdjournedHearing\": 2\n  },\n  \"caseConcludedDate\": \"{{caseConcludedDate}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fee-calculation"
+          },
+          "response": []
+        },
+        {
+          "name": "MHL14 calculation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feeCode\": \"MHL14\",\n  \"claimId\": \"postman-mhl14\",\n  \"startDate\": \"2024-08-13\",\n  \"netProfitCosts\": 10000,\n  \"netCostOfCounsel\": 10000,\n  \"netDisbursementAmount\": 100.21,\n  \"disbursementVatAmount\": 20.04,\n  \"vatIndicator\": true,\n  \"boltOns\": {\n    \"boltOnAdjournedHearing\": 2\n  },\n  \"caseConcludedDate\": \"{{caseConcludedDate}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fee-calculation"
+          },
+          "response": []
+        },
+        {
+          "name": "MHL15 calculation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feeCode\": \"MHL15\",\n  \"claimId\": \"postman-mhl15\",\n  \"startDate\": \"2024-08-13\",\n  \"netProfitCosts\": 10000,\n  \"netCostOfCounsel\": 10000,\n  \"netDisbursementAmount\": 100.21,\n  \"disbursementVatAmount\": 20.04,\n  \"vatIndicator\": true,\n  \"boltOns\": {\n    \"boltOnAdjournedHearing\": 2\n  },\n  \"caseConcludedDate\": \"{{caseConcludedDate}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fee-calculation"
+          },
+          "response": []
+        },
+        {
+          "name": "MHL16 calculation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feeCode\": \"MHL16\",\n  \"claimId\": \"postman-mhl16\",\n  \"startDate\": \"2024-08-13\",\n  \"netProfitCosts\": 10000,\n  \"netCostOfCounsel\": 10000,\n  \"netDisbursementAmount\": 100.21,\n  \"disbursementVatAmount\": 20.04,\n  \"vatIndicator\": true,\n  \"boltOns\": {\n    \"boltOnAdjournedHearing\": 2\n  },\n  \"caseConcludedDate\": \"{{caseConcludedDate}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fee-calculation"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Date validation",
+      "item": [
+        {
+          "name": "MHL11 before scheme start",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feeCode\": \"MHL11\",\n  \"claimId\": \"postman-mhl11-before-scheme\",\n  \"startDate\": \"2024-08-12\",\n  \"vatIndicator\": false\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fee-calculation"
+          },
+          "response": []
+        },
+        {
+          "name": "MHL16 before civil start",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feeCode\": \"MHL16\",\n  \"claimId\": \"postman-mhl16-before-civil\",\n  \"startDate\": \"2013-03-31\",\n  \"vatIndicator\": false\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fee-calculation"
+          },
+          "response": []
+        },
+        {
+          "name": "ELA before scheme start",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feeCode\": \"ELA\",\n  \"claimId\": \"postman-ela-before-scheme\",\n  \"startDate\": \"2024-08-31\",\n  \"vatIndicator\": false\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fee-calculation"
+          },
+          "response": []
+        },
+        {
+          "name": "MISCASBI before scheme start",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feeCode\": \"MISCASBI\",\n  \"claimId\": \"postman-miscasbi-before-scheme\",\n  \"startDate\": \"2015-03-22\",\n  \"vatIndicator\": false\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fee-calculation"
+          },
+          "response": []
+        },
+        {
+          "name": "WFB1 before scheme start",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feeCode\": \"WFB1\",\n  \"claimId\": \"postman-wfb1-before-scheme\",\n  \"startDate\": \"2014-01-31\",\n  \"vatIndicator\": false\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fee-calculation"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Warnings and controls",
+      "item": [
+        {
+          "name": "MHL11 disbursement VAT cap",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feeCode\": \"MHL11\",\n  \"claimId\": \"postman-mhl11-vat-cap\",\n  \"startDate\": \"2024-08-13\",\n  \"netProfitCosts\": 10000,\n  \"netCostOfCounsel\": 10000,\n  \"netDisbursementAmount\": 20,\n  \"disbursementVatAmount\": 20,\n  \"vatIndicator\": true,\n  \"caseConcludedDate\": \"{{caseConcludedDate}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fee-calculation"
+          },
+          "response": []
+        },
+        {
+          "name": "MHL03 escape positive control",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feeCode\": \"MHL03\",\n  \"claimId\": \"postman-mhl03-escape-control\",\n  \"startDate\": \"2013-04-01\",\n  \"netProfitCosts\": 5000,\n  \"netCostOfCounsel\": 5000,\n  \"vatIndicator\": false,\n  \"boltOns\": {\n    \"boltOnAdjournedHearing\": 1\n  },\n  \"caseConcludedDate\": \"{{caseConcludedDate}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fee-calculation"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

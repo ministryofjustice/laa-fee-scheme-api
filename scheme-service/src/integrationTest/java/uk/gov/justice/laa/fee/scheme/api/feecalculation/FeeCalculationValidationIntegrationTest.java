@@ -425,6 +425,44 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         """);
   }
 
+  @ParameterizedTest
+  @CsvSource({
+      "MHL11, 2024-08-12, ERRCIV1, Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.",
+      "MHL16, 2013-03-31, ERRCIV2, Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit."
+  })
+  void shouldReturnExpectedDateValidationForNewMentalHealthFees(
+      String feeCode, String startDate, String errorCode, String errorMessage) throws Exception {
+    String request = """
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "startDate": "%s",
+          "netProfitCosts": 239.06,
+          "netCostOfCounsel": 79.19,
+          "netDisbursementAmount": 100.21,
+          "disbursementVatAmount": 20.12,
+          "vatIndicator": true
+        }
+        """.formatted(feeCode, startDate);
+
+    postAndExpect(
+        request,
+        """
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "isInquest": false,
+          "validationMessages": [
+            {
+              "type":"ERROR",
+              "code":"%s",
+              "message":"%s"
+            }
+          ]
+        }
+        """.formatted(feeCode, errorCode, errorMessage));
+  }
+
   @Test
   void shouldReturnValidationErrorWhenCrimeFeeCodeAndStartDateIsInvalid() throws Exception {
     String request =

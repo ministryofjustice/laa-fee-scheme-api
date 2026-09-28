@@ -37,12 +37,13 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
   @InjectMocks
   MentalHealthFixedFeeCalculator mentalhealthFixedFeeCalculator;
 
-  private static FeeCalculationResponse buildExpectedResponse(String feeCode, FeeCalculation expectedCalculation,
+  private static FeeCalculationResponse buildExpectedResponse(String feeCode, String schemeId,
+                                                              FeeCalculation expectedCalculation,
                                                               boolean hasEscaped,
                                                               List<ValidationMessagesInner> validationMessages) {
     return FeeCalculationResponse.builder()
         .feeCode(feeCode)
-        .schemeId("MHL_FS2013")
+        .schemeId(schemeId)
         .claimId("claim_123")
         .validationMessages(validationMessages)
         .escapeCaseFlag(hasEscaped)
@@ -71,10 +72,11 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .build();
   }
 
-  private static FeeEntity buildFeeEntity(String feeCode, double fixedFee, Double escapeThresholdLimit) {
+  private static FeeEntity buildFeeEntity(String feeCode, String schemeId, double fixedFee,
+                                          Double escapeThresholdLimit) {
     return FeeEntity.builder()
         .feeCode(feeCode)
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("MHL_FS2013").build())
+        .feeScheme(FeeSchemesEntity.builder().schemeCode(schemeId).build())
         .fixedFee(BigDecimal.valueOf(fixedFee))
         .categoryType(MENTAL_HEALTH)
         .adjornHearingBoltOn(BigDecimal.valueOf(100.0))
@@ -181,13 +183,13 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
       }
 
       FeeCalculationRequest feeData = buildFeeCalculationRequest(feeCode, vatIndicator, boltOnNumber, null);
-      FeeEntity feeEntity = buildFeeEntity(feeCode, fixedFee, null);
+      FeeEntity feeEntity = buildFeeEntity(feeCode, "MHL_FS2013", fixedFee, null);
 
       FeeCalculationResponse response = mentalhealthFixedFeeCalculator.calculate(feeData, feeEntity);
 
       FeeCalculation expectedCalculation = buildFeeCalculation(fixedFee, vatIndicator, calculatedVat, boltOnNumber,
           boltOnTotalFeeAmount, boltOnAdjournedHearingFee, expectedTotal);
-      FeeCalculationResponse expectedResponse = buildExpectedResponse(feeCode, expectedCalculation,
+      FeeCalculationResponse expectedResponse = buildExpectedResponse(feeCode, "MHL_FS2013", expectedCalculation,
           false, new ArrayList<>());
 
       assertThat(response)
@@ -201,30 +203,35 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
     public static Stream<Arguments> testDataEscapeCase() {
       return Stream.of(
-          argumentsEscapeCase("MHL01, with Vat, no bolt ons, escaped", "MHL01", 263.0,
+          argumentsEscapeCase("MHL01, with Vat, no bolt ons, escaped", "MHL01", "MHL_FS2013", 263.0,
               1000.0, true, 52.6, null,
               0.0, null, 376.2, true, 759.0),
 
-          argumentsEscapeCase("MHL05, with Vat, has bolt ons, escaped", "MHL05", 321.0,
+          argumentsEscapeCase("MHL05, with Vat, has bolt ons, escaped", "MHL05", "MHL_FS2013", 321.0,
               1020.0, true, 124.2, 3,
               300.0, 300.0, 805.8, true, 321.0),
 
-          argumentsEscapeCase("MHL05, with Vat, has bolt ons, not escaped", "MHL05", 321.0,
+          argumentsEscapeCase("MHL05, with Vat, has bolt ons, not escaped", "MHL05", "MHL_FS2013", 321.0,
               111.0, true, 124.2, 3,
               300.0, 300.0, 805.8, false, 321.0),
 
-          argumentsEscapeCase("MHL10, with Vat, has bolt ons, cannot escape", "MHL05", 129.0,
-              1010.0, true, 85.8, 3,
-              300.0, 300.0, 575.4, false, null)
+          argumentsEscapeCase("MHL10, with Vat, no bolt ons, cannot escape", "MHL10", "MHL_FS2013", 129.0,
+              1010.0, true, 25.8, null,
+              0.0, null, 215.4, false, null),
+
+          argumentsEscapeCase("MHL11, with Vat, has bolt ons, cannot escape", "MHL11", "MHL_FS2024", 450.0,
+              5000.0, true, 150.0, 3,
+              300.0, 300.0, 960.6, false, null)
       );
     }
 
-    private static Arguments argumentsEscapeCase(String scenario, String feeCode, double fixedFee, double requestedNetProfitCosts,
+    private static Arguments argumentsEscapeCase(String scenario, String feeCode, String schemeId,
+                                                 double fixedFee, double requestedNetProfitCosts,
                                                  boolean vat, Double calculatedVat, Integer boltOnNumber, Double boltOnTotalFeeAmount,
                                                  Double boltOnAdjournedHearingFee, double expectedTotal, boolean hasWarning,
                                                  Double escapeThresholdLimit) {
 
-      return Arguments.of(scenario, feeCode, fixedFee, requestedNetProfitCosts, vat, calculatedVat, boltOnNumber,
+      return Arguments.of(scenario, feeCode, schemeId, fixedFee, requestedNetProfitCosts, vat, calculatedVat, boltOnNumber,
           boltOnTotalFeeAmount, boltOnAdjournedHearingFee, expectedTotal, hasWarning, escapeThresholdLimit);
     }
 
@@ -233,6 +240,7 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     void getFee_whenMentalHealth_AndEscapeCase(
         String description,
         String feeCode,
+        String schemeId,
         double fixedFee,
         double requestedNetProfitCosts,
         boolean vatIndicator,
@@ -248,7 +256,7 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
       mockVatRatesService(vatIndicator);
 
       FeeCalculationRequest feeData = buildFeeCalculationRequest(feeCode, vatIndicator, boltOnNumber, requestedNetProfitCosts);
-      FeeEntity feeEntity = buildFeeEntity(feeCode, fixedFee, escapeThresholdLimit);
+      FeeEntity feeEntity = buildFeeEntity(feeCode, schemeId, fixedFee, escapeThresholdLimit);
 
       FeeCalculationResponse response = mentalhealthFixedFeeCalculator.calculate(feeData, feeEntity);
 
@@ -266,7 +274,8 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
       FeeCalculation expectedCalculation = buildFeeCalculation(fixedFee, vatIndicator, calculatedVat, boltOnNumber,
           boltOnTotalFeeAmount, boltOnAdjournedHearingFee, expectedTotal);
-      FeeCalculationResponse expectedResponse = buildExpectedResponse(feeCode, expectedCalculation, hasEscaped, validationMessages);
+      FeeCalculationResponse expectedResponse = buildExpectedResponse(
+          feeCode, schemeId, expectedCalculation, hasEscaped, validationMessages);
 
       assertThat(response)
           .usingRecursiveComparison()
@@ -323,7 +332,7 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
       FeeCalculationRequest feeData = buildFeeCalculationDisbursementVatLimitRequest(
               feeCode, vatIndicator, boltOnNumber, null);
-      FeeEntity feeEntity = buildFeeEntity(feeCode, fixedFee, null);
+      FeeEntity feeEntity = buildFeeEntity(feeCode, "MHL_FS2013", fixedFee, null);
 
       FeeCalculationResponse response = mentalhealthFixedFeeCalculator.calculate(feeData, feeEntity);
 
@@ -340,7 +349,8 @@ class MentalHealthFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
       FeeCalculation expectedCalculation = buildFeeCalculationDisbursementVatLimitReached(fixedFee, vatIndicator, calculatedVat, boltOnNumber,
               boltOnTotalFeeAmount, boltOnAdjournedHearingFee, expectedTotal);
-      FeeCalculationResponse expectedResponse = buildExpectedResponse(feeCode, expectedCalculation, hasEscaped, validationMessages);
+      FeeCalculationResponse expectedResponse = buildExpectedResponse(
+          feeCode, "MHL_FS2013", expectedCalculation, hasEscaped, validationMessages);
 
       assertThat(response)
               .usingRecursiveComparison()

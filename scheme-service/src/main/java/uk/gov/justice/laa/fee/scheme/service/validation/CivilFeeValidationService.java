@@ -72,8 +72,10 @@ public class CivilFeeValidationService extends AbstractFeeValidationService {
             .orElse(ERR_CIVIL_START_DATE_TOO_OLD);
         throw new ValidationException(error, new FeeContext(feeCalculationRequest));
       } else {
-        // find by fee code or default to generic civil error
-        throw new ValidationException(ERR_CIVIL_START_DATE_TOO_OLD, new FeeContext(feeCalculationRequest));
+        ErrorType error = claimStartDate.isBefore(CIVIL_START_DATE)
+            ? ERR_CIVIL_START_DATE_TOO_OLD
+            : ERR_CIVIL_START_DATE;
+        throw new ValidationException(error, new FeeContext(feeCalculationRequest));
       }
     }
   }

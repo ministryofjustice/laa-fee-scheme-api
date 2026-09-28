@@ -96,4 +96,28 @@ class FeeRepositoryIntegrationTest extends PostgresContainerTestBase {
         );
   }
 
+  @ParameterizedTest
+  @CsvSource(delimiter = '|', value = {
+      "MHL11 | 450.00 | Mental Health Tribunal Fee - Levels 1 and 2 (Rule 11(7)(a) cases where a patient has not engaged with the provider)",
+      "MHL12 | 744.00 | Mental Health Tribunal Fee - Levels 1, 2 and 3 (Rule 11(7)(a) cases where a patient has not engaged with the provider)",
+      "MHL13 | 321.00 | Mental Health Tribunal Fee - Level 2 only (Rule 11(7)(a) cases where a patient has not engaged with the provider)",
+      "MHL14 | 615.00 | Mental Health Tribunal Fee - Levels 2 and 3 (Rule 11(7)(a) cases where a patient has not engaged with the provider)",
+      "MHL15 | 294.00 | Mental Health Tribunal Fee - Level 3 only (Rule 11(7)(a) cases where a patient has not engaged with the provider)",
+      "MHL16 | 423.00 | Mental Health Tribunal Fee - Levels 1 and 3 (Rule 11(7)(a) cases where a patient has not engaged with the provider)"
+  })
+  void shouldReturnNewMentalHealthFee(String feeCode, String fixedFee, String description) {
+    List<FeeEntity> result = repository.findByFeeCode(feeCode);
+
+    assertThat(result).singleElement().satisfies(entity -> {
+      assertThat(entity.getFeeCode()).isEqualTo(feeCode);
+      assertThat(entity.getDescription()).isEqualTo(description);
+      assertThat(entity.getFixedFee()).isEqualTo(new BigDecimal(fixedFee));
+      assertThat(entity.getEscapeThresholdLimit()).isNull();
+      assertThat(entity.getAdjornHearingBoltOn()).isEqualTo(new BigDecimal("117.00"));
+      assertThat(entity.getFeeScheme().getSchemeCode()).isEqualTo("MHL_FS2024");
+      assertThat(entity.getCategoryType()).isEqualTo(CategoryType.MENTAL_HEALTH);
+      assertThat(entity.getFeeType()).isEqualTo(FeeType.FIXED);
+    });
+  }
+
 }

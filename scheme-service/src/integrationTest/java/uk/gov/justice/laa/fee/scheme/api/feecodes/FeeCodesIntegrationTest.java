@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.fee.scheme.api.feecodes;
 
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.json.JsonCompareMode.LENIENT;
 import static org.springframework.test.json.JsonCompareMode.STRICT;
@@ -58,7 +59,9 @@ class FeeCodesIntegrationTest extends PostgresContainerTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.feeCodes").isArray())
-        .andExpect(jsonPath("$.feeCodes.length()").value(is(101)))
+        .andExpect(jsonPath("$.feeCodes.length()").value(is(107)))
+        .andExpect(jsonPath("$.feeCodes[*].feeCode")
+            .value(hasItems("MHL11", "MHL12", "MHL13", "MHL14", "MHL15", "MHL16")))
         .andExpect(jsonPath("$.feeCodes[0].feeCode").exists())
         .andExpect(jsonPath("$.feeCodes[0].areaOfLaw").value("Legal Help"))
         .andExpect(jsonPath("$.feeCodes[0].categoryOfLawCodes").isArray())

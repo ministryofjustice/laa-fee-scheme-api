@@ -92,10 +92,10 @@ class CivilFeeValidationServiceTest {
   }
 
   @Test
-  void getValidFeeEntity_whenCivilFeeCodeAndDateTooFarInPast_shouldThrowException() {
+  void getValidFeeEntity_whenCivilFeeCodeAndDateBeforeCivilStart_shouldThrowException() {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("DISC")
-        .startDate(LocalDate.of(2025, 5, 1))
+        .startDate(LocalDate.of(2013, 3, 31))
         .netDisbursementAmount(50.50)
         .disbursementVatAmount(20.15)
         .build();
@@ -139,6 +139,28 @@ class CivilFeeValidationServiceTest {
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
     assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE)
+        .hasMessage("ERRCIV1 - Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.");
+  }
+
+  @Test
+  void getValidFeeEntity_whenCivilFeeCodePredatesFeeScheme_shouldThrowFeeCodeDateError() {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("MHL11")
+        .startDate(LocalDate.of(2024, 8, 12))
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder()
+        .schemeCode("MHL_FS2024")
+        .validFrom(LocalDate.of(2024, 8, 13))
+        .build();
+
+    FeeEntity feeEntity = fixedFeeEntity("MHL11", CategoryType.MENTAL_HEALTH, feeSchemesEntity);
+    assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(
+        List.of(feeEntity), feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE)
         .hasMessage("ERRCIV1 - Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.");
