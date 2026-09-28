@@ -179,11 +179,8 @@ public final class FeeCalculationUtil {
                                                     FeeEntity feeEntity, CategoryType categoryType) {
     if (feeEntity.getCategoryType() != categoryType
         || feeEntity.getFeeBandType() != FeeBandType.HIGHER
-        || feeEntity.getLowerStandardFeeLimit() == null) {
-      return;
-    }
-
-    if (feeCalculationRequest.getNetProfitCosts() == null) {
+        || feeEntity.getLowerStandardFeeLimit() == null
+        || feeCalculationRequest.getNetProfitCosts() == null) {
       return;
     }
 
