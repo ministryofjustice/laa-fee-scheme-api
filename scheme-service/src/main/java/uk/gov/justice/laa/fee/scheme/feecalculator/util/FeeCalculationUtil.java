@@ -23,6 +23,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
 import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
+import uk.gov.justice.laa.fee.scheme.enums.FeeBandType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
 import uk.gov.justice.laa.fee.scheme.exception.CaseConcludedDateRequiredException;
 import uk.gov.justice.laa.fee.scheme.exception.FeeContext;
@@ -35,6 +36,7 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.util.DateUtil;
+import uk.gov.justice.laa.fee.scheme.util.NumberUtil;
 
 /**
  * Utility class for fee calculation operations.
@@ -168,6 +170,24 @@ public final class FeeCalculationUtil {
     LimitContext limitContext =
         new LimitContext(DISBURSEMENT_VAT, maxDisbursementVat, null, WARN_DISBURSEMENT_VAT_CAPPED);
     return checkLimitAndCapIfExceeded(requestedDisbursementVat, limitContext, validationMessages);
+  }
+
+  /**
+   * Validates higher standard fee claims against the lower standard fee limit.
+   */
+  public static void validateMagistratesHigherStandardFeeClaim(FeeCalculationRequest feeCalculationRequest,
+                                                               FeeEntity feeEntity, CategoryType categoryType) {
+    if (feeEntity.getCategoryType() != categoryType
+        || feeEntity.getFeeBandType() != FeeBandType.HIGHER
+        || feeEntity.getLowerStandardFeeLimit() == null) {
+      return;
+    }
+
+    BigDecimal netProfitCosts = NumberUtil.toBigDecimal(feeCalculationRequest.getNetProfitCosts());
+    if (netProfitCosts.compareTo(feeEntity.getLowerStandardFeeLimit()) <= 0) {
+      throw new ValidationException(ErrorType.ERR_CRIME_INCORRECT_STANDARD_FEE,
+          new FeeContext(feeCalculationRequest));
+    }
   }
 
   /**
