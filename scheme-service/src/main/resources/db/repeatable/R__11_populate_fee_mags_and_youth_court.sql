@@ -344,3 +344,121 @@ WHERE fee_scheme_code = 'MAGS_COURT_FS2025'
                    'PROJ1', 'PROJ3', 'PROJ2', 'PROJ4', 'PROV1', 'PROV2',
                    'PROV3', 'PROV4', 'PROK1', 'PROL1', 'PROK2', 'PROL2',
                    'PROK3', 'PROL3', 'PROJ5', 'PROJ7', 'PROJ6', 'PROJ8');
+
+UPDATE fee
+SET lower_standard_fee_limit = CASE fee_code
+        WHEN 'YOUE1' THEN 313.19
+        WHEN 'YOUF1' THEN 313.19
+        WHEN 'YOUE2' THEN 313.19
+        WHEN 'YOUF2' THEN 313.19
+        WHEN 'YOUE3' THEN 538.02
+        WHEN 'YOUF3' THEN 538.02
+        WHEN 'YOUE4' THEN 538.02
+        WHEN 'YOUF4' THEN 538.02
+        WHEN 'YOUX1' THEN 313.19
+        WHEN 'YOUX3' THEN 313.19
+        WHEN 'YOUX2' THEN 313.19
+        WHEN 'YOUX4' THEN 313.19
+        WHEN 'YOUK1' THEN 313.19
+        WHEN 'YOUL1' THEN 313.19
+        WHEN 'YOUK2' THEN 313.19
+        WHEN 'YOUL2' THEN 313.19
+        WHEN 'YOUK3' THEN 538.02
+        WHEN 'YOUL3' THEN 538.02
+        WHEN 'YOUK4' THEN 538.02
+        WHEN 'YOUL4' THEN 538.02
+        WHEN 'YOUY1' THEN 313.19
+        WHEN 'YOUY3' THEN 313.19
+        WHEN 'YOUY2' THEN 313.19
+        WHEN 'YOUY4' THEN 313.19
+    END,
+    higher_standard_fee_limit = CASE fee_code
+        WHEN 'YOUE1' THEN 542.63
+        WHEN 'YOUF1' THEN 542.63
+        WHEN 'YOUE2' THEN 542.63
+        WHEN 'YOUF2' THEN 542.63
+        WHEN 'YOUE3' THEN 896.59
+        WHEN 'YOUF3' THEN 896.59
+        WHEN 'YOUE4' THEN 896.59
+        WHEN 'YOUF4' THEN 896.59
+        WHEN 'YOUX1' THEN 542.63
+        WHEN 'YOUX3' THEN 542.63
+        WHEN 'YOUX2' THEN 542.63
+        WHEN 'YOUX4' THEN 542.63
+        WHEN 'YOUK1' THEN 542.63
+        WHEN 'YOUL1' THEN 542.63
+        WHEN 'YOUK2' THEN 542.63
+        WHEN 'YOUL2' THEN 542.63
+        WHEN 'YOUK3' THEN 896.59
+        WHEN 'YOUL3' THEN 896.59
+        WHEN 'YOUK4' THEN 896.59
+        WHEN 'YOUL4' THEN 896.59
+        WHEN 'YOUY1' THEN 542.63
+        WHEN 'YOUY3' THEN 542.63
+        WHEN 'YOUY2' THEN 542.63
+        WHEN 'YOUY4' THEN 542.63
+        END
+WHERE fee_scheme_code = 'YOUTH_COURT_FS2024'
+  AND fee_code IN ('YOUE1', 'YOUF1', 'YOUE2', 'YOUF2', 'YOUE3', 'YOUF3',
+                   'YOUE4', 'YOUF4', 'YOUX1', 'YOUX3', 'YOUX2', 'YOUX4',
+                   'YOUK1', 'YOUL1', 'YOUK2', 'YOUL2', 'YOUK3', 'YOUL3',
+                   'YOUK4', 'YOUL4', 'YOUY1', 'YOUY3', 'YOUY2', 'YOUY4');
+UPDATE fee
+SET lower_standard_fee_limit = CASE fee_code
+        WHEN 'YOUE1' THEN 344.51
+        WHEN 'YOUF1' THEN 344.51
+        WHEN 'YOUE2' THEN 344.51
+        WHEN 'YOUF2' THEN 344.51
+        WHEN 'YOUE3' THEN 591.82
+        WHEN 'YOUF3' THEN 591.82
+        WHEN 'YOUE4' THEN 591.82
+        WHEN 'YOUF4' THEN 591.82
+        WHEN 'YOUX1' THEN 344.51
+        WHEN 'YOUX3' THEN 344.51
+        WHEN 'YOUX2' THEN 344.51
+        WHEN 'YOUX4' THEN 344.51
+        WHEN 'YOUK1' THEN 344.51
+        WHEN 'YOUL1' THEN 344.51
+        WHEN 'YOUK2' THEN 344.51
+        WHEN 'YOUL2' THEN 344.51
+        WHEN 'YOUK3' THEN 591.82
+        WHEN 'YOUL3' THEN 591.82
+        WHEN 'YOUK4' THEN 591.82
+        WHEN 'YOUL4' THEN 591.82
+        WHEN 'YOUY1' THEN 344.51
+        WHEN 'YOUY3' THEN 344.51
+        WHEN 'YOUY2' THEN 344.51
+        WHEN 'YOUY4' THEN 344.51
+        END,
+    higher_standard_fee_limit = CASE fee_code
+        WHEN 'YOUE1' THEN 596.89
+        WHEN 'YOUF1' THEN 596.89
+        WHEN 'YOUE2' THEN 596.89
+        WHEN 'YOUF2' THEN 596.89
+        WHEN 'YOUE3' THEN 986.25
+        WHEN 'YOUF3' THEN 986.25
+        WHEN 'YOUE4' THEN 986.25
+        WHEN 'YOUF4' THEN 986.25
+        WHEN 'YOUX1' THEN 596.89
+        WHEN 'YOUX3' THEN 596.89
+        WHEN 'YOUX2' THEN 596.89
+        WHEN 'YOUX4' THEN 596.89
+        WHEN 'YOUK1' THEN 596.89
+        WHEN 'YOUL1' THEN 596.89
+        WHEN 'YOUK2' THEN 596.89
+        WHEN 'YOUL2' THEN 596.89
+        WHEN 'YOUK3' THEN 986.25
+        WHEN 'YOUL3' THEN 986.25
+        WHEN 'YOUK4' THEN 986.25
+        WHEN 'YOUL4' THEN 986.25
+        WHEN 'YOUY1' THEN 596.89
+        WHEN 'YOUY3' THEN 596.89
+        WHEN 'YOUY2' THEN 596.89
+        WHEN 'YOUY4' THEN 596.89
+        END
+WHERE fee_scheme_code = 'YOUTH_COURT_FS2025'
+  AND fee_code IN ('YOUE1', 'YOUF1', 'YOUE2', 'YOUF2', 'YOUE3', 'YOUF3',
+                   'YOUE4', 'YOUF4', 'YOUX1', 'YOUX3', 'YOUX2', 'YOUX4',
+                   'YOUK1', 'YOUL1', 'YOUK2', 'YOUL2', 'YOUK3', 'YOUL3',
+                   'YOUK4', 'YOUL4', 'YOUY1', 'YOUY3', 'YOUY2', 'YOUY4');
+
