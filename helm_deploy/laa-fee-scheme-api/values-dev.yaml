@@ -37,6 +37,9 @@ featureFlags:
   isInquestFeatureEnabled: true
   requestOverridesEnabled: true
 
+feeScheme:
+  inquestValidFrom: "2026-09-22"
+
 prometheus:
   enabled: true
   dashboardUrl: https://grafana.live.cloud-platform.service.justice.gov.uk/d/laa-fee-scheme-api-dev-dashboard

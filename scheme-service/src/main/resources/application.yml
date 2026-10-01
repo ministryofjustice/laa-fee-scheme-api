@@ -23,6 +23,8 @@ spring:
     default-schema: ${DB_SCHEMA:fee_scheme}
     enabled: true
     locations: classpath:db/migration,classpath:db/repeatable
+    placeholders:
+      inquest_valid_from: ${INQUEST_VALID_FROM:2026-12-09}
 
 management:
   server:
