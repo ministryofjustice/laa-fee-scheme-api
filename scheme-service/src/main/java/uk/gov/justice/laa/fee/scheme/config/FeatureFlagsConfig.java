@@ -17,9 +17,15 @@ import uk.gov.justice.laa.fee.scheme.exception.FeatureNotImplementedRuntimeExcep
 @Validated
 public class FeatureFlagsConfig {
 
+  @NotNull private Boolean isFeatureEnabled;
   @NotNull private Boolean isInquestFeatureEnabled;
 
   private boolean requestOverridesEnabled;
+
+  /** Returns the effective flag value for the sample feature, including a request override. */
+  public Boolean getIsFeatureEnabled() {
+    return isEnabled(Feature.FEATURE);
+  }
 
   /** Returns the effective flag value for inline checks, including a request override. */
   public Boolean getIsInquestFeatureEnabled() {
@@ -32,8 +38,8 @@ public class FeatureFlagsConfig {
       throw new FeatureNotImplementedRuntimeException(null);
     }
     Boolean configuredValue = switch (feature) {
+      case FEATURE -> isFeatureEnabled;
       case INQUEST -> isInquestFeatureEnabled;
-      default -> throw new FeatureNotImplementedRuntimeException(feature);
     };
     if (configuredValue == null) {
       throw new IllegalStateException("Missing feature flag configuration: " + feature);
