@@ -64,17 +64,17 @@ class FeatureFlagsConfigTest {
 
   @ParameterizedTest
   @ValueSource(strings = {
-      "feature-flags.is-feature-enabled=maybe",
-      "feature-flags.is-feature-enabled=",
+    "feature-flags.is-feature-enabled=maybe",
+    "feature-flags.is-feature-enabled=",
     "feature-flags.is-inquest-feature-enabled=maybe",
     "feature-flags.is-inquest-feature-enabled=",
-      "feature-flags.request-overrides-enabled=maybe",
-      "feature-flags.unknown-feature=true"
+    "feature-flags.request-overrides-enabled=maybe",
+    "feature-flags.unknown-feature=true"
   })
   void invalidConfigurationFailsStartup(String invalidProperty) {
     runner.withPropertyValues(
             "feature-flags.is-feature-enabled=true",
-          "feature-flags.is-inquest-feature-enabled=true",
+            "feature-flags.is-inquest-feature-enabled=true",
             invalidProperty)
         .run(context -> assertThat(context).hasFailed());
   }
@@ -84,7 +84,8 @@ class FeatureFlagsConfigTest {
     var source = new YamlPropertySourceLoader()
         .load("application", new ClassPathResource("application.yml")).getFirst();
     runner.withInitializer(context -> context.getEnvironment().getPropertySources().addLast(source))
-        .withPropertyValues("IS_FEATURE_ENABLED=false", "IS_INQUEST_FEATURE_ENABLED=false",
+        .withPropertyValues("IS_FEATURE_ENABLED=false",
+            "IS_INQUEST_FEATURE_ENABLED=false",
             "FEATURE_FLAG_REQUEST_OVERRIDES_ENABLED=true")
         .run(context -> {
           assertThat(context).hasNotFailed();
