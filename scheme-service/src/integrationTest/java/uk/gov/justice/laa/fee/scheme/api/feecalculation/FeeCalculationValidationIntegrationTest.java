@@ -663,6 +663,45 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         """);
   }
 
+  @ParameterizedTest
+  @CsvSource({
+      "PROF1",
+      "PROL1"
+  })
+  void shouldReturnValidationErrorWhenHigherStandardMagistratesFeeClaimedBelowLowerLimit(String feeCode)
+      throws Exception {
+    String request =
+        """
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "representationOrderDate": "2025-07-29",
+          "netProfitCosts": 313.19,
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true,
+          "caseConcludedDate": "2026-02-01"
+        }
+        """.formatted(feeCode);
+
+    postAndExpect(
+        request,
+        """
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "isInquest": false,
+          "validationMessages": [
+            {
+              "type":"ERROR",
+              "code":"ERRCRM14",
+              "message":"The Higher Standard Fee code has been claimed incorrectly. The costs entered are less than the Lower Standard Fee Limit. Resubmit your claim with correct fee code for the Lower Standard fee."
+            }
+          ]
+        }
+        """.formatted(feeCode));
+  }
+
   @Test
   void shouldReturnValidationErrorWhenCrimeFeeCodeAndUfnIsInvalid() throws Exception {
     String request =
