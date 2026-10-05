@@ -177,5 +177,9 @@ ON CONFLICT (scheme_code) DO NOTHING;
 -- Fee Scheme for 'Inquest' category
 INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
 VALUES
-    ('INQUEST_FS2026', 'Inquest Fee Scheme 2026', '2026-12-09', NULL)
-ON CONFLICT (scheme_code) DO NOTHING;
+    ('INQUEST_FS2026', 'Inquest Fee Scheme 2026', '${inquest_valid_from}', NULL)
+ON CONFLICT (scheme_code)
+DO UPDATE SET
+    scheme_name = EXCLUDED.scheme_name,
+    valid_from = EXCLUDED.valid_from,
+    valid_to = EXCLUDED.valid_to;
