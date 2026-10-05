@@ -1,10 +1,16 @@
 package uk.gov.justice.laa.fee.scheme.api.feecalculation;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
@@ -823,6 +829,57 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
         }
         """.formatted(feeCode, schemeId, expectedTotal, expectedVatAmount,
         netWaitingCosts, netTravelCosts, fixedFeeAmount));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "YOUF1, 2025-12-21, 313.20, 1072.74",
+      "YOUF2, 2025-12-21, 313.20, 437.81",
+      "YOUF3, 2025-12-21, 538.03, 1335.67",
+      "YOUF4, 2025-12-21, 538.03, 737.08",
+      "YOUX3, 2025-12-21, 313.20, 1072.74",
+      "YOUX4, 2025-12-21, 313.20, 437.81",
+      "YOUL1, 2025-12-21, 313.20, 1141.17",
+      "YOUL2, 2025-12-21, 313.20, 500.99",
+      "YOUL3, 2025-12-21, 538.03, 1430.44",
+      "YOUL4, 2025-12-21, 538.03, 831.85",
+      "YOUY3, 2025-12-21, 313.20, 1141.17",
+      "YOUY4, 2025-12-21, 313.20, 500.99",
+      "YOUF1, 2025-12-22, 344.52, 1180.01",
+      "YOUF2, 2025-12-22, 344.52, 481.59",
+      "YOUF3, 2025-12-22, 591.83, 1469.24",
+      "YOUF4, 2025-12-22, 591.83, 810.79",
+      "YOUX3, 2025-12-22, 344.52, 1180.01",
+      "YOUX4, 2025-12-22, 344.52, 481.59",
+      "YOUL1, 2025-12-22, 344.52, 1255.29",
+      "YOUL2, 2025-12-22, 344.52, 551.09",
+      "YOUL3, 2025-12-22, 591.83, 1573.48",
+      "YOUL4, 2025-12-22, 591.83, 915.04",
+      "YOUY3, 2025-12-22, 344.52, 1255.29",
+      "YOUY4, 2025-12-22, 344.52, 551.09"
+  })
+  void shouldCalculateHigherStandardYouthCourtFeeWhenProfitCostsExceedLowerLimit(
+      String feeCode, String repOrderDate, String netProfitCosts, double fixedFeeAmount) throws Exception {
+    String request = """
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "representationOrderDate": "%s",
+          "netProfitCosts": %s,
+          "vatIndicator": false,
+          "caseConcludedDate": "2026-02-01"
+        }
+        """.formatted(feeCode, repOrderDate, netProfitCosts);
+
+    mockMvc.perform(post(URI)
+            .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(request)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.feeCode").value(feeCode))
+        .andExpect(jsonPath("$.feeCalculation.fixedFeeAmount").value(fixedFeeAmount))
+        .andExpect(jsonPath("$.validationMessages").doesNotExist());
   }
 
   @ParameterizedTest

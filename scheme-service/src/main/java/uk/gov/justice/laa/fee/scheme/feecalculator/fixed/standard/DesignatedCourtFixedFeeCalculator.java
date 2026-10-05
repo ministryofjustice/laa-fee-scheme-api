@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard;
 
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.YOUTH_COURT;
 import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.validateHigherStandardFeeClaim;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 
@@ -35,7 +36,8 @@ public class DesignatedCourtFixedFeeCalculator extends StandardFixedFeeCalculato
 
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
-    validateHigherStandardFeeClaim(feeCalculationRequest, feeEntity, MAGISTRATES_COURT);
+    validateHigherStandardFeeClaim(feeCalculationRequest, feeEntity,
+        feeEntity.getCategoryType() == CategoryType.MAGISTRATES_COURT ? MAGISTRATES_COURT : YOUTH_COURT);
     return super.calculate(feeCalculationRequest, feeEntity);
   }
 
