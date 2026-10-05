@@ -7,55 +7,55 @@ ignore:
         reason: no fix available, not exploitable
         expires: 2099-01-01T00:00:00.000Z
   SNYK-JAVA-TOOLSJACKSONCORE-17972609:
-      - '*':
+    - '*':
         reason: no fix available; not exploitable - app does not use annotations @JsonView and @JsonUnwrapped (LFSP-549)
         expires: 2099-01-01T00:00:00.000Z
   SNYK-JAVA-COMFASTERXMLJACKSONCORE-17972608:
-      - '*':
+    - '*':
         reason: no fix available; not exploitable - app does not use annotations @JsonView and @JsonUnwrapped (LFSP-549)
         expires: 2099-01-01T00:00:00.000Z
   SNYK-JAVA-ORGAPACHETOMCATEMBED-16691231:
     - '*':
-       reason: no fix available, not exploitable
-       expires: 2099-01-01T00:00:00.000Z
+        reason: no fix available, not exploitable
+        expires: 2099-01-01T00:00:00.000Z
   SNYK-JAVA-ORGAPACHETOMCATEMBED-16643259:
-      - '*':
+    - '*':
         reason: no fix available, not exploitable
         expires: 2099-01-01T00:00:00.000Z
   SNYK-JAVA-ORGAPACHETOMCATEMBED-17732890:
-      - '*':
+    - '*':
         reason: no fix available, not exploitable
         expires: 2099-01-01T00:00:00.000Z
   SNYK-JAVA-ORGAPACHETOMCATEMBED-17733746:
-      - '*':
+    - '*':
         reason: no fix available, not exploitable
         expires: 2099-01-01T00:00:00.000Z
   SNYK-JAVA-CHQOSLOGBACK-17675439:
-      - '*':
+    - '*':
         reason: no fix available, not exploitable
         expires: 2099-01-01T00:00:00.000Z
   SNYK-JAVA-COMFASTERXMLJACKSONCORE-19778370:
-      - '*':
+    - '*':
         reason: no fix available, not exploitable
         expires: 2099-01-01T00:00:00.000Z
   SNYK-JAVA-TOOLSJACKSONCORE-19778371:
-      - '*':
+    - '*':
         reason: no fix available, not exploitable
         expires: 2099-01-01T00:00:00.000Z
   SNYK-JAVA-COMFASTERXMLJACKSONCORE-20059179:
-      - '*':
+    - '*':
         reason: no fix available, not exploitable
         expires: 2099-01-01T00:00:00.000Z
   SNYK-JAVA-COMFASTERXMLJACKSONCORE-20059683:
-      - '*':
+    - '*':
         reason: no fix available, not exploitable
         expires: 2099-01-01T00:00:00.000Z
   SNYK-JAVA-TOOLSJACKSONCORE-20059180:
-      - '*':
+    - '*':
         reason: no fix available, not exploitable
         expires: 2099-01-01T00:00:00.000Z
   SNYK-JAVA-TOOLSJACKSONCORE-20059682:
-      - '*':
+    - '*':
         reason: no fix available; not exploitable
         expires: 2099-01-01T00:00:00.000Z
 patch: {}
