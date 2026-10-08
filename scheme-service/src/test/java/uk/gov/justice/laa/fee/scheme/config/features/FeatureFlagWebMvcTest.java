@@ -24,6 +24,7 @@ import uk.gov.justice.laa.fee.scheme.exception.FeatureNotImplementedRuntimeExcep
 @WebMvcTest(controllers = {
     FeatureFlagWebMvcTest.MethodController.class, FeatureFlagWebMvcTest.ClassController.class
 }, properties = {
+    "feature-flags.is-example-feature-enabled=false",
     "feature-flags.is-inquest-feature-enabled=false",
     "feature-flags.request-overrides-enabled=true"
 })
@@ -38,10 +39,10 @@ class FeatureFlagWebMvcTest {
   @Test
   void inlineEvaluationUsesConfiguredValueAndRequestOverrides() throws Exception {
     mockMvc.perform(get("/test-flags/inline")).andExpect(content().string("false"));
-    mockMvc.perform(get("/test-flags/inline").param("featureFlag", "INQUEST:true"))
+    mockMvc.perform(get("/test-flags/inline").param("featureFlag", "EXAMPLE_FEATURE:true"))
         .andExpect(status().isOk()).andExpect(content().string("true"));
     mockMvc.perform(get("/test-flags/inline")).andExpect(content().string("false"));
-    mockMvc.perform(get("/test-flags/getter").param("featureFlag", "INQUEST:true"))
+    mockMvc.perform(get("/test-flags/getter").param("featureFlag", "EXAMPLE_FEATURE:true"))
         .andExpect(content().string("true"));
   }
 
@@ -50,27 +51,27 @@ class FeatureFlagWebMvcTest {
     for (String path : new String[] {"/test-flags/method", "/test-flags/class"}) {
       mockMvc.perform(get(path)).andExpect(status().isNotFound())
           .andExpect(jsonPath("$.status").value(404))
-          .andExpect(jsonPath("$.message").value("Feature is not available: INQUEST"));
-      mockMvc.perform(get(path).param("featureFlag", "INQUEST:true")).andExpect(status().isOk());
-      mockMvc.perform(get(path).param("featureFlag", "INQUEST:false")).andExpect(status().isNotFound());
+          .andExpect(jsonPath("$.message").value("Feature is not available: EXAMPLE_FEATURE"));
+      mockMvc.perform(get(path).param("featureFlag", "EXAMPLE_FEATURE:true")).andExpect(status().isOk());
+      mockMvc.perform(get(path).param("featureFlag", "EXAMPLE_FEATURE:false")).andExpect(status().isNotFound());
     }
   }
 
   @Test
   void methodAnnotationTakesPrecedenceOverControllerAnnotation() throws Exception {
-    mockMvc.perform(get("/test-flags/method-precedence").param("featureFlag", "INQUEST:true"))
+    mockMvc.perform(get("/test-flags/method-precedence").param("featureFlag", "EXAMPLE_FEATURE:true"))
         .andExpect(status().isOk());
   }
 
   @Test
   void malformedUnknownAndDuplicateOverridesReturnBadRequest() throws Exception {
-    for (String parameter : new String[] {"INQUEST:invalid", "UNKNOWN:true", "INQUEST"}) {
+    for (String parameter : new String[] {"EXAMPLE_FEATURE:invalid", "UNKNOWN:true", "EXAMPLE_FEATURE"}) {
       mockMvc.perform(get("/test-flags/method").param("featureFlag", parameter))
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.status").value(400))
           .andExpect(jsonPath("$.timestamp").exists());
     }
-    mockMvc.perform(get("/test-flags/inline").param("featureFlag", "INQUEST:true", "INQUEST:false"))
+    mockMvc.perform(get("/test-flags/inline").param("featureFlag", "EXAMPLE_FEATURE:true", "EXAMPLE_FEATURE:false"))
         .andExpect(status().isBadRequest());
   }
 
@@ -81,14 +82,14 @@ class FeatureFlagWebMvcTest {
   }
 
   @Nested
-  @TestPropertySource(properties = "feature-flags.is-inquest-feature-enabled=true")
+  @TestPropertySource(properties = "feature-flags.is-example-feature-enabled=true")
   class ConfiguredOn {
     @Test
     void overrideCanDisableAnEnabledFeature() throws Exception {
       mockMvc.perform(get("/test-flags/method")).andExpect(status().isOk());
-      mockMvc.perform(get("/test-flags/method").param("featureFlag", "INQUEST:false"))
+      mockMvc.perform(get("/test-flags/method").param("featureFlag", "EXAMPLE_FEATURE:false"))
           .andExpect(status().isNotFound());
-      mockMvc.perform(get("/test-flags/inline").param("featureFlag", "INQUEST:false"))
+      mockMvc.perform(get("/test-flags/inline").param("featureFlag", "EXAMPLE_FEATURE:false"))
           .andExpect(content().string("false"));
       mockMvc.perform(get("/test-flags/method")).andExpect(status().isOk());
     }
@@ -99,7 +100,7 @@ class FeatureFlagWebMvcTest {
   class OverridesDisabled {
     @Test
     void overridesReturnForbiddenButNormalRequestsContinue() throws Exception {
-      mockMvc.perform(get("/test-flags/inline").param("featureFlag", "INQUEST:true"))
+      mockMvc.perform(get("/test-flags/inline").param("featureFlag", "EXAMPLE_FEATURE:true"))
           .andExpect(status().isForbidden())
           .andExpect(jsonPath("$.status").value(403));
       mockMvc.perform(get("/test-flags/inline")).andExpect(status().isOk());
@@ -116,23 +117,17 @@ class FeatureFlagWebMvcTest {
 
     @GetMapping("/test-flags/inline")
     public boolean inline() {
-      return flags.isEnabled(Feature.INQUEST);
+      return flags.isEnabled(Feature.EXAMPLE_FEATURE);
     }
 
     @GetMapping("/test-flags/getter")
     public boolean getter() {
-      return flags.getIsInquestFeatureEnabled();
+      return flags.getIsExampleFeatureEnabled();
     }
 
     @GetMapping("/test-flags/method")
-    @RequiresFeatureFlag(Feature.INQUEST)
+    @RequiresFeatureFlag(Feature.EXAMPLE_FEATURE)
     public boolean methodGate() {
-      return true;
-    }
-
-    @GetMapping("/test-flags/method-precedence")
-    @RequiresFeatureFlag(Feature.INQUEST)
-    public boolean methodPrecedence() {
       return true;
     }
 
@@ -144,10 +139,16 @@ class FeatureFlagWebMvcTest {
 
   @RestController
   @RequestMapping("/test-flags")
-  @RequiresFeatureFlag(Feature.INQUEST)
+  @RequiresFeatureFlag(Feature.EXAMPLE_FEATURE)
   static class ClassController {
     @GetMapping("/class")
     public boolean classGate() {
+      return true;
+    }
+
+    @GetMapping("/method-precedence")
+    @RequiresFeatureFlag({})
+    public boolean methodPrecedence() {
       return true;
     }
   }
