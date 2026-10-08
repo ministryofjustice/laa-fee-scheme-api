@@ -13,6 +13,7 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.FeeBandType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTestBase;
 
@@ -141,6 +142,36 @@ class FeeRepositoryIntegrationTest extends PostgresContainerTestBase {
         .containsExactlyInAnyOrder(
             tuple("YOUTH_COURT_FS2024", fixedFee2024, lowerLimit2024, higherLimit2024, null),
             tuple("YOUTH_COURT_FS2025", fixedFee2025, lowerLimit2025, higherLimit2025, null)
+        );
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "PRIB1, LOWER, 357.06, 1691.69, 442.75, 2097.70",
+      "PRIB2, HIGHER, 357.06, 1691.69, 442.75, 2097.70",
+      "PRIC1, LOWER, 933.93, 4362.54, 1158.07, 5409.55",
+      "PRIC2, HIGHER, 933.93, 4362.54, 1158.07, 5409.55",
+      "PRID1, LOWER, 357.06, 1691.69, 442.75, 2097.70",
+      "PRID2, HIGHER, 357.06, 1691.69, 442.75, 2097.70",
+      "PRIE1, LOWER, 933.93, 4362.54, 1158.07, 5409.55",
+      "PRIE2, HIGHER, 933.93, 4362.54, 1158.07, 5409.55"
+  })
+  void shouldPopulatePrisonLawLimitsFor2016And2025(String feeCode,
+                                                   FeeBandType feeBandType,
+                                                   BigDecimal lowerLimit2016,
+                                                   BigDecimal higherLimit2016,
+                                                   BigDecimal lowerLimit2025,
+                                                   BigDecimal higherLimit2025) {
+    List<FeeEntity> result = repository.findByFeeCode(feeCode);
+
+    assertThat(result)
+        .extracting(entity -> entity.getFeeScheme().getSchemeCode(),
+            FeeEntity::getLowerStandardFeeLimit,
+            FeeEntity::getHigherStandardFeeLimit,
+            FeeEntity::getFeeBandType)
+        .containsExactlyInAnyOrder(
+            tuple("PRISON_FS2016", lowerLimit2016, higherLimit2016, feeBandType),
+            tuple("PRISON_FS2025", lowerLimit2025, higherLimit2025, feeBandType)
         );
   }
 
