@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -250,15 +251,21 @@ class UndesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThat(result).isEmpty();
   }
 
-  @Test
-  void calculate_whenHigherStandardMagistratesFeeClaimedBelowLowerLimit_shouldThrowValidationException() {
+  @ParameterizedTest
+  @CsvSource({
+      "PROF1, MAGISTRATES_COURT, MAGS_COURT_FS2022, 313.19",
+      "YOUF1, YOUTH_COURT, YOUTH_COURT_FS2024, 313.18",
+      "YOUF1, YOUTH_COURT, YOUTH_COURT_FS2024, 313.19"
+  })
+  void calculate_whenHigherStandardFeeClaimedAtOrBelowLowerLimit_shouldThrowValidationException(
+      String feeCode, CategoryType categoryType, String schemeCode, double netProfitCosts) {
     mockVatRatesService(true);
 
     FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .feeCode("PROF1")
+        .feeCode(feeCode)
         .claimId("claim_123")
         .representationOrderDate(LocalDate.of(2025, 7, 29))
-        .netProfitCosts(313.19)
+        .netProfitCosts(netProfitCosts)
         .netDisbursementAmount(100.00)
         .disbursementVatAmount(20.00)
         .vatIndicator(true)
@@ -268,11 +275,11 @@ class UndesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("PROF1")
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2022").build())
+        .feeCode(feeCode)
+        .feeScheme(FeeSchemesEntity.builder().schemeCode(schemeCode).build())
         .fixedFee(new BigDecimal("474.15"))
         .lowerStandardFeeLimit(new BigDecimal("313.19"))
-        .categoryType(MAGISTRATES_COURT)
+        .categoryType(categoryType)
         .feeBandType(HIGHER)
         .courtDesignationType(CourtDesignationType.UNDESIGNATED)
         .feeType(FIXED)
@@ -283,12 +290,17 @@ class UndesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .hasMessageContaining(ErrorType.ERR_CRIME_INCORRECT_STANDARD_FEE.getCode());
   }
 
-  @Test
-  void calculate_whenHigherStandardMagistratesFeeClaimedAboveLowerLimit_shouldCalculateFee() {
+  @ParameterizedTest
+  @CsvSource({
+      "PROF1, MAGISTRATES_COURT, MAGS_COURT_FS2022, 474.15, 820.98",
+      "YOUF1, YOUTH_COURT, YOUTH_COURT_FS2024, 1072.74, 1539.29"
+  })
+  void calculate_whenHigherStandardFeeClaimedAboveLowerLimit_shouldCalculateFee(
+      String feeCode, CategoryType categoryType, String schemeCode, BigDecimal fixedFee, double expectedTotal) {
     mockVatRatesService(true);
 
     FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .feeCode("PROF1")
+        .feeCode(feeCode)
         .claimId("claim_123")
         .representationOrderDate(LocalDate.of(2025, 7, 29))
         .netProfitCosts(313.20)
@@ -301,11 +313,11 @@ class UndesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("PROF1")
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2022").build())
-        .fixedFee(new BigDecimal("474.15"))
+        .feeCode(feeCode)
+        .feeScheme(FeeSchemesEntity.builder().schemeCode(schemeCode).build())
+        .fixedFee(fixedFee)
         .lowerStandardFeeLimit(new BigDecimal("313.19"))
-        .categoryType(MAGISTRATES_COURT)
+        .categoryType(categoryType)
         .feeBandType(HIGHER)
         .courtDesignationType(CourtDesignationType.UNDESIGNATED)
         .feeType(FIXED)
@@ -314,8 +326,8 @@ class UndesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     FeeCalculationResponse response = calculator.calculate(request, feeEntity);
 
     assertThat(response.getValidationMessages()).isEmpty();
-    assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(820.98);
-    assertThat(response.getFeeCalculation().getFixedFeeAmount()).isEqualTo(474.15);
+    assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
+    assertThat(response.getFeeCalculation().getFixedFeeAmount()).isEqualTo(fixedFee.doubleValue());
   }
 
 }
