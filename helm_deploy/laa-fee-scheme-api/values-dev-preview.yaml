@@ -33,7 +33,6 @@ application:
     level: INFO
 
 featureFlags:
-  isFeatureEnabled: true
   isInquestFeatureEnabled: true
   requestOverridesEnabled: true
 

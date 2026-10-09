@@ -37,7 +37,6 @@ application:
     level: DEBUG
 
 featureFlags:
-  isFeatureEnabled: false
   isInquestFeatureEnabled: true
   requestOverridesEnabled: true
 

@@ -40,7 +40,6 @@ application:
     level: INFO
 
 featureFlags:
-  isFeatureEnabled: false
   isInquestFeatureEnabled: false
   requestOverridesEnabled: false
 

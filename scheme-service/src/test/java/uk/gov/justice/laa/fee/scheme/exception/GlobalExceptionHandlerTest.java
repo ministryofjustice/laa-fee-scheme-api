@@ -211,25 +211,25 @@ class GlobalExceptionHandlerTest {
 
   @Test
   void handleFeatureNotEnabled(CapturedOutput capturedOutput) {
-    FeatureNotEnabledException exception = new FeatureNotEnabledException(Feature.FEATURE);
+    FeatureNotEnabledException exception = new FeatureNotEnabledException(Feature.EXAMPLE_FEATURE);
 
     ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeatureNotEnabled(exception);
 
-    assertErrorResponse(response, HttpStatus.NOT_FOUND, "Feature is not available: FEATURE");
+    assertErrorResponse(response, HttpStatus.NOT_FOUND, "Feature is not available: EXAMPLE_FEATURE");
     assertThat(capturedOutput.getOut())
-        .contains("Feature not enabled [status=404, error=Not Found, message=Feature is not available: FEATURE]");
+        .contains("Feature not enabled [status=404, error=Not Found, message=Feature is not available: EXAMPLE_FEATURE]");
     assertThat(capturedOutput.getOut()).doesNotContain("FeatureNotEnabledException");
   }
 
   @Test
   void handleFeatureNotImplemented(CapturedOutput capturedOutput) {
-    FeatureNotImplementedRuntimeException exception = new FeatureNotImplementedRuntimeException(Feature.FEATURE);
+    FeatureNotImplementedRuntimeException exception = new FeatureNotImplementedRuntimeException(Feature.EXAMPLE_FEATURE);
 
     ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleFeatureNotImplemented(exception);
 
-    assertErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, "Feature has not been implemented: FEATURE");
+    assertErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, "Feature has not been implemented: EXAMPLE_FEATURE");
     assertThat(capturedOutput.getOut())
-        .contains("Feature not implemented [status=500, error=Internal Server Error, message=Feature has not been implemented: FEATURE]");
+        .contains("Feature not implemented [status=500, error=Internal Server Error, message=Feature has not been implemented: EXAMPLE_FEATURE]");
   }
 
   @Test

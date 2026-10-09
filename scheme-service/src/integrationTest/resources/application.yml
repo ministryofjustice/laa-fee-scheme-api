@@ -6,10 +6,9 @@ spring:
       inquest_valid_from: "2026-12-09"
 
 feature-flags:
-  is-feature-enabled: true
+  is-example-feature-enabled: true
   is-inquest-feature-enabled: true
   request-overrides-enabled: false
-
 # use test token for tests
 laa.springboot.starter:
   auth:

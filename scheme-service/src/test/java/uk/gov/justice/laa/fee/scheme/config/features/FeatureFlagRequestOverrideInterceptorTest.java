@@ -33,21 +33,21 @@ class FeatureFlagRequestOverrideInterceptorTest {
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
   void overrideWinsWithoutChangingConfiguredValue(boolean enabled) {
-    flags.setIsFeatureEnabled(!enabled);
+    flags.setIsExampleFeatureEnabled(!enabled);
     flags.setRequestOverridesEnabled(true);
-    var request = requestWith("FEATURE:" + enabled);
+    var request = requestWith("EXAMPLE_FEATURE:" + enabled);
     assertThat(interceptor.preHandle(request, new MockHttpServletResponse(), new Object())).isTrue();
     RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-    assertThat(flags.isEnabled(Feature.FEATURE)).isEqualTo(enabled);
-    assertThat(flags.getIsFeatureEnabled()).isEqualTo(enabled);
+    assertThat(flags.isEnabled(Feature.EXAMPLE_FEATURE)).isEqualTo(enabled);
+    assertThat(flags.getIsExampleFeatureEnabled()).isEqualTo(enabled);
     RequestContextHolder.resetRequestAttributes();
-    assertThat(flags.getIsFeatureEnabled()).isEqualTo(!enabled);
+    assertThat(flags.getIsExampleFeatureEnabled()).isEqualTo(!enabled);
   }
 
   @ParameterizedTest
   @ValueSource(strings = {
-      "", "FEATURE", "FEATURE:", ":true", "FEATURE:maybe", "FEATURE:true:extra",
-      "UNKNOWN:true", "feature:true", "FEATURE: true", " FEATURE:true"
+      "", "EXAMPLE_FEATURE", "EXAMPLE_FEATURE:", ":true", "EXAMPLE_FEATURE:maybe", "EXAMPLE_FEATURE:true:extra",
+      "UNKNOWN:true", "feature:true", "EXAMPLE_FEATURE: true", " EXAMPLE_FEATURE:true"
   })
   void rejectsMalformedOrUnknownOverrides(String parameter) {
     flags.setRequestOverridesEnabled(true);
@@ -58,10 +58,10 @@ class FeatureFlagRequestOverrideInterceptorTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"FEATURE:true", "FEATURE:false"})
+  @ValueSource(strings = {"EXAMPLE_FEATURE:true", "EXAMPLE_FEATURE:false"})
   void rejectsDuplicatesEvenWhenFirstValueIsFalse(String second) {
     flags.setRequestOverridesEnabled(true);
-    var request = requestWith("FEATURE:false", second);
+    var request = requestWith("EXAMPLE_FEATURE:false", second);
     assertThatThrownBy(() -> interceptor.preHandle(request, new MockHttpServletResponse(), new Object()))
         .isInstanceOf(InvalidFeatureFlagRequestOverrideException.class)
         .hasMessageContaining("Duplicate");
@@ -71,17 +71,17 @@ class FeatureFlagRequestOverrideInterceptorTest {
   @ParameterizedTest
   @ValueSource(strings = {"TRUE", "True", "FALSE", "False"})
   void acceptsCaseInsensitiveBooleans(String value) {
-    flags.setIsFeatureEnabled(false);
+    flags.setIsExampleFeatureEnabled(false);
     flags.setRequestOverridesEnabled(true);
-    var request = requestWith("FEATURE:" + value);
+    var request = requestWith("EXAMPLE_FEATURE:" + value);
     interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
     RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-    assertThat(flags.getIsFeatureEnabled()).isEqualTo(Boolean.parseBoolean(value));
+    assertThat(flags.getIsExampleFeatureEnabled()).isEqualTo(Boolean.parseBoolean(value));
   }
 
   @Test
   void concurrentRequestsRemainIsolated() throws Exception {
-    flags.setIsFeatureEnabled(false);
+    flags.setIsExampleFeatureEnabled(false);
     flags.setRequestOverridesEnabled(true);
     CyclicBarrier barrier = new CyclicBarrier(2);
     try (var executor = Executors.newFixedThreadPool(2)) {
@@ -90,44 +90,44 @@ class FeatureFlagRequestOverrideInterceptorTest {
       assertThat(enabled.get(10, TimeUnit.SECONDS)).isTrue();
       assertThat(disabled.get(10, TimeUnit.SECONDS)).isFalse();
     }
-    assertThat(flags.getIsFeatureEnabled()).isFalse();
+    assertThat(flags.getIsExampleFeatureEnabled()).isFalse();
   }
 
   @Test
   void storageIsImmutableAndAcceptsEmptyMaps() {
     Map<Feature, Boolean> values = new HashMap<>();
-    values.put(Feature.FEATURE, true);
+    values.put(Feature.EXAMPLE_FEATURE, true);
     var overrides = new FeatureFlagRequestOverrides(values);
-    values.put(Feature.FEATURE, false);
-    assertThat(overrides.values()).containsEntry(Feature.FEATURE, true);
-    assertThatThrownBy(() -> overrides.values().put(Feature.FEATURE, false))
+    values.put(Feature.EXAMPLE_FEATURE, false);
+    assertThat(overrides.values()).containsEntry(Feature.EXAMPLE_FEATURE, true);
+    assertThatThrownBy(() -> overrides.values().put(Feature.EXAMPLE_FEATURE, false))
         .isInstanceOf(UnsupportedOperationException.class);
     assertThat(new FeatureFlagRequestOverrides(Map.of()).values()).isEmpty();
   }
 
   @Test
   void absentOverrideAndDisabledCapabilityUseConfiguredValue() {
-    flags.setIsFeatureEnabled(true);
+    flags.setIsExampleFeatureEnabled(true);
     flags.setRequestOverridesEnabled(true);
     var request = new MockHttpServletRequest();
     RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-    assertThat(flags.getIsFeatureEnabled()).isTrue();
+    assertThat(flags.getIsExampleFeatureEnabled()).isTrue();
     request.setAttribute(FeatureFlagRequestOverrides.REQUEST_ATTRIBUTE,
         new FeatureFlagRequestOverrides(Map.of()));
-    assertThat(flags.getIsFeatureEnabled()).isTrue();
+    assertThat(flags.getIsExampleFeatureEnabled()).isTrue();
     request.setAttribute(FeatureFlagRequestOverrides.REQUEST_ATTRIBUTE,
-        new FeatureFlagRequestOverrides(Map.of(Feature.FEATURE, false)));
+        new FeatureFlagRequestOverrides(Map.of(Feature.EXAMPLE_FEATURE, false)));
     flags.setRequestOverridesEnabled(false);
-    assertThat(flags.getIsFeatureEnabled()).isTrue();
+    assertThat(flags.getIsExampleFeatureEnabled()).isTrue();
   }
 
   private boolean evaluateConcurrentRequest(boolean enabled, CyclicBarrier barrier) throws Exception {
-    var request = requestWith("FEATURE:" + enabled);
+    var request = requestWith("EXAMPLE_FEATURE:" + enabled);
     interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
     RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
     try {
       barrier.await(5, TimeUnit.SECONDS);
-      return flags.getIsFeatureEnabled();
+      return flags.getIsExampleFeatureEnabled();
     } finally {
       RequestContextHolder.resetRequestAttributes();
     }

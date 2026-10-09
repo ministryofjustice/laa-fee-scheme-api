@@ -20,7 +20,8 @@ import uk.gov.justice.laa.fee.scheme.config.features.Feature;
 import uk.gov.justice.laa.fee.scheme.postgrestestcontainer.PostgresContainerTestBase;
 
 @SpringBootTest(properties = {
-    "feature-flags.is-feature-enabled=false",
+    "feature-flags.is-example-feature-enabled=false",
+    "feature-flags.is-inquest-feature-enabled=false",
     "feature-flags.request-overrides-enabled=true"
 })
 @AutoConfigureMockMvc
@@ -34,10 +35,10 @@ class FeatureFlagIntegrationTest extends PostgresContainerTestBase {
     mockMvc.perform(get("/test-features/gated").header(HttpHeaders.AUTHORIZATION, "int-test-token"))
         .andExpect(status().isNotFound());
     mockMvc.perform(get("/test-features/gated").header(HttpHeaders.AUTHORIZATION, "int-test-token")
-            .param("featureFlag", "FEATURE:true"))
+            .param("featureFlag", "EXAMPLE_FEATURE:true"))
         .andExpect(status().isOk()).andExpect(content().string("true"));
     mockMvc.perform(get("/test-features/inline").header(HttpHeaders.AUTHORIZATION, "int-test-token")
-            .param("featureFlag", "FEATURE:false"))
+            .param("featureFlag", "EXAMPLE_FEATURE:false"))
         .andExpect(status().isOk()).andExpect(content().string("false"));
     mockMvc.perform(get("/test-features/gated").header(HttpHeaders.AUTHORIZATION, "int-test-token"))
         .andExpect(status().isNotFound());
@@ -45,10 +46,10 @@ class FeatureFlagIntegrationTest extends PostgresContainerTestBase {
 
   @Test
   void overrideCannotBypassAuthentication() throws Exception {
-    mockMvc.perform(get("/test-features/gated").param("featureFlag", "FEATURE:true"))
+    mockMvc.perform(get("/test-features/gated").param("featureFlag", "EXAMPLE_FEATURE:true"))
         .andExpect(status().isUnauthorized());
     mockMvc.perform(get("/test-features/gated").header(HttpHeaders.AUTHORIZATION, "wrong-token")
-            .param("featureFlag", "FEATURE:true"))
+            .param("featureFlag", "EXAMPLE_FEATURE:true"))
         .andExpect(status().isUnauthorized());
   }
 
@@ -62,14 +63,14 @@ class FeatureFlagIntegrationTest extends PostgresContainerTestBase {
     }
 
     @GetMapping("/test-features/gated")
-    @RequiresFeatureFlag(Feature.FEATURE)
+    @RequiresFeatureFlag(Feature.EXAMPLE_FEATURE)
     public boolean gated() {
-      return flags.getIsFeatureEnabled();
+      return flags.getIsExampleFeatureEnabled();
     }
 
     @GetMapping("/test-features/inline")
     public boolean inline() {
-      return flags.isEnabled(Feature.FEATURE);
+      return flags.isEnabled(Feature.EXAMPLE_FEATURE);
     }
   }
 }

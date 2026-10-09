@@ -30,8 +30,6 @@ env:
       secretKeyRef:
         name: fee-scheme-api-secrets
         key: DATA_CLAIMS_EVENT_SERVICE_TOKEN
-  - name: IS_FEATURE_ENABLED
-    value: {{ .Values.featureFlags.isFeatureEnabled | quote }}
   - name: IS_INQUEST_FEATURE_ENABLED
     value: {{ .Values.featureFlags.isInquestFeatureEnabled | quote }}
   - name: FEATURE_FLAG_REQUEST_OVERRIDES_ENABLED
