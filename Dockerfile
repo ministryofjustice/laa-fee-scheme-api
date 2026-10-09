@@ -5,6 +5,7 @@ FROM amazoncorretto:25-alpine
 ARG app_version=1.0.0
 
 # Set up working directory in the container
+RUN apk upgrade --no-cache zlib
 RUN mkdir -p /opt/laa-fee-scheme-api/
 WORKDIR /opt/laa-fee-scheme-api/
 
