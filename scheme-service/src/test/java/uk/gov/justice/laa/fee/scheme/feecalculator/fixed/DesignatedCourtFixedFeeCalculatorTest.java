@@ -1,8 +1,10 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.YOUTH_COURT;
+import static uk.gov.justice.laa.fee.scheme.enums.FeeBandType.HIGHER;
 import static uk.gov.justice.laa.fee.scheme.enums.FeeType.FIXED;
 import static uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner.TypeEnum.WARNING;
 
@@ -23,7 +25,9 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.CourtDesignationType;
+import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
+import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard.DesignatedCourtFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -214,5 +218,69 @@ class DesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     Set<CategoryType> result = calculator.getSupportedCategories();
 
     assertThat(result).isEmpty();
+  }
+
+  @Test
+  void calculate_whenHigherStandardMagistratesFeeClaimedBelowLowerLimit_shouldThrowValidationException() {
+    mockVatRatesService(true);
+
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("PROL1")
+        .claimId("claim_123")
+        .representationOrderDate(LocalDate.of(2025, 7, 29))
+        .netProfitCosts(313.19)
+        .netDisbursementAmount(100.00)
+        .disbursementVatAmount(20.00)
+        .vatIndicator(true)
+        .caseConcludedDate(LocalDate.of(2025, 10, 30))
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("PROL1")
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2022").build())
+        .fixedFee(new BigDecimal("542.58"))
+        .lowerStandardFeeLimit(new BigDecimal("313.19"))
+        .categoryType(MAGISTRATES_COURT)
+        .feeBandType(HIGHER)
+        .courtDesignationType(CourtDesignationType.DESIGNATED)
+        .feeType(FIXED)
+        .build();
+
+    assertThatThrownBy(() -> calculator.calculate(request, feeEntity))
+        .isInstanceOf(ValidationException.class)
+        .hasMessageContaining(ErrorType.ERR_CRIME_INCORRECT_STANDARD_FEE.getCode());
+  }
+
+  @Test
+  void calculate_whenHigherStandardMagistratesFeeClaimedAboveLowerLimit_shouldCalculateFee() {
+    mockVatRatesService(true);
+
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("PROL1")
+        .claimId("claim_123")
+        .representationOrderDate(LocalDate.of(2025, 7, 29))
+        .netProfitCosts(313.20)
+        .netDisbursementAmount(100.00)
+        .disbursementVatAmount(20.00)
+        .vatIndicator(true)
+        .caseConcludedDate(LocalDate.of(2025, 10, 30))
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("PROL1")
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2022").build())
+        .fixedFee(new BigDecimal("542.58"))
+        .lowerStandardFeeLimit(new BigDecimal("313.19"))
+        .categoryType(MAGISTRATES_COURT)
+        .feeBandType(HIGHER)
+        .courtDesignationType(CourtDesignationType.DESIGNATED)
+        .feeType(FIXED)
+        .build();
+
+    FeeCalculationResponse response = calculator.calculate(request, feeEntity);
+
+    assertThat(response.getValidationMessages()).isEmpty();
+    assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(771.10);
+    assertThat(response.getFeeCalculation().getFixedFeeAmount()).isEqualTo(542.58);
   }
 }

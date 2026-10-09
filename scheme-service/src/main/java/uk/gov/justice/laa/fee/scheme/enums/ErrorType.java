@@ -23,6 +23,9 @@ public enum ErrorType {
           + " Resubmit your claim with reported costs under the specified limit."),
   ERR_CRIME_REP_ORDER_DATE("ERRCRM12", "Fee Code and representation order date are incompatible. "
           + "Check both fields and resubmit."),
+  ERR_CRIME_INCORRECT_STANDARD_FEE("ERRCRM14", "The Higher Standard Fee code has been claimed incorrectly. "
+          + "The costs entered are less than the Lower Standard Fee Limit. "
+          + "Resubmit your claim with correct fee code for the Lower Standard fee."),
   ERR_CRIME_REP_ORDER_DATE_MISSING("ERRCRM8", "Enter a representation order date."),
   ERR_CRIME_UFN_DATE("ERRCRM1", "Fee code and UFN date are incompatible. Check both fields and resubmit."),
   ERR_CRIME_UFN_MISSING("ERRCRM7", "Enter a UFN."),

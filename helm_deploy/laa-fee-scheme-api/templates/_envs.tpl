@@ -34,6 +34,8 @@ env:
     value: {{ .Values.featureFlags.isInquestFeatureEnabled | quote }}
   - name: FEATURE_FLAG_REQUEST_OVERRIDES_ENABLED
     value: {{ .Values.featureFlags.requestOverridesEnabled | quote }}
+  - name: INQUEST_VALID_FROM
+    value: {{ .Values.feeScheme.inquestValidFrom | quote }}
   {{- if .Values.sentry.enabled }}
   - name: SENTRY_DSN
     value: {{ .Values.sentry.dsn }}

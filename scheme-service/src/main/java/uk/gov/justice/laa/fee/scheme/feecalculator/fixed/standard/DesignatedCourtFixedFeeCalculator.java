@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard;
 
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
+import static uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil.validateHigherStandardFeeClaim;
 import static uk.gov.justice.laa.fee.scheme.util.NumberUtil.toBigDecimal;
 
 import java.math.BigDecimal;
@@ -7,9 +9,11 @@ import java.util.List;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
@@ -27,6 +31,12 @@ public class DesignatedCourtFixedFeeCalculator extends StandardFixedFeeCalculato
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of();
+  }
+
+  @Override
+  public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
+    validateHigherStandardFeeClaim(feeCalculationRequest, feeEntity, MAGISTRATES_COURT);
+    return super.calculate(feeCalculationRequest, feeEntity);
   }
 
   @Override

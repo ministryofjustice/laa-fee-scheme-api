@@ -70,6 +70,9 @@ featureFlags:
   isInquestFeatureEnabled: false
   requestOverridesEnabled: false
 
+feeScheme:
+  inquestValidFrom: "2026-12-09"
+
 resources: {}
 
 autoscaling:

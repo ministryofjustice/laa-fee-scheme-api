@@ -10,6 +10,9 @@ import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.COMMUNITY_CARE;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MAGISTRATES_COURT;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.MEDIATION;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.POLICE_STATION;
+import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.YOUTH_COURT;
+import static uk.gov.justice.laa.fee.scheme.enums.FeeBandType.HIGHER;
+import static uk.gov.justice.laa.fee.scheme.enums.FeeBandType.LOWER;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,8 +20,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
+import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.enums.ClaimStartDateType;
+import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
 import uk.gov.justice.laa.fee.scheme.exception.CaseConcludedDateRequiredException;
 import uk.gov.justice.laa.fee.scheme.exception.StartDateRequiredException;
 import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
@@ -185,6 +190,97 @@ class FeeCalculationUtilTest {
         new BigDecimal("24.10"));
 
     assertThat(totalAmount).isEqualTo(new BigDecimal("144.60"));
+  }
+
+  @Test
+  void validateHigherStandardFeeClaim_shouldThrowWhenProfitCostsAreAtOrBelowLowerLimit() {
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("PROF1")
+        .claimId("claim_123")
+        .netProfitCosts(313.19)
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("PROF1")
+        .categoryType(MAGISTRATES_COURT)
+        .feeBandType(HIGHER)
+        .lowerStandardFeeLimit(new BigDecimal("313.19"))
+        .build();
+
+    assertThatThrownBy(() -> FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT))
+        .isInstanceOf(ValidationException.class)
+        .hasMessageContaining(ErrorType.ERR_CRIME_INCORRECT_STANDARD_FEE.getCode());
+  }
+
+  @Test
+  void validateHigherStandardFeeClaim_shouldNotThrowWhenProfitCostsExceedLowerLimit() {
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("PROF1")
+        .claimId("claim_123")
+        .netProfitCosts(313.20)
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("PROF1")
+        .categoryType(MAGISTRATES_COURT)
+        .feeBandType(HIGHER)
+        .lowerStandardFeeLimit(new BigDecimal("313.19"))
+        .build();
+
+    FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT);
+  }
+
+  @Test
+  void validateHigherStandardFeeClaim_shouldNotThrowWhenProfitCostsAreMissing() {
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("PROF1")
+        .claimId("claim_123")
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("PROF1")
+        .categoryType(MAGISTRATES_COURT)
+        .feeBandType(HIGHER)
+        .lowerStandardFeeLimit(new BigDecimal("313.19"))
+        .build();
+
+    FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT);
+  }
+
+  @Test
+  void validateHigherStandardFeeClaim_shouldNotThrowForLowerFeeBand() {
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("PROE1")
+        .claimId("claim_123")
+        .netProfitCosts(10.00)
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("PROE1")
+        .categoryType(MAGISTRATES_COURT)
+        .feeBandType(LOWER)
+        .lowerStandardFeeLimit(new BigDecimal("313.19"))
+        .build();
+
+    FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT);
+  }
+
+  @Test
+  void validateHigherStandardFeeClaim_shouldNotThrowForYouthCourt() {
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("YOUF1")
+        .claimId("claim_123")
+        .netProfitCosts(10.00)
+        .build();
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode("YOUF1")
+        .categoryType(YOUTH_COURT)
+        .feeBandType(HIGHER)
+        .lowerStandardFeeLimit(new BigDecimal("313.19"))
+        .build();
+
+    FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT);
   }
 
   @Test
