@@ -956,71 +956,71 @@ Feature: Fee Calculation API
 
     @mags_court_designated
     Examples: Mags Court Designated
-      | feeCode  | startDate  | representationOrderDate |netDisbursementAmount | disbursementVatAmount | vatIndicator | numberOfMediationSessions | boltOnAdjournedHearing | expectedTotal |
-      | PROJ5    | 2016-04-01 | 2016-04-01              |20                    | 10.50                 | true         | 0                         | 0                      | 322.45|
-      | PROJ5    | 2022-09-30 | 2022-09-30              |20                    | 10.50                 | false        | 0                         | 0                      | 310.02|
-      | PROJ6    | 2016-04-01 | 2016-04-01              |20                    | 15.50                 | true         | 0                         | 0                      | 266.64|
-      | PROJ6    | 2022-09-30 | 2022-09-30              |20                    | 15.50                 | false        | 0                         | 0                      | 256.53|
-      | PROJ7    | 2016-04-01 | 2022-09-29              |20                    | 10.50                 | true         | 0                         | 0                      | 590.17|
-      | PROJ8    | 2016-04-01 | 2016-04-02              |20                    | 10.50                 | false        | 0                         | 0                      | 459.64|
-      | PROK1    | 2016-04-01 | 2016-04-01              |20                    | 15.50                 | true         | 0                         | 0                      | 322.45|
-      | PROK2    | 2016-04-01 | 2016-04-01              |20                    | 15.50                 | false        | 0                         | 0                      | 226.20|
-      | PROK3    | 2022-09-30 | 2022-09-30              |20                    | 10.50                 | true         | 0                         | 0                      | 500.57|
-      | PROL1    | 2022-09-30 | 2022-09-30              |20                    | 10.50                 | false        | 0                         | 0                      | 566.58|
-      | PROL2    | 2016-04-01 | 2016-04-01              |20                    | 15.50                 | true         | 0                         | 0                      | 546.77|
-      | PROL3    | 2022-09-30 | 2022-10-01              |20                    | 15.50                 | false        | 0                         | 0                      | 855.85|
+      | feeCode  | startDate  | representationOrderDate | netProfitCosts | netDisbursementAmount | disbursementVatAmount | vatIndicator | numberOfMediationSessions | boltOnAdjournedHearing | expectedTotal |
+      | PROJ5    | 2016-04-01 | 2016-04-01              |                | 20                    | 10.50                 | true         | 0                         | 0                      | 322.45|
+      | PROJ5    | 2022-09-30 | 2022-09-30              |                | 20                    | 10.50                 | false        | 0                         | 0                      | 310.02|
+      | PROJ6    | 2016-04-01 | 2016-04-01              |                | 20                    | 15.50                 | true         | 0                         | 0                      | 266.64|
+      | PROJ6    | 2022-09-30 | 2022-09-30              |                | 20                    | 15.50                 | false        | 0                         | 0                      | 256.53|
+      | PROJ7    | 2016-04-01 | 2022-09-29              | 1000.00        | 20                    | 10.50                 | true         | 0                         | 0                      | 590.17|
+      | PROJ8    | 2016-04-01 | 2016-04-02              | 1000.00        | 20                    | 10.50                 | false        | 0                         | 0                      | 459.64|
+      | PROK1    | 2016-04-01 | 2016-04-01              |                | 20                    | 15.50                 | true         | 0                         | 0                      | 322.45|
+      | PROK2    | 2016-04-01 | 2016-04-01              |                | 20                    | 15.50                 | false        | 0                         | 0                      | 226.20|
+      | PROK3    | 2022-09-30 | 2022-09-30              |                | 20                    | 10.50                 | true         | 0                         | 0                      | 500.57|
+      | PROL1    | 2022-09-30 | 2022-09-30              | 1000.00        | 20                    | 10.50                 | false        | 0                         | 0                      | 566.58|
+      | PROL2    | 2016-04-01 | 2016-04-01              | 1000.00        | 20                    | 15.50                 | true         | 0                         | 0                      | 546.77|
+      | PROL3    | 2022-09-30 | 2022-10-01              | 1000.00        | 20                    | 15.50                 | false        | 0                         | 0                      | 855.85|
 
     @youth_court_designated
     Examples: Youth Court Designated
-      | feeCode  | startDate  | representationOrderDate |netDisbursementAmount | disbursementVatAmount | vatIndicator | numberOfMediationSessions | boltOnAdjournedHearing | expectedTotal  |
-      | YOUK1    | 2024-12-06 | 2024-12-06              |20                    | 10.50                 | true         | 0                         | 0                      | 1085.53|
-      | YOUK2    | 2024-12-06 | 2024-12-07              |20                    | 10.50                 | false        | 0                         | 0                      | 256.53|
-      | YOUK3    | 2024-12-06 | 2025-01-01              |20                    | 15.50                 | true         | 0                         | 0                      | 1218.88|
-      | YOUK4    | 2024-12-06 | 2025-05-05              |20                    | 15.50                 | false        | 0                         | 0                      | 421.14|
-      | YOUL1    | 2024-12-06 | 2024-12-06              |20                    | 10.50                 | true         | 0                         | 0                      | 1393.40|
-      | YOUL2    | 2024-12-06 | 2024-12-07              |20                    | 10.50                 | false        | 0                         | 0                      | 524.99|
-      | YOUL3    | 2024-12-06 | 2025-01-01              |20                    | 15.50                 | true         | 0                         | 0                      | 1740.53|
-      | YOUL4    | 2024-12-06 | 2025-05-05              |20                    | 15.50                 | false        | 0                         | 0                      | 855.85|
-      | YOUY1    | 2024-12-06 | 2024-12-06              |20                    | 10.50                 | true         | 0                         | 0                      | 1085.53|
-      | YOUY2    | 2024-12-06 | 2024-12-07              |20                    | 10.50                 | false        | 0                         | 0                      | 256.53|
-      | YOUY3    | 2024-12-06 | 2025-01-01              |20                    | 15.50                 | true         | 0                         | 0                      | 1393.40|
-      | YOUY4    | 2024-12-06 | 2025-05-05              |20                    | 15.50                 | false        | 0                         | 0                      | 524.99|
+      | feeCode  | startDate  | representationOrderDate | netProfitCosts | netDisbursementAmount | disbursementVatAmount | vatIndicator | numberOfMediationSessions | boltOnAdjournedHearing | expectedTotal  |
+      | YOUK1    | 2024-12-06 | 2024-12-06              |                | 20                    | 10.50                 | true         | 0                         | 0                      | 1085.53|
+      | YOUK2    | 2024-12-06 | 2024-12-07              |                | 20                    | 10.50                 | false        | 0                         | 0                      | 256.53|
+      | YOUK3    | 2024-12-06 | 2025-01-01              |                | 20                    | 15.50                 | true         | 0                         | 0                      | 1218.88|
+      | YOUK4    | 2024-12-06 | 2025-05-05              |                | 20                    | 15.50                 | false        | 0                         | 0                      | 421.14|
+      | YOUL1    | 2024-12-06 | 2024-12-06              | 1000.00        | 20                    | 10.50                 | true         | 0                         | 0                      | 1393.40|
+      | YOUL2    | 2024-12-06 | 2024-12-07              | 1000.00        | 20                    | 10.50                 | false        | 0                         | 0                      | 524.99|
+      | YOUL3    | 2024-12-06 | 2025-01-01              | 1000.00        | 20                    | 15.50                 | true         | 0                         | 0                      | 1740.53|
+      | YOUL4    | 2024-12-06 | 2025-05-05              | 1000.00        | 20                    | 15.50                 | false        | 0                         | 0                      | 855.85|
+      | YOUY1    | 2024-12-06 | 2024-12-06              |                | 20                    | 10.50                 | true         | 0                         | 0                      | 1085.53|
+      | YOUY2    | 2024-12-06 | 2024-12-07              |                | 20                    | 10.50                 | false        | 0                         | 0                      | 256.53|
+      | YOUY3    | 2024-12-06 | 2025-01-01              | 1000.00        | 20                    | 15.50                 | true         | 0                         | 0                      | 1393.40|
+      | YOUY4    | 2024-12-06 | 2025-05-05              | 1000.00        | 20                    | 15.50                 | false        | 0                         | 0                      | 524.99|
 
     @mags_court_undesignated
     Examples: Mags Court Undesignated
-      | feeCode  | startDate  | representationOrderDate | netTravelCosts| netWaitingCosts | netDisbursementAmount | disbursementVatAmount | vatIndicator | numberOfMediationSessions | boltOnAdjournedHearing | expectedTotal |
-      | PROE1    | 2016-04-01 | 2016-04-01              | 100           | 50              | 20                    | 10.50                 | true         | 0                         | 0                      | 437.62|
-      | PROE1    | 2022-09-30 | 2022-09-30              | 100           | 50              | 20                    | 10.50                 | false        | 0                         | 0                      | 397.88|
-      | PROE2    | 2016-04-01 | 2016-04-01              | 100           | 50              | 20                    | 15.50                 | true         | 0                         | 0                      | 393.92|
-      | PROE2    | 2022-09-30 | 2022-09-30              | 100           | 50              | 20                    | 15.50                 | false        | 0                         | 0                      | 356.01|
-      | PROE3    | 2016-04-01 | 2016-04-01              | 100           | 50              | 20                    | 10.50                 | true         | 0                         | 0                      | 539.34|
-      | PROF1    | 2022-09-30 | 2022-09-30              | 100           | 50              | 20                    | 10.50                 | false        | 0                         | 0                      | 648.15|
-      | PROF2    | 2016-04-01 | 2022-09-29              | 100           | 50              | 20                    | 15.50                 | true         | 0                         | 0                      | 660.84|
-      | PROF3    | 2016-04-01 | 2016-04-02              | 100           | 50              | 20                    | 15.50                 | false        | 0                         | 0                      | 814.94|
-      | PROJ1    | 2016-04-01 | 2016-04-01              | 100           | 50              | 20                    | 10.50                 | true         | 0                         | 0                      | 437.62|
-      | PROJ2    | 2016-04-01 | 2016-04-01              | 100           | 50              | 20                    | 10.50                 | false        | 0                         | 0                      | 332.27|
-      | PROJ3    | 2022-09-30 | 2022-09-30              | 100           | 50              | 20                    | 15.50                 | true         | 0                         | 0                      | 772.98|
-      | PROJ4    | 2022-09-30 | 2022-09-30              | 100           | 50              | 20                    | 15.50                 | false        | 0                         | 0                      | 611.81|
-      | PROV1    | 2016-04-01 | 2016-04-01              | 100           | 50              | 20                    | 10.50                 | true         | 0                         | 0                      | 393.92|
-      | PROV2    | 2022-09-30 | 2022-09-30              | 100           | 50              | 20                    | 10.50                 | false        | 0                         | 0                      | 611.81|
-      | PROV3    | 2016-04-01 | 2016-04-01              | 100           | 50              | 20                    | 15.50                 | true         | 0                         | 0                      | 539.34|
-      | PROV4    | 2022-09-30 | 2024-10-01              | 100           | 50              | 20                    | 15.50                 | false        | 0                         | 0                      | 911.08|
+      | feeCode  | startDate  | representationOrderDate | netProfitCosts | netTravelCosts| netWaitingCosts | netDisbursementAmount | disbursementVatAmount | vatIndicator | numberOfMediationSessions | boltOnAdjournedHearing | expectedTotal |
+      | PROE1    | 2016-04-01 | 2016-04-01              | 1000.00        | 100           | 50              | 20                    | 10.50                 | true         | 0                         | 0                      | 437.62|
+      | PROE1    | 2022-09-30 | 2022-09-30              | 1000.00        | 100           | 50              | 20                    | 10.50                 | false        | 0                         | 0                      | 397.88|
+      | PROE2    | 2016-04-01 | 2016-04-01              | 1000.00        | 100           | 50              | 20                    | 15.50                 | true         | 0                         | 0                      | 393.92|
+      | PROE2    | 2022-09-30 | 2022-09-30              | 1000.00        | 100           | 50              | 20                    | 15.50                 | false        | 0                         | 0                      | 356.01|
+      | PROE3    | 2016-04-01 | 2016-04-01              | 1000.00        | 100           | 50              | 20                    | 10.50                 | true         | 0                         | 0                      | 539.34|
+      | PROF1    | 2022-09-30 | 2022-09-30              | 1000.00        | 100           | 50              | 20                    | 10.50                 | false        | 0                         | 0                      | 648.15|
+      | PROF2    | 2016-04-01 | 2022-09-29              | 1000.00        | 100           | 50              | 20                    | 15.50                 | true         | 0                         | 0                      | 660.84|
+      | PROF3    | 2016-04-01 | 2016-04-02              | 1000.00        | 100           | 50              | 20                    | 15.50                 | false        | 0                         | 0                      | 814.94|
+      | PROJ1    | 2016-04-01 | 2016-04-01              | 1000.00        | 100           | 50              | 20                    | 10.50                 | true         | 0                         | 0                      | 437.62|
+      | PROJ2    | 2016-04-01 | 2016-04-01              | 1000.00        | 100           | 50              | 20                    | 10.50                 | false        | 0                         | 0                      | 332.27|
+      | PROJ3    | 2022-09-30 | 2022-09-30              | 1000.00        | 100           | 50              | 20                    | 15.50                 | true         | 0                         | 0                      | 772.98|
+      | PROJ4    | 2022-09-30 | 2022-09-30              | 1000.00        | 100           | 50              | 20                    | 15.50                 | false        | 0                         | 0                      | 611.81|
+      | PROV1    | 2016-04-01 | 2016-04-01              | 1000.00        | 100           | 50              | 20                    | 10.50                 | true         | 0                         | 0                      | 393.92|
+      | PROV2    | 2022-09-30 | 2022-09-30              | 1000.00        | 100           | 50              | 20                    | 10.50                 | false        | 0                         | 0                      | 611.81|
+      | PROV3    | 2016-04-01 | 2016-04-01              | 1000.00        | 100           | 50              | 20                    | 15.50                 | true         | 0                         | 0                      | 539.34|
+      | PROV4    | 2022-09-30 | 2024-10-01              | 1000.00        | 100           | 50              | 20                    | 15.50                 | false        | 0                         | 0                      | 911.08|
 
     @youth_court_undesignated
     Examples: Youth Court Undesignated
-      | feeCode  | startDate  | representationOrderDate | netTravelCosts| netWaitingCosts | netDisbursementAmount | disbursementVatAmount | vatIndicator | numberOfMediationSessions | boltOnAdjournedHearing | expectedTotal |
-      | YOUE1    | 2024-12-06 | 2024-12-06              | 100           | 50              | 20                    | 10.50                 | true         | 0                         | 0                      | 1190.96|
-      | YOUE2    | 2024-12-06 | 2024-12-07              | 100           | 50              | 20                    | 10.50                 | false        | 0                         | 0                      | 356.01|
-      | YOUE3    | 2024-12-06 | 2025-01-01              | 100           | 50              | 20                    | 15.50                 | true         | 0                         | 0                      | 1307.95|
-      | YOUE4    | 2024-12-06 | 2025-05-05              | 100           | 50              | 20                    | 15.50                 | false        | 0                         | 0                      | 495.37|
-      | YOUF1    | 2024-12-06 | 2024-12-06              | 100           | 50              | 20                    | 10.50                 | true         | 0                         | 0                      | 1491.29|
-      | YOUF2    | 2024-12-06 | 2024-12-07              | 100           | 50              | 20                    | 10.50                 | false        | 0                         | 0                      | 611.81|
-      | YOUF3    | 2024-12-06 | 2025-01-01              | 100           | 50              | 20                    | 15.50                 | true         | 0                         | 0                      | 1806.80|
-      | YOUF4    | 2024-12-06 | 2025-05-05              | 100           | 50              | 20                    | 15.50                 | false        | 0                         | 0                      | 911.08|
-      | YOUX1    | 2024-12-06 | 2024-12-06              | 100           | 50              | 20                    | 10.50                 | true         | 0                         | 0                      | 1190.96|
-      | YOUX2    | 2024-12-06 | 2024-12-07              | 100           | 50              | 20                    | 10.50                 | false        | 0                         | 0                      | 356.01|
-      | YOUX3    | 2024-12-06 | 2025-01-01              | 100           | 50              | 20                    | 15.50                 | true         | 0                         | 0                      | 1491.29|
-      | YOUX4    | 2024-12-06 | 2025-05-05              | 100           | 50              | 20                    | 15.50                 | false        | 0                         | 0                      | 611.81|
+      | feeCode  | startDate  | representationOrderDate | netProfitCosts | netTravelCosts| netWaitingCosts | netDisbursementAmount | disbursementVatAmount | vatIndicator | numberOfMediationSessions | boltOnAdjournedHearing | expectedTotal |
+      | YOUE1    | 2024-12-06 | 2024-12-06              | 1000.00        | 100           | 50              | 20                    | 10.50                 | true         | 0                         | 0                      | 1190.96|
+      | YOUE2    | 2024-12-06 | 2024-12-07              | 1000.00        | 100           | 50              | 20                    | 10.50                 | false        | 0                         | 0                      | 356.01|
+      | YOUE3    | 2024-12-06 | 2025-01-01              | 1000.00        | 100           | 50              | 20                    | 15.50                 | true         | 0                         | 0                      | 1307.95|
+      | YOUE4    | 2024-12-06 | 2025-05-05              | 1000.00        | 100           | 50              | 20                    | 15.50                 | false        | 0                         | 0                      | 495.37|
+      | YOUF1    | 2024-12-06 | 2024-12-06              | 1000.00        | 100           | 50              | 20                    | 10.50                 | true         | 0                         | 0                      | 1491.29|
+      | YOUF2    | 2024-12-06 | 2024-12-07              | 1000.00        | 100           | 50              | 20                    | 10.50                 | false        | 0                         | 0                      | 611.81|
+      | YOUF3    | 2024-12-06 | 2025-01-01              | 1000.00        | 100           | 50              | 20                    | 15.50                 | true         | 0                         | 0                      | 1806.80|
+      | YOUF4    | 2024-12-06 | 2025-05-05              | 1000.00        | 100           | 50              | 20                    | 15.50                 | false        | 0                         | 0                      | 911.08|
+      | YOUX1    | 2024-12-06 | 2024-12-06              | 1000.00        | 100           | 50              | 20                    | 10.50                 | true         | 0                         | 0                      | 1190.96|
+      | YOUX2    | 2024-12-06 | 2024-12-07              | 1000.00        | 100           | 50              | 20                    | 10.50                 | false        | 0                         | 0                      | 356.01|
+      | YOUX3    | 2024-12-06 | 2025-01-01              | 1000.00        | 100           | 50              | 20                    | 15.50                 | true         | 0                         | 0                      | 1491.29|
+      | YOUX4    | 2024-12-06 | 2025-05-05              | 1000.00        | 100           | 50              | 20                    | 15.50                 | false        | 0                         | 0                      | 611.81|
 
     @assoc_civil_work
     Examples: Associated Civil Work
