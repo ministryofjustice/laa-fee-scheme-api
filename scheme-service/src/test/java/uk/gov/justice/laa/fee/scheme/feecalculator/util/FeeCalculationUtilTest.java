@@ -214,7 +214,7 @@ class FeeCalculationUtilTest {
   }
 
   @Test
-  void validateHigherStandardFeeClaim_shouldNotThrowWhenRelevantCostsEqualLowerLimit() {
+  void validateHigherStandardFeeClaim_shouldThrowWhenRelevantCostsEqualLowerLimit() {
     FeeCalculationRequest request = FeeCalculationRequest.builder()
         .feeCode("PROF1")
         .claimId("claim_123")
@@ -228,8 +228,10 @@ class FeeCalculationUtilTest {
         .lowerStandardFeeLimit(new BigDecimal("313.19"))
         .build();
 
-    FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT,
-        new BigDecimal("313.19"));
+    assertThatThrownBy(() -> FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT,
+        new BigDecimal("313.19")))
+        .isInstanceOf(ValidationException.class)
+        .hasMessageContaining(ErrorType.ERR_CRIME_INCORRECT_STANDARD_FEE.getCode());
   }
 
   @Test

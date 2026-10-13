@@ -185,7 +185,7 @@ public final class FeeCalculationUtil {
       return;
     }
 
-    if (relevantCosts.compareTo(feeEntity.getLowerStandardFeeLimit()) < 0) {
+    if (relevantCosts.compareTo(feeEntity.getLowerStandardFeeLimit()) <= 0) {
       throw new ValidationException(ErrorType.ERR_CRIME_INCORRECT_STANDARD_FEE,
           new FeeContext(feeCalculationRequest));
     }

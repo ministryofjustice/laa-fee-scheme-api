@@ -209,7 +209,7 @@ class PrisonLawFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
 
   @ParameterizedTest
   @ValueSource(strings = {"PRIB2", "PRIC2", "PRID2", "PRIE2"})
-  void test_whenPrisonLawHigherFeeCodesAreEqualToLowerLimit_shouldAllowClaim(String feeCode) {
+  void test_whenPrisonLawHigherFeeCodesAreEqualToLowerLimit_shouldRejectClaim(String feeCode) {
     mockVatRatesService(false);
 
     FeeCalculationRequest feeCalculationRequest = buildFeeCalculationRequest(feeCode,
@@ -225,10 +225,9 @@ class PrisonLawFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .lowerStandardFeeLimit(BigDecimal.valueOf(750.00))
         .build();
 
-    FeeCalculationResponse response = prisonLawFeeCalculator.calculate(feeCalculationRequest, feeEntity);
-
-    assertThat(response).isNotNull();
-    assertThat(response.getValidationMessages()).isEmpty();
+    assertThatThrownBy(() -> prisonLawFeeCalculator.calculate(feeCalculationRequest, feeEntity))
+        .isInstanceOf(ValidationException.class)
+        .hasMessageContaining(ErrorType.ERR_CRIME_INCORRECT_STANDARD_FEE.getCode());
   }
 
   @Nested
