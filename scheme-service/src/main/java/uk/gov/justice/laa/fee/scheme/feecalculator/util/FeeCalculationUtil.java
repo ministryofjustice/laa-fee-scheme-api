@@ -36,7 +36,6 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.util.DateUtil;
-import uk.gov.justice.laa.fee.scheme.util.NumberUtil;
 
 /**
  * Utility class for fee calculation operations.
