@@ -220,15 +220,21 @@ class DesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     assertThat(result).isEmpty();
   }
 
-  @Test
-  void calculate_whenHigherStandardMagistratesFeeClaimedBelowLowerLimit_shouldThrowValidationException() {
+  @ParameterizedTest
+  @CsvSource({
+      "PROL1, MAGISTRATES_COURT, MAGS_COURT_FS2022, 313.19",
+      "YOUL1, YOUTH_COURT, YOUTH_COURT_FS2024, 313.18",
+      "YOUL1, YOUTH_COURT, YOUTH_COURT_FS2024, 313.19"
+  })
+  void calculate_whenHigherStandardFeeClaimedAtOrBelowLowerLimit_shouldThrowValidationException(
+      String feeCode, CategoryType categoryType, String schemeCode, double netProfitCosts) {
     mockVatRatesService(true);
 
     FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .feeCode("PROL1")
+        .feeCode(feeCode)
         .claimId("claim_123")
         .representationOrderDate(LocalDate.of(2025, 7, 29))
-        .netProfitCosts(313.19)
+        .netProfitCosts(netProfitCosts)
         .netDisbursementAmount(100.00)
         .disbursementVatAmount(20.00)
         .vatIndicator(true)
@@ -236,11 +242,11 @@ class DesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("PROL1")
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2022").build())
+        .feeCode(feeCode)
+        .feeScheme(FeeSchemesEntity.builder().schemeCode(schemeCode).build())
         .fixedFee(new BigDecimal("542.58"))
         .lowerStandardFeeLimit(new BigDecimal("313.19"))
-        .categoryType(MAGISTRATES_COURT)
+        .categoryType(categoryType)
         .feeBandType(HIGHER)
         .courtDesignationType(CourtDesignationType.DESIGNATED)
         .feeType(FIXED)
@@ -251,12 +257,17 @@ class DesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .hasMessageContaining(ErrorType.ERR_CRIME_INCORRECT_STANDARD_FEE.getCode());
   }
 
-  @Test
-  void calculate_whenHigherStandardMagistratesFeeClaimedAboveLowerLimit_shouldCalculateFee() {
+  @ParameterizedTest
+  @CsvSource({
+      "PROL1, MAGISTRATES_COURT, MAGS_COURT_FS2022, 542.58, 771.10",
+      "YOUL1, YOUTH_COURT, YOUTH_COURT_FS2024, 1141.17, 1489.40"
+  })
+  void calculate_whenHigherStandardFeeClaimedAboveLowerLimit_shouldCalculateFee(
+      String feeCode, CategoryType categoryType, String schemeCode, BigDecimal fixedFee, double expectedTotal) {
     mockVatRatesService(true);
 
     FeeCalculationRequest request = FeeCalculationRequest.builder()
-        .feeCode("PROL1")
+        .feeCode(feeCode)
         .claimId("claim_123")
         .representationOrderDate(LocalDate.of(2025, 7, 29))
         .netProfitCosts(313.20)
@@ -267,11 +278,11 @@ class DesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
         .build();
 
     FeeEntity feeEntity = FeeEntity.builder()
-        .feeCode("PROL1")
-        .feeScheme(FeeSchemesEntity.builder().schemeCode("MAGS_COURT_FS2022").build())
-        .fixedFee(new BigDecimal("542.58"))
+        .feeCode(feeCode)
+        .feeScheme(FeeSchemesEntity.builder().schemeCode(schemeCode).build())
+        .fixedFee(fixedFee)
         .lowerStandardFeeLimit(new BigDecimal("313.19"))
-        .categoryType(MAGISTRATES_COURT)
+        .categoryType(categoryType)
         .feeBandType(HIGHER)
         .courtDesignationType(CourtDesignationType.DESIGNATED)
         .feeType(FIXED)
@@ -280,7 +291,7 @@ class DesignatedCourtFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     FeeCalculationResponse response = calculator.calculate(request, feeEntity);
 
     assertThat(response.getValidationMessages()).isEmpty();
-    assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(771.10);
-    assertThat(response.getFeeCalculation().getFixedFeeAmount()).isEqualTo(542.58);
+    assertThat(response.getFeeCalculation().getTotalAmount()).isEqualTo(expectedTotal);
+    assertThat(response.getFeeCalculation().getFixedFeeAmount()).isEqualTo(fixedFee.doubleValue());
   }
 }

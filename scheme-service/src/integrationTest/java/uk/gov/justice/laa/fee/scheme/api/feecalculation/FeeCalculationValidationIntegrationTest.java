@@ -665,24 +665,53 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
 
   @ParameterizedTest
   @CsvSource({
-      "PROF1",
-      "PROL1"
+      "PROF1, 2025-07-29, 313.19",
+      "PROL1, 2025-07-29, 313.19",
+      "YOUF1, 2025-12-21, 313.19",
+      "YOUF2, 2025-12-21, 313.19",
+      "YOUF3, 2025-12-21, 538.02",
+      "YOUF4, 2025-12-21, 538.02",
+      "YOUL1, 2025-12-21, 313.19",
+      "YOUL2, 2025-12-21, 313.19",
+      "YOUL3, 2025-12-21, 538.02",
+      "YOUL4, 2025-12-21, 538.02",
+      "YOUX3, 2025-12-21, 313.19",
+      "YOUX4, 2025-12-21, 313.19",
+      "YOUY3, 2025-12-21, 313.19",
+      "YOUY4, 2025-12-21, 313.19",
+      "YOUF1, 2025-12-22, 344.51",
+      "YOUF2, 2025-12-22, 344.51",
+      "YOUF3, 2025-12-22, 591.82",
+      "YOUF4, 2025-12-22, 591.82",
+      "YOUL1, 2025-12-22, 344.51",
+      "YOUL2, 2025-12-22, 344.51",
+      "YOUL3, 2025-12-22, 591.82",
+      "YOUL4, 2025-12-22, 591.82",
+      "YOUX3, 2025-12-22, 344.51",
+      "YOUX4, 2025-12-22, 344.51",
+      "YOUY3, 2025-12-22, 344.51",
+      "YOUY4, 2025-12-22, 344.51",
+      "YOUF1, 2025-12-21, 313.18",
+      "YOUL1, 2025-12-21, 313.18",
+      "YOUF3, 2025-12-22, 591.81",
+      "YOUL3, 2025-12-22, 591.81"
   })
-  void shouldReturnValidationErrorWhenHigherStandardMagistratesFeeClaimedBelowLowerLimit(String feeCode)
+  void shouldReturnValidationErrorWhenHigherStandardFeeClaimedAtOrBelowLowerLimit(
+      String feeCode, String repOrderDate, String netProfitCosts)
       throws Exception {
     String request =
         """
         {
           "feeCode": "%s",
           "claimId": "claim_123",
-          "representationOrderDate": "2025-07-29",
-          "netProfitCosts": 313.19,
+          "representationOrderDate": "%s",
+          "netProfitCosts": %s,
           "netDisbursementAmount": 123.38,
           "disbursementVatAmount": 24.67,
           "vatIndicator": true,
           "caseConcludedDate": "2026-02-01"
         }
-        """.formatted(feeCode);
+        """.formatted(feeCode, repOrderDate, netProfitCosts);
 
     postAndExpect(
         request,

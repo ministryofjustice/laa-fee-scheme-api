@@ -116,4 +116,4 @@ Feature: Magistrates higher standard fee validation
       | PROJ7   | 2025-12-22              | 1000.00        |                |                 | MAGS_COURT_FS2025  | 864.26        | 596.84         |
       | PROJ8   | 2025-12-22              | 1000.00        |                |                 | MAGS_COURT_FS2025  | 809.36        | 551.09         |
       | PROE1   | 2025-12-21              | 100.00         | 111            | 100             | MAGS_COURT_FS2022  | 669.91        | 223.88         |
-      | YOUF1   | 2025-12-22              | 100.00         | 111            | 100             | YOUTH_COURT_FS2025 | 1817.26       | 1180.01        |
+      | YOUF1   | 2025-12-22              | 344.52         | 111            | 100             | YOUTH_COURT_FS2025 | 1817.26       | 1180.01        |
