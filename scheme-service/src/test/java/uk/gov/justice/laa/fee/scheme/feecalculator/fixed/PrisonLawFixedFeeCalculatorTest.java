@@ -2,6 +2,7 @@ package uk.gov.justice.laa.fee.scheme.feecalculator.fixed;
 
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.laa.fee.scheme.enums.CategoryType.PRISON_LAW;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_PRISON_HAS_ESCAPED;
 import static uk.gov.justice.laa.fee.scheme.enums.WarningType.WARN_PRISON_MAY_HAVE_ESCAPED;
@@ -20,13 +21,17 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.entity.FeeSchemesEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
+import uk.gov.justice.laa.fee.scheme.enums.ErrorType;
+import uk.gov.justice.laa.fee.scheme.enums.FeeBandType;
 import uk.gov.justice.laa.fee.scheme.enums.FeeType;
 import uk.gov.justice.laa.fee.scheme.enums.WarningType;
+import uk.gov.justice.laa.fee.scheme.exception.ValidationException;
 import uk.gov.justice.laa.fee.scheme.feecalculator.BaseFeeCalculatorTest;
 import uk.gov.justice.laa.fee.scheme.feecalculator.fixed.standard.PrisonLawFixedFeeCalculator;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculation;
@@ -176,6 +181,53 @@ class PrisonLawFixedFeeCalculatorTest extends BaseFeeCalculatorTest {
     FeeCalculationResponse response = prisonLawFeeCalculator.calculate(feeCalculationRequest, feeEntity);
 
     assertThat(response.getEscapeCaseFlag()).isFalse();
+    assertThat(response.getValidationMessages()).isEmpty();
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"PRIB2", "PRIC2", "PRID2", "PRIE2"})
+  void test_whenPrisonLawHigherFeeCodesAreBelowLowerLimit_shouldRejectClaim(String feeCode) {
+    mockVatRatesService(false);
+
+    FeeCalculationRequest feeCalculationRequest = buildFeeCalculationRequest(feeCode,
+        "121221/799", false, 100.00, 20.00, 250.0, 60.0);
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode(feeCode)
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("PRISON_FS2016").build())
+        .fixedFee(BigDecimal.valueOf(200.75))
+        .categoryType(PRISON_LAW)
+        .feeType(FeeType.FIXED)
+        .feeBandType(FeeBandType.HIGHER)
+        .lowerStandardFeeLimit(BigDecimal.valueOf(750.00))
+        .build();
+
+    assertThatThrownBy(() -> prisonLawFeeCalculator.calculate(feeCalculationRequest, feeEntity))
+        .isInstanceOf(ValidationException.class)
+        .hasMessageContaining(ErrorType.ERR_CRIME_INCORRECT_STANDARD_FEE.getCode());
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"PRIB2", "PRIC2", "PRID2", "PRIE2"})
+  void test_whenPrisonLawHigherFeeCodesAreEqualToLowerLimit_shouldAllowClaim(String feeCode) {
+    mockVatRatesService(false);
+
+    FeeCalculationRequest feeCalculationRequest = buildFeeCalculationRequest(feeCode,
+        "121221/799", false, 100.00, 20.00, 500.0, 250.0);
+
+    FeeEntity feeEntity = FeeEntity.builder()
+        .feeCode(feeCode)
+        .feeScheme(FeeSchemesEntity.builder().schemeCode("PRISON_FS2016").build())
+        .fixedFee(BigDecimal.valueOf(200.75))
+        .categoryType(PRISON_LAW)
+        .feeType(FeeType.FIXED)
+        .feeBandType(FeeBandType.HIGHER)
+        .lowerStandardFeeLimit(BigDecimal.valueOf(750.00))
+        .build();
+
+    FeeCalculationResponse response = prisonLawFeeCalculator.calculate(feeCalculationRequest, feeEntity);
+
+    assertThat(response).isNotNull();
     assertThat(response.getValidationMessages()).isEmpty();
   }
 
