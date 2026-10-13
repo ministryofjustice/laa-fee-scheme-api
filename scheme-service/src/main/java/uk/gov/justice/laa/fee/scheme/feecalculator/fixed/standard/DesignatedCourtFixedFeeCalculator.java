@@ -35,7 +35,8 @@ public class DesignatedCourtFixedFeeCalculator extends StandardFixedFeeCalculato
 
   @Override
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
-    validateHigherStandardFeeClaim(feeCalculationRequest, feeEntity, MAGISTRATES_COURT);
+    validateHigherStandardFeeClaim(feeCalculationRequest, feeEntity, MAGISTRATES_COURT,
+        toBigDecimal(feeCalculationRequest.getNetProfitCosts()));
     return super.calculate(feeCalculationRequest, feeEntity);
   }
 

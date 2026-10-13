@@ -46,7 +46,8 @@ public class UndesignatedCourtFixedFeeCalculator implements FeeCalculator {
   public FeeCalculationResponse calculate(FeeCalculationRequest feeCalculationRequest, FeeEntity feeEntity) {
     log.info("Calculate magistrates and youth court undesignated fixed fee");
 
-    validateHigherStandardFeeClaim(feeCalculationRequest, feeEntity, MAGISTRATES_COURT);
+    validateHigherStandardFeeClaim(feeCalculationRequest, feeEntity, MAGISTRATES_COURT,
+        toBigDecimal(feeCalculationRequest.getNetProfitCosts()));
 
     // Get fixed fee amount
     BigDecimal fixedFeeAmount = defaultToZeroIfNull(feeEntity.getFixedFee());

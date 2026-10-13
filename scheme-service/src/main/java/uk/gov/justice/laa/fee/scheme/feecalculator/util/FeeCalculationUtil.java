@@ -176,16 +176,16 @@ public final class FeeCalculationUtil {
    * Validates higher standard fee claims against the lower standard fee limit.
    */
   public static void validateHigherStandardFeeClaim(FeeCalculationRequest feeCalculationRequest,
-                                                    FeeEntity feeEntity, CategoryType categoryType) {
+                                                    FeeEntity feeEntity, CategoryType categoryType,
+                                                    BigDecimal relevantCosts) {
     if (feeEntity.getCategoryType() != categoryType
         || feeEntity.getFeeBandType() != FeeBandType.HIGHER
         || feeEntity.getLowerStandardFeeLimit() == null
-        || feeCalculationRequest.getNetProfitCosts() == null) {
+        || relevantCosts == null) {
       return;
     }
 
-    BigDecimal netProfitCosts = NumberUtil.toBigDecimal(feeCalculationRequest.getNetProfitCosts());
-    if (netProfitCosts.compareTo(feeEntity.getLowerStandardFeeLimit()) <= 0) {
+    if (relevantCosts.compareTo(feeEntity.getLowerStandardFeeLimit()) < 0) {
       throw new ValidationException(ErrorType.ERR_CRIME_INCORRECT_STANDARD_FEE,
           new FeeContext(feeCalculationRequest));
     }
