@@ -1073,16 +1073,16 @@ Feature: Fee Calculation API
 
     @prison_law
     Examples: Prison Law
-      | feeCode  | startDate  | uniqueFileNumber  | netTravelCosts| netWaitingCosts  | netDisbursementAmount | disbursementVatAmount | vatIndicator | numberOfMediationSessions | boltOnAdjournedHearing | expectedTotal | representationOrderDate |
-      | PRIA     | 2016-04-01 | 110516/001        | 0             | 0                | 20                    | 10.50                 | true         | 0                         | 0                      | 264.90| 2016-05-12              |
-      | PRIB1    | 2016-04-01 | 010416/002        | 0             | 0                | 20                    | 10.50                 | false        | 0                         | 0                      | 227.93|                         |
-      | PRIB2    | 2016-04-01 | 110619/003        | 0             | 0                | 20                    | 15.50                 | true         | 0                         | 0                      | 700.99|                         |
-      | PRIC1    | 2016-04-01 | 161224/004        | 0             | 0                | 20                    | 15.50                 | false        | 0                         | 0                      | 461.21|                         |
-      | PRIC2    | 2016-04-01 | 200118/005        | 0             | 0                | 20                    | 10.50                 | true         | 0                         | 0                      | 1769.33| 2018-05-12              |
-      | PRID1    | 2016-04-01 | 020416/006        | 0             | 0                | 20                    | 10.50                 | false        | 0                         | 0                      | 227.93|                         |
-      | PRID2    | 2016-04-01 | 110516/001        | 0             | 0                | 20                    | 15.50                 | true         | 0                         | 0                      | 700.99|                         |
-      | PRIE1    | 2016-04-01 | 010416/002        | 0             | 0                | 20                    | 15.50                 | false        | 0                         | 0                      | 461.21|                         |
-      | PRIE2    | 2016-04-01 | 020416/003        | 0             | 0                | 20                    | 10.50                 | true         | 0                         | 0                      | 1769.33|                         |
+      | feeCode  | startDate  | uniqueFileNumber  | netProfitCosts | netTravelCosts| netWaitingCosts  | netDisbursementAmount | disbursementVatAmount | vatIndicator | numberOfMediationSessions | boltOnAdjournedHearing | expectedTotal | representationOrderDate |
+      | PRIA     | 2016-04-01 | 110516/001        | 0              | 0             | 0                | 20                    | 10.50                 | true         | 0                         | 0                      | 264.90| 2016-05-12              |
+      | PRIB1    | 2016-04-01 | 010416/002        | 0              | 0             | 0                | 20                    | 10.50                 | false        | 0                         | 0                      | 227.93|                         |
+      | PRIB2    | 2016-04-01 | 110619/003        | 400            | 0             | 0                | 20                    | 15.50                 | true         | 0                         | 0                      | 700.99|                         |
+      | PRIC1    | 2016-04-01 | 161224/004        | 0              | 0             | 0                | 20                    | 15.50                 | false        | 0                         | 0                      | 461.21|                         |
+      | PRIC2    | 2016-04-01 | 200118/005        | 934            | 0             | 0                | 20                    | 10.50                 | true         | 0                         | 0                      | 1769.33| 2018-05-12              |
+      | PRID1    | 2016-04-01 | 020416/006        | 0              | 0             | 0                | 20                    | 10.50                 | false        | 0                         | 0                      | 227.93|                         |
+      | PRID2    | 2016-04-01 | 110516/001        | 400            | 0             | 0                | 20                    | 15.50                 | true         | 0                         | 0                      | 700.99|                         |
+      | PRIE1    | 2016-04-01 | 010416/002        | 0              | 0             | 0                | 20                    | 15.50                 | false        | 0                         | 0                      | 461.21|                         |
+      | PRIE2    | 2016-04-01 | 020416/003        | 934            | 0             | 0                | 20                    | 10.50                 | true         | 0                         | 0                      | 1769.33|                         |
 
     @appeals_and_reviews
     Examples: Appeals and Reviews

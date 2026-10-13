@@ -679,39 +679,40 @@ class FeeCalculationFixedFeeIntegrationTest extends BaseFeeCalculationIntegratio
 
   @ParameterizedTest
   @CsvSource({
-      "PRIA, 211225/123, PRISON_FS2016, 360.9, 40.15, 200.75",
-      "PRIA, 221225/123, PRISON_FS2025, 418.72, 49.79, 248.93",
-      "PRIB1, 211225/123, PRISON_FS2016, 364.72, 40.79, 203.93",
-      "PRIB1, 221225/123, PRISON_FS2025, 423.44, 50.57, 252.87",
-      "PRIB2, 211225/123, PRISON_FS2016, 796.99, 112.83, 564.16",
-      "PRIB2, 221225/123, PRISON_FS2025, 959.47, 139.91, 699.56",
-      "PRIC1, 211225/123, PRISON_FS2016, 644.65, 87.44, 437.21",
-      "PRIC1, 221225/123, PRISON_FS2025, 770.57, 108.43, 542.14",
-      "PRIC2, 211225/123, PRISON_FS2016, 1865.33, 290.89, 1454.44",
-      "PRIC2, 221225/123, PRISON_FS2025, 2284.21, 360.7, 1803.51",
-      "PRID1, 211225/123, PRISON_FS2016, 364.72, 40.79, 203.93",
-      "PRID1, 221225/123, PRISON_FS2025, 423.44, 50.57, 252.87",
-      "PRID2, 211225/123, PRISON_FS2016, 796.99, 112.83, 564.16",
-      "PRID2, 221225/123, PRISON_FS2025, 959.47, 139.91, 699.56",
-      "PRIE1, 211225/123, PRISON_FS2016, 644.65, 87.44, 437.21",
-      "PRIE2, 221225/123, PRISON_FS2025, 2284.21, 360.7, 1803.51",
+      "PRIA, 211225/123, 100.0, 200.0, PRISON_FS2016, 360.9, 40.15, 200.75",
+      "PRIA, 221225/123, 100.0, 200.0, PRISON_FS2025, 418.72, 49.79, 248.93",
+      "PRIB1, 211225/123, 100.0, 200.0, PRISON_FS2016, 364.72, 40.79, 203.93",
+      "PRIB1, 221225/123, 100.0, 200.0, PRISON_FS2025, 423.44, 50.57, 252.87",
+      "PRIB2, 211225/123, 200.0, 200.0, PRISON_FS2016, 796.99, 112.83, 564.16",
+      "PRIB2, 221225/123, 243.0, 200.0, PRISON_FS2025, 959.47, 139.91, 699.56",
+      "PRIC1, 211225/123, 100.0, 200.0, PRISON_FS2016, 644.65, 87.44, 437.21",
+      "PRIC1, 221225/123, 100.0, 200.0, PRISON_FS2025, 770.57, 108.43, 542.14",
+      "PRIC2, 211225/123, 734.0, 200.0, PRISON_FS2016, 1865.33, 290.89, 1454.44",
+      "PRIC2, 221225/123, 959.0, 200.0, PRISON_FS2025, 2284.21, 360.7, 1803.51",
+      "PRID1, 211225/123, 100.0, 200.0, PRISON_FS2016, 364.72, 40.79, 203.93",
+      "PRID1, 221225/123, 100.0, 200.0, PRISON_FS2025, 423.44, 50.57, 252.87",
+      "PRID2, 211225/123, 200.0, 200.0, PRISON_FS2016, 796.99, 112.83, 564.16",
+      "PRID2, 221225/123, 243.0, 200.0, PRISON_FS2025, 959.47, 139.91, 699.56",
+      "PRIE1, 211225/123, 100.0, 200.0, PRISON_FS2016, 644.65, 87.44, 437.21",
+      "PRIE2, 221225/123, 959.0, 200.0, PRISON_FS2025, 2284.21, 360.7, 1803.51",
   })
-  void shouldGetPrisonLawFixedFeeCalculation(String feeCode, String ufn, String feeScheme,
-                                                 double total, double vat, double fixedFee) throws Exception {
+  void shouldGetPrisonLawFixedFeeCalculation(String feeCode, String ufn, double netProfitCosts,
+                                             double netWaitingCosts, String feeScheme,
+                                             double total, double vat, double fixedFee) throws Exception {
     String request = """ 
         {
           "feeCode": "%s",
           "claimId": "claim_123",
           "uniqueFileNumber": "%s",
-          "netProfitCosts": 100,
+          "netProfitCosts": %s,
           "netTravelCosts": 200,
-          "netWaitingCosts": 200,
+          "netWaitingCosts": %s,
           "netDisbursementAmount": 100,
           "disbursementVatAmount": 20,
           "vatIndicator": true,
           "caseConcludedDate": "2026-02-01"
         }
-        """.formatted(feeCode, ufn);
+        """.formatted(feeCode, ufn, netProfitCosts, netWaitingCosts);
 
     postAndExpect(request, """
         {

@@ -48,16 +48,16 @@ Feature: Fee Calculations for Dec 2025 uplifts
 
     @dec2025_prison_law
     Examples: Prison Law
-      | feeCode  | startDate  | uniqueFileNumber  | netTravelCosts| netWaitingCosts  | netDisbursementAmount | disbursementVatAmount | vatIndicator | numberOfMediationSessions | boltOnAdjournedHearing | expectedTotal |
-      | PRIA     | 2016-04-01 | 221225/001        | 0             | 0                | 20                    | 10.50                 | true         | 0                         | 0                      | 322.72|
-      | PRIB1    | 2016-04-01 | 221225/002        | 0             | 0                | 20                    | 10.50                 | false        | 0                         | 0                      | 276.87|
-      | PRIB2    | 2016-04-01 | 221225/003        | 0             | 0                | 20                    | 15.50                 | true         | 0                         | 0                      | 863.47|
-      | PRIC1    | 2016-04-01 | 221225/004        | 0             | 0                | 20                    | 15.50                 | false        | 0                         | 0                      | 566.14|
-      | PRIC2    | 2016-04-01 | 221225/005        | 0             | 0                | 20                    | 10.50                 | true         | 0                         | 0                      | 2188.21|
-      | PRID1    | 2016-04-01 | 221225/006        | 0             | 0                | 20                    | 10.50                 | false        | 0                         | 0                      | 276.87|
-      | PRID2    | 2016-04-01 | 221225/001        | 0             | 0                | 20                    | 15.50                 | true         | 0                         | 0                      | 863.47|
-      | PRIE1    | 2016-04-01 | 221225/002        | 0             | 0                | 20                    | 15.50                 | false        | 0                         | 0                      | 566.14|
-      | PRIE2    | 2016-04-01 | 221225/003        | 0             | 0                | 20                    | 10.50                 | true         | 0                         | 0                      | 2188.21|
+      | feeCode  | startDate  | uniqueFileNumber  | netProfitCosts | netTravelCosts| netWaitingCosts  | netDisbursementAmount | disbursementVatAmount | vatIndicator | numberOfMediationSessions | boltOnAdjournedHearing | expectedTotal |
+      | PRIA     | 2016-04-01 | 221225/001        | 0              | 0             | 0                | 20                    | 10.50                 | true         | 0                         | 0                      | 322.72|
+      | PRIB1    | 2016-04-01 | 221225/002        | 0              | 0             | 0                | 20                    | 10.50                 | false        | 0                         | 0                      | 276.87|
+      | PRIB2    | 2016-04-01 | 221225/003        | 443            | 0             | 0                | 20                    | 15.50                 | true         | 0                         | 0                      | 863.47|
+      | PRIC1    | 2016-04-01 | 221225/004        | 0              | 0             | 0                | 20                    | 15.50                 | false        | 0                         | 0                      | 566.14|
+      | PRIC2    | 2016-04-01 | 221225/005        | 1159           | 0             | 0                | 20                    | 10.50                 | true         | 0                         | 0                      | 2188.21|
+      | PRID1    | 2016-04-01 | 221225/006        | 0              | 0             | 0                | 20                    | 10.50                 | false        | 0                         | 0                      | 276.87|
+      | PRID2    | 2016-04-01 | 221225/001        | 443            | 0             | 0                | 20                    | 15.50                 | true         | 0                         | 0                      | 863.47|
+      | PRIE1    | 2016-04-01 | 221225/002        | 0              | 0             | 0                | 20                    | 15.50                 | false        | 0                         | 0                      | 566.14|
+      | PRIE2    | 2016-04-01 | 221225/003        | 1159           | 0             | 0                | 20                    | 10.50                 | true         | 0                         | 0                      | 2188.21|
 
     @dec2025_pre_order_cover
     Examples: Pre Order Cover
