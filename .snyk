@@ -58,4 +58,8 @@ ignore:
     - '*':
         reason: no fix available; not exploitable
         expires: 2099-01-01T00:00:00.000Z
+  SNYK-JAVA-ORGGLASSFISHJAXB-20883142:
+    - '*':
+        reason: no fix or patch available; app does not use JAXB XML binding APIs
+        expires: 2099-01-01T00:00:00.000Z
 patch: {}
