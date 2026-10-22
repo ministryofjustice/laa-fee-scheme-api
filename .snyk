@@ -62,4 +62,12 @@ ignore:
     - '*':
         reason: no fix or patch available; app does not use JAXB XML binding APIs
         expires: 2099-01-01T00:00:00.000Z
+  SNYK-JAVA-COMFASTERXMLJACKSONCORE-21193287:
+    - '*':
+        reason: no fix available or patch available; app accepts only schema-limited JSON payloads
+        expires: 2099-01-01T00:00:00.000Z
+  SNYK-JAVA-TOOLSJACKSONCORE-21193288:
+    - '*':
+        reason: no fix available or patch available; app accepts only schema-limited JSON payloads
+        expires: 2099-01-01T00:00:00.000Z
 patch: {}
