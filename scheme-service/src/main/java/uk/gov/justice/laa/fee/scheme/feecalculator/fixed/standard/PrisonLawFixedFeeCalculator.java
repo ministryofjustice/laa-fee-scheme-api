@@ -15,6 +15,7 @@ import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
 import uk.gov.justice.laa.fee.scheme.enums.CategoryType;
 import uk.gov.justice.laa.fee.scheme.feecalculator.util.FeeCalculationUtil;
 import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
+import uk.gov.justice.laa.fee.scheme.model.FeeCalculationResponse;
 import uk.gov.justice.laa.fee.scheme.model.ValidationMessagesInner;
 import uk.gov.justice.laa.fee.scheme.service.VatRatesService;
 
@@ -35,6 +36,19 @@ public class PrisonLawFixedFeeCalculator extends StandardFixedFeeCalculator {
   @Override
   public Set<CategoryType> getSupportedCategories() {
     return Set.of(CategoryType.PRISON_LAW);
+  }
+
+  @Override
+  public FeeCalculationResponse calculate(FeeCalculationRequest request, FeeEntity feeEntity) {
+
+    // Validate higher standard fee claim
+    if (request.getNetProfitCosts() != null && request.getNetWaitingCosts() != null) {
+      BigDecimal total = toBigDecimal(request.getNetProfitCosts())
+              .add(toBigDecimal(request.getNetWaitingCosts()));
+      FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, CategoryType.PRISON_LAW, total);
+    }
+
+    return super.calculate(request, feeEntity);
   }
 
   @Override

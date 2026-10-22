@@ -7,6 +7,9 @@
     "test": "cucumber-js -p api",
     "test:dry-run": "cucumber-js -p api --dry-run"
   },
+  "overrides": {
+    "follow-redirects": "^1.16.1"
+  },
   "devDependencies": {
     "@cucumber/cucumber": "^12.1.0",
     "@types/node": "^24.3.0",

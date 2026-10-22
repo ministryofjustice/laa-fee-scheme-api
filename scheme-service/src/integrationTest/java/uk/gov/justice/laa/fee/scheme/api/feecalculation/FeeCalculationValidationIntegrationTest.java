@@ -731,6 +731,53 @@ class FeeCalculationValidationIntegrationTest extends BaseFeeCalculationIntegrat
         """.formatted(feeCode));
   }
 
+  @ParameterizedTest
+  @CsvSource({
+      "PRIB2, 211225/123, 157.06, 200.00",
+      "PRIC2, 211225/123, 733.93, 200.00",
+      "PRID2, 211225/123, 157.05, 200.00",
+      "PRIE2, 211225/123, 733.92, 200.00",
+      "PRIB2, 221225/123, 242.75, 200.00",
+      "PRIC2, 221225/123, 958.07, 200.00",
+      "PRID2, 221225/123, 242.74, 200.00",
+      "PRIE2, 221225/123, 958.06, 200.00"
+  })
+  void shouldReturnValidationErrorWhenHigherStandardPrisonLawFeeClaimedAtOrBelowLowerLimit(
+      String feeCode, String uniqueFileNumber, String netProfitCosts, String netWaitingCosts)
+      throws Exception {
+    String request =
+        """
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "uniqueFileNumber": "%s",
+          "netProfitCosts": %s,
+          "netWaitingCosts": %s,
+          "netDisbursementAmount": 123.38,
+          "disbursementVatAmount": 24.67,
+          "vatIndicator": true,
+          "caseConcludedDate": "2026-02-01"
+        }
+        """.formatted(feeCode, uniqueFileNumber, netProfitCosts, netWaitingCosts);
+
+    postAndExpect(
+        request,
+        """
+        {
+          "feeCode": "%s",
+          "claimId": "claim_123",
+          "isInquest": false,
+          "validationMessages": [
+            {
+              "type":"ERROR",
+              "code":"ERRCRM14",
+              "message":"The Higher Standard Fee code has been claimed incorrectly. The costs entered are less than the Lower Standard Fee Limit. Resubmit your claim with correct fee code for the Lower Standard fee."
+            }
+          ]
+        }
+        """.formatted(feeCode));
+  }
+
   @Test
   void shouldReturnValidationErrorWhenCrimeFeeCodeAndUfnIsInvalid() throws Exception {
     String request =

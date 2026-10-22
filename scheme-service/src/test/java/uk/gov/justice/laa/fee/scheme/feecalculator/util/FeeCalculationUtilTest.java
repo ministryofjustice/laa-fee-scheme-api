@@ -214,7 +214,8 @@ class FeeCalculationUtilTest {
         .lowerStandardFeeLimit(new BigDecimal("313.19"))
         .build();
 
-    assertThatThrownBy(() -> FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, categoryType))
+    assertThatThrownBy(() -> FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, categoryType,
+            new BigDecimal(netProfitCosts)))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining(ErrorType.ERR_CRIME_INCORRECT_STANDARD_FEE.getCode());
   }
@@ -235,7 +236,7 @@ class FeeCalculationUtilTest {
         .lowerStandardFeeLimit(new BigDecimal("313.19"))
         .build();
 
-    FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, categoryType);
+    FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT, new BigDecimal(request.getNetProfitCosts()));
   }
 
   @ParameterizedTest
@@ -253,7 +254,7 @@ class FeeCalculationUtilTest {
         .lowerStandardFeeLimit(new BigDecimal("313.19"))
         .build();
 
-    FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, categoryType);
+    FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, categoryType, null);
   }
 
   @ParameterizedTest
@@ -272,7 +273,7 @@ class FeeCalculationUtilTest {
         .lowerStandardFeeLimit(new BigDecimal("313.19"))
         .build();
 
-    FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, categoryType);
+    FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT, new BigDecimal(request.getNetProfitCosts()));
   }
 
   @Test
@@ -290,7 +291,8 @@ class FeeCalculationUtilTest {
         .lowerStandardFeeLimit(new BigDecimal("313.19"))
         .build();
 
-    FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT);
+    FeeCalculationUtil.validateHigherStandardFeeClaim(request, feeEntity, CategoryType.MAGISTRATES_COURT,
+        new BigDecimal("10.00"));
   }
 
   @Test
