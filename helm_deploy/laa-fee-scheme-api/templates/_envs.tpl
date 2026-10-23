@@ -48,4 +48,8 @@ env:
     value: {{.Values.spring.logging.level}}
   - name: APP_LOGGING_LEVEL
     value: {{.Values.application.logging.level}}
+  - name: JAVA_TOOL_OPTIONS
+    value: >-
+      -Dcom.sun.net.ssl.checkRevocation=true
+      -Dcom.sun.security.enableCRLDP=true
 {{- end -}}
