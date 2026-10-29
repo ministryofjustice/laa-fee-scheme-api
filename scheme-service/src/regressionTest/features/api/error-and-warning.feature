@@ -19,7 +19,7 @@ Feature: Error and warning API
       | MISCASBI | 2015-03-22 | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
       | WFB1     | 2014-01-31 | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
       | COM      | 2012-12-31 | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.                 |
-      | FAM      | 2012-12-31 | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.                 |
+      | FPB010   | 2012-12-31 | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.                 |
   @api
   Scenario Outline: Escape and warning code and messages for a given payload
     Given I have an initialized API client
