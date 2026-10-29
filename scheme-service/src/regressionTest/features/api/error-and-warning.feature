@@ -14,14 +14,12 @@ Feature: Error and warning API
     And the JSON path "validationMessages.0.message" should equal "<message>"
 
     Examples:
-      | feeCode | startDate   | code    | message                                                                                                         |
-      | INQ     | 2026-12-01  | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
-      | COMINQ  | 2026-12-01  | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
-      | DISC    | 2013-05-01  | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
-      | FAM     | 2013-05-01  | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
-      | COM     | 2012-12-31  | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.                 |
-      | FAM     | 2012-12-31  | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.                 |
-
+      | feeCode  | startDate  | code    | message                                                                                                         |
+      | ELA      | 2024-08-31 | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
+      | MISCASBI | 2015-03-22 | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
+      | WFB1     | 2014-01-31 | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
+      | COM      | 2012-12-31 | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.                 |
+      | FAM      | 2012-12-31 | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.                 |
   @api
   Scenario Outline: Escape and warning code and messages for a given payload
     Given I have an initialized API client
@@ -332,15 +330,15 @@ Feature: Error and warning API
       | CLIN     | 2013-03-31  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit. |
       | DEBT     | 2013-03-31  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit. |
       | EDUFIN   | 2013-03-31  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit. |
-      | ELA      | 2024-08-31  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit. |
+      | ELA      | 2024-08-31  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim. |
       | HOUS     | 2013-03-31  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit. |
       | MISCGEN  | 2013-03-31  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit. |
       | MISCCON  | 2013-03-31  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit. |
       | MISCPI   | 2013-03-31  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit. |
-      | MISCASBI | 2015-03-22  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit. |
+      | MISCASBI | 2015-03-22  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim. |
       | MISCEMP  | 2013-03-31  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit. |
       | PUB      | 2013-03-31  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit. |
-      | WFB1     | 2014-01-31  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit. |
+      | WFB1     | 2014-01-31  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim. |
       | ASSA     | 2013-03-31  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit. |
       | ASSS     | 2013-03-31  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit. |
       | ASST     | 2013-03-31  |                  |                          |                |            |       |                        |                        |               | ERROR | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit. |
@@ -718,3 +716,22 @@ Feature: Error and warning API
       | MSCINQ    | 2026-12-09  | 718.00         |                   | No           | 20                     | WARNING | WAROTH12 | The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid. |
       | PUBINQ    | 2026-12-09  | 718.00         |                   | Yes          | 20                     | WARNING | WAROTH12 | The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid. |
       | WFBINQ    | 2026-12-09  | 718.00         |                   | No           | 20                     | WARNING | WAROTH12 | The claim exceeds the Escape Case Threshold. An Escape Case Claim must be submitted for further costs to be paid. |
+
+  @api @inquest_override
+  Scenario Outline: Inquest civil fee/date validation with override enabled
+    Given I have an initialized API client
+    And a fee calculation payload with:
+      | feeCode   | <feeCode>   |
+      | startDate | <startDate> |
+    When I POST "/api/v1/fee-calculation?featureFlag=INQUEST:true" with the payload
+    Then the response status should be 200
+    And the JSON path "validationMessages.0.type" should equal "ERROR"
+    And the JSON path "validationMessages.0.code" should equal "<code>"
+    And the JSON path "validationMessages.0.message" should equal "<message>"
+
+    Examples: Inquest civil fee/date validation rules
+      | feeCode | startDate   | code    | message                                                                                                         |
+      | COMINQ  | 2026-12-01  | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
+      | FAMINQ  | 2026-12-01  | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
+      | INQ     | 2012-12-31  | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.                 |
+      | WFBINQ  | 2012-12-31  | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.                 |
