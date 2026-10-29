@@ -1,6 +1,28 @@
 Feature: Error and warning API
 
   @api
+  @errciv
+  Scenario Outline: Civil fee/date validation for before scheme start and before the civil cutoff
+    Given I have an initialized API client
+    And a fee calculation payload with:
+      | feeCode   | <feeCode>   |
+      | startDate | <startDate> |
+    When I POST "/api/v1/fee-calculation" with the payload
+    Then the response status should be 200
+    And the JSON path "validationMessages.0.type" should equal "ERROR"
+    And the JSON path "validationMessages.0.code" should equal "<code>"
+    And the JSON path "validationMessages.0.message" should equal "<message>"
+
+    Examples:
+      | feeCode | startDate   | code    | message                                                                                                         |
+      | INQ     | 2026-12-01  | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
+      | COMINQ  | 2026-12-01  | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
+      | DISC    | 2013-05-01  | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
+      | FAM     | 2013-05-01  | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
+      | COM     | 2012-12-31  | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.                 |
+      | FAM     | 2012-12-31  | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.                 |
+
+  @api
   Scenario Outline: Escape and warning code and messages for a given payload
     Given I have an initialized API client
     And a fee calculation payload with:

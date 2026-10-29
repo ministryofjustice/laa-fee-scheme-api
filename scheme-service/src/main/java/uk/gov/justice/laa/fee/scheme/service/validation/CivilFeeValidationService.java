@@ -65,16 +65,22 @@ public class CivilFeeValidationService extends AbstractFeeValidationService {
     LocalDate claimStartDate = FeeCalculationUtil.getFeeClaimStartDate(categoryType, feeCalculationRequest);
     LocalDate earliestFeeSchemeDate = getEarliestFeeSchemeDate(feeEntityList);
 
-    if (claimStartDate.isBefore(earliestFeeSchemeDate)) {
-      if (categoryType == IMMIGRATION_ASYLUM) {
-        ErrorType error = findByFeeCode(feeCalculationRequest.getFeeCode())
-            .filter(e -> !claimStartDate.isBefore(CIVIL_START_DATE))
-            .orElse(ERR_CIVIL_START_DATE_TOO_OLD);
+    if (claimStartDate.isBefore(CIVIL_START_DATE)) {
+      throw new ValidationException(ERR_CIVIL_START_DATE_TOO_OLD, new FeeContext(feeCalculationRequest));
+    }
+
+    if (categoryType == IMMIGRATION_ASYLUM) {
+      ErrorType error = findByFeeCode(feeCalculationRequest.getFeeCode())
+          .filter(e -> !claimStartDate.isBefore(CIVIL_START_DATE))
+          .orElse(ERR_CIVIL_START_DATE);
+      if (claimStartDate.isBefore(earliestFeeSchemeDate)) {
         throw new ValidationException(error, new FeeContext(feeCalculationRequest));
-      } else {
-        // find by fee code or default to generic civil error
-        throw new ValidationException(ERR_CIVIL_START_DATE_TOO_OLD, new FeeContext(feeCalculationRequest));
       }
+      return;
+    }
+
+    if (claimStartDate.isBefore(earliestFeeSchemeDate)) {
+      throw new ValidationException(ERR_CIVIL_START_DATE, new FeeContext(feeCalculationRequest));
     }
   }
 
