@@ -1,12 +1,12 @@
 plugins {
-    id 'io.freefair.lombok' version '9.8.0'
+    id 'io.freefair.lombok' version '9.8.2'
     id 'uk.gov.justice.service.laa.laa-spring-boot-gradle-plugin'
-    id "io.sentry.jvm.gradle" version "6.23.0"
+    id "io.sentry.jvm.gradle" version "6.24.0"
     id 'info.solidsoft.pitest'
 }
 
 def versions = [
-        sentry 						: '8.60.0'
+        sentry 						: '8.61.1'
 ]
 
 test {
@@ -102,7 +102,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 
-    implementation 'org.springframework.boot:spring-boot-flyway:4.1.1'
+    implementation 'org.springframework.boot:spring-boot-flyway:4.1.2'
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1'
 
@@ -110,10 +110,10 @@ dependencies {
 
     implementation 'uk.gov.justice.service.laa:laa-spring-boot-starter-auth'
 
-    implementation 'org.flywaydb:flyway-core:13.10.0'
-    implementation 'org.flywaydb:flyway-database-postgresql:13.10.0'
+    implementation 'org.flywaydb:flyway-core:13.11.1'
+    implementation 'org.flywaydb:flyway-database-postgresql:13.11.1'
 
-    implementation 'io.micrometer:micrometer-registry-prometheus:1.17.1'
+    implementation 'io.micrometer:micrometer-registry-prometheus:1.17.2'
 
     implementation 'org.springframework.boot:spring-boot-micrometer-tracing-brave'
 
