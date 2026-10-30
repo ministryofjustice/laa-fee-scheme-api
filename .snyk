@@ -70,4 +70,20 @@ ignore:
     - '*':
         reason: no fix available or patch available; app accepts only schema-limited JSON payloads
         expires: 2099-01-01T00:00:00.000Z
+  SNYK-JAVA-COMFASTERXMLJACKSONCORE-21761837:
+    - '*':
+        reason: no fix available; app accepts only schema-limited JSON payloads
+        expires: 2099-01-01T00:00:00.000Z
+  SNYK-JAVA-TOOLSJACKSONCORE-21761838:
+    - '*':
+        reason: no fix available; app accepts only schema-limited JSON payloads
+        expires: 2099-01-01T00:00:00.000Z
+  SNYK-JAVA-ORGAPACHETOMCATEMBED-21707475:
+    - '*':
+        reason: no fix available; authentication is not exposed in this app
+        expires: 2099-01-01T00:00:00.000Z
+  SNYK-JAVA-ORGAPACHETOMCATEMBED-21707477:
+    - '*':
+        reason: no fix available; access control is enforced at app level
+        expires: 2099-01-01T00:00:00.000Z
 patch: {}
