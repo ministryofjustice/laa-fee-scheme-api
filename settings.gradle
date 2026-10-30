@@ -2,17 +2,11 @@ pluginManagement {
     repositories {
         mavenCentral()
         maven { url = "https://plugins.gradle.org/m2/" }
-        maven {
-            url = uri('https://central.sonatype.com/repository/maven-snapshots/')
-            mavenContent {
-                snapshotsOnly()
-            }
-        }
         gradlePluginPortal()
     }
 
     plugins {
-        id 'uk.gov.justice.service.laa.laa-spring-boot-gradle-plugin' version '3.1.4'
+        id 'uk.gov.justice.service.laa.laa-spring-boot-gradle-plugin' version 'v3.1.4' apply false
         id 'info.solidsoft.pitest' version '1.19.0'
     }
 }
