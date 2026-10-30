@@ -11,10 +11,13 @@ import static uk.gov.justice.laa.fee.scheme.enums.ErrorType.ERR_FAMILY_LONDON_RA
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
@@ -92,7 +95,7 @@ class CivilFeeValidationServiceTest {
   }
 
   @Test
-  void getValidFeeEntity_whenCivilFeeCodeAndDateTooFarInPast_shouldThrowException() {
+  void getValidFeeEntity_whenCivilFeeCodeAndSchemeStartsAfterClaimDate_shouldThrowErrCiv1() {
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("DISC")
         .startDate(LocalDate.of(2025, 5, 1))
@@ -107,8 +110,65 @@ class CivilFeeValidationServiceTest {
 
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
-
     assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE)
+        .hasMessage("ERRCIV1 - Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.");
+  }
+
+  @Test
+  void getValidFeeEntity_whenDateIsExactlyCivilCutoff_shouldNotThrowException() {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("COM")
+        .startDate(LocalDate.of(2013, 4, 1))
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("COM_FS2013")
+        .validFrom(LocalDate.of(2013, 4, 1))
+        .build();
+
+    FeeEntity feeEntity = fixedFeeEntity("COM", CategoryType.COMMUNITY_CARE, feeSchemesEntity);
+
+    FeeEntity result = civilFeeValidationService.getValidFeeEntity(List.of(feeEntity), feeCalculationRequest);
+
+    assertThat(result).isNotNull();
+    assertThat(result.getFeeCode()).isEqualTo("COM");
+    assertThat(result.getFeeScheme().getSchemeCode()).isEqualTo("COM_FS2013");
+  }
+
+  @Test
+  void getValidFeeEntity_whenInquestFeeCodeAndStartDateIsBeforeSchemeStart_shouldThrowErrCiv1ForSpecificFeeCode() {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("COMINQ")
+        .startDate(LocalDate.of(2026, 12, 1))
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("INQUEST_FS2026")
+        .validFrom(LocalDate.of(2026, 12, 9))
+        .build();
+
+    FeeEntity feeEntity = fixedFeeEntity("COMINQ", CategoryType.INQUEST, feeSchemesEntity);
+
+    assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(List.of(feeEntity), feeCalculationRequest))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE)
+        .hasMessage("ERRCIV1 - Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.");
+  }
+
+  @Test
+  void getValidFeeEntity_whenInquestFeeCodeBeforeCivilCutoff_shouldThrowErrCiv2() {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("INQ")
+        .startDate(LocalDate.of(2012, 12, 31))
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("INQUEST_FS2026")
+        .validFrom(LocalDate.of(2026, 12, 9))
+        .build();
+
+    FeeEntity feeEntity = fixedFeeEntity("INQ", CategoryType.INQUEST, feeSchemesEntity);
+
+    assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(List.of(feeEntity), feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE_TOO_OLD)
         .hasMessage("ERRCIV2 - Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.");
@@ -116,12 +176,7 @@ class CivilFeeValidationServiceTest {
 
   @Test
   void getValidFeeEntity_whenInquestFeeCodeAndStartDateIsInvalid_shouldThrowException() {
-    // Mirrors getValidFeeEntity_whenCivilFeeCodeAndStartDateIsInvalid_shouldThrowException (DISC) above,
-    // but for the INQUEST category. Real seed data for Inquest fee codes currently only has a single,
-    // non-expiring fee scheme (INQUEST_FS2026, validTo = null), so ERRCIV1 cannot be reproduced end-to-end
-    // via the database today. This unit test proves the shared civil validation logic still correctly
-    // raises ERRCIV1 for INQUEST category fee codes when a claim start date falls outside of a fee
-    // scheme's valid date range.
+    // This covers a start date that is after the scheme's validFrom but outside the valid date range.
     FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
         .feeCode("INQ")
         .startDate(LocalDate.of(2026, 12, 31))
@@ -136,6 +191,158 @@ class CivilFeeValidationServiceTest {
 
     FeeEntity feeEntity = fixedFeeEntity("INQ", CategoryType.INQUEST, feeSchemesEntity);
 
+    List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+    assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE)
+        .hasMessage("ERRCIV1 - Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.");
+  }
+
+  @Test
+  void getValidFeeEntity_whenInquestFeeCodeAndStartDateIsBeforeSchemeStart_shouldThrowErrCiv1() {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("INQ")
+        .startDate(LocalDate.of(2026, 12, 1))
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15)
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("INQUEST_FS2026")
+        .validFrom(LocalDate.of(2026, 12, 9))
+        .build();
+
+    FeeEntity feeEntity = fixedFeeEntity("INQ", CategoryType.INQUEST, feeSchemesEntity);
+
+    List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+    assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE)
+        .hasMessage("ERRCIV1 - Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.");
+  }
+
+  @Test
+  void getValidFeeEntity_whenNonInquestCivilFeeDateIsBeforeCivilCutoff_shouldThrowErrCiv2() {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("COM")
+        .startDate(LocalDate.of(2012, 12, 31))
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("COM_FS2013")
+        .validFrom(LocalDate.of(2013, 4, 1))
+        .build();
+
+    FeeEntity feeEntity = fixedFeeEntity("COM", CategoryType.COMMUNITY_CARE, feeSchemesEntity);
+
+    List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+    assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE_TOO_OLD)
+        .hasMessage("ERRCIV2 - Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.");
+  }
+
+  @Test
+  void getValidFeeEntity_whenNonInquestCivilFeeDateIsAfterCivilCutoffButBeforeSchemeStart_shouldThrowErrCiv1() {
+    FeeCalculationRequest feeCalculationRequest = FeeCalculationRequest.builder()
+        .feeCode("COM")
+        .startDate(LocalDate.of(2013, 5, 1))
+        .build();
+
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("COM_FS2013")
+        .validFrom(LocalDate.of(2013, 7, 1))
+        .build();
+
+    FeeEntity feeEntity = fixedFeeEntity("COM", CategoryType.COMMUNITY_CARE, feeSchemesEntity);
+
+    List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+    assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE)
+        .hasMessage("ERRCIV1 - Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.");
+  }
+
+  private static Stream<Arguments> civilCategoryTypes() {
+    return Stream.of(
+        Arguments.of(CategoryType.ADVICE_ASSISTANCE_ADVOCACY),
+        Arguments.of(CategoryType.ADVOCACY_APPEALS_REVIEWS),
+        Arguments.of(CategoryType.ASSOCIATED_CIVIL),
+        Arguments.of(CategoryType.CLAIMS_PUBLIC_AUTHORITIES),
+        Arguments.of(CategoryType.CLINICAL_NEGLIGENCE),
+        Arguments.of(CategoryType.COMMUNITY_CARE),
+        Arguments.of(CategoryType.DEBT),
+        Arguments.of(CategoryType.DISCRIMINATION),
+        Arguments.of(CategoryType.EARLY_COVER),
+        Arguments.of(CategoryType.EDUCATION),
+        Arguments.of(CategoryType.FAMILY),
+        Arguments.of(CategoryType.HOUSING),
+        Arguments.of(CategoryType.HOUSING_HLPAS),
+        Arguments.of(CategoryType.IMMIGRATION_ASYLUM),
+        Arguments.of(CategoryType.INQUEST),
+        Arguments.of(CategoryType.MAGISTRATES_COURT),
+        Arguments.of(CategoryType.MEDIATION),
+        Arguments.of(CategoryType.MENTAL_HEALTH),
+        Arguments.of(CategoryType.MISCELLANEOUS),
+        Arguments.of(CategoryType.POLICE_STATION),
+        Arguments.of(CategoryType.PUBLIC_LAW),
+        Arguments.of(CategoryType.PRISON_LAW),
+        Arguments.of(CategoryType.PRE_ORDER_COVER),
+        Arguments.of(CategoryType.REFUSED_MEANS_TEST),
+        Arguments.of(CategoryType.SENDING_HEARING),
+        Arguments.of(CategoryType.WELFARE_BENEFITS),
+        Arguments.of(CategoryType.YOUTH_COURT)
+    );
+  }
+
+  private FeeCalculationRequest buildRequestForCategory(CategoryType categoryType, LocalDate claimDate) {
+    var requestBuilder = FeeCalculationRequest.builder()
+        .feeCode("TEST")
+        .startDate(claimDate)
+        .netDisbursementAmount(50.50)
+        .disbursementVatAmount(20.15);
+
+    switch (categoryType) {
+      case ADVICE_ASSISTANCE_ADVOCACY -> requestBuilder.caseConcludedDate(claimDate.minusDays(1));
+      case ADVOCACY_APPEALS_REVIEWS, ASSOCIATED_CIVIL, POLICE_STATION, PRISON_LAW, PRE_ORDER_COVER,
+           EARLY_COVER, REFUSED_MEANS_TEST -> requestBuilder.uniqueFileNumber(
+              claimDate.format(java.time.format.DateTimeFormatter.ofPattern("ddMMyy")) + "/001");
+      case MAGISTRATES_COURT, YOUTH_COURT, SENDING_HEARING -> requestBuilder.representationOrderDate(claimDate);
+      case FAMILY -> requestBuilder.londonRate(Boolean.FALSE);
+      default -> {
+      }
+    }
+
+    return requestBuilder.build();
+  }
+
+  @ParameterizedTest
+  @MethodSource("civilCategoryTypes")
+  void getValidFeeEntity_whenDateIsBeforeCivilCutoff_shouldThrowErrCiv2(CategoryType categoryType) {
+    FeeCalculationRequest feeCalculationRequest = buildRequestForCategory(categoryType, LocalDate.of(2012, 12, 31));
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("SCHEME_2013")
+        .validFrom(LocalDate.of(2013, 4, 1))
+        .build();
+
+    FeeEntity feeEntity = fixedFeeEntity("TEST", categoryType, feeSchemesEntity);
+    List<FeeEntity> feeEntityList = List.of(feeEntity);
+
+    assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
+        .isInstanceOf(ValidationException.class)
+        .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE_TOO_OLD)
+        .hasMessage("ERRCIV2 - Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.");
+  }
+
+  @ParameterizedTest
+  @MethodSource("civilCategoryTypes")
+  void getValidFeeEntity_whenDateIsAfterCivilCutoffButBeforeSchemeStart_shouldThrowErrCiv1(CategoryType categoryType) {
+    FeeCalculationRequest feeCalculationRequest = buildRequestForCategory(categoryType, LocalDate.of(2013, 5, 1));
+    FeeSchemesEntity feeSchemesEntity = FeeSchemesEntity.builder().schemeCode("SCHEME_2013")
+        .validFrom(LocalDate.of(2013, 7, 1))
+        .build();
+
+    FeeEntity feeEntity = fixedFeeEntity("TEST", categoryType, feeSchemesEntity);
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
     assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
