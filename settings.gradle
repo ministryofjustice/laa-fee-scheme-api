@@ -1,9 +1,13 @@
 pluginManagement {
     repositories {
-        maven { url = 'https://repo.spring.io/release' }
-        maven { url = 'https://repo.spring.io/plugins-release' }
         mavenCentral()
         maven { url = "https://plugins.gradle.org/m2/" }
+        maven {
+            url = uri('https://central.sonatype.com/repository/maven-snapshots/')
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
         gradlePluginPortal()
     }
 
