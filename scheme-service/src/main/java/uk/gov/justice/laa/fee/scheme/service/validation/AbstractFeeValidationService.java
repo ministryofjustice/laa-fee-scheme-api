@@ -71,9 +71,14 @@ public abstract class AbstractFeeValidationService {
     return feeEntityList.stream()
         .filter(fee -> isValidFee(fee, claimStartDate))
         .filter(fee -> filterByRegion(fee, feeCalculationRequest.getLondonRate()))
+        .filter(fee -> filterByRequestContext(fee, feeCalculationRequest))
         .max(Comparator.comparing(fee -> fee.getFeeScheme().getValidFrom()))
         .orElseThrow(() -> new ValidationException(getErrorType(feeCalculationRequest, categoryType),
             new FeeContext(feeCalculationRequest)));
+  }
+
+  protected boolean filterByRequestContext(FeeEntity fee, FeeCalculationRequest feeCalculationRequest) {
+    return true;
   }
 
   /**

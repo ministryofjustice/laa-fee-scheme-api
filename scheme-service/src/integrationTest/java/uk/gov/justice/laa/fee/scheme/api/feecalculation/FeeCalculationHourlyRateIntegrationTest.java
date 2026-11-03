@@ -209,14 +209,17 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
 
   @ParameterizedTest
   @CsvSource({
-      "IAXC, IMM_ASYLM_FS2025",
-      "IMXC, IMM_ASYLM_FS2025",
-      "IRAR, IMM_ASYLM_FS2023"
+      "IAXC, IMM_ASYLM_FS2025, IAXC:IAAP",
+      "IMXC, IMM_ASYLM_FS2025, IMXC:IMAP",
+      "IMXC, IMM_ASYLM_BAIL_FS2025, IMXC:IBAI",
+      "IRAR, IMM_ASYLM_FS2023, IRAR:IREM"
   })
-  void shouldGetImmigrationAndAsylumHourlyRateClrFeeCalculation(String feeCode, String feeScheme) throws Exception {
+  void shouldGetImmigrationAndAsylumHourlyRateClrFeeCalculation(String feeCode, String feeScheme,
+                                                                String matterTypeCode) throws Exception {
     String request = """ 
         {
           "feeCode": "%s",
+          "matterTypeCode": "%s",
           "claimId": "claim_123",
           "startDate": "2025-12-22",
           "netProfitCosts": 116.89,
@@ -226,7 +229,7 @@ class FeeCalculationHourlyRateIntegrationTest extends BaseFeeCalculationIntegrat
           "vatIndicator": true,
           "caseConcludedDate": "2026-02-01"
         }
-        """.formatted(feeCode);
+        """.formatted(feeCode, matterTypeCode);
 
     postAndExpect(request, """
         {

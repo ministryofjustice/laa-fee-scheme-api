@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.fee.scheme.entity.FeeEntity;
@@ -211,6 +212,72 @@ class CivilFeeValidationServiceTest {
         .isInstanceOf(ValidationException.class)
         .hasFieldOrPropertyWithValue("error", expectedError)
         .hasMessageContaining(expectedError.getMessage());
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "IMXC:IBAI, IMM_ASYLM_BAIL_FS2025",
+      "IMXC:IMAP, IMM_ASYLM_FS2025"
+  })
+  void getValidFeeEntity_whenImxcMatterTypeIsProvided_shouldSelectMatchingScheme(String matterTypeCode,
+                                                                                 String expectedFeeScheme) {
+    LocalDate validFrom = LocalDate.of(2025, 12, 22);
+    FeeEntity standardFee = immigrationAsylumFeeEntity("IMM_ASYLM_FS2025", validFrom);
+    FeeEntity bailFee = immigrationAsylumFeeEntity("IMM_ASYLM_BAIL_FS2025", validFrom);
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("IMXC")
+        .matterTypeCode(matterTypeCode)
+        .startDate(validFrom)
+        .build();
+
+    FeeEntity result = civilFeeValidationService.getValidFeeEntity(List.of(standardFee, bailFee), request);
+
+    assertThat(result.getFeeScheme().getSchemeCode()).isEqualTo(expectedFeeScheme);
+  }
+
+  @ParameterizedTest
+  @NullAndEmptySource
+  void getValidFeeEntity_whenImxcMatterTypeIsMissing_shouldNotFilterSchemes(String matterTypeCode) {
+    LocalDate validFrom = LocalDate.of(2025, 12, 22);
+    FeeEntity bailFee = immigrationAsylumFeeEntity("IMM_ASYLM_BAIL_FS2025", validFrom);
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("IMXC")
+        .matterTypeCode(matterTypeCode)
+        .startDate(validFrom)
+        .build();
+
+    FeeEntity result = civilFeeValidationService.getValidFeeEntity(List.of(bailFee), request);
+
+    assertThat(result).isSameAs(bailFee);
+  }
+
+  @Test
+  void getValidFeeEntity_whenOtherImmigrationFeeCodeIsUsed_shouldNotApplyImxcMatterTypeFilter() {
+    LocalDate validFrom = LocalDate.of(2025, 12, 22);
+    FeeEntity fee = fixedFeeEntity(
+        "IAXC",
+        CategoryType.IMMIGRATION_ASYLUM,
+        FeeSchemesEntity.builder()
+            .schemeCode("IMM_ASYLM_FS2025")
+            .validFrom(validFrom)
+            .build());
+    FeeCalculationRequest request = FeeCalculationRequest.builder()
+        .feeCode("IAXC")
+        .matterTypeCode("IAXC:IBAI")
+        .startDate(validFrom)
+        .build();
+
+    FeeEntity result = civilFeeValidationService.getValidFeeEntity(List.of(fee), request);
+
+    assertThat(result).isSameAs(fee);
+  }
+
+  private FeeEntity immigrationAsylumFeeEntity(String schemeCode, LocalDate validFrom) {
+    FeeSchemesEntity feeScheme = FeeSchemesEntity.builder()
+        .schemeCode(schemeCode)
+        .validFrom(validFrom)
+        .build();
+    return fixedFeeEntity("IMXC", CategoryType.IMMIGRATION_ASYLUM, feeScheme);
   }
 
   @ParameterizedTest()

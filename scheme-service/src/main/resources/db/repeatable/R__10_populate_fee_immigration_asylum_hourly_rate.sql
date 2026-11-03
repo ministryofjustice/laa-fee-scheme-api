@@ -47,3 +47,14 @@ VALUES ('IACD', NULL, NULL, 1600.00, 161.00, 166.00, 90.00, 302.00, 'IMM_ASYLM_F
        ('IMCD', NULL, NULL, 1200.00, 161.00, 166.00, 90.00, 237.00, 'IMM_ASYLM_FS2020')
 ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;
 
+
+
+-- Temporary Fix - Handling IMXC bail cases using multiple fee schemes for different years (2013, 2020, 2023, 2025)
+INSERT INTO fee
+(fee_code, profit_cost_limit, disbursement_limit, total_limit, fee_scheme_code)
+VALUES
+       ('IMXC', NULL, NULL, 500.00, 'IMM_ASYLM_BAIL_FS2013'),
+       ('IMXC', NULL, NULL, 500.00, 'IMM_ASYLM_BAIL_FS2020'),
+       ('IMXC', NULL, NULL, 500.00, 'IMM_ASYLM_BAIL_FS2023'),
+       ('IMXC', NULL, NULL, 700.00, 'IMM_ASYLM_BAIL_FS2025')
+ON CONFLICT (fee_code, fee_scheme_code) DO NOTHING;

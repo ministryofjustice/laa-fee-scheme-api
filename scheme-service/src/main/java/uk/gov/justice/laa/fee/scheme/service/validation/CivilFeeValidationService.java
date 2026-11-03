@@ -29,6 +29,9 @@ import uk.gov.justice.laa.fee.scheme.model.FeeCalculationRequest;
 public class CivilFeeValidationService extends AbstractFeeValidationService {
 
   private static final LocalDate CIVIL_START_DATE = LocalDate.of(2013, 4, 1);
+  private static final String FEE_CODE_IMXC = "IMXC";
+  private static final String BAIL_MATTER_TYPE_CODE = "IBAI";
+  private static final String BAIL_SCHEME = "BAIL";
 
   /**
    * Validates the fee code and claim start date and returns the valid Fee entity.
@@ -82,6 +85,20 @@ public class CivilFeeValidationService extends AbstractFeeValidationService {
     if (feeCalculationRequest.getLondonRate() == null) {
       throw new ValidationException(ERR_FAMILY_LONDON_RATE, new FeeContext(feeCalculationRequest));
     }
+  }
+
+  @Override
+  protected boolean filterByRequestContext(FeeEntity fee, FeeCalculationRequest feeCalculationRequest) {
+    String matterTypeCode = feeCalculationRequest.getMatterTypeCode();
+    if (fee.getCategoryType() != IMMIGRATION_ASYLUM
+        || !FEE_CODE_IMXC.equals(feeCalculationRequest.getFeeCode())
+        || matterTypeCode == null || matterTypeCode.isEmpty()) {
+      return true;
+    }
+
+    boolean bailMatterType = matterTypeCode.contains(BAIL_MATTER_TYPE_CODE);
+    boolean bailScheme = fee.getFeeScheme().getSchemeCode().contains(BAIL_SCHEME);
+    return bailMatterType == bailScheme;
   }
 
   private LocalDate getEarliestFeeSchemeDate(List<FeeEntity> feeEntityList) {

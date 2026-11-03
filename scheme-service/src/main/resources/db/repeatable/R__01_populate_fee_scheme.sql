@@ -183,3 +183,12 @@ DO UPDATE SET
     scheme_name = EXCLUDED.scheme_name,
     valid_from = EXCLUDED.valid_from,
     valid_to = EXCLUDED.valid_to;
+
+-- Fee Scheme for 'Immigration and Asylum - Bail' category
+INSERT INTO fee_schemes (scheme_code, scheme_name, valid_from, valid_to)
+VALUES
+    ('IMM_ASYLM_BAIL_FS2013', 'Immigration and Asylum Bail Scheme 2013', '2013-04-01', '2020-06-07'),
+    ('IMM_ASYLM_BAIL_FS2020', 'Immigration and Asylum Bail Scheme 2020', '2020-06-08', '2023-03-31'),
+    ('IMM_ASYLM_BAIL_FS2023', 'Immigration and Asylum Bail Scheme 2023', '2023-04-01', NULL),
+    ('IMM_ASYLM_BAIL_FS2025', 'Immigration and Asylum Bail Scheme 2025', '2025-12-22', NULL)
+ON CONFLICT (scheme_code) DO NOTHING;
