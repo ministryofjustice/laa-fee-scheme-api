@@ -69,18 +69,15 @@ public class CivilFeeValidationService extends AbstractFeeValidationService {
       throw new ValidationException(ERR_CIVIL_START_DATE_TOO_OLD, new FeeContext(feeCalculationRequest));
     }
 
-    if (categoryType == IMMIGRATION_ASYLUM) {
-      ErrorType error = findByFeeCode(feeCalculationRequest.getFeeCode())
-          .filter(e -> !claimStartDate.isBefore(CIVIL_START_DATE))
-          .orElse(ERR_CIVIL_START_DATE);
-      if (claimStartDate.isBefore(earliestFeeSchemeDate)) {
-        throw new ValidationException(error, new FeeContext(feeCalculationRequest));
-      }
-      return;
-    }
-
     if (claimStartDate.isBefore(earliestFeeSchemeDate)) {
-      throw new ValidationException(ERR_CIVIL_START_DATE, new FeeContext(feeCalculationRequest));
+      if (categoryType == IMMIGRATION_ASYLUM) {
+        ErrorType error = findByFeeCode(feeCalculationRequest.getFeeCode())
+                .filter(e -> !claimStartDate.isBefore(CIVIL_START_DATE))
+                .orElse(ERR_CIVIL_START_DATE_TOO_OLD);
+        throw new ValidationException(error, new FeeContext(feeCalculationRequest));
+      } else {
+        throw new ValidationException(ERR_CIVIL_START_DATE, new FeeContext(feeCalculationRequest));
+      }
     }
   }
 

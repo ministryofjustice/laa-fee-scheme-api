@@ -345,10 +345,17 @@ class CivilFeeValidationServiceTest {
     FeeEntity feeEntity = fixedFeeEntity("TEST", categoryType, feeSchemesEntity);
     List<FeeEntity> feeEntityList = List.of(feeEntity);
 
+    ErrorType expectedError = categoryType == CategoryType.IMMIGRATION_ASYLUM
+        ? ERR_CIVIL_START_DATE_TOO_OLD
+        : ERR_CIVIL_START_DATE;
+    String expectedMessage = expectedError == ERR_CIVIL_START_DATE_TOO_OLD
+        ? "ERRCIV2 - Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit."
+        : "ERRCIV1 - Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.";
+
     assertThatThrownBy(() -> civilFeeValidationService.getValidFeeEntity(feeEntityList, feeCalculationRequest))
         .isInstanceOf(ValidationException.class)
-        .hasFieldOrPropertyWithValue("error", ERR_CIVIL_START_DATE)
-        .hasMessage("ERRCIV1 - Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.");
+        .hasFieldOrPropertyWithValue("error", expectedError)
+        .hasMessage(expectedMessage);
   }
 
   @ParameterizedTest
