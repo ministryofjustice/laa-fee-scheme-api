@@ -731,7 +731,7 @@ Feature: Error and warning API
 
     Examples: Inquest civil fee/date validation rules
       | feeCode | startDate   | code    | message                                                                                                         |
-      | COMINQ  | 2026-12-01  | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
-      | FAMINQ  | 2026-12-01  | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
-      | INQ     | 2012-12-31  | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.                 |
-      | WFBINQ  | 2012-12-31  | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.                 |
+      | COMINQ  | 2026-01-01  | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
+      | FAMINQ  | 2026-01-01  | ERRCIV1 | Fee Code and Case Start Date combination is not valid. Check both fields and resubmit your claim.             |
+      | INQ     | 2012-01-31  | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.                 |
+      | WFBINQ  | 2012-01-31  | ERRCIV2 | Cases started before 1st April 2013 cannot be accepted. Check Case Start Date and resubmit.                 |
