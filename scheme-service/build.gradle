@@ -1,12 +1,12 @@
 plugins {
     id 'io.freefair.lombok' version '9.8.2'
     id 'uk.gov.justice.service.laa.laa-spring-boot-gradle-plugin'
-    id "io.sentry.jvm.gradle" version "6.24.0"
+    id "io.sentry.jvm.gradle" version "6.25.0"
     id 'info.solidsoft.pitest'
 }
 
 def versions = [
-        sentry 						: '8.61.1'
+        sentry 						: '8.62.0'
 ]
 
 test {
@@ -104,7 +104,7 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-flyway:4.1.2'
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.0'
 
     implementation 'org.apache.commons:commons-lang3:3.21.0'
 
