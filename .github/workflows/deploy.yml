@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v6
 
       - name: Build and run tests
         uses: './.github/actions/build-and-test'
@@ -28,16 +28,16 @@ jobs:
     needs: build-test
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v6
 
       - name: Set up JDK 25
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654  # v5
+        uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78  # v5
         with:
           java-version: '25'
           distribution: 'corretto'
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c  # v5
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c  # v6.4.1
 
       - name: Build and install dependencies
         run: ./gradlew clean build
@@ -118,10 +118,10 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v6
 
       - name: Set up JDK 25
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654  # v5
+        uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78  # v5
         with:
           java-version: 25
           distribution: 'corretto'
@@ -144,6 +144,6 @@ jobs:
           sed -i 's/"security-severity": "undefined"/"security-severity": "0"/g' snyk-app.sarif
 
       - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@b25d0ebf40e5b63ee81e1bd6e5d2a12b7c2aeb61 # v4
+        uses: github/codeql-action/upload-sarif@0911ee96d2d6c8def97122c36c5cadd93829a4b4 # v4
         with:
           sarif_file: snyk-app.sarif
